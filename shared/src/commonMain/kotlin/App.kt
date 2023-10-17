@@ -14,6 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.serialization.kotlinx.json.json
+import model.Movie
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -38,6 +44,19 @@ fun App() {
             }
         }
     }
+}
+
+val httpClient = HttpClient {
+    install(ContentNegotiation) {
+        json()
+    }
+}
+
+suspend fun getMovies(): List<Movie> {
+    val movies = httpClient
+        .get("movieDB url")
+        .body<List<Movie>>()
+    return movies
 }
 
 expect fun getPlatformName(): String
