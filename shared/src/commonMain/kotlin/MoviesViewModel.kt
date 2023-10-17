@@ -4,11 +4,14 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import model.Movie
+import model.MoviesPage
 
 data class MoviesUiState(
     val movies: List<Movie> = emptyList()
@@ -20,7 +23,9 @@ class MoviesViewModel : ViewModel() {
 
     private val httpClient = HttpClient {
         install(ContentNegotiation) {
-            json()
+            json(kotlinx.serialization.json.Json {
+                ignoreUnknownKeys = true
+            })
         }
     }
 
@@ -33,7 +38,7 @@ class MoviesViewModel : ViewModel() {
     }
 
     private fun updateMovies() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val movies = getMovies()
             _uiState.update {
                 it.copy(movies = movies)
@@ -42,9 +47,9 @@ class MoviesViewModel : ViewModel() {
     }
 
     private suspend fun getMovies(): List<Movie> {
-        val movies = httpClient
-            .get("movieDB url")
-            .body<List<Movie>>()
-        return movies
+        val moviesPages = httpClient
+            .get("https://api.themoviedb.org/3/movie/popular?api_key=fe3e15709f26d5df026b17a743dbd529")
+            .body<MoviesPage>()
+        return moviesPages.results
     }
 }
