@@ -1,3 +1,5 @@
+package Movies
+
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -10,8 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import model.Movie
-import model.MoviesPage
+import Movies.model.Movie
+import Movies.model.MoviesPage
 
 data class MoviesUiState(
     val movies: List<Movie> = emptyList()
