@@ -31,7 +31,9 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:2.3.5")
                 implementation("io.ktor:ktor-client-content-negotiation:2.3.5") //match serialization to http responses
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5") //match serialization to http responses
-                implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+                implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") //serialization for model entities
+                api("dev.icerock.moko:mvvm-core:0.16.1") //viewmodel library
+                api("dev.icerock.moko:mvvm-compose:0.16.1") //viewmodel library
             }
         }
         val androidMain by getting {
