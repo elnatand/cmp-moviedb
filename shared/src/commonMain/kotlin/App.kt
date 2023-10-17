@@ -1,5 +1,5 @@
-import Movies.MoviesPage
-import Movies.MoviesViewModel
+import movies.MoviesPage
+import movies.MoviesViewModel
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import dev.icerock.moko.mvvm.compose.getViewModel

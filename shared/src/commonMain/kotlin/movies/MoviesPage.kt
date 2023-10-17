@@ -1,4 +1,4 @@
-package Movies
+package movies
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement

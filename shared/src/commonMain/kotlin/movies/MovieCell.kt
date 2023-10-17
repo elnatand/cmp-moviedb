@@ -1,9 +1,7 @@
-package Movies
+package movies
 
-import Movies.model.Movie
+import movies.model.Movie
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.layout.ContentScale
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
