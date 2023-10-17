@@ -29,6 +29,8 @@ kotlin {
                 implementation(compose.components.resources)
                 implementation("media.kamel:kamel-image:0.6.0")
                 implementation("io.ktor:ktor-client-core:2.3.5")
+                implementation("io.ktor:ktor-client-content-negotiation:2.3.5") //match serialization to http responses
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5") //match serialization to http responses
                 implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
             }
         }
