@@ -10,8 +10,4 @@ class MoviesRepositoryImpl(
     override suspend fun getMoviesPage(): List<Movie> {
         return moviesRemoteDataSource.getMoviesPage()
     }
-
-    override fun onCleared() {
-        moviesRemoteDataSource.onCleared()
-    }
 }

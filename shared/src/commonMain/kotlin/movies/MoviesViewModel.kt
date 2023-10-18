@@ -27,10 +27,6 @@ class MoviesViewModel : ViewModel(), KoinComponent {
         updateMovies()
     }
 
-    override fun onCleared() {
-        moviesRepository.onCleared()
-    }
-
     private fun updateMovies() {
         viewModelScope.launch(Dispatchers.IO) {
             val movies = moviesRepository.getMoviesPage()
