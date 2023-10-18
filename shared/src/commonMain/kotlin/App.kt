@@ -6,8 +6,6 @@ import navigation.RootNavGraph
 fun App() {
     MaterialTheme {
         RootNavGraph()
-//        val moviesViewModel = getViewModel(Unit, viewModelFactory { MoviesViewModel() })
-//        MoviesPage(moviesViewModel)
     }
 }
 
