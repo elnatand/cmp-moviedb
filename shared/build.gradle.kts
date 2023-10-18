@@ -34,6 +34,8 @@ kotlin {
                 implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") //serialization for model entities
                 api("dev.icerock.moko:mvvm-core:0.16.1") //viewmodel library
                 api("dev.icerock.moko:mvvm-compose:0.16.1") //viewmodel library
+                implementation("io.insert-koin:koin-core:3.5.0") //DI
+              //  implementation("io.insert-koin:koin-compose:1.0.4") //DI
             }
         }
         val androidMain by getting {
@@ -42,6 +44,7 @@ kotlin {
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.10.1")
                 implementation("io.ktor:ktor-client-android:2.3.5")
+                implementation("io.insert-koin:koin-android:3.5.0") //DI
             }
         }
         val iosX64Main by getting
