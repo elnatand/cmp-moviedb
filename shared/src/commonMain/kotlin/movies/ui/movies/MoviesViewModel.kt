@@ -1,4 +1,4 @@
-package movies
+package movies.ui.movies
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers

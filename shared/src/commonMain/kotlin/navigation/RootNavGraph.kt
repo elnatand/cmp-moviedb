@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.rememberNavigator
-import movies.MoviesRoute
+import movies.ui.movies.MoviesRoute
 
 @Composable
 fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
@@ -15,7 +15,7 @@ fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
         scene("/home") {
             MoviesRoute()
         }
-        scene("/search") {
+        scene("/movie") {
 
         }
     }

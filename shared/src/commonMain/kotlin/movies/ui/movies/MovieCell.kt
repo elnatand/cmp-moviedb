@@ -1,4 +1,4 @@
-package movies
+package movies.ui.movies
 
 import movies.model.Movie
 import androidx.compose.runtime.Composable
