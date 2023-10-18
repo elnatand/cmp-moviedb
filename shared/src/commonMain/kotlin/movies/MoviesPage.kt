@@ -12,10 +12,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.mvvm.compose.getViewModel
+import dev.icerock.moko.mvvm.compose.viewModelFactory
 
 @Composable
-fun MoviesPage(viewModel: MoviesViewModel) {
+fun MoviesRoute() {
+    val viewModel = getViewModel(Unit, viewModelFactory { MoviesViewModel() })
     val uiState by viewModel.uiState.collectAsState()
+    MoviesScreen(uiState)
+}
+
+@Composable
+fun MoviesScreen(uiState: MoviesUiState) {
     AnimatedVisibility(uiState.movies.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),

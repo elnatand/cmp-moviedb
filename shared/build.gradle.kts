@@ -36,6 +36,7 @@ kotlin {
                 api("dev.icerock.moko:mvvm-compose:0.16.1") //viewmodel library
                 implementation("io.insert-koin:koin-core:3.5.0") //DI
               //  implementation("io.insert-koin:koin-compose:1.0.4") //DI
+                api("moe.tlaster:precompose:1.5.4") //Navigation
             }
         }
         val androidMain by getting {
