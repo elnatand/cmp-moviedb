@@ -16,14 +16,22 @@ import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 
 @Composable
-fun MoviesRoute() {
+fun MoviesRoute(
+    onClick: (Int) -> Unit
+) {
     val viewModel = getViewModel(Unit, viewModelFactory { MoviesViewModel() })
     val uiState by viewModel.uiState.collectAsState()
-    MoviesScreen(uiState)
+    MoviesScreen(
+        uiState = uiState,
+        onClick = onClick
+    )
 }
 
 @Composable
-fun MoviesScreen(uiState: MoviesUiState) {
+fun MoviesScreen(
+    uiState: MoviesViewModel.MoviesUiState,
+    onClick: (Int) -> Unit
+) {
     AnimatedVisibility(uiState.movies.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -31,8 +39,11 @@ fun MoviesScreen(uiState: MoviesUiState) {
             verticalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
             content = {
-                items(uiState.movies){
-                    MovieCell(it)
+                items(uiState.movies) {
+                    MovieCell(
+                        movie = it,
+                        onClick = onClick
+                    )
                 }
             }
         )

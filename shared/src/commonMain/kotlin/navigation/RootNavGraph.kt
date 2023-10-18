@@ -3,7 +3,9 @@ package navigation
 import androidx.compose.runtime.Composable
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.Navigator
+import moe.tlaster.precompose.navigation.path
 import moe.tlaster.precompose.navigation.rememberNavigator
+import movies.ui.movie_details.MovieDetailsRoute
 import movies.ui.movies.MoviesRoute
 
 @Composable
@@ -13,10 +15,13 @@ fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
         initialRoute = "/home",
     ) {
         scene("/home") {
-            MoviesRoute()
+            MoviesRoute{
+                navigator.navigate("/movie_details/$it")
+            }
         }
-        scene("/movie") {
-
+        scene("/movie_details/{movieId}") {
+            val movieId: Int? = it.path("movieId")
+            MovieDetailsRoute(movieId)
         }
     }
 }

@@ -1,4 +1,4 @@
-package movies.ui.movies
+package movies.ui.movie_details
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers
@@ -8,32 +8,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import movies.data.MoviesRepository
-import movies.model.Movie
+import movies.model.MovieDetails
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 
-class MoviesViewModel : ViewModel(), KoinComponent {
+class MovieDetailsViewModel : ViewModel(), KoinComponent {
 
     private val moviesRepository: MoviesRepository = get()
 
-    private val _uiState = MutableStateFlow(MoviesUiState())
+    private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    init {
-        updateMovies()
-    }
-
-    private fun updateMovies() {
+    fun getMovieDetails(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val movies = moviesRepository.getMoviesPage()
+            val movieDetails = moviesRepository.getMovieDetails(movieId)
             _uiState.update {
-                it.copy(movies = movies)
+                it.copy(movieDetails = movieDetails)
             }
         }
     }
 
-    data class MoviesUiState(
-        val movies: List<Movie> = emptyList()
+    data class UiState(
+        val movieDetails: MovieDetails? = null
     )
-
 }
