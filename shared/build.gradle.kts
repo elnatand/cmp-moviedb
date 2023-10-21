@@ -29,15 +29,15 @@ kotlin {
                 implementation(compose.animation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
-                implementation(libs.bundles.ktor)
+                implementation(libs.bundles.ktor) // network
                 implementation(libs.org.jetbrains.kotlinx.coroutines.core)
-                implementation(libs.media.kamel.image)
-                implementation(libs.io.insert.koin.core)
-                api(libs.bundles.moko.mvvm)
+                implementation(libs.media.kamel.image) // image loader
+                implementation(libs.io.insert.koin.core) //di
+                api(libs.bundles.moko.mvvm) //view model
                 api(libs.bundles.moko.resources)
                 api(libs.bundles.moko.permissions)
 
-                api(libs.moe.tlaster.precompose)
+                api(libs.moe.tlaster.precompose) // navigation
             }
         }
         val androidMain by getting {
