@@ -24,28 +24,28 @@ kotlin {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
-                implementation(compose.material)
+                implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
+                implementation(compose.animation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
-                implementation("media.kamel:kamel-image:0.6.0")
-                implementation("io.ktor:ktor-client-core:2.3.5")
-                implementation("io.ktor:ktor-client-content-negotiation:2.3.5") //match serialization to http responses
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5") //match serialization to http responses
-                implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0") //serialization for model entities
-                api("dev.icerock.moko:mvvm-core:0.16.1") //viewmodel library
-                api("dev.icerock.moko:mvvm-compose:0.16.1") //viewmodel library
-                implementation("io.insert-koin:koin-core:3.5.0") //DI
-              //  implementation("io.insert-koin:koin-compose:1.0.4") //DI
-                api("moe.tlaster:precompose:1.5.4") //Navigation
+                implementation(libs.bundles.ktor) // network
+                implementation(libs.org.jetbrains.kotlinx.coroutines.core)
+                implementation(libs.media.kamel.image) // image loader
+                implementation(libs.io.insert.koin.core) //di
+                api(libs.bundles.moko.mvvm) //view model
+                api(libs.bundles.moko.resources)
+                api(libs.bundles.moko.permissions)
+
+                api(libs.moe.tlaster.precompose) // navigation
             }
         }
         val androidMain by getting {
             dependencies {
-                api("androidx.activity:activity-compose:1.7.2")
-                api("androidx.appcompat:appcompat:1.6.1")
-                api("androidx.core:core-ktx:1.10.1")
-                implementation("io.ktor:ktor-client-android:2.3.5")
-                implementation("io.insert-koin:koin-android:3.5.0") //DI
+                implementation(libs.androidx.appcompat)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.io.ktor.client.android)
+                implementation(libs.io.insert.koin.android)
             }
         }
         val iosX64Main by getting
@@ -57,7 +57,7 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
-                implementation("io.ktor:ktor-client-darwin:2.3.5")
+                implementation(libs.io.ktor.client.darwin)
             }
         }
     }
