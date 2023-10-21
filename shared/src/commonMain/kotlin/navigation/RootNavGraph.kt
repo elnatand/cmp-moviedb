@@ -21,7 +21,10 @@ fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
         }
         scene("/movie_details/{movieId}") {
             val movieId: Int? = it.path("movieId")
-            MovieDetailsRoute(movieId)
+            MovieDetailsRoute(
+                movieId = movieId,
+                onBackPressed = { navigator.goBack() }
+            )
         }
     }
 }
