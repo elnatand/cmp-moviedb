@@ -1,11 +1,27 @@
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import navigation.RootNavGraph
+import ui.design_system.NavigationBar
+import ui.navigation.RootNavGraph
 
 @Composable
-fun App() {
+fun App(
+    appState: MdbAppState = rememberMdbAppState()
+) {
+
     MaterialTheme {
-        RootNavGraph()
+        Scaffold(
+            bottomBar = {
+                if (appState.shouldShowBottomBar()) {
+                    NavigationBar(
+                        topLevelDestinations = appState.topLevelDestinations,
+                        onClick = appState::navigateToTopLevelDestination
+                    )
+                }
+            }
+        ) {
+            RootNavGraph()
+        }
     }
 }
 
