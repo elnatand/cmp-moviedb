@@ -1,8 +1,8 @@
-package movies.di
+package features.movies.di
 
-import movies.data.MoviesRepository
-import movies.data.MoviesRepositoryImpl
-import movies.data.data_sources.MoviesRemoteDataSource
+import features.movies.data.MoviesRepository
+import features.movies.data.MoviesRepositoryImpl
+import features.movies.data.data_sources.MoviesRemoteDataSource
 import network.createHttpClient
 import org.koin.dsl.module
 

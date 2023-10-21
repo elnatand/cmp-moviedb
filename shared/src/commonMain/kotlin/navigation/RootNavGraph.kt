@@ -5,8 +5,8 @@ import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.path
 import moe.tlaster.precompose.navigation.rememberNavigator
-import movies.ui.movie_details.MovieDetailsRoute
-import movies.ui.movies.MoviesRoute
+import features.movies.ui.movie_details.MovieDetailsRoute
+import features.movies.ui.movies.MoviesRoute
 
 @Composable
 fun RootNavGraph(navigator: Navigator = rememberNavigator()) {

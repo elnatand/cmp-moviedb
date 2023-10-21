@@ -1,4 +1,4 @@
-package movies.model
+package features.movies.model
 
 import kotlinx.serialization.Serializable
 

@@ -1,11 +1,11 @@
-package movies.data.data_sources
+package features.movies.data.data_sources
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import movies.model.Movie
-import movies.model.MovieDetails
-import movies.model.MoviesPage
+import features.movies.model.Movie
+import features.movies.model.MovieDetails
+import features.movies.model.MoviesPage
 
 class MoviesRemoteDataSource(
     private val httpClient: HttpClient

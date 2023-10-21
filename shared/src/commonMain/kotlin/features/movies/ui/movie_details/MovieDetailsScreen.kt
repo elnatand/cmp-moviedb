@@ -1,4 +1,4 @@
-package movies.ui.movie_details
+package features.movies.ui.movie_details
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

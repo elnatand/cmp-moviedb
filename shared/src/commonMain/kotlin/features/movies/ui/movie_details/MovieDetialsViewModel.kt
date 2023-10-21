@@ -1,4 +1,4 @@
-package movies.ui.movie_details
+package features.movies.ui.movie_details
 
 import dev.icerock.moko.mvvm.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers
@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import movies.data.MoviesRepository
-import movies.model.MovieDetails
+import features.movies.data.MoviesRepository
+import features.movies.model.MovieDetails
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 

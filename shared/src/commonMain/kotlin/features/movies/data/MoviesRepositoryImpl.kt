@@ -1,8 +1,8 @@
-package movies.data
+package features.movies.data
 
-import movies.data.data_sources.MoviesRemoteDataSource
-import movies.model.Movie
-import movies.model.MovieDetails
+import features.movies.data.data_sources.MoviesRemoteDataSource
+import features.movies.model.Movie
+import features.movies.model.MovieDetails
 
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource

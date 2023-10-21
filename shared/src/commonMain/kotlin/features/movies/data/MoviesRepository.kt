@@ -1,7 +1,7 @@
-package movies.data
+package features.movies.data
 
-import movies.model.Movie
-import movies.model.MovieDetails
+import features.movies.model.Movie
+import features.movies.model.MovieDetails
 
 interface MoviesRepository {
     suspend fun getMoviesPage(): List<Movie>
