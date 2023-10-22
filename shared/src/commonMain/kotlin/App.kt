@@ -6,7 +6,7 @@ import ui.navigation.RootNavGraph
 
 @Composable
 fun App(
-    appState: MdbAppState = rememberMdbAppState()
+    appState: AppState = rememberAppState()
 ) {
 
     MaterialTheme {

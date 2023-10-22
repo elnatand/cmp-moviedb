@@ -9,20 +9,20 @@ import ui.navigation.moviesRoute
 import ui.navigation.tvShowsRoute
 
 @Composable
-fun rememberMdbAppState(
+fun rememberAppState(
     navController: Navigator = rememberNavigator(),
-): MdbAppState {
+): AppState {
     return remember(
         navController,
     ) {
-        MdbAppState(
+        AppState(
             navController = navController,
         )
     }
 }
 
 @Stable
-class MdbAppState(
+class AppState(
     private val navController: Navigator,
 ) {
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
