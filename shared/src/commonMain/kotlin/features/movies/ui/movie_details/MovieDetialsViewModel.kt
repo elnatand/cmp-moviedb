@@ -1,6 +1,7 @@
 package features.movies.ui.movie_details
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+
+import moe.tlaster.precompose.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,15 +10,20 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import features.movies.data.MoviesRepository
 import features.movies.model.MovieDetails
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
-class MovieDetailsViewModel : ViewModel(), KoinComponent {
 
-    private val moviesRepository: MoviesRepository = get()
+class MovieDetailsViewModel(
+    private val movieId: Int,
+    private val moviesRepository: MoviesRepository,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
+
+    init {
+        getMovieDetails(movieId)
+    }
 
     fun getMovieDetails(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {

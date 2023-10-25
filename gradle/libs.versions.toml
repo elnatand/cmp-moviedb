@@ -13,6 +13,7 @@ dev-icerock-moko-mvvm-version = "0.16.1"
 dev-icerock-moko-permissions-version = "0.16.0"
 dev-icerock-moko-resources-version = "0.23.0"
 io-insert-koin-core-version = "3.5.0"
+io-insert-koin-compose-version = "1.1.0"
 kotlin-version = "1.9.10"
 ktor-version = "2.3.5"
 media-kamel-image-version = "0.7.3"
@@ -48,6 +49,7 @@ dev-icerock-moko-resources-compose = { module = "dev.icerock.moko:resources-comp
 dev-icerock-moko-resources-generator-plugin = { module = "dev.icerock.moko:resources-generator", version.ref = "dev-icerock-moko-resources-version" }
 io-insert-koin-android = { module = "io.insert-koin:koin-android", version.ref = "io-insert-koin-core-version" }
 io-insert-koin-core = { module = "io.insert-koin:koin-core", version.ref = "io-insert-koin-core-version" }
+io-insert-koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "io-insert-koin-compose-version" }
 io-ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor-version" }
 io-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-version" }
 io-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor-version" }
@@ -56,6 +58,8 @@ io-ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.r
 io-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor-version" }
 media-kamel-image = { module = "media.kamel:kamel-image", version.ref = "media-kamel-image-version" }
 moe-tlaster-precompose = { module = "moe.tlaster:precompose", version.ref = "moe-tlaster-precompose-version" }
+moe-tlaster-precompose-koin = { module = "moe.tlaster:precompose-koin", version.ref = "moe-tlaster-precompose-version" }
+moe-tlaster-precompose-viewmodel = { module = "moe.tlaster:precompose-viewmodel", version.ref = "moe-tlaster-precompose-version" }
 org-jetbrains-kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "org-jetbrains-kotlinx-coroutines-core-version" }
 org-jetbrains-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "org-jetbrains-kotlinx-coroutines-core-version" }
 org-jetbrains-kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "org-jetbrains-kotlinx-datetime-version" }

@@ -1,6 +1,9 @@
 package features.tv_shows
 
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,12 +22,20 @@ fun TvShowsRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TvShowsScreen(
     uiState: TvShowsViewModel.UiState,
     onClick: (Int) -> Unit
 ) {
-    Text("Not implemented yet")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "TV Shows") },
+            )
+        }
+    ) {
+        Text("Not implemented yet")
 //    AnimatedVisibility(uiState.movies.isNotEmpty()) {
 //        LazyVerticalGrid(
 //            columns = GridCells.Fixed(2),
@@ -36,4 +47,6 @@ fun TvShowsScreen(
 //            }
 //        )
 //    }
+    }
+
 }

@@ -33,10 +33,13 @@ kotlin {
                 implementation(libs.org.jetbrains.kotlinx.coroutines.core)
                 implementation(libs.media.kamel.image) // image loader
                 implementation(libs.io.insert.koin.core) //di
+                implementation(libs.io.insert.koin.compose) //di
                 api(libs.bundles.moko.mvvm) //view model
                 api(libs.bundles.moko.resources)
                 api(libs.bundles.moko.permissions)
 
+                api(libs.moe.tlaster.precompose.viewmodel)
+                api(libs.moe.tlaster.precompose.koin)
                 api(libs.moe.tlaster.precompose) // navigation
             }
         }
