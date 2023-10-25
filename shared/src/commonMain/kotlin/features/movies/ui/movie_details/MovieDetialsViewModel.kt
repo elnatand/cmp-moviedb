@@ -25,7 +25,7 @@ class MovieDetailsViewModel(
         getMovieDetails(movieId)
     }
 
-    fun getMovieDetails(movieId: Int) {
+   private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val movieDetails = moviesRepository.getMovieDetails(movieId)
             _uiState.update {
