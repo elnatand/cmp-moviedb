@@ -18,6 +18,7 @@ fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
     NavHost(
         navigator = navigator,
         initialRoute = moviesRoute,
+        persistNavState = true
     ) {
         scene(moviesRoute) {
             MoviesRoute{

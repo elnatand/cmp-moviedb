@@ -6,7 +6,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-fun createHttpClient(httpClientEngine: HttpClientEngine) = HttpClient(httpClientEngine) {
+fun createHttpClient() = HttpClient() {
     install(ContentNegotiation) {
         json(Json { ignoreUnknownKeys = true })
     }

@@ -1,39 +1,41 @@
 package features.movies.ui.movies
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+
+import features.movies.data.MoviesRepository
+import features.movies.model.Movie
+import features.movies.model.MoviesPage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import features.movies.data.MoviesRepository
-import features.movies.model.Movie
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
-class MoviesViewModel : ViewModel(), KoinComponent {
+class MoviesViewModel(
+    private val moviesRepository: MoviesRepository
+) : ViewModel() {
 
-    private val moviesRepository: MoviesRepository = get()
-
-    private val _uiState = MutableStateFlow(MoviesUiState())
+    private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
+    private val page = 1
+
     init {
-        updateMovies()
+        getMovies()
     }
 
-    private fun updateMovies() {
+    private fun getMovies() {
         viewModelScope.launch(Dispatchers.IO) {
-            val movies = moviesRepository.getMoviesPage()
+            val movies = moviesRepository.getMoviesPage(page)
             _uiState.update {
                 it.copy(movies = movies)
             }
         }
     }
 
-    data class MoviesUiState(
+    data class UiState(
         val movies: List<Movie> = emptyList()
     )
-
 }

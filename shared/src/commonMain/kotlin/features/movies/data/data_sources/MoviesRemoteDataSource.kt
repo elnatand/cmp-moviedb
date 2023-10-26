@@ -10,9 +10,13 @@ import features.movies.model.MoviesPage
 class MoviesRemoteDataSource(
     private val httpClient: HttpClient
 ) {
-    suspend fun getMoviesPage(): List<Movie> {
+    suspend fun getMoviesPage(page:Int): List<Movie> {
         val moviesPages = httpClient
-            .get("https://api.themoviedb.org/3/movie/popular?api_key=fe3e15709f26d5df026b17a743dbd529")
+            .get("https://api.themoviedb.org/3/movie/popular?api_key=fe3e15709f26d5df026b17a743dbd529"){
+                url{
+                    parameters.append("page", page.toString())
+                }
+            }
             .body<MoviesPage>()
         return moviesPages.results
     }

@@ -15,15 +15,17 @@ import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import moe.tlaster.precompose.koin.koinViewModel
+import moe.tlaster.precompose.stateholder.LocalSavedStateHolder
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MovieDetailsRoute(
     movieId: Int?,
     onBackPressed: () -> Unit,
 ) {
-    val viewModel = getViewModel(Unit, viewModelFactory { MovieDetailsViewModel() })
+    val viewModel =  koinViewModel(MovieDetailsViewModel::class) { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
-    viewModel.getMovieDetails(movieId ?: 0)
     MovieDetailsScreen(
         uiState = uiState,
         onBackPressed,

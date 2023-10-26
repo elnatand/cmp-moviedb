@@ -1,27 +1,33 @@
 package features.movies.ui.movie_details
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+
+import moe.tlaster.precompose.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import features.movies.data.MoviesRepository
-import features.movies.model.MovieDetails
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import features.tv_shows.data.TvShowsRepository
+import features.tv_shows.model.TvShowDetails
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
-class MovieDetailsViewModel : ViewModel(), KoinComponent {
 
-    private val moviesRepository: MoviesRepository = get()
+class MovieDetailsViewModel(
+    private val movieId: Int,
+    private val tvShowsRepository: TvShowsRepository,
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    fun getMovieDetails(movieId: Int) {
+    init {
+        getMovieDetails(movieId)
+    }
+
+   private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val movieDetails = moviesRepository.getMovieDetails(movieId)
+            val movieDetails = tvShowsRepository.getTvShowDetails(movieId)
             _uiState.update {
                 it.copy(movieDetails = movieDetails)
             }
@@ -29,6 +35,6 @@ class MovieDetailsViewModel : ViewModel(), KoinComponent {
     }
 
     data class UiState(
-        val movieDetails: MovieDetails? = null
+        val movieDetails: TvShowDetails? = null
     )
 }
