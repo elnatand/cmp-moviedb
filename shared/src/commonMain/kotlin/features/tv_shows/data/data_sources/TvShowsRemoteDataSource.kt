@@ -11,14 +11,14 @@ import io.ktor.client.statement.request
 class TvShowsRemoteDataSource(
     private val httpClient: HttpClient
 ) {
-    suspend fun getMoviesPage(): List<TvShow> {
+    suspend fun getTvShowPage(): List<TvShow> {
         val tvShowsPages = httpClient
             .get("https://api.themoviedb.org/3/tv/popular?api_key=fe3e15709f26d5df026b17a743dbd529"){}
             .body<TvShowsPage>()
         return tvShowsPages.results
     }
 
-    suspend fun getMovieDetails(tvShowId: Int): TvShowDetails {
+    suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
         return httpClient
             .get("https://api.themoviedb.org/3/movie/${tvShowId}?api_key=fe3e15709f26d5df026b17a743dbd529")
             .body()

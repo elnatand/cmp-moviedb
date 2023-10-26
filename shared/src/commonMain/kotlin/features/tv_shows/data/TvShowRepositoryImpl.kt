@@ -9,10 +9,10 @@ class TvShowRepositoryImpl(
 ) : TvShowsRepository {
 
     override suspend fun getTvShowsPage(): List<TvShow> {
-        return tvShowsRemoteDataSource.getMoviesPage()
+        return tvShowsRemoteDataSource.getTvShowPage()
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
-        return tvShowsRemoteDataSource.getMovieDetails(tvShowId)
+        return tvShowsRemoteDataSource.getTvShowDetails(tvShowId)
     }
 }

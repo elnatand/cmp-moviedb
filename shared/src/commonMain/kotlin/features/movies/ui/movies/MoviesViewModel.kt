@@ -20,13 +20,15 @@ class MoviesViewModel(
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
+    private val page = 1
+
     init {
         getMovies()
     }
 
     private fun getMovies() {
         viewModelScope.launch(Dispatchers.IO) {
-            val movies = moviesRepository.getMoviesPage()
+            val movies = moviesRepository.getMoviesPage(page)
             _uiState.update {
                 it.copy(movies = movies)
             }
