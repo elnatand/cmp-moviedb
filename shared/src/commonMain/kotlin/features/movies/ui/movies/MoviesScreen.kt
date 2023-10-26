@@ -16,11 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.mvvm.compose.getViewModel
-import dev.icerock.moko.mvvm.compose.viewModelFactory
-import features.movies.ui.movie_details.MovieDetailsViewModel
 import moe.tlaster.precompose.koin.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MoviesRoute(
@@ -47,16 +43,16 @@ fun MoviesScreen(
             )
         }
     ) {
-        AnimatedVisibility(uiState.movies.isNotEmpty()) {
+        AnimatedVisibility(uiState.tvShows.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
                 content = {
-                    items(uiState.movies) {
+                    items(uiState.tvShows) {
                         MovieCell(
-                            movie = it,
+                            tvShow = it,
                             onClick = onClick
                         )
                     }

@@ -1,12 +1,8 @@
 package di
 
-import features.movies.di.moviesModule
-import org.koin.core.context.startKoin
-import org.koin.dsl.KoinAppDeclaration
-import org.koin.compose.KoinApplication
+import network.createHttpClient
+import org.koin.dsl.module
 
-fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
-
-
-
+val appModule = module {
+    single { createHttpClient() }
 }

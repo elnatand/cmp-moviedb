@@ -1,39 +1,38 @@
 package features.tv_shows
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import features.movies.data.MoviesRepository
-import features.movies.model.Movie
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import features.tv_shows.data.TvShowsRepository
+import features.tv_shows.model.TvShow
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
-class TvShowsViewModel : ViewModel(), KoinComponent {
-
-    private val moviesRepository: MoviesRepository = get()
+class TvShowsViewModel(
+    private val tvShowsRepository: TvShowsRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
     init {
-        updateMovies()
+        getTvShows()
     }
 
-    private fun updateMovies() {
+    private fun getTvShows() {
         viewModelScope.launch(Dispatchers.IO) {
-            val movies = moviesRepository.getMoviesPage()
+            val tvShows = tvShowsRepository.getTvShowsPage()
             _uiState.update {
-                it.copy(movies = movies)
+                it.copy(tvShows = tvShows)
             }
         }
     }
 
     data class UiState(
-        val movies: List<Movie> = emptyList()
+        val tvShows: List<TvShow> = emptyList()
     )
-
 }

@@ -9,12 +9,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import dev.icerock.moko.mvvm.compose.getViewModel
 import dev.icerock.moko.mvvm.compose.viewModelFactory
+import moe.tlaster.precompose.koin.koinViewModel
 
 @Composable
 fun TvShowsRoute(
     onClick: (Int) -> Unit
 ) {
-    val viewModel = getViewModel(Unit, viewModelFactory { TvShowsViewModel() })
+    val viewModel = koinViewModel(TvShowsViewModel::class)
     val uiState by viewModel.uiState.collectAsState()
     TvShowsScreen(
         uiState = uiState,

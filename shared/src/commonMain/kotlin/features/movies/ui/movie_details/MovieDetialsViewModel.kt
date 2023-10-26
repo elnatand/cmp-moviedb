@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import features.movies.data.MoviesRepository
-import features.movies.model.MovieDetails
+import features.tv_shows.data.TvShowsRepository
+import features.tv_shows.model.TvShowDetails
 import moe.tlaster.precompose.viewmodel.viewModelScope
 
 
 class MovieDetailsViewModel(
     private val movieId: Int,
-    private val moviesRepository: MoviesRepository,
+    private val tvShowsRepository: TvShowsRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
@@ -27,7 +27,7 @@ class MovieDetailsViewModel(
 
    private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val movieDetails = moviesRepository.getMovieDetails(movieId)
+            val movieDetails = tvShowsRepository.getTvShowDetails(movieId)
             _uiState.update {
                 it.copy(movieDetails = movieDetails)
             }
@@ -35,6 +35,6 @@ class MovieDetailsViewModel(
     }
 
     data class UiState(
-        val movieDetails: MovieDetails? = null
+        val movieDetails: TvShowDetails? = null
     )
 }
