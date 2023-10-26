@@ -6,13 +6,14 @@ import io.ktor.client.request.get
 import features.tv_shows.model.TvShow
 import features.tv_shows.model.TvShowDetails
 import features.tv_shows.model.TvShowsPage
+import io.ktor.client.statement.request
 
 class TvShowsRemoteDataSource(
     private val httpClient: HttpClient
 ) {
     suspend fun getMoviesPage(): List<TvShow> {
         val tvShowsPages = httpClient
-            .get("https://api.themoviedb.org/3/movie/popular?api_key=fe3e15709f26d5df026b17a743dbd529")
+            .get("https://api.themoviedb.org/3/tv/popular?api_key=fe3e15709f26d5df026b17a743dbd529"){}
             .body<TvShowsPage>()
         return tvShowsPages.results
     }

@@ -43,16 +43,16 @@ fun MoviesScreen(
             )
         }
     ) {
-        AnimatedVisibility(uiState.tvShows.isNotEmpty()) {
+        AnimatedVisibility(uiState.movies.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
                 content = {
-                    items(uiState.tvShows) {
+                    items(uiState.movies) {
                         MovieCell(
-                            tvShow = it,
+                            movie = it,
                             onClick = onClick
                         )
                     }
