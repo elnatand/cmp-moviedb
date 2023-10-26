@@ -8,8 +8,8 @@ class TvShowRepositoryImpl(
     private val tvShowsRemoteDataSource: TvShowsRemoteDataSource
 ) : TvShowsRepository {
 
-    override suspend fun getTvShowsPage(): List<TvShow> {
-        return tvShowsRemoteDataSource.getTvShowPage()
+    override suspend fun getTvShowsPage(page: Int): List<TvShow> {
+        return tvShowsRemoteDataSource.getTvShowPage(page)
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {

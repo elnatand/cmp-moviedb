@@ -19,13 +19,15 @@ class TvShowsViewModel(
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
+    private val page = 1
+
     init {
         getTvShows()
     }
 
     private fun getTvShows() {
         viewModelScope.launch(Dispatchers.IO) {
-            val tvShows = tvShowsRepository.getTvShowsPage()
+            val tvShows = tvShowsRepository.getTvShowsPage(page)
             _uiState.update {
                 it.copy(tvShows = tvShows)
             }
