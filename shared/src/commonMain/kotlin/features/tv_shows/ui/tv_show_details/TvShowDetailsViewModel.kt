@@ -1,4 +1,4 @@
-package features.tv_shows
+package features.tv_shows.ui.tv_show_details
 
 
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +12,7 @@ import features.tv_shows.model.TvShow
 import moe.tlaster.precompose.viewmodel.ViewModel
 import moe.tlaster.precompose.viewmodel.viewModelScope
 
-class TvShowsViewModel(
+class TvShowDetailsViewModel(
     private val tvShowsRepository: TvShowsRepository
 ) : ViewModel() {
 

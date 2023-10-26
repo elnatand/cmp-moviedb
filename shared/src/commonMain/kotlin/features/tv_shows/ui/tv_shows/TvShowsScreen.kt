@@ -1,4 +1,4 @@
-package features.tv_shows
+package features.tv_shows.ui.tv_shows
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -16,9 +16,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.icerock.moko.mvvm.compose.getViewModel
-import dev.icerock.moko.mvvm.compose.viewModelFactory
-import features.movies.ui.movies.MovieCell
 import moe.tlaster.precompose.koin.koinViewModel
 
 @Composable

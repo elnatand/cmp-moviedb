@@ -7,7 +7,8 @@ import moe.tlaster.precompose.navigation.path
 import moe.tlaster.precompose.navigation.rememberNavigator
 import features.movies.ui.movie_details.MovieDetailsRoute
 import features.movies.ui.movies.MoviesRoute
-import features.tv_shows.TvShowsRoute
+import features.tv_shows.ui.tv_shows.TvShowsRoute
+import moe.tlaster.precompose.navigation.NavOptions
 
 const val moviesRoute = "/movies"
 const val tvShowsRoute = "/tv_shows"
@@ -15,14 +16,17 @@ const val movieDetailsRoute = "/movie_details"
 
 @Composable
 fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
+    val navOptions = NavOptions(
+        // Launch the scene as single top
+        launchSingleTop = true,
+    )
     NavHost(
         navigator = navigator,
         initialRoute = moviesRoute,
-        persistNavState = true
     ) {
         scene(moviesRoute) {
-            MoviesRoute{
-                navigator.navigate("$movieDetailsRoute/$it")
+            MoviesRoute {
+                navigator.navigate("$movieDetailsRoute/$it", navOptions)
             }
         }
         scene("$movieDetailsRoute/{movieId}") {
