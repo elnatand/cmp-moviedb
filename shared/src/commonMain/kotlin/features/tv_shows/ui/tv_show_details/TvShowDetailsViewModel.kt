@@ -8,18 +8,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import features.tv_shows.data.TvShowsRepository
-import features.tv_shows.model.TvShow
+import features.tv_shows.model.TvShowDetails
 import moe.tlaster.precompose.viewmodel.ViewModel
 import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class TvShowDetailsViewModel(
+    private val tvShowId: Int,
     private val tvShowsRepository: TvShowsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
-
-    private val page = 1
 
     init {
         getTvShows()
@@ -27,7 +26,7 @@ class TvShowDetailsViewModel(
 
     private fun getTvShows() {
         viewModelScope.launch(Dispatchers.IO) {
-            val tvShows = tvShowsRepository.getTvShowsPage(page)
+            val tvShows = tvShowsRepository.getTvShowDetails(tvShowId)
             _uiState.update {
                 it.copy(tvShows = tvShows)
             }
@@ -35,6 +34,6 @@ class TvShowDetailsViewModel(
     }
 
     data class UiState(
-        val tvShows: List<TvShow> = emptyList()
+        val tvShows: TvShowDetails? = null
     )
 }

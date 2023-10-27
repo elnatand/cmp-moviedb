@@ -28,7 +28,7 @@ fun MovieDetailsRoute(
     val uiState by viewModel.uiState.collectAsState()
     MovieDetailsScreen(
         uiState = uiState,
-        onBackPressed,
+        onBackPressed = onBackPressed,
     )
 }
 

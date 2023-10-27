@@ -7,12 +7,15 @@ import moe.tlaster.precompose.navigation.path
 import moe.tlaster.precompose.navigation.rememberNavigator
 import features.movies.ui.movie_details.MovieDetailsRoute
 import features.movies.ui.movies.MoviesRoute
+import features.tv_shows.ui.tv_show_details.TvShowDetailsRoute
 import features.tv_shows.ui.tv_shows.TvShowsRoute
 import moe.tlaster.precompose.navigation.NavOptions
 
 const val moviesRoute = "/movies"
-const val tvShowsRoute = "/tv_shows"
 const val movieDetailsRoute = "/movie_details"
+
+const val tvShowsRoute = "/tv_shows"
+const val tvShowDetailsRoute = "/tv_show_details"
 
 @Composable
 fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
@@ -38,8 +41,15 @@ fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
         }
         scene(tvShowsRoute) {
             TvShowsRoute {
-                //TODO to be implemented
+                navigator.navigate("$tvShowDetailsRoute/$it", navOptions)
             }
+        }
+        scene("$tvShowDetailsRoute/{tvShowId}") {
+            val tvShowId: Int? = it.path("tvShowId")
+            TvShowDetailsRoute(
+                tvShowId = tvShowId,
+                onBackPressed = { navigator.goBack() }
+            )
         }
     }
 }

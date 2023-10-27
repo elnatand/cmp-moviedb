@@ -23,7 +23,7 @@ class TvShowsRemoteDataSource(
 
     suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
         return httpClient
-            .get("https://api.themoviedb.org/3/movie/${tvShowId}?api_key=fe3e15709f26d5df026b17a743dbd529")
+            .get("https://api.themoviedb.org/3/tv/${tvShowId}?api_key=fe3e15709f26d5df026b17a743dbd529")
             .body()
     }
 }

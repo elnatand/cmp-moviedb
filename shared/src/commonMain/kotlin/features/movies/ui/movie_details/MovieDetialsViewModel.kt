@@ -1,6 +1,8 @@
 package features.movies.ui.movie_details
 
 
+import features.movies.data.MoviesRepository
+import features.movies.model.MovieDetails
 import moe.tlaster.precompose.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -15,7 +17,7 @@ import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class MovieDetailsViewModel(
     private val movieId: Int,
-    private val tvShowsRepository: TvShowsRepository,
+    private val moviesRepository: MoviesRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
@@ -27,7 +29,7 @@ class MovieDetailsViewModel(
 
    private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            val movieDetails = tvShowsRepository.getTvShowDetails(movieId)
+            val movieDetails = moviesRepository.getMovieDetails(movieId)
             _uiState.update {
                 it.copy(movieDetails = movieDetails)
             }
@@ -35,6 +37,6 @@ class MovieDetailsViewModel(
     }
 
     data class UiState(
-        val movieDetails: TvShowDetails? = null
+        val movieDetails: MovieDetails? = null
     )
 }
