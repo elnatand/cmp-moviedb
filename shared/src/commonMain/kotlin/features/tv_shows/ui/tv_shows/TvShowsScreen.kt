@@ -43,7 +43,10 @@ fun TvShowsScreen(
             )
         }
     ) {
-        AnimatedVisibility(uiState.tvShows.isNotEmpty()) {
+        AnimatedVisibility(
+            visible = uiState.tvShows.isNotEmpty(),
+            modifier = Modifier.padding(it)
+        ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(5.dp),

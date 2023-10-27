@@ -2,6 +2,7 @@ package features.movies.ui.movies
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -22,7 +23,7 @@ import moe.tlaster.precompose.koin.koinViewModel
 fun MoviesRoute(
     onClick: (Int) -> Unit
 ) {
-    val viewModel =  koinViewModel(MoviesViewModel::class)
+    val viewModel = koinViewModel(MoviesViewModel::class)
     val uiState by viewModel.uiState.collectAsState()
     MoviesScreen(
         uiState = uiState,
@@ -43,7 +44,10 @@ fun MoviesScreen(
             )
         }
     ) {
-        AnimatedVisibility(uiState.movies.isNotEmpty()) {
+        AnimatedVisibility(
+            visible = uiState.movies.isNotEmpty(),
+            modifier = Modifier.padding(it)
+        ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
