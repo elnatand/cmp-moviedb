@@ -7,6 +7,7 @@ import moe.tlaster.precompose.navigation.NavOptions
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.rememberNavigator
 import ui.navigation.moviesRoute
+import ui.navigation.profileRoute
 import ui.navigation.tvShowsRoute
 
 @Composable
@@ -43,6 +44,7 @@ class AppState(
         when (topLevelDestination) {
             TopLevelDestination.MOVIES -> navController.navigate(moviesRoute, navOptions)
             TopLevelDestination.TV_SHOWS -> navController.navigate(tvShowsRoute, navOptions)
+            TopLevelDestination.PROFILE ->navController.navigate(profileRoute, navOptions)
         }
     }
 }

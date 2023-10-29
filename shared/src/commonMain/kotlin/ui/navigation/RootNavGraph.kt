@@ -7,6 +7,7 @@ import moe.tlaster.precompose.navigation.path
 import moe.tlaster.precompose.navigation.rememberNavigator
 import features.movies.ui.movie_details.MovieDetailsRoute
 import features.movies.ui.movies.MoviesRoute
+import features.profile.ui.ProfileRoute
 import features.tv_shows.ui.tv_show_details.TvShowDetailsRoute
 import features.tv_shows.ui.tv_shows.TvShowsRoute
 import moe.tlaster.precompose.navigation.NavOptions
@@ -16,6 +17,7 @@ const val movieDetailsRoute = "/movie_details"
 
 const val tvShowsRoute = "/tv_shows"
 const val tvShowDetailsRoute = "/tv_show_details"
+const val profileRoute = "/profile"
 
 @Composable
 fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
@@ -50,6 +52,9 @@ fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
                 tvShowId = tvShowId,
                 onBackPressed = { navigator.goBack() }
             )
+        }
+        scene(profileRoute) {
+            ProfileRoute()
         }
     }
 }

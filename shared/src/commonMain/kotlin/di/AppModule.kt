@@ -2,6 +2,7 @@ package di
 
 
 import features.movies.di.moviesModule
+import features.profile.di.profileModule
 import features.tv_shows.di.tvShowsModule
 import network.dataModule
 import org.koin.core.context.startKoin
@@ -14,6 +15,9 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
      * Shared Modules
      */
     modules(
-        dataModule, moviesModule, tvShowsModule
+        dataModule,
+        moviesModule,
+        tvShowsModule,
+        profileModule
     )
 }
