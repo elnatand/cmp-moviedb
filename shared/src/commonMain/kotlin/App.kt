@@ -1,12 +1,11 @@
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import di.appModule
 import features.movies.di.moviesModule
 import features.tv_shows.di.tvShowsModule
-import network.createHttpClient
+import network.dataModule
 import org.koin.compose.KoinApplication
-import org.koin.dsl.module
+import org.koin.compose.KoinContext
 import ui.design_system.NavigationBar
 import ui.navigation.RootNavGraph
 
@@ -14,15 +13,7 @@ import ui.navigation.RootNavGraph
 fun App(
     appState: AppState = rememberAppState()
 ) {
-    KoinApplication(
-        application = {
-            modules(
-                appModule,
-                moviesModule,
-                tvShowsModule
-            )
-        }
-    ) {
+    KoinContext {
         MaterialTheme {
             Scaffold(
                 bottomBar = {
@@ -38,7 +29,6 @@ fun App(
             }
         }
     }
-
 }
 
 expect fun getPlatformName(): String
