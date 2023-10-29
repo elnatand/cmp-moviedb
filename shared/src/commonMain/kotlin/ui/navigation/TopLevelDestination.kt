@@ -1,11 +1,14 @@
+package ui.navigation
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
-import ui.navigation.moviesRoute
-import ui.navigation.profileRoute
-import ui.navigation.tvShowsRoute
+import features.movies.navigation.moviesRoute
+import features.profile.navigation.profileRoute
+import features.tv_shows.navigation.tvShowsRoute
+
 
 enum class TopLevelDestination(
     val icon: ImageVector,

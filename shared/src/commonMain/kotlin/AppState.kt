@@ -2,13 +2,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import features.movies.navigation.navigateToMovies
+import features.profile.navigation.navigateToProfile
+import features.tv_shows.navigation.navigateToTvShows
 import moe.tlaster.precompose.navigation.BackStackEntry
 import moe.tlaster.precompose.navigation.NavOptions
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.rememberNavigator
-import ui.navigation.moviesRoute
-import ui.navigation.profileRoute
-import ui.navigation.tvShowsRoute
+import ui.navigation.TopLevelDestination
 
 @Composable
 fun rememberAppState(
@@ -42,9 +43,9 @@ class AppState(
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         when (topLevelDestination) {
-            TopLevelDestination.MOVIES -> navController.navigate(moviesRoute, navOptions)
-            TopLevelDestination.TV_SHOWS -> navController.navigate(tvShowsRoute, navOptions)
-            TopLevelDestination.PROFILE ->navController.navigate(profileRoute, navOptions)
+            TopLevelDestination.MOVIES -> navController.navigateToMovies(navOptions)
+            TopLevelDestination.TV_SHOWS -> navController.navigateToTvShows(navOptions)
+            TopLevelDestination.PROFILE -> navController.navigateToProfile(navOptions)
         }
     }
 }

@@ -1,6 +1,6 @@
 package ui.design_system
 
-import TopLevelDestination
+import ui.navigation.TopLevelDestination
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
