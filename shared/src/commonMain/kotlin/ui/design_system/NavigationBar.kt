@@ -8,7 +8,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ui.strings.Strings
 
 
 @Composable
@@ -31,15 +30,7 @@ fun NavigationBar(
                             contentDescription = null,
                         )
                     },
-                    label = {
-                        Text(
-                            when(it){
-                                TopLevelDestination.MOVIES -> Strings.movies.get()
-                                TopLevelDestination.TV_SHOWS -> Strings.tv_shows.get()
-                                TopLevelDestination.PROFILE -> Strings.profile.get()
-                            }
-                        )
-                    },
+                    label = { Text(it.titleRes.get()) },
                 )
             }
         },
