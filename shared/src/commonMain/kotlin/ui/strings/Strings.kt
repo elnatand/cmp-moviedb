@@ -2,6 +2,9 @@ package ui.strings
 
 import platformLanguage
 
+/**
+ * Temporary Strings holder
+ */
 enum class Strings(
     private val en: String,
     private val iw: String
@@ -20,11 +23,12 @@ enum class Strings(
     );
 
     fun get(): String {
-        return when (platformLanguage) {
-            "en" -> Strings.valueOf(name).en
-            "iw" -> Strings.valueOf(name).iw
-            else -> Strings.valueOf(name).en
+        Strings.valueOf(name).apply {
+            return when (platformLanguage) {
+                "en" -> en
+                "iw" -> iw
+                else -> en
+            }
         }
     }
 }
-
