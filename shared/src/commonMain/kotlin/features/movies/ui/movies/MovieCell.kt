@@ -11,11 +11,11 @@ import io.kamel.image.asyncPainterResource
 @Composable
 fun MovieCell(
     movie: Movie,
-    onClick: (Int) -> Unit
+    onClick: (movieId: Int, title: String) -> Unit
 ) {
     KamelImage(
         modifier = Modifier.clickable {
-            onClick(movie.id)
+            onClick(movie.id, movie.title)
         },
         resource = asyncPainterResource("https://image.tmdb.org/t/p/w300${movie.poster_path ?: ""}"),
         contentDescription = "",

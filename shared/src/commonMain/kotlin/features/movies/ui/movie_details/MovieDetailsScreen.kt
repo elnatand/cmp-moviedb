@@ -12,12 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import dev.icerock.moko.mvvm.compose.getViewModel
-import dev.icerock.moko.mvvm.compose.viewModelFactory
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import moe.tlaster.precompose.koin.koinViewModel
-import moe.tlaster.precompose.stateholder.LocalSavedStateHolder
 import org.koin.core.parameter.parametersOf
 import ui.extansions.mirror
 
@@ -25,11 +22,13 @@ import ui.extansions.mirror
 fun MovieDetailsRoute(
     movieId: Int?,
     onBackPressed: () -> Unit,
+    title: String,
 ) {
-    val viewModel =  koinViewModel(MovieDetailsViewModel::class) { parametersOf(movieId) }
+    val viewModel = koinViewModel(MovieDetailsViewModel::class) { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
     MovieDetailsScreen(
         uiState = uiState,
+        title = title,
         onBackPressed = onBackPressed,
     )
 }
@@ -39,11 +38,12 @@ fun MovieDetailsRoute(
 fun MovieDetailsScreen(
     uiState: MovieDetailsViewModel.UiState,
     onBackPressed: () -> Unit,
+    title: String,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Movie Details") },
+                title = { Text(text = title) },
                 navigationIcon = {
                     IconButton(onClick = { onBackPressed() }) {
                         Icon(

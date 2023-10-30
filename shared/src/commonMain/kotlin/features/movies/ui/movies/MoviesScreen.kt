@@ -21,7 +21,7 @@ import moe.tlaster.precompose.koin.koinViewModel
 
 @Composable
 fun MoviesRoute(
-    onClick: (Int) -> Unit
+    onClick: (movieId: Int, title: String) -> Unit
 ) {
     val viewModel = koinViewModel(MoviesViewModel::class)
     val uiState by viewModel.uiState.collectAsState()
@@ -35,7 +35,7 @@ fun MoviesRoute(
 @Composable
 fun MoviesScreen(
     uiState: MoviesViewModel.UiState,
-    onClick: (Int) -> Unit
+    onClick: (Int, String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -43,10 +43,10 @@ fun MoviesScreen(
                 title = { Text(text = Strings.movies.get()) },
             )
         }
-    ) {
+    ) { paddingValues ->
         AnimatedVisibility(
             visible = uiState.movies.isNotEmpty(),
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(paddingValues)
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
