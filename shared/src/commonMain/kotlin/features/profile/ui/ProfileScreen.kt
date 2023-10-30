@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import moe.tlaster.precompose.koin.koinViewModel
+import ui.strings.Strings
 
 @Composable
 fun ProfileRoute(
@@ -31,7 +32,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Profile") },
+                title = { Text(text = Strings.profile.get()) },
             )
         }
     ) {

@@ -11,17 +11,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import moe.tlaster.precompose.koin.koinViewModel
 import org.koin.core.parameter.parametersOf
+import ui.extansions.mirror
 
 @Composable
 fun TvShowDetailsRoute(
     tvShowId: Int?,
     onBackPressed: () -> Unit,
 ) {
-    val viewModel = koinViewModel(TvShowDetailsViewModel::class)  { parametersOf(tvShowId) }
+    val viewModel = koinViewModel(TvShowDetailsViewModel::class) { parametersOf(tvShowId) }
     val uiState by viewModel.uiState.collectAsState()
     TvShowDetailsScreen(
         uiState = uiState,
@@ -42,6 +44,7 @@ fun TvShowDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = { onBackPressed() }) {
                         Icon(
+                            modifier = Modifier.mirror(),
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
@@ -50,12 +53,11 @@ fun TvShowDetailsScreen(
             )
         }
     ) {
-        uiState.tvShows?.let {
+        uiState.tvShowDetails?.let {
             KamelImage(
                 resource = asyncPainterResource("https://image.tmdb.org/t/p/w300${it.poster_path}"),
                 contentDescription = "",
             )
         }
     }
-
 }

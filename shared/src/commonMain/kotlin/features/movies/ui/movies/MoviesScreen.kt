@@ -1,8 +1,8 @@
 package features.movies.ui.movies
 
+import ui.strings.Strings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -40,7 +40,7 @@ fun MoviesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Movies") },
+                title = { Text(text = Strings.movies.get()) },
             )
         }
     ) {

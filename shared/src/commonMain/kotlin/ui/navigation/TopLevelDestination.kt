@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import features.movies.navigation.moviesRoute
 import features.profile.navigation.profileRoute
 import features.tv_shows.navigation.tvShowsRoute
+import ui.strings.Strings
 
 
 enum class TopLevelDestination(
@@ -17,17 +18,17 @@ enum class TopLevelDestination(
 ) {
     MOVIES(
         icon = Icons.Filled.Theaters,
-        title = "Movies",
+        title = Strings.movies.get(),
         route = moviesRoute
     ),
     TV_SHOWS(
         icon = Icons.Filled.Tv,
-        title = "TV Shows",
+        title = Strings.tv_shows.get(),
         route = tvShowsRoute
     ),
     PROFILE(
         icon = Icons.Filled.Person,
-        title = "Profile",
+        title = Strings.profile.get(),
         route = profileRoute
     ),
 }

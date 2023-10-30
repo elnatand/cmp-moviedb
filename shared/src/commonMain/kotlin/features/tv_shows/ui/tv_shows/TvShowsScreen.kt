@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import moe.tlaster.precompose.koin.koinViewModel
+import ui.strings.Strings
 
 @Composable
 fun TvShowsRoute(
@@ -39,7 +40,7 @@ fun TvShowsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "TV Shows") },
+                title = { Text(text =Strings.tv_shows.get()) },
             )
         }
     ) {

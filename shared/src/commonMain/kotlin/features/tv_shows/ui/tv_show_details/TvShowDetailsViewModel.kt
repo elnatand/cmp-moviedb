@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import features.tv_shows.data.TvShowsRepository
+import features.tv_shows.model.TvShow
 import features.tv_shows.model.TvShowDetails
 import moe.tlaster.precompose.viewmodel.ViewModel
 import moe.tlaster.precompose.viewmodel.viewModelScope
@@ -21,19 +22,19 @@ class TvShowDetailsViewModel(
     val uiState = _uiState.asStateFlow()
 
     init {
-        getTvShows()
+        getTvShowDetails()
     }
 
-    private fun getTvShows() {
+    private fun getTvShowDetails() {
         viewModelScope.launch(Dispatchers.IO) {
-            val tvShows = tvShowsRepository.getTvShowDetails(tvShowId)
+            val tvShowDetails = tvShowsRepository.getTvShowDetails(tvShowId)
             _uiState.update {
-                it.copy(tvShows = tvShows)
+                it.copy(tvShowDetails = tvShowDetails)
             }
         }
     }
 
     data class UiState(
-        val tvShows: TvShowDetails? = null
+        val tvShowDetails: TvShowDetails? = null
     )
 }
