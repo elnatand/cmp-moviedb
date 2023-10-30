@@ -20,7 +20,7 @@ import ui.extansions.mirror
 
 @Composable
 fun MovieDetailsRoute(
-    movieId: Int?,
+    movieId: Int,
     onBackPressed: () -> Unit,
     title: String,
 ) {

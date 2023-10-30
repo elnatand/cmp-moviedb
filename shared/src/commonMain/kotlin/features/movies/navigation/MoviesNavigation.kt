@@ -11,7 +11,7 @@ import moe.tlaster.precompose.navigation.path
 const val moviesRoute = "/movies"
 const val movieDetailsRoute = "/movie_details"
 const val MOVIE_ID = "movieId"
-const val TITLE = "title"
+const val MOVIE_TITLE = "movie_title"
 
 fun Navigator.navigateToMovies(navOptions: NavOptions) {
     navigate(moviesRoute, navOptions)
@@ -26,9 +26,9 @@ fun RouteBuilder.moviesScene(navigator: Navigator, navOptions: NavOptions) {
 }
 
 fun RouteBuilder.movieDetailsScene(navigator: Navigator) {
-    scene("$movieDetailsRoute/{$MOVIE_ID}/{$TITLE}") {
-        val movieId: Int? = it.path(MOVIE_ID)
-        val title: String = it.path(TITLE) ?: ""
+    scene("$movieDetailsRoute/{$MOVIE_ID}/{$MOVIE_TITLE}") {
+        val movieId: Int = it.path(MOVIE_ID) ?: 0
+        val title: String = it.path(MOVIE_TITLE) ?: ""
         MovieDetailsRoute(
             movieId = movieId,
             title = title,

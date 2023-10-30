@@ -20,13 +20,15 @@ import ui.extansions.mirror
 
 @Composable
 fun TvShowDetailsRoute(
-    tvShowId: Int?,
+    tvShowId: Int,
+    tvShowTitle: String,
     onBackPressed: () -> Unit,
 ) {
     val viewModel = koinViewModel(TvShowDetailsViewModel::class) { parametersOf(tvShowId) }
     val uiState by viewModel.uiState.collectAsState()
     TvShowDetailsScreen(
         uiState = uiState,
+        tvShowTitle = tvShowTitle,
         onBackPressed = onBackPressed
     )
 }
@@ -35,12 +37,13 @@ fun TvShowDetailsRoute(
 @Composable
 fun TvShowDetailsScreen(
     uiState: TvShowDetailsViewModel.UiState,
+    tvShowTitle: String,
     onBackPressed: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "TV Show Details") },
+                title = { Text(text = tvShowTitle) },
                 navigationIcon = {
                     IconButton(onClick = { onBackPressed() }) {
                         Icon(

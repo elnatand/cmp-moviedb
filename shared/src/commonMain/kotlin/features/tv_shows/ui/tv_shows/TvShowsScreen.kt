@@ -21,7 +21,7 @@ import ui.strings.Strings
 
 @Composable
 fun TvShowsRoute(
-    onClick: (Int) -> Unit
+    onClick: (id: Int, title: String) -> Unit
 ) {
     val viewModel = koinViewModel(TvShowsViewModel::class)
     val uiState by viewModel.uiState.collectAsState()
@@ -35,18 +35,18 @@ fun TvShowsRoute(
 @Composable
 fun TvShowsScreen(
     uiState: TvShowsViewModel.UiState,
-    onClick: (Int) -> Unit
+    onClick: (id: Int, title: String) -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text =Strings.tv_shows.get()) },
+                title = { Text(text = Strings.tv_shows.get()) },
             )
         }
-    ) {
+    ) { paddingValues ->
         AnimatedVisibility(
             visible = uiState.tvShows.isNotEmpty(),
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(paddingValues)
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),

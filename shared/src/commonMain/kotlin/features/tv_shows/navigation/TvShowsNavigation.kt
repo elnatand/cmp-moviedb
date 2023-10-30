@@ -1,7 +1,6 @@
 package features.tv_shows.navigation
 
 
-import features.tv_shows.model.TvShow
 import features.tv_shows.ui.tv_show_details.TvShowDetailsRoute
 import features.tv_shows.ui.tv_shows.TvShowsRoute
 import moe.tlaster.precompose.navigation.NavOptions
@@ -12,24 +11,27 @@ import moe.tlaster.precompose.navigation.path
 const val tvShowsRoute = "/tv_shows"
 const val tvShowDetailsRoute = "/tv_show_details"
 const val TV_SHOW_ID = "tvShowId"
+const val TV_SHOW_TITLE = "tvShowTitle"
 
-fun Navigator.navigateToTvShows(navOptions: NavOptions){
+fun Navigator.navigateToTvShows(navOptions: NavOptions) {
     navigate(tvShowsRoute, navOptions)
 }
 
 fun RouteBuilder.tvShowsScene(navigator: Navigator, navOptions: NavOptions) {
     scene(tvShowsRoute) {
-        TvShowsRoute {
-            navigator.navigate("${tvShowDetailsRoute}/$it", navOptions)
+        TvShowsRoute { tvShowId, tvShowTitle ->
+            navigator.navigate("$tvShowDetailsRoute/$tvShowId/$tvShowTitle", navOptions)
         }
     }
 }
 
 fun RouteBuilder.tvShowDetailsScene(navigator: Navigator) {
-    scene("${tvShowDetailsRoute}/{$TV_SHOW_ID}") {
-        val tvShowId: Int? = it.path(TV_SHOW_ID)
+    scene("$tvShowDetailsRoute/{$TV_SHOW_ID}/{$TV_SHOW_TITLE}") {
+        val tvShowId: Int = it.path(TV_SHOW_ID) ?: 0
+        val tvShowTitle: String = it.path(TV_SHOW_TITLE) ?: ""
         TvShowDetailsRoute(
             tvShowId = tvShowId,
+            tvShowTitle = tvShowTitle,
             onBackPressed = { navigator.goBack() }
         )
     }
