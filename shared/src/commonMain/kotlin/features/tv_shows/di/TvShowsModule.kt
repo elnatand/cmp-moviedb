@@ -19,7 +19,7 @@ val tvShowsModule = module {
 
     factory { (id: Int) ->
         TvShowDetailsViewModel(
-            tvShowId = id,
+            tvShowId= id,
             tvShowsRepository = get()
         )
     }

@@ -50,12 +50,11 @@ fun TvShowDetailsScreen(
             )
         }
     ) {
-        uiState.tvShows?.let {
+        uiState.tvShowDetails?.let {
             KamelImage(
                 resource = asyncPainterResource("https://image.tmdb.org/t/p/w300${it.poster_path}"),
                 contentDescription = "",
             )
         }
     }
-
 }
