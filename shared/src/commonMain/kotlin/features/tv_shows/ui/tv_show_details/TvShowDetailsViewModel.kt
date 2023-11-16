@@ -1,15 +1,13 @@
 package features.tv_shows.ui.tv_show_details
 
-
+import data.tv_shows.TvShowsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import features.tv_shows.data.TvShowsRepository
-import features.tv_shows.model.TvShow
-import features.tv_shows.model.TvShowDetails
+import model.TvShowDetails
 import moe.tlaster.precompose.viewmodel.ViewModel
 import moe.tlaster.precompose.viewmodel.viewModelScope
 

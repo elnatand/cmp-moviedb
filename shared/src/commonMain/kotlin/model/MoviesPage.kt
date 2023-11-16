@@ -1,6 +1,7 @@
-package features.movies.model
+package model
 
 import kotlinx.serialization.Serializable
+import model.Movie
 
 @Serializable
 data class MoviesPage(

@@ -1,6 +1,6 @@
-package features.tv_shows.model
+package model
 
-import features.tv_shows.model.TvShow
+import model.TvShow
 import kotlinx.serialization.Serializable
 
 @Serializable

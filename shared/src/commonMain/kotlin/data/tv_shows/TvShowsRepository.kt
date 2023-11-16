@@ -1,7 +1,7 @@
-package features.tv_shows.data
+package data.tv_shows
 
-import features.tv_shows.model.TvShow
-import features.tv_shows.model.TvShowDetails
+import model.TvShow
+import model.TvShowDetails
 
 interface TvShowsRepository {
     suspend fun getTvShowsPage(page: Int): List<TvShow>

@@ -1,7 +1,7 @@
 package features.movies.ui.movies
 
 import androidx.compose.foundation.clickable
-import features.movies.model.Movie
+import model.Movie
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale

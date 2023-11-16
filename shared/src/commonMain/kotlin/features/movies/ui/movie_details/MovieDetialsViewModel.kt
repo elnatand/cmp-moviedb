@@ -1,8 +1,8 @@
 package features.movies.ui.movie_details
 
 
-import features.movies.data.MoviesRepository
-import features.movies.model.MovieDetails
+import data.movies.MoviesRepository
+import model.MovieDetails
 import moe.tlaster.precompose.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import features.tv_shows.data.TvShowsRepository
-import features.tv_shows.model.TvShowDetails
 import moe.tlaster.precompose.viewmodel.viewModelScope
 
 

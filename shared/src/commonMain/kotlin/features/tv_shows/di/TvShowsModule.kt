@@ -1,10 +1,11 @@
 package features.tv_shows.di
 
 import features.tv_shows.ui.tv_shows.TvShowsViewModel
-import features.tv_shows.data.TvShowRepositoryImpl
-import features.tv_shows.data.TvShowsRepository
-import features.tv_shows.data.data_sources.TvShowsRemoteDataSource
+import data.tv_shows.TvShowRepositoryImpl
+import data.tv_shows.TvShowsRepository
+import data.tv_shows.data_sources.TvShowsRemoteDataSource
 import features.tv_shows.ui.tv_show_details.TvShowDetailsViewModel
+
 import org.koin.dsl.module
 
 val tvShowsModule = module {

@@ -1,4 +1,4 @@
-package ui.model
+package model
 
 data class UiState<T> (
 

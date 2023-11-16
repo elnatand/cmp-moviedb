@@ -1,9 +1,8 @@
 package features.movies.ui.movies
 
 
-import features.movies.data.MoviesRepository
-import features.movies.model.Movie
-import features.movies.model.MoviesPage
+import data.movies.MoviesRepository
+import model.Movie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
@@ -13,8 +12,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import moe.tlaster.precompose.viewmodel.ViewModel
 import moe.tlaster.precompose.viewmodel.viewModelScope
-import ui.model.State
-import ui.model.UiState
+import model.State
+import model.UiState
 
 class MoviesViewModel(
     private val moviesRepository: MoviesRepository

@@ -1,8 +1,8 @@
-package features.tv_shows.data.data_sources
+package data.tv_shows.data_sources
 
-import features.tv_shows.model.TvShow
-import features.tv_shows.model.TvShowDetails
-import features.tv_shows.model.TvShowsPage
+import model.TvShow
+import model.TvShowDetails
+import model.TvShowsPage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

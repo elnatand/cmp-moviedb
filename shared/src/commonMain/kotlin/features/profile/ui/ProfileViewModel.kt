@@ -1,7 +1,7 @@
 package features.profile.ui
 
 
-import features.tv_shows.model.TvShow
+import model.TvShow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import moe.tlaster.precompose.viewmodel.ViewModel

@@ -1,11 +1,11 @@
-package features.tv_shows.model
+package model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TvShowDetails(
+data class MovieDetails(
     val id: Int,
-    val name: String,
+    val title: String,
     val overview: String,
     val poster_path: String,
     val backdrop_path: String?

@@ -4,7 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import features.tv_shows.model.TvShow
+import model.TvShow
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 

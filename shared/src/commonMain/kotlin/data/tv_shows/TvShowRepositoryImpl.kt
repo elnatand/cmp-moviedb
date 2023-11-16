@@ -1,8 +1,8 @@
-package features.tv_shows.data
+package data.tv_shows
 
-import features.tv_shows.data.data_sources.TvShowsRemoteDataSource
-import features.tv_shows.model.TvShow
-import features.tv_shows.model.TvShowDetails
+import data.tv_shows.data_sources.TvShowsRemoteDataSource
+import model.TvShow
+import model.TvShowDetails
 
 class TvShowRepositoryImpl(
     private val tvShowsRemoteDataSource: TvShowsRemoteDataSource
