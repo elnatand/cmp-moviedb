@@ -1,0 +1,1 @@
+expect val platformLanguage: String?

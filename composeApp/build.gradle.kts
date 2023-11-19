@@ -72,7 +72,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.myapplication"
+    namespace = "com.example.moviedb"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -80,7 +80,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.myapplication.MyApplication"
+        applicationId = "com.example.moviedb"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -110,11 +110,8 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 }
-dependencies {
-    implementation("androidx.core:core-ktx:+")
-}
 
 multiplatformResources {
-    multiplatformResourcesPackage = "com.jetbrains.kmpapp"
+    multiplatformResourcesPackage = "com.example.moviedb"
 }
 
