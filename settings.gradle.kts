@@ -1,3 +1,5 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -16,5 +18,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "CMPMovieDB"
-include(":androidApp")
-include(":shared")
+include(":composeApp")
