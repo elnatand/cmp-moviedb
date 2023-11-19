@@ -1,7 +1,7 @@
 package com.example.moviedb.di
 
 fun initKoin() {
-    com.example.moviedb.di.initKoin(
+    initKoin(
         appDeclaration = {
             modules(iOSModule)
         }
