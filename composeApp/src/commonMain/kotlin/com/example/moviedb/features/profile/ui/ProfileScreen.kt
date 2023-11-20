@@ -11,7 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import moe.tlaster.precompose.koin.koinViewModel
-import com.example.moviedb.ui.strings.Strings
+import com.example.moviedb.MR
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun ProfileRoute(
@@ -32,7 +33,7 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = Strings.profile.get()) },
+                title = { Text(text = stringResource(MR.strings.profile)) },
             )
         }
     ) {

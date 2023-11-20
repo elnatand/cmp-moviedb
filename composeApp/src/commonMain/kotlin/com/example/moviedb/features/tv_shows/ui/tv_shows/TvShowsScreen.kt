@@ -16,8 +16,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.moviedb.MR
+import dev.icerock.moko.resources.compose.stringResource
 import moe.tlaster.precompose.koin.koinViewModel
-import com.example.moviedb.ui.strings.Strings
+
 
 @Composable
 fun TvShowsRoute(
@@ -40,7 +42,7 @@ fun TvShowsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = Strings.tv_shows.get()) },
+                title = { Text(text = stringResource(MR.strings.tv_shows)) },
             )
         }
     ) { paddingValues ->

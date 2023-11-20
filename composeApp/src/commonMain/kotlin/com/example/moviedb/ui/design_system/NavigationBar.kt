@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.icerock.moko.resources.compose.stringResource
 
 
 @Composable
@@ -30,7 +31,7 @@ fun NavigationBar(
                             contentDescription = null,
                         )
                     },
-                    label = { Text(it.titleRes.get()) },
+                    label = { Text(stringResource(it.titleRes)) },
                 )
             }
         },
