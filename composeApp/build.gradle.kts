@@ -46,6 +46,10 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
+
+            api(projects.model)
+            api(projects.data)
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
@@ -58,9 +62,6 @@ kotlin {
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.koin)
             implementation(libs.moko.resources.compose)
-
-            api(project(":data"))
-            api(project(":model"))
 
             api(libs.precompose)
             api(libs.precompose.viewmodel) // For ViewModel intergration

@@ -1,16 +1,13 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinxSerialization)
-
-   // alias(libs.plugins.androidLibrary)
 }
 
 kotlin {
 
     applyDefaultHierarchyTemplate()
     jvm()
-//   androidTarget()
-//
+
     listOf(
         iosX64(),
         iosArm64(),

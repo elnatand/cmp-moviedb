@@ -1,14 +1,12 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-   // alias(libs.plugins.androidLibrary)
 }
 
 kotlin {
 
     applyDefaultHierarchyTemplate()
     jvm()
-//   androidTarget()
-//
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -22,7 +20,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(project(":model"))
+                implementation(projects.model)
 
                 api(libs.ktor.client.core)
                 api(libs.ktor.client.content.negotiation)
