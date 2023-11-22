@@ -28,6 +28,7 @@ kotlin {
             dependencies {
                 implementation(projects.model)
                 implementation(projects.data)
+                implementation(projects.core.ui)
 
                 implementation(compose.runtime)
                 implementation(compose.foundation)

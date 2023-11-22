@@ -1,4 +1,4 @@
-package com.example.moviedb.ui.navigation
+package com.example.moviedb.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person

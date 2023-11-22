@@ -1,6 +1,5 @@
-package com.example.moviedb.ui.design_system
+package com.example.moviedb.ui
 
-import com.example.moviedb.ui.navigation.TopLevelDestination
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -8,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.moviedb.navigation.TopLevelDestination
 import dev.icerock.moko.resources.compose.stringResource
 
 

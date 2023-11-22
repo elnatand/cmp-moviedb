@@ -1,4 +1,4 @@
-package com.example.moviedb.ui.navigation
+package com.example.moviedb.navigation
 
 import androidx.compose.runtime.Composable
 import moe.tlaster.precompose.navigation.NavHost
