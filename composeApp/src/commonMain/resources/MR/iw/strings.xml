@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="movies">סרטים</string>
-    <string name="tv_shows">סדרות</string>
-    <string name="profile">פרופיל</string>
+    <string name="hello_kmp">שלום</string>
 </resources>
