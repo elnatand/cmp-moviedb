@@ -47,8 +47,8 @@ kotlin {
         }
         commonMain.dependencies {
 
-            api(projects.model)
-            api(projects.data)
+            implementation(projects.model)
+            implementation(projects.data)
             implementation(projects.core.ui)
             implementation(projects.feature.movies)
             implementation(projects.feature.tvShows)
@@ -60,16 +60,11 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
 
-            implementation(libs.kamel)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.koin)
             implementation(libs.moko.resources.compose)
 
-            api(libs.precompose)
-            api(libs.precompose.viewmodel) // For ViewModel intergration
-            api(libs.precompose.koin) // For Koin intergration
+            implementation(libs.precompose)
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.moviedb.network
+package com.example.moviedb.data.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine

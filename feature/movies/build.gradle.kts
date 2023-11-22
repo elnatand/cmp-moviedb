@@ -40,9 +40,9 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.moko.resources.compose)
 
-                api(libs.precompose)
-                api(libs.precompose.viewmodel) // For ViewModel intergration
-                api(libs.precompose.koin) // For Koin intergration
+                implementation(libs.precompose)
+                implementation(libs.precompose.viewmodel) // For ViewModel intergration
+                implementation(libs.precompose.koin) // For Koin intergration
             }
         }
     }

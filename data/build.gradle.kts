@@ -21,6 +21,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.model)
+                implementation(libs.koin.core)
 
                 api(libs.ktor.client.core)
                 api(libs.ktor.client.content.negotiation)
