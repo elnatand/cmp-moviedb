@@ -34,13 +34,13 @@ kotlin {
             dependsOn(commonMain.get())
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
+            api(compose.runtime)
+            api(compose.foundation)
+            api(compose.material)
+            api(compose.material3)
+            api(compose.materialIconsExtended)
 
-            implementation(libs.moko.resources.compose)
+            api(libs.moko.resources.compose)
         }
     }
 }

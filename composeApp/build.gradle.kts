@@ -54,15 +54,8 @@ kotlin {
             implementation(projects.feature.tvShows)
             implementation(projects.feature.profile)
 
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.moko.resources.compose)
 
             implementation(libs.precompose)
         }

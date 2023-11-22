@@ -30,15 +30,8 @@ kotlin {
                 implementation(projects.data)
                 implementation(projects.core.ui)
 
-                implementation(compose.runtime)
-                implementation(compose.foundation)
-                implementation(compose.material)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
-
                 implementation(libs.kamel)
                 implementation(libs.koin.core)
-                implementation(libs.moko.resources.compose)
 
                 implementation(libs.precompose)
                 implementation(libs.precompose.viewmodel) // For ViewModel intergration
