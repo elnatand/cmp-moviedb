@@ -1,4 +1,4 @@
-package com.example.moviedb.features.profile.ui
+package com.example.moviedb.profile.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
@@ -11,7 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import moe.tlaster.precompose.koin.koinViewModel
-import com.example.moviedb.MR
+import com.example.moviedb.ui.MR
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -44,5 +44,4 @@ fun ProfileScreen(
             Text(text = "Profile")
         }
     }
-
 }

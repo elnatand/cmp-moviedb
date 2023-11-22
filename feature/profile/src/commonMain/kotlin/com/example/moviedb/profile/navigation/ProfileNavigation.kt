@@ -1,6 +1,6 @@
-package com.example.moviedb.features.profile.navigation
+package com.example.moviedb.profile.navigation
 
-import com.example.moviedb.features.profile.ui.ProfileRoute
+import com.example.moviedb.profile.ui.ProfileRoute
 import moe.tlaster.precompose.navigation.NavOptions
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.RouteBuilder

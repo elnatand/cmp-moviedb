@@ -26,7 +26,7 @@ import com.example.moviedb.model.State
 import com.example.moviedb.model.UiState
 import com.example.moviedb.ui.design_system.Loader
 
-//import com.example.moviedb.ui.MR
+import com.example.moviedb.ui.MR
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -50,8 +50,7 @@ fun MoviesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-               // title = { Text(text = stringResource(MR.strings.movies)) },
-                title = { Text(text = "") },
+                title = { Text(text = stringResource(MR.strings.movies)) },
             )
         }
     ) { paddingValues ->

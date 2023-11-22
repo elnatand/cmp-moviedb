@@ -1,4 +1,4 @@
-package com.example.moviedb.features.profile.ui
+package com.example.moviedb.profile.ui
 
 
 import com.example.moviedb.model.TvShow

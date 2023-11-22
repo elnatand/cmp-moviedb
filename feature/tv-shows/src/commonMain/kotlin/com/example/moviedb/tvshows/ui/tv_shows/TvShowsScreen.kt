@@ -18,8 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.stringResource
 import moe.tlaster.precompose.koin.koinViewModel
-//import com.example.moviedb.ui.MR
-
+import com.example.moviedb.ui.MR
 
 
 @Composable
@@ -43,8 +42,7 @@ fun TvShowsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-               // title = { Text(text = stringResource(MR.strings.tv_shows)) },
-                title = { Text(text = "") },
+                title = { Text(text = stringResource(MR.strings.tv_shows)) },
             )
         }
     ) { paddingValues ->

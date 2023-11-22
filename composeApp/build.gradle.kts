@@ -52,6 +52,7 @@ kotlin {
             implementation(projects.core.ui)
             implementation(projects.feature.movies)
             implementation(projects.feature.tvShows)
+            implementation(projects.feature.profile)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
