@@ -5,10 +5,10 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.moviedb.features.movies.navigation.moviesRoute
 import com.example.moviedb.features.profile.navigation.profileRoute
 import com.example.moviedb.features.tv_shows.navigation.tvShowsRoute
 import com.example.moviedb.MR
+import com.example.moviedb.movies.navigation.moviesRoute
 import dev.icerock.moko.resources.StringResource
 
 

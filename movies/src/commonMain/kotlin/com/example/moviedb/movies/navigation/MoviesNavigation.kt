@@ -1,8 +1,8 @@
-package com.example.moviedb.features.movies.navigation
+package com.example.moviedb.movies.navigation
 
 
-import com.example.moviedb.features.movies.ui.movie_details.MovieDetailsRoute
-import com.example.moviedb.features.movies.ui.movies.MoviesRoute
+import com.example.moviedb.movies.ui.movie_details.MovieDetailsRoute
+import com.example.moviedb.movies.ui.movies.MoviesRoute
 import moe.tlaster.precompose.navigation.NavOptions
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.RouteBuilder
@@ -18,17 +18,17 @@ fun Navigator.navigateToMovies(navOptions: NavOptions) {
 }
 
 fun RouteBuilder.moviesScene(navigator: Navigator, navOptions: NavOptions) {
-    scene(moviesRoute) {
+    scene(com.example.moviedb.movies.navigation.moviesRoute) {
         MoviesRoute { movieId, title ->
-            navigator.navigate("$movieDetailsRoute/$movieId/$title", navOptions)
+            navigator.navigate("${com.example.moviedb.movies.navigation.movieDetailsRoute}/$movieId/$title", navOptions)
         }
     }
 }
 
 fun RouteBuilder.movieDetailsScene(navigator: Navigator) {
-    scene("$movieDetailsRoute/{$MOVIE_ID}/{$MOVIE_TITLE}") {
-        val movieId: Int = it.path(MOVIE_ID) ?: 0
-        val title: String = it.path(MOVIE_TITLE) ?: ""
+    scene("${com.example.moviedb.movies.navigation.movieDetailsRoute}/{${com.example.moviedb.movies.navigation.MOVIE_ID}}/{${com.example.moviedb.movies.navigation.MOVIE_TITLE}}") {
+        val movieId: Int = it.path(com.example.moviedb.movies.navigation.MOVIE_ID) ?: 0
+        val title: String = it.path(com.example.moviedb.movies.navigation.MOVIE_TITLE) ?: ""
         MovieDetailsRoute(
             movieId = movieId,
             title = title,

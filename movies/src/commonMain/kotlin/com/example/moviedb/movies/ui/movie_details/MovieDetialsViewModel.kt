@@ -1,4 +1,4 @@
-package com.example.moviedb.features.movies.ui.movie_details
+package com.example.moviedb.movies.ui.movie_details
 
 
 import com.example.moviedb.data.movies.MoviesRepository

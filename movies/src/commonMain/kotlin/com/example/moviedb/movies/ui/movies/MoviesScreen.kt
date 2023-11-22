@@ -1,4 +1,4 @@
-package com.example.moviedb.features.movies.ui.movies
+package com.example.moviedb.movies.ui.movies
 
 
 import androidx.compose.animation.AnimatedVisibility
@@ -22,10 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.model.Movie
 import moe.tlaster.precompose.koin.koinViewModel
-import com.example.moviedb.ui.design_system.Loader
+//import com.example.moviedb.ui.design_system.Loader
 import com.example.moviedb.model.State
 import com.example.moviedb.model.UiState
-import com.example.moviedb.MR
+//import com.example.moviedb.MR
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -49,7 +49,8 @@ fun MoviesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(MR.strings.movies)) },
+                //title = { Text(text = stringResource(MR.strings.movies)) },
+                title = { Text(text = "") },
             )
         }
     ) { paddingValues ->
@@ -59,7 +60,7 @@ fun MoviesScreen(
         ) {
             when (uiState.state) {
                 State.LOADING -> {
-                    Loader(modifier = Modifier.padding(paddingValues))
+                   // Loader(modifier = Modifier.padding(paddingValues))
                 }
 
                 State.SUCCESS -> {

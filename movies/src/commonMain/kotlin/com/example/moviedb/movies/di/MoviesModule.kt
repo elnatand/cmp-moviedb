@@ -1,11 +1,11 @@
-package com.example.moviedb.features.movies.di
+package com.example.moviedb.movies.di
 
 
 import com.example.moviedb.data.movies.MoviesRepository
 import com.example.moviedb.data.movies.MoviesRepositoryImpl
 import com.example.moviedb.data.movies.data_sources.MoviesRemoteDataSource
-import com.example.moviedb.features.movies.ui.movie_details.MovieDetailsViewModel
-import com.example.moviedb.features.movies.ui.movies.MoviesViewModel
+import com.example.moviedb.movies.ui.movie_details.MovieDetailsViewModel
+import com.example.moviedb.movies.ui.movies.MoviesViewModel
 import org.koin.dsl.module
 
 val moviesModule = module {

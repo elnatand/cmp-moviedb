@@ -1,4 +1,4 @@
-package com.example.moviedb.features.movies.ui.movie_details
+package com.example.moviedb.movies.ui.movie_details
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -16,7 +16,7 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import moe.tlaster.precompose.koin.koinViewModel
 import org.koin.core.parameter.parametersOf
-import com.example.moviedb.ui.extansions.mirror
+//import com.example.moviedb.ui.extansions.mirror
 
 @Composable
 fun MovieDetailsRoute(
@@ -47,7 +47,7 @@ fun MovieDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = { onBackPressed() }) {
                         Icon(
-                            modifier = Modifier.mirror(),
+                          //  modifier = Modifier.mirror(),
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back"
                         )

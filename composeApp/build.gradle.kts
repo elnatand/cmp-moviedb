@@ -49,6 +49,7 @@ kotlin {
 
             api(projects.model)
             api(projects.data)
+            implementation(projects.movies)
 
             implementation(compose.runtime)
             implementation(compose.foundation)

@@ -21,3 +21,4 @@ rootProject.name = "CMPMovieDB"
 include(":composeApp")
 include(":data")
 include(":model")
+include(":movies")

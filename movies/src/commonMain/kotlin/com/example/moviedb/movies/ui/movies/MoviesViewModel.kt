@@ -1,4 +1,4 @@
-package com.example.moviedb.features.movies.ui.movies
+package com.example.moviedb.movies.ui.movies
 
 
 
