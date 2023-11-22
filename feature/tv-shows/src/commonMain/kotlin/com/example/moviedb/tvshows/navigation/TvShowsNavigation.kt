@@ -1,8 +1,8 @@
-package com.example.moviedb.features.tv_shows.navigation
+package com.example.moviedb.tvshows.navigation
 
 
-import com.example.moviedb.features.tv_shows.ui.tv_show_details.TvShowDetailsRoute
-import com.example.moviedb.features.tv_shows.ui.tv_shows.TvShowsRoute
+import com.example.moviedb.tvshows.ui.tv_show_details.TvShowDetailsRoute
+import com.example.moviedb.tvshows.ui.tv_shows.TvShowsRoute
 import moe.tlaster.precompose.navigation.NavOptions
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.RouteBuilder

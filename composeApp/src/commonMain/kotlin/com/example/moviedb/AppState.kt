@@ -5,7 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import com.example.moviedb.features.profile.navigation.navigateToProfile
-import com.example.moviedb.features.tv_shows.navigation.navigateToTvShows
+import com.example.moviedb.tvshows.navigation.navigateToTvShows
 import com.example.moviedb.movies.navigation.navigateToMovies
 import com.example.moviedb.navigation.TopLevelDestination
 import moe.tlaster.precompose.navigation.BackStackEntry

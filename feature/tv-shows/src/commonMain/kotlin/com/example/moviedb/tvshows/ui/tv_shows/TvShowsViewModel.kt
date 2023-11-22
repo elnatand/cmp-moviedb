@@ -1,4 +1,4 @@
-package com.example.moviedb.features.tv_shows.ui.tv_shows
+package com.example.moviedb.tvshows.ui.tv_shows
 
 
 import kotlinx.coroutines.Dispatchers

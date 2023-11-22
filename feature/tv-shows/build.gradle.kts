@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.mokoResources)
 }
 
 kotlin {
@@ -21,35 +20,37 @@ kotlin {
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             path.substring(1).replace(':', '-')
-            isStatic = true
         }
     }
 
     sourceSets {
-        // Required for moko-resources to work
-        applyDefaultHierarchyTemplate()
+        val commonMain by getting {
+            dependencies {
+                implementation(projects.model)
+                implementation(projects.data)
+                implementation(projects.core.ui)
 
-        androidMain {
-            // Required for moko-resources to work
-            dependsOn(commonMain.get())
-        }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material)
+                implementation(compose.material3)
+                implementation(compose.materialIconsExtended)
 
-            implementation(libs.moko.resources.compose)
+                implementation(libs.kamel)
+                implementation(libs.koin.core)
+                implementation(libs.moko.resources.compose)
+
+                api(libs.precompose)
+                api(libs.precompose.viewmodel) // For ViewModel intergration
+                api(libs.precompose.koin) // For Koin intergration
+            }
         }
     }
 }
 
 android {
-    namespace = "com.example.moviedb.core.ui"
+    namespace = "com.example.moviedb.tvshows"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -78,8 +79,4 @@ android {
     dependencies {
         debugImplementation(libs.compose.ui.tooling)
     }
-}
-
-multiplatformResources {
-    multiplatformResourcesPackage = "com.example.moviedb.ui"
 }

@@ -49,8 +49,9 @@ kotlin {
 
             api(projects.model)
             api(projects.data)
-            implementation(projects.feature.movies)
             implementation(projects.core.ui)
+            implementation(projects.feature.movies)
+            implementation(projects.feature.tvShows)
 
             implementation(compose.runtime)
             implementation(compose.foundation)

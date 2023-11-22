@@ -1,4 +1,4 @@
-package com.example.moviedb.features.tv_shows.ui.tv_shows
+package com.example.moviedb.tvshows.ui.tv_shows
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -16,9 +16,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.moviedb.MR
 import dev.icerock.moko.resources.compose.stringResource
 import moe.tlaster.precompose.koin.koinViewModel
+//import com.example.moviedb.ui.MR
+
 
 
 @Composable
@@ -42,7 +43,8 @@ fun TvShowsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(MR.strings.tv_shows)) },
+               // title = { Text(text = stringResource(MR.strings.tv_shows)) },
+                title = { Text(text = "") },
             )
         }
     ) { paddingValues ->

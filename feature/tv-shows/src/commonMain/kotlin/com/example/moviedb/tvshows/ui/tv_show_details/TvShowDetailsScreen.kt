@@ -1,4 +1,4 @@
-package com.example.moviedb.features.tv_shows.ui.tv_show_details
+package com.example.moviedb.tvshows.ui.tv_show_details
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack

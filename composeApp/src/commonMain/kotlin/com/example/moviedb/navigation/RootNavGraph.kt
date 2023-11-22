@@ -5,8 +5,8 @@ import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.Navigator
 import moe.tlaster.precompose.navigation.rememberNavigator
 import com.example.moviedb.features.profile.navigation.profileScene
-import com.example.moviedb.features.tv_shows.navigation.tvShowDetailsScene
-import com.example.moviedb.features.tv_shows.navigation.tvShowsScene
+import com.example.moviedb.tvshows.navigation.tvShowDetailsScene
+import com.example.moviedb.tvshows.navigation.tvShowsScene
 import com.example.moviedb.movies.navigation.movieDetailsScene
 import com.example.moviedb.movies.navigation.moviesRoute
 import com.example.moviedb.movies.navigation.moviesScene
