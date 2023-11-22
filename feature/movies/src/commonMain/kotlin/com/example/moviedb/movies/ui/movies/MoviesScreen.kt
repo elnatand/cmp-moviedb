@@ -26,7 +26,6 @@ import moe.tlaster.precompose.koin.koinViewModel
 import com.example.moviedb.model.State
 import com.example.moviedb.model.UiState
 //import com.example.moviedb.MR
-import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun MoviesRoute(
