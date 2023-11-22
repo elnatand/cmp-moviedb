@@ -37,9 +37,6 @@ kotlin {
 
                 implementation(libs.kamel)
                 implementation(libs.koin.core)
-                implementation(libs.koin.compose)
-                implementation(libs.voyager.navigator)
-                implementation(libs.voyager.koin)
                 implementation(libs.moko.resources.compose)
 
                 api(libs.precompose)
