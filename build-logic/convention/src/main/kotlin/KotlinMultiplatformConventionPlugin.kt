@@ -26,6 +26,15 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                     baseName = path.substring(1).replace(':', '-')
                 }
             }
+
+            //remove expect actual warning
+            targets.configureEach {
+                compilations.configureEach {
+                    compilerOptions.configure {
+                        freeCompilerArgs.add("-Xexpect-actual-classes")
+                    }
+                }
+            }
         }
     }
 }
