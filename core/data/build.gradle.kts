@@ -1,21 +1,10 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
+    id("moviedb.kotlin.multiplatform")
 }
 
 kotlin {
 
-    applyDefaultHierarchyTemplate()
     jvm()
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            path.substring(1).replace(':', '-')
-        }
-    }
 
     sourceSets {
         commonMain.dependencies {
