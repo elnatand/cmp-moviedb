@@ -18,14 +18,12 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(projects.model)
-                implementation(libs.koin.core)
+        commonMain.dependencies {
+            implementation(projects.core.model)
 
-                api(libs.ktor.client.core)
-                api(libs.ktor.client.content.negotiation)
-            }
+            implementation(libs.koin.core)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
         }
     }
 }
