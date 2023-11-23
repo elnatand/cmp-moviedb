@@ -1,22 +1,10 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
     id("moviedb.android.library")
+    id("moviedb.kotlin.multiplatform")
     alias(libs.plugins.jetbrainsCompose)
 }
 
 kotlin {
-    androidTarget()
-
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            path.substring(1).replace(':', '-')
-        }
-    }
-
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)

@@ -23,6 +23,10 @@ dependencies {
 
 gradlePlugin {
     plugins {
+        register("kotlinMultiplatform") {
+            id = "moviedb.kotlin.multiplatform"
+            implementationClass = "KotlinMultiplatformConventionPlugin"
+        }
         register("androidLibrary") {
             id = "moviedb.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
