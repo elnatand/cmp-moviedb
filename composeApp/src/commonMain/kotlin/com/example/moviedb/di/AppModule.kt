@@ -1,10 +1,11 @@
 package com.example.moviedb.di
 
 
-import com.example.moviedb.features.movies.di.moviesModule
-import com.example.moviedb.features.profile.di.profileModule
-import com.example.moviedb.features.tv_shows.di.tvShowsModule
-import com.example.moviedb.network.dataModule
+
+import com.example.moviedb.profile.di.profileModule
+import com.example.moviedb.tvshows.di.tvShowsModule
+import com.example.moviedb.movies.di.moviesModule
+import com.example.moviedb.data.di.dataModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 
