@@ -1,10 +1,9 @@
-package com
+package com.example.moviedb
 
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
 
 fun Project.configureAndroid() {
   android {

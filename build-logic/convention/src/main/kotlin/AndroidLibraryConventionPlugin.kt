@@ -1,4 +1,4 @@
-import com.configureAndroid
+import com.example.moviedb.configureAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

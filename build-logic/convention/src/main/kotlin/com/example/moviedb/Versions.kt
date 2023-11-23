@@ -1,4 +1,4 @@
-package com
+package com.example.moviedb
 
 object Versions {
   const val COMPILE_SDK = 34
