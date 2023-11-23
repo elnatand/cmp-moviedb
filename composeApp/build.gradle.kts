@@ -46,9 +46,8 @@ kotlin {
             implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
-
             implementation(projects.model)
-            implementation(projects.data)
+            implementation(projects.core.data)
             implementation(projects.core.ui)
             implementation(projects.feature.movies)
             implementation(projects.feature.tvShows)

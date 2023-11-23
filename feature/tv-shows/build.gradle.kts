@@ -24,19 +24,17 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(projects.model)
-                implementation(projects.data)
-                implementation(projects.core.ui)
+        commonMain.dependencies {
+            implementation(projects.model)
+            implementation(projects.core.data)
+            implementation(projects.core.ui)
 
-                implementation(libs.kamel)
-                implementation(libs.koin.core)
+            implementation(libs.kamel)
+            implementation(libs.koin.core)
 
-                implementation(libs.precompose)
-                implementation(libs.precompose.viewmodel) // For ViewModel intergration
-                implementation(libs.precompose.koin) // For Koin intergration
-            }
+            implementation(libs.precompose)
+            implementation(libs.precompose.viewmodel) // For ViewModel intergration
+            implementation(libs.precompose.koin) // For Koin intergration
         }
     }
 }

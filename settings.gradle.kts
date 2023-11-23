@@ -19,7 +19,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "CMPMovieDB"
 include(":composeApp")
-include(":data")
+include(":core:data")
 include(":model")
 include(":core:ui")
 include(":feature:movies")
