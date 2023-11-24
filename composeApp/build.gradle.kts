@@ -1,12 +1,28 @@
 plugins {
     alias(libs.plugins.androidApplication)
-    id("moviedb.kotlin.multiplatform")
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.mokoResources)
 }
 
 kotlin {
+    androidTarget ()
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "ComposeApp"
+            isStatic = true
+        }
+    }
+
     sourceSets {
+        // Required for moko-resources to work
+        applyDefaultHierarchyTemplate()
+
         androidMain {
             dependencies {
                 implementation(libs.compose.ui)
