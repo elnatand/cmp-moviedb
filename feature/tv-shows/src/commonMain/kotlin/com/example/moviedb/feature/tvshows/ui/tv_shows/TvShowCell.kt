@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import com.example.moviedb.core.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.model.TvShow
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -17,7 +18,7 @@ fun TvShowCell(
         modifier = Modifier.clickable {
             onClick(tvShow.id, tvShow.name)
         },
-        resource = asyncPainterResource("https://image.tmdb.org/t/p/w300${tvShow.poster_path ?: ""}"),
+        resource = asyncPainterResource("$TMDB_IMAGE_URL${tvShow.poster_path ?: ""}"),
         contentDescription = "",
         contentScale = ContentScale.Crop
     )

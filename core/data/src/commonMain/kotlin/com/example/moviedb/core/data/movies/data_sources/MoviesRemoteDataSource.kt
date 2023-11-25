@@ -1,5 +1,7 @@
 package com.example.moviedb.core.data.movies.data_sources
 
+import com.example.moviedb.core.data.model.API_KEY
+import com.example.moviedb.core.data.model.TMDB_BASE_URL
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -12,7 +14,7 @@ class MoviesRemoteDataSource(
 ) {
     suspend fun getMoviesPage(page:Int): List<Movie> {
         val moviesPages = httpClient
-            .get("https://api.themoviedb.org/3/movie/popular?api_key=fe3e15709f26d5df026b17a743dbd529"){
+            .get("${TMDB_BASE_URL}movie/popular?api_key=$API_KEY"){
                 url{
                     parameters.append("page", page.toString())
                 }
@@ -23,7 +25,7 @@ class MoviesRemoteDataSource(
 
     suspend fun getMovieDetails(movieId: Int): MovieDetails {
         return httpClient
-            .get("https://api.themoviedb.org/3/movie/${movieId}?api_key=fe3e15709f26d5df026b17a743dbd529")
+            .get("${TMDB_BASE_URL}/movie/${movieId}?api_key=$API_KEY")
             .body()
     }
 }

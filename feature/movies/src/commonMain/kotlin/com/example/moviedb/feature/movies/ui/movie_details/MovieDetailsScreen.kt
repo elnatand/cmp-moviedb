@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.example.moviedb.core.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.ui.extansions.mirror
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -57,7 +58,7 @@ fun MovieDetailsScreen(
     ) {
         uiState.movieDetails?.let {
             KamelImage(
-                resource = asyncPainterResource("https://image.tmdb.org/t/p/w300${it.poster_path}"),
+                resource = asyncPainterResource("$TMDB_IMAGE_URL${it.poster_path}"),
                 contentDescription = "",
             )
         }
