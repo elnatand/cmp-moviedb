@@ -1,27 +1,23 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinMultiplatform)
+    id("moviedb.kotlin.multiplatform")
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.mokoResources)
 }
 
 kotlin {
-    androidTarget ()
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.withType<Framework> {
             isStatic = true
+            baseName = "ComposeApp"
         }
     }
 
     sourceSets {
-        // Required for moko-resources to work
-        applyDefaultHierarchyTemplate()
 
         androidMain {
             dependencies {
