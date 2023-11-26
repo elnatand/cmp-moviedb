@@ -11,7 +11,7 @@ import com.example.moviedb.navigation.RootNavGraph
 @Composable
 fun App() {
     PreComposeApp {
-      val appState: AppState = rememberAppState()
+        val appState: AppState = rememberAppState()
         KoinContext {
             MaterialTheme {
                 Scaffold(
@@ -19,6 +19,7 @@ fun App() {
                         if (appState.shouldShowBottomBar()) {
                             NavigationBar(
                                 topLevelDestinations = appState.topLevelDestinations,
+                                currentDestination = appState.currentDestination,
                                 onClick = appState::navigateToTopLevelDestination
                             )
                         }

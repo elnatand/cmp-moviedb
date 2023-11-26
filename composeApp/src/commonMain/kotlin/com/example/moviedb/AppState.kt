@@ -37,10 +37,15 @@ class AppState(
         launchSingleTop = true,
     )
 
+    val currentDestination: String?
+        @Composable   get() {
+            val backStackEntry = navController.currentEntry.collectAsState("").value as? BackStackEntry?
+            return backStackEntry?.route?.route
+        }
+
     @Composable
     fun shouldShowBottomBar(): Boolean {
-        val backStackEntry = navController.currentEntry.collectAsState("").value as? BackStackEntry
-        return backStackEntry?.route?.route in bottomBarRoutes
+        return currentDestination in bottomBarRoutes
     }
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {

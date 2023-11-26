@@ -15,6 +15,7 @@ import dev.icerock.moko.resources.compose.stringResource
 fun NavigationBar(
     modifier: Modifier = Modifier,
     topLevelDestinations: List<TopLevelDestination>,
+    currentDestination: String?,
     onClick: (TopLevelDestination) -> Unit
 ) {
     NavigationBar(
@@ -22,8 +23,9 @@ fun NavigationBar(
         tonalElevation = 0.dp,
         content = {
             topLevelDestinations.forEach {
+                val selected = currentDestination == it.route
                 NavigationBarItem(
-                    selected = true,
+                    selected = selected,
                     onClick = { onClick(it) },
                     icon = {
                         Icon(
