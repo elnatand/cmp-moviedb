@@ -27,6 +27,7 @@ import com.example.moviedb.core.model.UiState
 import com.example.moviedb.core.ui.design_system.Loader
 
 import com.example.moviedb.ui.MR
+import com.theapache64.rebugger.Rebugger
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
@@ -47,6 +48,13 @@ fun MoviesScreen(
     uiState: UiState<List<Movie>>,
     onClick: (Int, String) -> Unit
 ) {
+
+    Rebugger(
+        trackMap = mapOf(
+            "uiState" to uiState.data
+        ),
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(

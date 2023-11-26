@@ -19,6 +19,7 @@ kotlin {
             api(compose.materialIconsExtended)
 
             api(libs.moko.resources.compose)
+            api(libs.rebugger) //logs for recompositions
         }
     }
 }

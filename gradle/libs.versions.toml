@@ -22,6 +22,7 @@ kamel = "0.7.3"
 precompose = "1.5.7"
 voyager = "1.0.0-rc10"
 moko-resources = "0.23.0"
+rebugger = "1.0.0-rc01"
 
 
 [plugins]
@@ -64,6 +65,7 @@ precompose-viewmodel = { module = "moe.tlaster:precompose-viewmodel", version.re
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
 moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko-resources" }
+rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
 
 
 # Build logic dependencies
