@@ -3,7 +3,9 @@ package com.example.moviedb
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.moviedb.App
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.moviedb.feature.profile.ui.ProfileScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -14,4 +16,10 @@ class MainActivity : ComponentActivity() {
             App()
         }
     }
+}
+
+@Preview
+@Composable
+fun AppAndroidPreview() {
+    ProfileScreen()
 }

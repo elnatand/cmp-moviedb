@@ -1,21 +1,8 @@
 package com.example.moviedb.feature.profile.ui
 
 
-import com.example.moviedb.core.model.TvShow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import moe.tlaster.precompose.viewmodel.ViewModel
 
-class ProfileViewModel(
-  //  private val tvShowsRepository: TvShowsRepository
-) : ViewModel() {
+class ProfileViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState = _uiState.asStateFlow()
-
-
-
-    data class UiState(
-        val tvShows: List<TvShow> = emptyList()
-    )
 }
