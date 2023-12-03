@@ -10,8 +10,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
         }
 
         extensions.configure<KotlinMultiplatformExtension> {
-            //required for moko-resources to work
-            applyDefaultHierarchyTemplate()
 
             if (pluginManager.hasPlugin("com.android.library") || pluginManager.hasPlugin("com.android.application")) {
                 androidTarget()
