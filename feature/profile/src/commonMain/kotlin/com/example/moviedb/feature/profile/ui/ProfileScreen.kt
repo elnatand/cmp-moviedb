@@ -18,8 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.moviedb.ui.MR
-import dev.icerock.moko.resources.compose.stringResource
+import com.example.moviedb.core.model.Strings
 
 @Composable
 fun ProfileRoute() {
@@ -35,7 +34,7 @@ fun ProfileScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(MR.strings.profile)) },
+                title = { Text(text = Strings.profile.get()) },
             )
         }
     ) { paddingValues ->

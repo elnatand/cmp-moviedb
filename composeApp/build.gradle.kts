@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     id("moviedb.kotlin.multiplatform")
     alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.mokoResources)
 }
 
 kotlin {
@@ -28,9 +27,6 @@ kotlin {
                 implementation(libs.ktor.client.android)
                 implementation(libs.koin.android)
             }
-
-            // Required for moko-resources to work
-            dependsOn(commonMain.get())
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -90,8 +86,3 @@ android {
         debugImplementation(libs.compose.ui.tooling)
     }
 }
-
-multiplatformResources {
-    multiplatformResourcesPackage = "com.example.moviedb"
-}
-

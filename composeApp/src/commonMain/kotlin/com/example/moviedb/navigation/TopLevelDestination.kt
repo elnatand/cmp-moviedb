@@ -5,31 +5,30 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.moviedb.core.model.Strings
 import com.example.moviedb.feature.profile.navigation.profileRoute
 import com.example.moviedb.feature.tvshows.navigation.tvShowsRoute
-import com.example.moviedb.ui.MR
 import com.example.moviedb.feature.movies.navigation.moviesRoute
-import dev.icerock.moko.resources.StringResource
 
 
 enum class TopLevelDestination(
     val icon: ImageVector,
-    val titleRes: StringResource,
+    val titleRes: Strings,
     val route: String
 ) {
     MOVIES(
         icon = Icons.Filled.Theaters,
-        titleRes = MR.strings.movies,
+        titleRes = Strings.movies,
         route = moviesRoute
     ),
     TV_SHOWS(
         icon = Icons.Filled.Tv,
-        titleRes = MR.strings.tv_shows,
+        titleRes = Strings.tv_shows,
         route = tvShowsRoute
     ),
     PROFILE(
         icon = Icons.Filled.Person,
-        titleRes = MR.strings.profile,
+        titleRes = Strings.profile,
         route = profileRoute
     ),
 }

@@ -23,12 +23,11 @@ import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Movie
 import moe.tlaster.precompose.koin.koinViewModel
 import com.example.moviedb.core.model.State
+import com.example.moviedb.core.model.Strings
 import com.example.moviedb.core.model.UiState
 import com.example.moviedb.core.ui.design_system.Loader
-
-import com.example.moviedb.ui.MR
 import com.theapache64.rebugger.Rebugger
-import dev.icerock.moko.resources.compose.stringResource
+
 
 @Composable
 fun MoviesRoute(
@@ -58,7 +57,7 @@ fun MoviesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(MR.strings.movies)) },
+                title = { Text(text = Strings.movies.get()) },
             )
         }
     ) { paddingValues ->
