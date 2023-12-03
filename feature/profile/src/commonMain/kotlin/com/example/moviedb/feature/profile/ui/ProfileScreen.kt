@@ -46,7 +46,7 @@ fun ProfileScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Notifications"
+                    text = Strings.notifications.get()
                 )
                 Spacer(Modifier.weight(1f))
                 Switch(

@@ -21,13 +21,17 @@ enum class Strings(
     profile(
         en = "Profile",
         iw = "פרופיל"
+    ),
+    notifications(
+        en = "Notifications",
+        iw = "התראות"
     );
 
     fun get(): String {
         Strings.valueOf(name).apply {
             return when (platformLanguage) {
                 "en" -> en
-                "iw" -> iw
+                "iw", "he" -> iw
                 else -> en
             }
         }
