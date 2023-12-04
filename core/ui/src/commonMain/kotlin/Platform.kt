@@ -1,6 +1,7 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 
+
 expect val platformLanguage: String?
 
 
@@ -23,3 +24,5 @@ expect class ImagePicker {
 
 @Composable
 expect fun rememberBitmapFromBytes(bytes: ByteArray?): ImageBitmap
+
+expect val isRightToLeftLanguage: Boolean
