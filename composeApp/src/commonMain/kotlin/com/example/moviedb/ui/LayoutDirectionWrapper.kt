@@ -6,7 +6,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import isRightToLeftLanguage
-import platformLanguage
 
 @Composable
 fun LayoutDirectionWrapper(content: @Composable () -> Unit) {

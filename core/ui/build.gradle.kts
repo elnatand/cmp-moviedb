@@ -6,9 +6,6 @@ plugins {
 
 kotlin {
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.androidx.activity.compose)
-        }
         commonMain.dependencies {
             api(compose.runtime)
             api(compose.foundation)
