@@ -116,7 +116,9 @@ private fun ProfileImage() {
     val modifier = Modifier
         .size(60.dp)
         .clip(CircleShape)
-        .clickable { imagePicker.pickImage() }
+        .clickable {
+            imagePicker.pickImage()
+        }
 
     if (selectedBytes.isNotEmpty()) {
         Image(
