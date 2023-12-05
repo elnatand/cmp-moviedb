@@ -10,11 +10,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 
-actual class PlatformContext(val androidContext: Context)
-
-@Composable
-actual fun getPlatformContext(): PlatformContext = PlatformContext(LocalContext.current)
-
 actual class ImagePicker(
   private val context: Context
 ) {

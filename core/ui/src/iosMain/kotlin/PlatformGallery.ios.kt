@@ -1,10 +1,8 @@
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asComposeImageBitmap
-import androidx.compose.ui.interop.LocalUIViewController
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.refTo
 import org.jetbrains.skia.Bitmap
@@ -18,13 +16,6 @@ import platform.UIKit.UINavigationControllerDelegateProtocol
 import platform.UIKit.UIViewController
 import platform.darwin.NSObject
 import platform.posix.memcpy
-
-
-
-actual class PlatformContext (val iosController: ProvidableCompositionLocal<UIViewController>)
-
-@Composable
-actual fun getPlatformContext(): PlatformContext = PlatformContext(LocalUIViewController)
 
 actual class ImagePicker(
     private val rootController: UIViewController

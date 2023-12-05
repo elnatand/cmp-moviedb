@@ -1,5 +1,4 @@
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.ImageBitmap
 
 
 expect class CameraFactory(context: PlatformContext) {
