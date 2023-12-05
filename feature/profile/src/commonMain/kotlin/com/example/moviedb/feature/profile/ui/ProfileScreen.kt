@@ -1,5 +1,6 @@
 package com.example.moviedb.feature.profile.ui
 
+import CameraFactory
 import ImagePickerFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -55,6 +57,7 @@ fun ProfileScreen() {
         Column(
             modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp).fillMaxWidth()
         ) {
+            Camera()
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -83,6 +86,22 @@ fun ProfileScreen() {
             }
         }
     }
+}
+
+@Composable
+private fun Camera() {
+
+    var selectedBytes: ByteArray by remember { mutableStateOf(ByteArray(0)) }
+    val camera = CameraFactory(context = getPlatformContext()).createCamera()
+    camera.RegisterCamera { bytes: ByteArray ->
+        selectedBytes = bytes
+    }
+    Button(
+        onClick = {
+            camera.openCamera()
+        },
+        content = { Text("Open Camera") }
+    )
 }
 
 @Composable
