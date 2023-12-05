@@ -60,7 +60,7 @@ fun ProfileScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Name: Elna",
+                    text = "${Strings.user_name.get()}: Elna",
                     modifier = Modifier.weight(1f)
                 )
                 ProfileImage()

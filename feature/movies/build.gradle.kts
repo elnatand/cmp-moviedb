@@ -4,6 +4,11 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
 }
 
+//android section should be before kotlin section
+android {
+    namespace = "com.example.moviedb.movies"
+}
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -19,8 +24,4 @@ kotlin {
             implementation(libs.precompose.koin) // For Koin intergration
         }
     }
-}
-
-android {
-    namespace = "com.example.moviedb.movies"
 }
