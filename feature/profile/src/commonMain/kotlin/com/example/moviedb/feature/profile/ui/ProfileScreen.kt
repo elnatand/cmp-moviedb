@@ -101,7 +101,7 @@ private fun Camera(selectedBytes: MutableState<ByteArray>) {
         onClick = {
             camera.openCamera()
         },
-        content = { Text("Camera") }
+        content = { Text(Strings.camera.get()) }
     )
 }
 
