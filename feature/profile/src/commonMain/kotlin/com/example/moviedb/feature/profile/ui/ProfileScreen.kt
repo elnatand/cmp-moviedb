@@ -59,7 +59,6 @@ fun ProfileScreen() {
         Column(
             modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp).fillMaxWidth()
         ) {
-            Camera(selectedBytes)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -68,6 +67,7 @@ fun ProfileScreen() {
                     text = "${Strings.user_name.get()}: Elna",
                     modifier = Modifier.weight(1f)
                 )
+                Camera(selectedBytes)
                 ProfileImage(selectedBytes)
             }
             Spacer(Modifier.height(16.dp))
@@ -97,10 +97,11 @@ private fun Camera(selectedBytes: MutableState<ByteArray>) {
         selectedBytes.value = bytes
     }
     Button(
+        modifier = Modifier.padding(end = 8.dp),
         onClick = {
             camera.openCamera()
         },
-        content = { Text("Open Camera") }
+        content = { Text("Camera") }
     )
 }
 

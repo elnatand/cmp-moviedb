@@ -10,6 +10,5 @@ expect class Camera {
     @Composable
     fun RegisterCamera(onImagePicked: (ByteArray) -> Unit)
 
-
     fun openCamera()
 }
