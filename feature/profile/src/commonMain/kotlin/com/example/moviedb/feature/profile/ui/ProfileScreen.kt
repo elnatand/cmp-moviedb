@@ -1,10 +1,19 @@
 package com.example.moviedb.feature.profile.ui
 
+import ImagePickerFactory
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -17,8 +26,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Strings
+import getPlatformContext
+import rememberBitmapFromBytes
 
 @Composable
 fun ProfileRoute() {
@@ -46,6 +60,17 @@ fun ProfileScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    text = "${Strings.user_name.get()}: Elna",
+                    modifier = Modifier.weight(1f)
+                )
+                ProfileImage()
+            }
+            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
                     text = Strings.notifications.get()
                 )
                 Spacer(Modifier.weight(1f))
@@ -57,5 +82,36 @@ fun ProfileScreen() {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ProfileImage() {
+    var selectedBytes: ByteArray by remember { mutableStateOf(ByteArray(0)) }
+    val imagePicker = ImagePickerFactory(context = getPlatformContext()).createPicker()
+    imagePicker.RegisterPicker { bytes: ByteArray ->
+        selectedBytes = bytes
+    }
+    val contentScale = ContentScale.Crop
+
+    val modifier = Modifier
+        .size(60.dp)
+        .clip(CircleShape)
+        .clickable { imagePicker.pickImage() }
+
+    if (selectedBytes.isNotEmpty()) {
+        Image(
+            bitmap = rememberBitmapFromBytes(selectedBytes),
+            contentDescription = null,
+            modifier = modifier,
+            contentScale = contentScale
+        )
+    } else {
+        Image(
+            imageVector = Icons.Filled.Person,
+            contentDescription = null,
+            modifier = modifier.background(Color.Gray),
+            contentScale = contentScale
+        )
     }
 }

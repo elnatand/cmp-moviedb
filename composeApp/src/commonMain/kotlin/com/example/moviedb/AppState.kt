@@ -30,8 +30,8 @@ fun rememberAppState(
 class AppState(
     private val navController: Navigator,
 ) {
-    val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
-    private val bottomBarRoutes = TopLevelDestination.values().map { it.route }
+    val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.entries
+    private val bottomBarRoutes = TopLevelDestination.entries.map { it.route }
     private val navOptions = NavOptions(
         // Launch the scene as single top
         launchSingleTop = true,

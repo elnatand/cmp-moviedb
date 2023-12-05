@@ -10,6 +10,10 @@ enum class Strings(
     private val en: String,
     private val iw: String
 ) {
+    user_name(
+        en = "Name",
+        iw = "שם"
+    ),
     movies(
         en = "Movies",
         iw = "סרטים"

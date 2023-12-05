@@ -3,9 +3,16 @@ plugins {
     id("moviedb.kotlin.multiplatform")
     alias(libs.plugins.jetbrainsCompose)
 }
+//android section should be before kotlin section
+android {
+    namespace = "com.example.moviedb.core.ui"
+}
 
 kotlin {
     sourceSets {
+        androidMain.dependencies {
+            implementation(libs.androidx.activity.compose)
+        }
         commonMain.dependencies {
             api(compose.runtime)
             api(compose.foundation)
@@ -16,8 +23,4 @@ kotlin {
             api(libs.rebugger) //logs for recompositions
         }
     }
-}
-
-android {
-    namespace = "com.example.moviedb.core.ui"
 }

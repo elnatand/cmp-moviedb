@@ -1,24 +1,23 @@
 package com.example.moviedb
 
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
 
-fun Project.configureAndroid() {
-  android {
-    compileSdkVersion(Versions.COMPILE_SDK)
 
-    defaultConfig {
-      minSdk = Versions.MIN_SDK
-      targetSdk = Versions.TARGET_SDK
+fun Project.configureAndroid(
+    commonExtension: CommonExtension<*, *, *, *, *>,
+) {
+    commonExtension.apply {
+        compileSdk = Versions.COMPILE_SDK
+
+        defaultConfig {
+            minSdk = Versions.MIN_SDK
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_17
+            targetCompatibility = JavaVersion.VERSION_17
+        }
     }
-
-    compileOptions {
-      sourceCompatibility = JavaVersion.VERSION_17
-      targetCompatibility = JavaVersion.VERSION_17
-    }
-  }
 }
-
-private fun Project.android(action: BaseExtension.() -> Unit) = extensions.configure<BaseExtension>(action)
