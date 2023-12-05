@@ -22,6 +22,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ fun ProfileRoute() {
 fun ProfileScreen() {
 
     var checked by remember { mutableStateOf(true) }
+    val selectedBytes = remember { mutableStateOf(ByteArray(0)) }
 
     Scaffold(
         topBar = {
@@ -57,7 +59,7 @@ fun ProfileScreen() {
         Column(
             modifier = Modifier.padding(paddingValues).padding(horizontal = 16.dp).fillMaxWidth()
         ) {
-            Camera()
+            Camera(selectedBytes)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -66,7 +68,7 @@ fun ProfileScreen() {
                     text = "${Strings.user_name.get()}: Elna",
                     modifier = Modifier.weight(1f)
                 )
-                ProfileImage()
+                ProfileImage(selectedBytes)
             }
             Spacer(Modifier.height(16.dp))
             Row(
@@ -89,12 +91,10 @@ fun ProfileScreen() {
 }
 
 @Composable
-private fun Camera() {
-
-    var selectedBytes: ByteArray by remember { mutableStateOf(ByteArray(0)) }
+private fun Camera(selectedBytes: MutableState<ByteArray>) {
     val camera = CameraFactory(context = getPlatformContext()).createCamera()
     camera.RegisterCamera { bytes: ByteArray ->
-        selectedBytes = bytes
+        selectedBytes.value = bytes
     }
     Button(
         onClick = {
@@ -105,11 +105,10 @@ private fun Camera() {
 }
 
 @Composable
-private fun ProfileImage() {
-    var selectedBytes: ByteArray by remember { mutableStateOf(ByteArray(0)) }
+private fun ProfileImage(selectedBytes: MutableState<ByteArray>) {
     val imagePicker = ImagePickerFactory(context = getPlatformContext()).createPicker()
     imagePicker.RegisterPicker { bytes: ByteArray ->
-        selectedBytes = bytes
+        selectedBytes.value = bytes
     }
     val contentScale = ContentScale.Crop
 
@@ -120,9 +119,9 @@ private fun ProfileImage() {
             imagePicker.pickImage()
         }
 
-    if (selectedBytes.isNotEmpty()) {
+    if (selectedBytes.value.isNotEmpty()) {
         Image(
-            bitmap = rememberBitmapFromBytes(selectedBytes),
+            bitmap = rememberBitmapFromBytes(selectedBytes.value),
             contentDescription = null,
             modifier = modifier,
             contentScale = contentScale

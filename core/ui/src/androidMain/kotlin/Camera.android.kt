@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+
 import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -33,37 +34,26 @@ actual class Camera(
     private lateinit var permissionsActivityLauncher: ActivityResultLauncher<String>
     val REQUEST_IMAGE_CAPTURE = 1
 
-//    val launcher = activity.registerForActivityResult(
-//        ActivityResultContracts.StartActivityForResult()
-//    ) { result ->
-//        if (result.resultCode == Activity.RESULT_OK) {
-//            // There are no request codes
-//            val data: Intent? = result.data
-//            println("cameraLauncher = ${data}")
-//        } else {
-//            println("cameraLauncher = RESULT_Error")
-//        }
-//    }
-
     val context = activity.applicationContext
     val file = context.createImageFile()
-    val uri = FileProvider.getUriForFile(
+    val uri: Uri? = FileProvider.getUriForFile(
         Objects.requireNonNull(context),
         "com.example.moviedb" + ".provider", file
     )
 
-
-
-//    var capturedImageUri by remember {
-//        mutableStateOf<Uri>(Uri.EMPTY)
-//    }
+    var capturedImageUri: Uri? = null
 
     @Composable
     actual fun RegisterCamera(onImagePicked: (ByteArray) -> Unit) {
         cameraLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.TakePicture()
         ) {
-            //  capturedImageUri = uri
+            capturedImageUri = uri
+            capturedImageUri?.let {uri->
+                context.contentResolver.openInputStream(uri)?.use {
+                    onImagePicked(it.readBytes())
+                }
+            }
         }
     }
 
