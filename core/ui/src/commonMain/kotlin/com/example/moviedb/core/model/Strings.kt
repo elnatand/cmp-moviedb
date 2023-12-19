@@ -10,6 +10,10 @@ enum class Strings(
     private val en: String,
     private val iw: String
 ) {
+    camera(
+        en = "Camera",
+        iw = "מצלמה"
+    ),
     user_name(
         en = "Name",
         iw = "שם"

@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import isRightToLeftLanguage
 
+
 @Composable
 fun LayoutDirectionWrapper(content: @Composable () -> Unit) {
     val layoutDirection = when (isRightToLeftLanguage) {
