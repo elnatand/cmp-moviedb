@@ -1,16 +1,6 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 
-expect val platformLanguage: String?
-
-expect val isRightToLeftLanguage: Boolean
-
-
-expect class PlatformContext
-
-@Composable
-expect fun getPlatformContext(): PlatformContext
-
 expect class ImagePickerFactory(context: PlatformContext) {
     @Composable
     fun createPicker(): ImagePicker

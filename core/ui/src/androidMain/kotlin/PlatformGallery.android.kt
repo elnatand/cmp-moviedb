@@ -10,23 +10,20 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 
-actual class PlatformContext(val androidContext: Context)
-
-@Composable
-actual fun getPlatformContext(): PlatformContext = PlatformContext(LocalContext.current)
-
 actual class ImagePicker(
-    private val activity: ComponentActivity
+  private val context: Context
 ) {
     private lateinit var getContent: ActivityResultLauncher<String>
 
     @Composable
-    actual fun RegisterPicker(onImagePicked: (ByteArray) -> Unit) {
+    actual fun RegisterPicker(
+        onImagePicked: (ByteArray) -> Unit
+    ) {
         getContent = rememberLauncherForActivityResult(
             ActivityResultContracts.GetContent()
         ) { uri ->
             uri?.let {
-                activity.contentResolver.openInputStream(uri)?.use {
+                context.contentResolver.openInputStream(uri)?.use {
                     onImagePicked(it.readBytes())
                 }
             }

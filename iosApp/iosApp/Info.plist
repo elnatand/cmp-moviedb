@@ -49,6 +49,8 @@
 <key>CFBundleLocalizations</key><array>
 <string>en</string>
 <string>he</string>
+<key>NSCameraUsageDescription</key>
+<string>whatever</string>
 </array>
 </dict>
 </plist>
