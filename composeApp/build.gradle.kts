@@ -35,9 +35,9 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.data)
             implementation(projects.core.ui)
-            implementation(projects.feature.movies)
-            implementation(projects.feature.tvShows)
-            implementation(projects.feature.profile)
+            implementation(projects.features.movies)
+            implementation(projects.features.tvShows)
+            implementation(projects.features.profile)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
