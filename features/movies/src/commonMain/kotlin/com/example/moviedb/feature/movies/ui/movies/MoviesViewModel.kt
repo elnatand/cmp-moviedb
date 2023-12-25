@@ -6,7 +6,6 @@ import com.example.moviedb.core.data.movies.MoviesRepository
 import com.example.moviedb.core.model.Movie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -32,7 +31,6 @@ class MoviesViewModel(
     private fun getMovies() {
         viewModelScope.launch(Dispatchers.IO) {
             val movies = moviesRepository.getMoviesPage(page)
-            delay(5000)
             _uiState.update {
                 it.copy(
                     state = State.SUCCESS,
