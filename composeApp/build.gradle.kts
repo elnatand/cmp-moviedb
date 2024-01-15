@@ -35,6 +35,8 @@ kotlin {
             implementation(projects.core.model)
             implementation(projects.core.data)
             implementation(projects.core.ui)
+            implementation(projects.core.database)
+
             implementation(projects.features.movies)
             implementation(projects.features.tvShows)
             implementation(projects.features.profile)

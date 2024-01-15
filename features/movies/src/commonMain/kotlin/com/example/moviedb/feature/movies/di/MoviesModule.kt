@@ -7,7 +7,6 @@ import org.koin.dsl.module
 
 val moviesModule = module {
 
-
     factory {
         MoviesViewModel(
             moviesRepository = get(),
