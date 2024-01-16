@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.example.moviedb.core.model.TMDB_IMAGE_URL
+import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.ui.extansions.mirror
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource

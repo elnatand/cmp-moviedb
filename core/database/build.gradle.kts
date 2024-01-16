@@ -1,9 +1,7 @@
-import com.android.build.gradle.internal.ide.kmp.KotlinAndroidSourceSetMarker.Companion.android
-
 plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
-    id("app.cash.sqldelight") version "2.0.1"
+    alias(libs.plugins.sqldelight)
 }
 
 //android section should be before kotlin section
