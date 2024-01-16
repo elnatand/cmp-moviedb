@@ -17,7 +17,6 @@ val dataModule = module {
     single<TvShowsRepository> { TvShowRepositoryImpl(tvShowsRemoteDataSource = get()) }
 
     single { MoviesRemoteDataSource(httpClient = get()) }
-
     single { MoviesLocalDataSource(database = get()) }
 
     single<MoviesRepository> {

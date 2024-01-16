@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.ide.kmp.KotlinAndroidSourceSetMarker.Companion.android
+
 plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
@@ -17,22 +19,18 @@ sqldelight {
     }
 }
 
-
-
-private val sqlDelightVersion = "2.0.1"
-
 kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
+                implementation(libs.sqldelight.coroutines.extensions)
                 implementation(libs.koin.core)
                 implementation(projects.core.model)
             }
         }
         val androidMain by getting {
             dependencies {
-                implementation("app.cash.sqldelight:android-driver:$sqlDelightVersion")
+                implementation(libs.sqldelight.android.driver)
             }
         }
         val iosX64Main by getting
@@ -44,7 +42,7 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
             dependencies {
-                implementation("app.cash.sqldelight:native-driver:$sqlDelightVersion")
+                implementation(libs.sqldelight.native.driver)
             }
         }
     }

@@ -13,10 +13,10 @@ class MoviesRepositoryImpl(
 ) : MoviesRepository {
 
     override suspend fun observeMoviesPage(page: Int): Flow<List<Movie>> {
-        val remoteMoviesPage = moviesRemoteDataSource.getMoviesPage(page)
         val localMoviesPageStream = moviesLocalDataSource.getMoviesPage(page)
         if (localMoviesPageStream.first().isEmpty()) {
-            moviesLocalDataSource.insertMoviesPage(remoteMoviesPage, page)
+            val remoteMoviesPage = moviesRemoteDataSource.getMoviesPage(page)
+            moviesLocalDataSource.insertMoviesPage(movies = remoteMoviesPage, page = page)
         }
 
         return localMoviesPageStream
