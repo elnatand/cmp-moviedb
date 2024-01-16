@@ -27,6 +27,7 @@ kotlin {
             dependencies {
                 implementation("app.cash.sqldelight:coroutines-extensions:$sqlDelightVersion")
                 implementation(libs.koin.core)
+                implementation(projects.core.model)
             }
         }
         val androidMain by getting {

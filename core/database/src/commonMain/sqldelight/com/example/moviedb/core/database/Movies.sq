@@ -1,0 +1,15 @@
+CREATE TABLE movie (
+  id INTEGER PRIMARY KEY NOT NULL,
+  title TEXT NOT NULL,
+  poster_path TEXT,
+  page INTEGER NOT NULL
+);
+
+selectMovies:
+SELECT *
+FROM movie
+WHERE page = ?;
+
+insert:
+INSERT INTO movie(id, title, poster_path,page)
+VALUES (?, ?,?,?);
