@@ -10,15 +10,6 @@ android {
 
 kotlin {
     sourceSets {
-        androidMain {
-            dependencies {
-                implementation(libs.ktor.client.okhttp)
-                implementation(libs.ktor.client.android)
-            }
-        }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
         commonMain.dependencies {
             implementation(projects.core.model)
             implementation(projects.core.database)
@@ -26,6 +17,13 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
+        }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktor.client.android)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
