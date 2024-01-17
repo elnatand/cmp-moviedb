@@ -23,18 +23,16 @@ kotlin {
                 implementation(libs.compose.ui)
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.androidx.activity.compose)
-                implementation(libs.ktor.client.okhttp)
-                implementation(libs.ktor.client.android)
                 implementation(libs.koin.android)
             }
         }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
-        }
+
         commonMain.dependencies {
             implementation(projects.core.model)
             implementation(projects.core.data)
             implementation(projects.core.ui)
+            implementation(projects.core.database)
+
             implementation(projects.features.movies)
             implementation(projects.features.tvShows)
             implementation(projects.features.profile)

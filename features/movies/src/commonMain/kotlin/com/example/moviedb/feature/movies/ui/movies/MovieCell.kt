@@ -5,7 +5,7 @@ import com.example.moviedb.core.model.Movie
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import com.example.moviedb.core.model.TMDB_IMAGE_URL
+import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 

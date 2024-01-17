@@ -30,12 +30,13 @@ class MoviesViewModel(
 
     private fun getMovies() {
         viewModelScope.launch(Dispatchers.IO) {
-            val movies = moviesRepository.getMoviesPage(page)
-            _uiState.update {
-                it.copy(
-                    state = State.SUCCESS,
-                    data = movies
-                )
+             moviesRepository.observeMoviesPage(page).collect{ movies->
+                _uiState.update {
+                    it.copy(
+                        state = State.SUCCESS,
+                        data = movies
+                    )
+                }
             }
         }
     }
