@@ -52,5 +52,12 @@
 <key>NSCameraUsageDescription</key>
 <string>whatever</string>
 </array>
+<key>NSAppTransportSecurity</key>
+<dict>
+  <!--Include to allow all connections (DANGER)-->
+  <key>NSAllowsArbitraryLoads</key>
+      <true/>
+</dict>
+
 </dict>
 </plist>
