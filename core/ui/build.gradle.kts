@@ -20,6 +20,8 @@ kotlin {
             api(compose.material3)
             api(compose.materialIconsExtended)
 
+            api(libs.kamel)
+
             api(libs.rebugger) //logs for recompositions
         }
     }

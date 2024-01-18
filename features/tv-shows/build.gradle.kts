@@ -16,7 +16,6 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.core.ui)
 
-            implementation(libs.kamel)
             implementation(libs.koin.core)
 
             implementation(libs.precompose)
