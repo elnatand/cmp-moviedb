@@ -6,13 +6,12 @@ import androidx.compose.runtime.Composable
 import com.example.moviedb.navigation.RootNavGraph
 import com.example.moviedb.ui.LayoutDirectionWrapper
 import com.example.moviedb.ui.NavigationBar
-import moe.tlaster.precompose.PreComposeApp
 import org.koin.compose.KoinContext
 
 @Composable
-fun App() {
+fun App(root: RootComponent) {
 
-    PreComposeApp {
+
         val appState: AppState = rememberAppState()
         KoinContext {
             MaterialTheme {
@@ -33,5 +32,5 @@ fun App() {
                 }
             }
         }
-    }
+
 }

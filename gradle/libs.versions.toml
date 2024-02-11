@@ -12,9 +12,12 @@ koin-compose = "1.1.0"
 kotlin = "1.9.22"
 ktor = "2.3.7"
 kamel = "0.7.3"
-precompose = "1.5.7"
 rebugger = "1.0.0-rc01"
 sqldelight = "2.0.1"
+
+extensionsComposeJetbrains = "2.1.4-compose-experimental"
+decompose = "2.2.2"
+kotlinxSerializationJson = "1.6.1"
 
 
 [plugins]
@@ -40,14 +43,13 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-precompose = { module = "moe.tlaster:precompose", version.ref = "precompose" }
-precompose-koin = { module = "moe.tlaster:precompose-koin", version.ref = "precompose" }
-precompose-viewmodel = { module = "moe.tlaster:precompose-viewmodel", version.ref = "precompose" }
 rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 
+decompose = { module = "com.arkivanov.decompose:decompose", version.ref = "decompose" }
+decompose-jetbrains = { module = "com.arkivanov.decompose:extensions-compose-jetbrains", version.ref = "extensionsComposeJetbrains" }
 
 # Build logic dependencies
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }

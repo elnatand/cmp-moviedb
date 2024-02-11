@@ -16,17 +16,16 @@ import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.ui.extansions.mirror
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import moe.tlaster.precompose.koin.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MovieDetailsRoute(
+    component: MovieDetailsComponent,
     movieId: Int,
     onBackPressed: () -> Unit,
     title: String,
 ) {
-    val viewModel = koinViewModel(MovieDetailsViewModel::class) { parametersOf(movieId) }
-    val uiState by viewModel.uiState.collectAsState()
+
+    val uiState by component.uiState.collectAsState()
     MovieDetailsScreen(
         uiState = uiState,
         title = title,
@@ -37,7 +36,7 @@ fun MovieDetailsRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailsScreen(
-    uiState: MovieDetailsViewModel.UiState,
+    uiState: MovieDetailsComponent.UiState,
     onBackPressed: () -> Unit,
     title: String,
 ) {

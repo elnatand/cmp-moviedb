@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     id("moviedb.kotlin.multiplatform")
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -34,13 +35,11 @@ kotlin {
             implementation(projects.core.database)
 
             implementation(projects.features.movies)
-            implementation(projects.features.tvShows)
-            implementation(projects.features.profile)
+//            implementation(projects.features.tvShows)
+//            implementation(projects.features.profile)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-
-            implementation(libs.precompose)
         }
     }
 }

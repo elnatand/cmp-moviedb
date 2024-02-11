@@ -23,6 +23,11 @@ kotlin {
             api(libs.kamel)
 
             api(libs.rebugger) //logs for recompositions
+
+            api(libs.decompose)
+            api(libs.decompose.jetbrains)
+//            api(libs.kotlinx.serialization.json)
+            api("com.arkivanov.essenty:lifecycle-coroutines:1.3.0")
         }
     }
 }

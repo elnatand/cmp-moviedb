@@ -17,10 +17,6 @@ kotlin {
             implementation(projects.core.ui)
 
             implementation(libs.koin.core)
-
-            implementation(libs.precompose)
-            implementation(libs.precompose.viewmodel) // For ViewModel intergration
-            implementation(libs.precompose.koin) // For Koin intergration
         }
     }
 }
