@@ -27,16 +27,14 @@ actual class ImagePicker(
     private var onImagePicked: (ByteArray) -> Unit = {}
 
     @OptIn(ExperimentalForeignApi::class)
-    private val delegate = object : NSObject(), UIImagePickerControllerDelegateProtocol,
-        UINavigationControllerDelegateProtocol {
+    private val delegate = object : NSObject(), UIImagePickerControllerDelegateProtocol, UINavigationControllerDelegateProtocol {
 
         override fun imagePickerController(
             picker: UIImagePickerController,
             didFinishPickingImage: UIImage,
             editingInfo: Map<Any?, *>?
         ) {
-            val imageNsData = UIImageJPEGRepresentation(didFinishPickingImage, 1.0)
-                ?: return
+            val imageNsData = UIImageJPEGRepresentation(didFinishPickingImage, 1.0) ?: return
             val bytes = ByteArray(imageNsData.length.toInt())
             memcpy(bytes.refTo(0), imageNsData.bytes, imageNsData.length)
 
@@ -65,11 +63,11 @@ actual class ImagePicker(
 
 
 
-actual class ImagePickerFactory actual constructor(private val context: PlatformViewController) {
+actual class ImagePickerFactory actual constructor(private val uiController: PlatformViewController) {
 
     @Composable
     actual fun createPicker(): ImagePicker {
-        val rootController = context.iosController.current
+        val rootController = uiController.iosController.current
         return remember {
             ImagePicker(rootController)
         }

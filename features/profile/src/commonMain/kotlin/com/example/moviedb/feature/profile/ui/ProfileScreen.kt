@@ -107,7 +107,7 @@ private fun Camera(selectedBytes: MutableState<ByteArray>) {
 
 @Composable
 private fun ProfileImage(selectedBytes: MutableState<ByteArray>) {
-    val imagePicker = ImagePickerFactory(context = getPlatformViewController()).createPicker()
+    val imagePicker = ImagePickerFactory(uiController = getPlatformViewController()).createPicker()
     imagePicker.RegisterPicker { bytes: ByteArray ->
         selectedBytes.value = bytes
     }
