@@ -3,29 +3,26 @@ package com.example.moviedb.feature.movies.ui.movies
 
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.lifecycle.Lifecycle
-import com.arkivanov.essenty.lifecycle.coroutines.coroutineScope
-import com.arkivanov.essenty.lifecycle.doOnDestroy
 import com.example.moviedb.core.data.movies.MoviesRepository
 import com.example.moviedb.core.model.Movie
+import com.example.moviedb.core.model.State
+import com.example.moviedb.core.model.UiState
+import com.example.moviedb.feature.movies.componentCoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.example.moviedb.core.model.State
-import com.example.moviedb.core.model.UiState
-import com.example.moviedb.feature.movies.componentCoroutineScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 
 class MoviesComponent(
     componentContext: ComponentContext,
-    private val moviesRepository: MoviesRepository,
-) : ComponentContext by componentContext {
+) : ComponentContext by componentContext, KoinComponent {
+
+    private val moviesRepository: MoviesRepository by inject()
 
     private val _uiState = MutableStateFlow(UiState<List<Movie>>())
     val uiState = _uiState.asStateFlow()

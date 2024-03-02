@@ -7,16 +7,5 @@ import org.koin.dsl.module
 
 val moviesModule = module {
 
-    factory {
-        MoviesComponent(
-            moviesRepository = get(),
-        )
-    }
 
-    factory { (id: Int) ->
-        MovieDetailsComponent(
-            movieId = id,
-            moviesRepository = get()
-        )
-    }
 }

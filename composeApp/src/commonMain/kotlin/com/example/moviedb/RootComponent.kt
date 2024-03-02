@@ -30,22 +30,17 @@ class RootComponent(
         config: Configuration,
         context: ComponentContext
     ): Child {
-        val httpClient = CreateH
-        val moviesRemoteDataSource = MoviesRemoteDataSource()
-        val moviesLocalDataSource = MoviesLocalDataSource()
         return when (config) {
             Configuration.ScreenMovies -> Child.ScreenMovies(
                 MoviesComponent(
                     componentContext = context,
-                    moviesRepository = MoviesRepositoryImpl(moviesRemoteDataSource,),
                 )
             )
 
             is Configuration.ScreenMovieDetails -> Child.ScreenMovieDetails(
                 MovieDetailsComponent(
-                    movieId = ,
+                    movieId = 0,
                     componentContext = context,
-                    moviesRepository = MoviesRepositoryImpl()
                 )
             )
         }
