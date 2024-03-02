@@ -67,7 +67,7 @@ actual class ImagePickerFactory actual constructor(private val uiController: Pla
 
     @Composable
     actual fun createPicker(): ImagePicker {
-        val rootController = uiController.iosController.current
+        val rootController = (uiController as IOSViewController).iosController.current
         return remember {
             ImagePicker(rootController)
         }

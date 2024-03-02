@@ -18,26 +18,13 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Objects
 
-actual class CameraFactory actual constructor(context: PlatformViewController) {
-
-    @Composable
-    actual fun createCamera(): Camera {
-        val activity = LocalContext.current as ComponentActivity
-        return remember(activity) {
-            Camera(activity = activity)
-        }
-    }
-}
-
 actual class Camera(
-    private val activity: ComponentActivity,
+    private val context: Context,
 ) {
 
     private lateinit var cameraLauncher: ManagedActivityResultLauncher<Uri, Boolean>
     private lateinit var permissionsActivityLauncher: ActivityResultLauncher<String>
 
-
-    private val context = activity.applicationContext
     private val file = context.createImageFile()
     private var capturedImageUri: Uri? = null
     private val uri = FileProvider.getUriForFile(
@@ -48,9 +35,7 @@ actual class Camera(
 
     @Composable
     actual fun RegisterCamera(onImagePicked: (ByteArray) -> Unit) {
-        cameraLauncher = rememberLauncherForActivityResult(
-            ActivityResultContracts.TakePicture()
-        ) {
+        cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
             capturedImageUri = uri
             capturedImageUri?.let { uri ->
                 context.contentResolver.openInputStream(uri)?.use {
@@ -92,4 +77,15 @@ fun Context.createImageFile(): File {
         ".jpg", /* suffix */
         externalCacheDir      /* directory */
     )
+}
+
+actual class CameraFactory actual constructor(private val viewController: PlatformViewController) {
+
+    @Composable
+    actual fun createCamera(): Camera {
+        val context = (viewController as AndroidViewController).androidContext
+        return remember(context) {
+            Camera(context = context)
+        }
+    }
 }
