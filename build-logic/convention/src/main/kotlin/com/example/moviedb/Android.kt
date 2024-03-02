@@ -6,7 +6,7 @@ import org.gradle.api.Project
 
 
 fun Project.configureAndroid(
-    commonExtension: CommonExtension<*, *, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
     commonExtension.apply {
         compileSdk = Versions.COMPILE_SDK
