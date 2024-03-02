@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Objects
 
-actual class CameraFactory actual constructor(context: PlatformContext) {
+actual class CameraFactory actual constructor(context: PlatformViewController) {
 
     @Composable
     actual fun createCamera(): Camera {

@@ -58,7 +58,7 @@ actual class Camera(
 }
 
 
-actual class CameraFactory actual constructor(private val context: PlatformContext) {
+actual class CameraFactory actual constructor(private val context: PlatformViewController) {
 
     @Composable
     actual fun createCamera(): Camera {

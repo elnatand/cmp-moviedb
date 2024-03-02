@@ -2,7 +2,7 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-actual class PlatformContext(val androidContext: Context)
+class AndroidViewController(val androidContext: Context): PlatformViewController
 
 @Composable
-actual fun getPlatformContext(): PlatformContext = PlatformContext(LocalContext.current)
+actual fun getPlatformViewController(): PlatformViewController = AndroidViewController(LocalContext.current)

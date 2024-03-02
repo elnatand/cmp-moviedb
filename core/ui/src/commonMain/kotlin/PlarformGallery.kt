@@ -1,7 +1,7 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.ImageBitmap
 
-expect class ImagePickerFactory(context: PlatformContext) {
+expect class ImagePickerFactory(context: PlatformViewController) {
     @Composable
     fun createPicker(): ImagePicker
 }

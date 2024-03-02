@@ -1,10 +1,9 @@
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.ui.interop.LocalUIViewController
 import platform.UIKit.UIViewController
 
-actual class PlatformContext (val iosController: ProvidableCompositionLocal<UIViewController>)
+class IOSViewController(val iosController: ProvidableCompositionLocal<UIViewController>) : PlatformViewController
 
 @Composable
-actual fun getPlatformContext(): PlatformContext = PlatformContext(LocalUIViewController)
+actual fun getPlatformViewController(): PlatformViewController = IOSViewController(LocalUIViewController)

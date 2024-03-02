@@ -25,14 +25,14 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                 }
             }
 
-            //remove expect actual warning
-            targets.configureEach {
-                compilations.configureEach {
-                    compilerOptions.configure {
-                        freeCompilerArgs.add("-Xexpect-actual-classes")
-                    }
-                }
-            }
+//            //remove expect actual warning
+//            targets.configureEach {
+//                compilations.configureEach {
+//                    compilerOptions.configure {
+//                        freeCompilerArgs.add("-Xexpect-actual-classes")
+//                    }
+//                }
+//            }
         }
     }
 }

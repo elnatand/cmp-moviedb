@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Strings
-import getPlatformContext
+import getPlatformViewController
 import rememberBitmapFromBytes
 
 @Composable
@@ -92,7 +92,7 @@ fun ProfileScreen() {
 
 @Composable
 private fun Camera(selectedBytes: MutableState<ByteArray>) {
-    val camera = CameraFactory(context = getPlatformContext()).createCamera()
+    val camera = CameraFactory(context = getPlatformViewController()).createCamera()
     camera.RegisterCamera { bytes: ByteArray ->
         selectedBytes.value = bytes
     }
@@ -107,7 +107,7 @@ private fun Camera(selectedBytes: MutableState<ByteArray>) {
 
 @Composable
 private fun ProfileImage(selectedBytes: MutableState<ByteArray>) {
-    val imagePicker = ImagePickerFactory(context = getPlatformContext()).createPicker()
+    val imagePicker = ImagePickerFactory(context = getPlatformViewController()).createPicker()
     imagePicker.RegisterPicker { bytes: ByteArray ->
         selectedBytes.value = bytes
     }

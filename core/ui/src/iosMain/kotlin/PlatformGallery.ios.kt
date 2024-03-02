@@ -65,7 +65,7 @@ actual class ImagePicker(
 
 
 
-actual class ImagePickerFactory actual constructor(private val context: PlatformContext) {
+actual class ImagePickerFactory actual constructor(private val context: PlatformViewController) {
 
     @Composable
     actual fun createPicker(): ImagePicker {
