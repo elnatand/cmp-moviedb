@@ -58,11 +58,11 @@ actual class Camera(
 }
 
 
-actual class CameraFactory actual constructor(private val context: PlatformContext) {
+actual class CameraFactory actual constructor(private val viewController: PlatformViewController) {
 
     @Composable
     actual fun createCamera(): Camera {
-        val rootController = context.iosController.current
+        val rootController = (viewController as IOSViewController).iosController.current
         return remember {
             Camera(rootController)
         }

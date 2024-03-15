@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Strings
-import getPlatformContext
+import getPlatformViewController
 import rememberBitmapFromBytes
 
 @Composable
@@ -47,7 +47,7 @@ fun ProfileRoute() {
 fun ProfileScreen() {
 
     var checked by remember { mutableStateOf(true) }
-    val selectedBytes = remember { mutableStateOf(ByteArray(0)) }
+    val selectedImageBytes = remember { mutableStateOf(ByteArray(0)) }
 
     Scaffold(
         topBar = {
@@ -67,8 +67,8 @@ fun ProfileScreen() {
                     text = "${Strings.user_name.get()}: Elna",
                     modifier = Modifier.weight(1f)
                 )
-                Camera(selectedBytes)
-                ProfileImage(selectedBytes)
+                Camera(selectedImageBytes)
+                ProfileImage(selectedImageBytes)
             }
             Spacer(Modifier.height(16.dp))
             Row(
@@ -92,7 +92,7 @@ fun ProfileScreen() {
 
 @Composable
 private fun Camera(selectedBytes: MutableState<ByteArray>) {
-    val camera = CameraFactory(context = getPlatformContext()).createCamera()
+    val camera = CameraFactory(viewController = getPlatformViewController()).createCamera()
     camera.RegisterCamera { bytes: ByteArray ->
         selectedBytes.value = bytes
     }
@@ -107,7 +107,7 @@ private fun Camera(selectedBytes: MutableState<ByteArray>) {
 
 @Composable
 private fun ProfileImage(selectedBytes: MutableState<ByteArray>) {
-    val imagePicker = ImagePickerFactory(context = getPlatformContext()).createPicker()
+    val imagePicker = ImagePickerFactory(uiController = getPlatformViewController()).createPicker()
     imagePicker.RegisterPicker { bytes: ByteArray ->
         selectedBytes.value = bytes
     }

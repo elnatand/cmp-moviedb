@@ -1,7 +1,7 @@
 import androidx.compose.runtime.Composable
 
 
-expect class CameraFactory(context: PlatformContext) {
+expect class CameraFactory(viewController: PlatformViewController) {
     @Composable
     fun createCamera(): Camera
 }
