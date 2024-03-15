@@ -99,10 +99,7 @@ private fun Camera(imageBitmap: MutableState<ImageBitmap?>) {
     val coroutineScope = rememberCoroutineScope()
     val cameraManager = rememberCameraManager {
         coroutineScope.launch {
-            val bitmap = withContext(Dispatchers.Default) {
-                it?.toImageBitmap()
-            }
-            imageBitmap.value = bitmap
+            imageBitmap.value =  it?.toImageBitmap()
         }
     }
     Button(
@@ -119,10 +116,7 @@ private fun ProfileImage(imageBitmap: MutableState<ImageBitmap?>) {
     val coroutineScope = rememberCoroutineScope()
     val galleryManager = rememberGalleryManager {
         coroutineScope.launch {
-            val bitmap = withContext(Dispatchers.Default) {
-                it?.toImageBitmap()
-            }
-            imageBitmap.value = bitmap
+            imageBitmap.value =  it?.toImageBitmap()
         }
     }
 
