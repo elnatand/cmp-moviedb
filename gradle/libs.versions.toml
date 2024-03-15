@@ -14,6 +14,7 @@ kamel = "0.9.1"
 precompose = "1.5.7"
 rebugger = "1.0.0-rc01"
 sqldelight = "2.0.1"
+accompanist-permissions = "0.32.0"
 
 
 [plugins]
@@ -46,6 +47,7 @@ rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger"
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
 
 
 # Build logic dependencies

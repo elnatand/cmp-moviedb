@@ -1,7 +1,5 @@
 package com.example.moviedb.feature.profile.ui
 
-import CameraFactory
-import ImagePickerFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,16 +24,22 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Strings
-import getPlatformViewController
-import rememberBitmapFromBytes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import rememberCameraManager
+import rememberGalleryManager
+
 
 @Composable
 fun ProfileRoute() {
@@ -47,7 +51,7 @@ fun ProfileRoute() {
 fun ProfileScreen() {
 
     var checked by remember { mutableStateOf(true) }
-    val selectedImageBytes = remember { mutableStateOf(ByteArray(0)) }
+    val imageBitmap = remember { mutableStateOf<ImageBitmap?>(null) }
 
     Scaffold(
         topBar = {
@@ -67,8 +71,8 @@ fun ProfileScreen() {
                     text = "${Strings.user_name.get()}: Elna",
                     modifier = Modifier.weight(1f)
                 )
-                Camera(selectedImageBytes)
-                ProfileImage(selectedImageBytes)
+                Camera(imageBitmap)
+                ProfileImage(imageBitmap)
             }
             Spacer(Modifier.height(16.dp))
             Row(
@@ -91,38 +95,50 @@ fun ProfileScreen() {
 }
 
 @Composable
-private fun Camera(selectedBytes: MutableState<ByteArray>) {
-    val camera = CameraFactory(viewController = getPlatformViewController()).createCamera()
-    camera.RegisterCamera { bytes: ByteArray ->
-        selectedBytes.value = bytes
+private fun Camera(imageBitmap: MutableState<ImageBitmap?>) {
+    val coroutineScope = rememberCoroutineScope()
+    val cameraManager = rememberCameraManager {
+        coroutineScope.launch {
+            val bitmap = withContext(Dispatchers.Default) {
+                it?.toImageBitmap()
+            }
+            imageBitmap.value = bitmap
+        }
     }
     Button(
         modifier = Modifier.padding(end = 8.dp),
         onClick = {
-            camera.openCamera()
+            cameraManager.launch()
         },
         content = { Text(Strings.camera.get()) }
     )
 }
 
 @Composable
-private fun ProfileImage(selectedBytes: MutableState<ByteArray>) {
-    val imagePicker = ImagePickerFactory(uiController = getPlatformViewController()).createPicker()
-    imagePicker.RegisterPicker { bytes: ByteArray ->
-        selectedBytes.value = bytes
+private fun ProfileImage(imageBitmap: MutableState<ImageBitmap?>) {
+    val coroutineScope = rememberCoroutineScope()
+    val galleryManager = rememberGalleryManager {
+        coroutineScope.launch {
+            val bitmap = withContext(Dispatchers.Default) {
+                it?.toImageBitmap()
+            }
+            imageBitmap.value = bitmap
+        }
     }
+
+
     val contentScale = ContentScale.Crop
 
     val modifier = Modifier
         .size(60.dp)
         .clip(CircleShape)
         .clickable {
-            imagePicker.pickImage()
+            galleryManager.launch()
         }
 
-    if (selectedBytes.value.isNotEmpty()) {
+    if (imageBitmap.value != null) {
         Image(
-            bitmap = rememberBitmapFromBytes(selectedBytes.value),
+            bitmap = imageBitmap.value!!,
             contentDescription = null,
             modifier = modifier,
             contentScale = contentScale
