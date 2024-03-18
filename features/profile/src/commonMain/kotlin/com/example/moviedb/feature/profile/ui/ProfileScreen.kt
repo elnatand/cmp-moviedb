@@ -34,9 +34,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Strings
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import rememberCameraManager
 import rememberGalleryManager
 
@@ -130,9 +128,10 @@ private fun ProfileImage(imageBitmap: MutableState<ImageBitmap?>) {
             galleryManager.launch()
         }
 
-    if (imageBitmap.value != null) {
+    val image = imageBitmap.value
+    if (image != null) {
         Image(
-            bitmap = imageBitmap.value!!,
+            bitmap = image,
             contentDescription = null,
             modifier = modifier,
             contentScale = contentScale
