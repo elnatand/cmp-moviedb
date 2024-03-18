@@ -2,7 +2,7 @@ import android.util.LayoutDirection
 import androidx.core.text.layoutDirection
 import java.util.Locale
 
-actual val platformLanguage:String?
+actual val platformLanguage:String
     get() = Locale.getDefault().language
 
 

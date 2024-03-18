@@ -4,7 +4,7 @@ import platform.Foundation.languageCode
 import platform.UIKit.UIApplication
 import platform.UIKit.UIUserInterfaceLayoutDirection
 
-actual val platformLanguage: String?
+actual val platformLanguage: String
     get() = NSLocale.currentLocale.languageCode
 
 
