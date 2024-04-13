@@ -16,9 +16,9 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             }
 
             listOf(
-                iosX64(),
-                iosArm64(),
-                iosSimulatorArm64(),
+                iosArm64(), // for ios devices
+                // iosX64(), // for ios simulator in Intel silicon Mac computer
+                iosSimulatorArm64(), // for ios simulators in Apple silicon Mac computer
             ).forEach { target ->
                 target.binaries.framework {
                     baseName = path.substring(1).replace(':', '-')
