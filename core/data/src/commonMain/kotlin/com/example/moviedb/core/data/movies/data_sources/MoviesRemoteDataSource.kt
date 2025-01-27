@@ -25,7 +25,7 @@ class MoviesRemoteDataSource(
 
     suspend fun getMovieDetails(movieId: Int): MovieDetails {
         return httpClient
-            .get("${TMDB_BASE_URL}/movie/${movieId}?api_key=$API_KEY")
+            .get("${TMDB_BASE_URL}movie/${movieId}?api_key=$API_KEY")
             .body()
     }
 }
