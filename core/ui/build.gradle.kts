@@ -1,7 +1,7 @@
 plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.composeMultiplatform)
 }
 //android section should be before kotlin section
 android {
