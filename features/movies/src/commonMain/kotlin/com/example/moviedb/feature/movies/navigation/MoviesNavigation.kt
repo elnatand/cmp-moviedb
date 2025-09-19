@@ -3,14 +3,12 @@ package com.example.moviedb.feature.movies.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.moviedb.feature.movies.ui.movie_details.MovieDetailsRoute
 import com.example.moviedb.feature.movies.ui.movies.MoviesRoute
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.koin.compose.viewmodel.koinViewModel
 
 
 const val movieDetailsRoute = "/movie_details"
@@ -19,28 +17,40 @@ const val MOVIE_TITLE = "movie_title"
 
 @Serializable
 @SerialName("movies")
-data object MOVIES
+data object Movies
+
+@Serializable
+@SerialName("movie_details")
+data class MovieDetails(
+    val movieId: Int,
+    val title: String
+)
 
 fun NavHostController.navigateToMovies() {
-    navigate(MOVIES)
+    navigate(Movies)
 }
 
-fun NavGraphBuilder.moviesScene(navigator: NavHostController) {
-    composable<MOVIES> { entry ->
-        MoviesRoute { movieId, title ->
 
+fun NavGraphBuilder.moviesScene(
+    navigator: NavHostController,
+) {
+    composable<Movies> { entry ->
+        MoviesRoute { movieId, title ->
+            navigator.navigate(MovieDetails(movieId, title))
         }
     }
 }
 
 fun NavGraphBuilder.movieDetailsScene(navigator: NavHostController) {
-//    scene("$movieDetailsRoute/{$MOVIE_ID}/{$MOVIE_TITLE}") {
-//        val movieId: Int = it.path(MOVIE_ID) ?: 0
-//        val title: String = it.path(MOVIE_TITLE) ?: ""
-//        MovieDetailsRoute(
-//            movieId = movieId,
-//            title = title,
-//            onBackPressed = { navigator.goBack() }
-//        )
-//    }
+    composable<MovieDetails> { entry ->
+        val params = entry.toRoute<MovieDetails>()
+
+        val movieId: Int = params.movieId
+        val title: String = params.title
+        MovieDetailsRoute(
+            movieId = movieId,
+            title = title,
+            onBackPressed = { navigator.popBackStack() }
+        )
+    }
 }
