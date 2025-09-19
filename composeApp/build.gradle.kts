@@ -39,6 +39,8 @@ kotlin {
             implementation(libs.koin.compose)
 
             implementation(libs.precompose)
+
+            implementation(libs.navigation.compose)
         }
     }
 }
