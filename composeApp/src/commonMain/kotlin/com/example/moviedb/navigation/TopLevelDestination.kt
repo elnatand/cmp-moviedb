@@ -8,7 +8,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.moviedb.core.model.Strings
 import com.example.moviedb.feature.profile.navigation.profileRoute
 import com.example.moviedb.feature.tvshows.navigation.tvShowsRoute
-import com.example.moviedb.feature.movies.navigation.moviesRoute
 
 
 enum class TopLevelDestination(
@@ -19,7 +18,7 @@ enum class TopLevelDestination(
     MOVIES(
         icon = Icons.Filled.Theaters,
         titleRes = Strings.movies,
-        route = moviesRoute
+        route = "moviesRoute"
     ),
     TV_SHOWS(
         icon = Icons.Filled.Tv,

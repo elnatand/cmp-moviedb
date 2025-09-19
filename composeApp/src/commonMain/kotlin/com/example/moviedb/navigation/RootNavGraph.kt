@@ -1,32 +1,29 @@
 package com.example.moviedb.navigation
 
 import androidx.compose.runtime.Composable
-import moe.tlaster.precompose.navigation.NavHost
-import moe.tlaster.precompose.navigation.Navigator
-import moe.tlaster.precompose.navigation.rememberNavigator
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
+import com.example.moviedb.feature.movies.navigation.MOVIES
 import com.example.moviedb.feature.profile.navigation.profileScene
 import com.example.moviedb.feature.tvshows.navigation.tvShowDetailsScene
 import com.example.moviedb.feature.tvshows.navigation.tvShowsScene
 import com.example.moviedb.feature.movies.navigation.movieDetailsScene
-import com.example.moviedb.feature.movies.navigation.moviesRoute
 import com.example.moviedb.feature.movies.navigation.moviesScene
-import moe.tlaster.precompose.navigation.NavOptions
+
 
 
 @Composable
-fun RootNavGraph(navigator: Navigator = rememberNavigator()) {
-    val navOptions = NavOptions(
-        // Launch the scene as single top
-        launchSingleTop = true,
-    )
+fun RootNavGraph(navigator: NavHostController = rememberNavController()) {
     NavHost(
-        navigator = navigator,
-        initialRoute = moviesRoute,
+        navController = navigator,
+        startDestination = MOVIES,
     ) {
-        moviesScene(navigator, navOptions)
-        movieDetailsScene(navigator)
-        tvShowsScene(navigator, navOptions)
-        tvShowDetailsScene(navigator)
-        profileScene()
+        moviesScene(navigator)
+//        movieDetailsScene(navigator)
+//        tvShowsScene(navigator, navOptions)
+//        tvShowDetailsScene(navigator)
+//        profileScene()
     }
 }

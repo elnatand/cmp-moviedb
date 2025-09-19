@@ -1,6 +1,7 @@
 package com.example.moviedb.feature.tvshows.navigation
 
 
+import androidx.navigation.NavHostController
 import com.example.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsRoute
 import com.example.moviedb.feature.tvshows.ui.tv_shows.TvShowsRoute
 import moe.tlaster.precompose.navigation.NavOptions
@@ -13,14 +14,14 @@ const val tvShowDetailsRoute = "/tv_show_details"
 const val TV_SHOW_ID = "tvShowId"
 const val TV_SHOW_TITLE = "tvShowTitle"
 
-fun Navigator.navigateToTvShows(navOptions: NavOptions) {
-    navigate(tvShowsRoute, navOptions)
+fun NavHostController.navigateToTvShows() {
+    navigate(tvShowsRoute)
 }
 
-fun RouteBuilder.tvShowsScene(navigator: Navigator, navOptions: NavOptions) {
+fun RouteBuilder.tvShowsScene(navigator: Navigator) {
     scene(tvShowsRoute) {
         TvShowsRoute { tvShowId, tvShowTitle ->
-            navigator.navigate("$tvShowDetailsRoute/$tvShowId/$tvShowTitle", navOptions)
+            navigator.navigate("$tvShowDetailsRoute/$tvShowId/$tvShowTitle", )
         }
     }
 }
