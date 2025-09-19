@@ -1,19 +1,24 @@
 package com.example.moviedb.feature.profile.navigation
 
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.composable
 import com.example.moviedb.feature.profile.ui.ProfileRoute
-import moe.tlaster.precompose.navigation.NavOptions
-import moe.tlaster.precompose.navigation.Navigator
-import moe.tlaster.precompose.navigation.RouteBuilder
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 const val profileRoute = "/profile"
 
+@Serializable
+@SerialName("profile")
+data object PROFILE
+
 fun NavHostController.navigateToProfile(){
-    navigate(profileRoute)
+    navigate(PROFILE)
 }
 
-fun RouteBuilder.profileScene(){
-    scene(profileRoute) {
+fun NavGraphBuilder.profileScene(){
+    composable<PROFILE> { entry ->
         ProfileRoute()
     }
 }

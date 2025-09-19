@@ -27,7 +27,7 @@ fun rememberAppState(
 
 @Stable
 class AppState(
-    private val navController: NavHostController,
+    val navController: NavHostController,
 ) {
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.entries
     private val bottomBarRoutes = TopLevelDestination.entries.map { it.route }
