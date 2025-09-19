@@ -1,16 +1,17 @@
 package com.example.moviedb.feature.movies.ui.movie_details
 
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
 import com.example.moviedb.core.model.MovieDetails
-import moe.tlaster.precompose.viewmodel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import moe.tlaster.precompose.viewmodel.viewModelScope
+
 
 
 class MovieDetailsViewModel(

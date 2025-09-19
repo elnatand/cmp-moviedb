@@ -15,9 +15,10 @@ import androidx.compose.ui.Modifier
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import moe.tlaster.precompose.koin.koinViewModel
+
 import org.koin.core.parameter.parametersOf
 import com.example.moviedb.core.ui.extansions.mirror
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun TvShowDetailsRoute(
@@ -25,7 +26,7 @@ fun TvShowDetailsRoute(
     tvShowTitle: String,
     onBackPressed: () -> Unit,
 ) {
-    val viewModel = koinViewModel(TvShowDetailsViewModel::class) { parametersOf(tvShowId) }
+    val viewModel = koinViewModel<TvShowDetailsViewModel> { parametersOf(tvShowId) }
     val uiState by viewModel.uiState.collectAsState()
     TvShowDetailsScreen(
         uiState = uiState,
