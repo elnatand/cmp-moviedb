@@ -37,9 +37,6 @@ kotlin {
             implementation(projects.features.profile)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-
-            implementation(libs.precompose)
-
             implementation(libs.navigation.compose)
         }
     }

@@ -11,7 +11,6 @@ kotlin = "2.2.10"
 ktor = "2.3.9"
 kamel = "0.9.4"
 navigationCompose = "2.9.0"
-precompose = "1.6.2"
 rebugger = "1.0.0-rc01"
 sqldelight = "2.1.0"
 accompanist-permissions = "0.32.0"
@@ -42,9 +41,6 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "kto
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-precompose = { module = "moe.tlaster:precompose", version.ref = "precompose" }
-precompose-koin = { module = "moe.tlaster:precompose-koin", version.ref = "precompose" }
-precompose-viewmodel = { module = "moe.tlaster:precompose-viewmodel", version.ref = "precompose" }
 rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
@@ -55,8 +51,3 @@ accompanist-permissions = { module = "com.google.accompanist:accompanist-permiss
 # Build logic dependencies
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-
-# Plugins defined by this project
-#movidb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform", version = "unspecified" }
-#moviedb-kotlinMultiplatform = { id = "moviedb.kotlin.multiplatform", version = "unspecified" }
-

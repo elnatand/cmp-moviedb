@@ -19,7 +19,6 @@ kotlin {
 
             implementation(libs.koin.core)
 
-            implementation(libs.precompose)
             implementation(libs.navigation.compose)
         }
     }

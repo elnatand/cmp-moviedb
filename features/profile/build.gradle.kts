@@ -18,8 +18,6 @@ kotlin {
             implementation(projects.core.ui)
 
             implementation(libs.koin.core)
-
-            implementation(libs.precompose)
             implementation(libs.navigation.compose)
         }
     }
