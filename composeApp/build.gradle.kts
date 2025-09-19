@@ -4,7 +4,8 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     alias(libs.plugins.androidApplication)
     id("moviedb.kotlin.multiplatform")
-    alias(libs.plugins.composeMultiplatform)
+    id("moviedb.kotlin.composeMultiplatform")
+   // alias(libs.plugins.composeMultiplatform)
 }
 
 kotlin {
@@ -20,27 +21,26 @@ kotlin {
 
         androidMain {
             dependencies {
-                implementation(libs.compose.ui)
-                implementation(libs.compose.ui.tooling.preview)
+
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.koin.android)
             }
         }
 
         commonMain.dependencies {
-            implementation(projects.core.model)
-            implementation(projects.core.data)
-            implementation(projects.core.ui)
-            implementation(projects.core.database)
-
-            implementation(projects.features.movies)
-            implementation(projects.features.tvShows)
-            implementation(projects.features.profile)
-
-            implementation(libs.koin.core)
-            implementation(libs.koin.compose)
-
-            implementation(libs.precompose)
+//            implementation(projects.core.model)
+//            implementation(projects.core.data)
+//            implementation(projects.core.ui)
+//            implementation(projects.core.database)
+//
+//            implementation(projects.features.movies)
+//            implementation(projects.features.tvShows)
+//            implementation(projects.features.profile)
+//
+//            implementation(libs.koin.core)
+//            implementation(libs.koin.compose)
+//
+//            implementation(libs.precompose)
         }
     }
 }
@@ -74,7 +74,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    dependencies {
-        debugImplementation(libs.compose.ui.tooling)
-    }
+//    dependencies {
+//        debugImplementation(libs.compose.ui.tooling)
+//    }
 }

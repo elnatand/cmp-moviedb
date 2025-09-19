@@ -1,19 +1,19 @@
 [versions]
-compose = "1.6.6"
+compose = "1.9.1"
 composeMultiplatform = "1.8.2"
 agp = "8.10.1"
 android-minSdk = "24"
-android-compileSdk = "34"
-android-targetSdk = "34"
-androidx-activityCompose = "1.9.0"
-koin = "3.5.3"
-koin-compose = "1.1.2"
+android-compileSdk = "36"
+android-targetSdk = "36"
+androidx-activityCompose = "1.10.1"
+koin = "4.1.1"
+koin-compose = "4.1.1"
 kotlin = "2.2.10"
 ktor = "2.3.9"
 kamel = "0.9.4"
-precompose = "1.5.7"
+precompose = "1.6.2"
 rebugger = "1.0.0-rc01"
-sqldelight = "2.0.1"
+sqldelight = "2.1.0"
 accompanist-permissions = "0.32.0"
 
 
@@ -27,9 +27,7 @@ kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 [libraries]
-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 kamel = { module = "media.kamel:kamel-image", version.ref = "kamel" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -54,4 +52,8 @@ accompanist-permissions = { module = "com.google.accompanist:accompanist-permiss
 # Build logic dependencies
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+# Plugins defined by this project
+#movidb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform", version = "unspecified" }
+#moviedb-kotlinMultiplatform = { id = "moviedb.kotlin.multiplatform", version = "unspecified" }
 

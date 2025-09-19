@@ -2,6 +2,7 @@ plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.composeCompiler)
 }
 
 //android section should be before kotlin section
