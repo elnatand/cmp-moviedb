@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     id("moviedb.kotlin.multiplatform")
     id("moviedb.kotlin.composeMultiplatform")
-   // alias(libs.plugins.composeMultiplatform)
 }
 
 kotlin {
@@ -28,19 +27,18 @@ kotlin {
         }
 
         commonMain.dependencies {
-//            implementation(projects.core.model)
-//            implementation(projects.core.data)
-//            implementation(projects.core.ui)
-//            implementation(projects.core.database)
-//
-//            implementation(projects.features.movies)
-//            implementation(projects.features.tvShows)
-//            implementation(projects.features.profile)
-//
-//            implementation(libs.koin.core)
-//            implementation(libs.koin.compose)
-//
-//            implementation(libs.precompose)
+            implementation(projects.core.model)
+            implementation(projects.core.data)
+            implementation(projects.core.ui)
+            implementation(projects.core.database)
+
+            implementation(projects.features.movies)
+            implementation(projects.features.tvShows)
+            implementation(projects.features.profile)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+
+            implementation(libs.precompose)
         }
     }
 }
