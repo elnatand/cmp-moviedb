@@ -9,6 +9,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.AppState
 import com.example.moviedb.navigation.TopLevelDestination
+import com.example.moviedb.resources.Res
+import com.example.moviedb.resources.movies
+import com.example.moviedb.resources.profile
+import com.example.moviedb.resources.tv_shows
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
@@ -31,9 +37,17 @@ fun NavigationBar(
                             contentDescription = null,
                         )
                     },
-                    label = { Text(destination.titleRes.get()) },
+                    label = { Text(stringResource(getStringRes(destination))) },
                 )
             }
         },
     )
+}
+
+private fun getStringRes(destination: TopLevelDestination): StringResource {
+    return when (destination) {
+        TopLevelDestination.MOVIES -> Res.string.movies
+        TopLevelDestination.TV_SHOWS -> Res.string.tv_shows
+        TopLevelDestination.PROFILE -> Res.string.profile
+    }
 }

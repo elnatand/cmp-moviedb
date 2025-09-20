@@ -1,0 +1,8 @@
+<resources>
+    <string name="movies">Movies</string>
+    <string name="camera">Camera</string>
+    <string name="user_name">Name</string>
+    <string name="tv_shows">TV Shows</string>
+    <string name="profile">Profile</string>
+    <string name="notifications">Notifications</string>
+</resources>

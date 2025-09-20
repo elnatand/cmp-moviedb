@@ -22,11 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Movie
 import com.example.moviedb.core.model.State
-import com.example.moviedb.core.model.Strings
 import com.example.moviedb.core.model.UiState
 import com.example.moviedb.core.ui.design_system.Loader
+import com.example.moviedb.resources.Res
+import com.example.moviedb.resources.movies
 import com.theapache64.rebugger.Rebugger
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
 
 
 @Composable
@@ -57,7 +60,7 @@ fun MoviesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = Strings.movies.get()) },
+                title = { Text(text = stringResource(Res.string.movies)) },
             )
         }
     ) { paddingValues ->

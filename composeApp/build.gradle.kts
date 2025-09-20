@@ -38,6 +38,8 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.navigation.compose)
+
+            implementation(compose.components.resources)
         }
     }
 }

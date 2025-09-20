@@ -33,8 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.example.moviedb.core.model.Strings
+import com.example.moviedb.resources.Res
+import com.example.moviedb.resources.camera
+import com.example.moviedb.resources.notifications
+import com.example.moviedb.resources.profile
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import rememberCameraManager
 import rememberGalleryManager
 
@@ -54,7 +58,7 @@ fun ProfileScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = Strings.profile.get()) },
+                title = { Text(text = stringResource(Res.string.profile)) },
             )
         }
     ) { paddingValues ->
@@ -66,7 +70,7 @@ fun ProfileScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${Strings.user_name.get()}: Elna",
+                    text = "${stringResource(Res.string.profile)}: Elna",
                     modifier = Modifier.weight(1f)
                 )
                 Camera(imageBitmap)
@@ -78,7 +82,7 @@ fun ProfileScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = Strings.notifications.get()
+                    text = stringResource(Res.string.notifications)
                 )
                 Spacer(Modifier.weight(1f))
                 Switch(
@@ -97,7 +101,7 @@ private fun Camera(imageBitmap: MutableState<ImageBitmap?>) {
     val coroutineScope = rememberCoroutineScope()
     val cameraManager = rememberCameraManager {
         coroutineScope.launch {
-            imageBitmap.value =  it?.toImageBitmap()
+            imageBitmap.value = it?.toImageBitmap()
         }
     }
     Button(
@@ -105,7 +109,7 @@ private fun Camera(imageBitmap: MutableState<ImageBitmap?>) {
         onClick = {
             cameraManager.launch()
         },
-        content = { Text(Strings.camera.get()) }
+        content = { Text(stringResource(Res.string.camera)) }
     )
 }
 
@@ -114,7 +118,7 @@ private fun ProfileImage(imageBitmap: MutableState<ImageBitmap?>) {
     val coroutineScope = rememberCoroutineScope()
     val galleryManager = rememberGalleryManager {
         coroutineScope.launch {
-            imageBitmap.value =  it?.toImageBitmap()
+            imageBitmap.value = it?.toImageBitmap()
         }
     }
 

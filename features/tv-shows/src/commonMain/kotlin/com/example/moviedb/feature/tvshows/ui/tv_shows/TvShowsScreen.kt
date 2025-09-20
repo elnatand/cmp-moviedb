@@ -16,7 +16,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.moviedb.core.model.Strings
+import com.example.moviedb.resources.Res
+import com.example.moviedb.resources.tv_shows
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -41,7 +43,7 @@ fun TvShowsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = Strings.tv_shows.get()) },
+                title = { Text(text = stringResource(Res.string.tv_shows)) },
             )
         }
     ) { paddingValues ->
