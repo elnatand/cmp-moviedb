@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @SerialName("tv_shows")
-data object TvShows
+data object TvShowsRoute
 
 @Serializable
 @SerialName("tv_show_details")
@@ -22,20 +22,14 @@ data class TvShowDetails(
     val title: String
 )
 
-
-const val tvShowsRoute = "/tv_shows"
-const val tvShowDetailsRoute = "/tv_show_details"
-const val TV_SHOW_ID = "tvShowId"
-const val TV_SHOW_TITLE = "tvShowTitle"
-
 fun NavHostController.navigateToTvShows(
     navOptions: NavOptions? = null
 ) {
-    navigate(TvShows, navOptions)
+    navigate(TvShowsRoute, navOptions)
 }
 
 fun NavGraphBuilder.tvShowsScene(navigator: NavHostController) {
-    composable<TvShows> {
+    composable<TvShowsRoute> {
         TvShowsRoute { tvShowId, tvShowTitle ->
             navigator.navigate(TvShowDetails(tvShowId, tvShowTitle))
         }

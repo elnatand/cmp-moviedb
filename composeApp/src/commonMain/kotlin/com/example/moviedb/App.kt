@@ -17,11 +17,7 @@ fun App() {
                 Scaffold(
                     bottomBar = {
                         if (appState.shouldShowBottomBar()) {
-                            NavigationBar(
-                                topLevelDestinations = appState.topLevelDestinations,
-                                currentDestination = appState.currentDestination,
-                                onClick = appState::navigateToTopLevelDestination
-                            )
+                            NavigationBar(appState = appState)
                         }
                     }
                 ) {
