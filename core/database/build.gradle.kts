@@ -20,32 +20,21 @@ sqldelight {
 
 kotlin {
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.sqldelight.coroutines.extensions)
-                implementation(libs.koin.core)
-                implementation(projects.core.model)
-            }
+        commonMain.dependencies {
+            implementation(libs.sqldelight.coroutines.extensions)
+            implementation(libs.koin.core)
+            implementation(projects.core.model)
         }
-        val androidMain by getting {
+
+        androidMain {
             dependencies {
                 implementation(libs.sqldelight.android.driver)
             }
         }
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+
+        iosMain {
             dependencies {
                 implementation(libs.sqldelight.native.driver)
-
-                /**
-                 *  see why need this dependency
-                 *  https://github.com/cashapp/sqldelight/issues/4888#issuecomment-1846036472
-                 */
-                implementation("co.touchlab:stately-common:2.0.6")
             }
         }
     }
