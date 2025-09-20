@@ -1,6 +1,8 @@
 package com.example.moviedb.feature.tvshows.ui.tv_shows
 
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,8 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.example.moviedb.core.data.tv_shows.TvShowsRepository
 import com.example.moviedb.core.model.TvShow
-import moe.tlaster.precompose.viewmodel.ViewModel
-import moe.tlaster.precompose.viewmodel.viewModelScope
+
 
 class TvShowsViewModel(
     private val tvShowsRepository: TvShowsRepository

@@ -6,19 +6,24 @@ plugins {
 
 group = "com.example.movidb.buildlogic"
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-}
+
 
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.plugins.composeMultiplatform.toDep())
+    compileOnly(libs.plugins.composeCompiler.toDep())
+}
+
+fun Provider<PluginDependency>.toDep() = map {
+    "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}"
+}
+
+tasks {
+    validatePlugins {
+        enableStricterValidation = true
+        failOnWarning = true
+    }
 }
 
 gradlePlugin {
@@ -26,6 +31,10 @@ gradlePlugin {
         register("kotlinMultiplatform") {
             id = "moviedb.kotlin.multiplatform"
             implementationClass = "KotlinMultiplatformConventionPlugin"
+        }
+        register("composeMultiplatform"){
+            id = "moviedb.kotlin.composeMultiplatform"
+            implementationClass = "ComposeMultiplatformConventionPlugin"
         }
         register("androidLibrary") {
             id = "moviedb.android.library"

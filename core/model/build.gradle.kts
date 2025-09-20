@@ -1,5 +1,6 @@
 plugins {
     id("moviedb.kotlin.multiplatform")
+    id("moviedb.kotlin.composeMultiplatform")
     alias(libs.plugins.kotlinxSerialization)
 }
 

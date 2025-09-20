@@ -3,19 +3,24 @@ package com.example.moviedb
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.util.trace
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navOptions
 import com.example.moviedb.feature.profile.navigation.navigateToProfile
 import com.example.moviedb.feature.tvshows.navigation.navigateToTvShows
 import com.example.moviedb.feature.movies.navigation.navigateToMovies
 import com.example.moviedb.navigation.TopLevelDestination
-import moe.tlaster.precompose.navigation.BackStackEntry
-import moe.tlaster.precompose.navigation.NavOptions
-import moe.tlaster.precompose.navigation.Navigator
-import moe.tlaster.precompose.navigation.rememberNavigator
+
 
 @Composable
 fun rememberAppState(
-    navController: Navigator = rememberNavigator(),
+    navController: NavHostController = rememberNavController()
 ): AppState {
     return remember(
         navController,
@@ -28,31 +33,59 @@ fun rememberAppState(
 
 @Stable
 class AppState(
-    private val navController: Navigator,
+    val navController: NavHostController,
 ) {
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.entries
     private val bottomBarRoutes = TopLevelDestination.entries.map { it.route }
-    private val navOptions = NavOptions(
-        // Launch the scene as single top
-        launchSingleTop = true,
-    )
 
-    val currentDestination: String?
-        @Composable   get() {
-            val backStackEntry = navController.currentEntry.collectAsState("").value as? BackStackEntry?
-            return backStackEntry?.route?.route
+    private val previousDestination = mutableStateOf<NavDestination?>(null)
+
+    val currentDestination: NavDestination?
+        @Composable get() {
+            // Collect the currentBackStackEntryFlow as a state
+            val currentEntry = navController.currentBackStackEntryFlow.collectAsState(initial = null)
+
+            // Fallback to previousDestination if currentEntry is null
+            return currentEntry.value?.destination.also { destination ->
+                if (destination != null) {
+                    previousDestination.value = destination
+                }
+            } ?: previousDestination.value
+        }
+
+    val currentTopLevelDestination: TopLevelDestination?
+        @Composable get() {
+            return TopLevelDestination.entries.firstOrNull { topLevelDestination ->
+                currentDestination?.hasRoute(route = topLevelDestination.route) == true
+            }
         }
 
     @Composable
     fun shouldShowBottomBar(): Boolean {
-        return currentDestination in bottomBarRoutes
+         return currentTopLevelDestination?.route in bottomBarRoutes
     }
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
-        when (topLevelDestination) {
-            TopLevelDestination.MOVIES -> navController.navigateToMovies(navOptions)
-            TopLevelDestination.TV_SHOWS -> navController.navigateToTvShows(navOptions)
-            TopLevelDestination.PROFILE -> navController.navigateToProfile(navOptions)
+        trace("Navigation: ${topLevelDestination.name}") {
+            val topLevelNavOptions = navOptions {
+                // Pop up to the start destination of the graph to
+                // avoid building up a large stack of destinations
+                // on the back stack as users select items
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+                // Avoid multiple copies of the same destination when
+                // reselecting the same item
+                launchSingleTop = true
+                // Restore state when reselecting a previously selected item
+                restoreState = true
+            }
+
+            when (topLevelDestination) {
+                TopLevelDestination.MOVIES -> navController.navigateToMovies(topLevelNavOptions)
+                TopLevelDestination.TV_SHOWS -> navController.navigateToTvShows(topLevelNavOptions)
+                TopLevelDestination.PROFILE -> navController.navigateToProfile(topLevelNavOptions)
+            }
         }
     }
 }

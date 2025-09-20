@@ -17,14 +17,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Strings
-import moe.tlaster.precompose.koin.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
 fun TvShowsRoute(
     onClick: (id: Int, title: String) -> Unit
 ) {
-    val viewModel = koinViewModel(TvShowsViewModel::class)
+    val viewModel = koinViewModel<TvShowsViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     TvShowsScreen(
         uiState = uiState,

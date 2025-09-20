@@ -1,7 +1,8 @@
 plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
-    alias(libs.plugins.jetbrainsCompose)
+    id("moviedb.kotlin.composeMultiplatform")
+    alias(libs.plugins.kotlinxSerialization) //because of the navigation key
 }
 
 //android section should be before kotlin section
@@ -18,9 +19,7 @@ kotlin {
 
             implementation(libs.koin.core)
 
-            implementation(libs.precompose)
-            implementation(libs.precompose.viewmodel) // For ViewModel intergration
-            implementation(libs.precompose.koin) // For Koin intergration
+            implementation(libs.navigation.compose)
         }
     }
 }

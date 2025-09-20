@@ -21,19 +21,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.model.Movie
-import moe.tlaster.precompose.koin.koinViewModel
 import com.example.moviedb.core.model.State
 import com.example.moviedb.core.model.Strings
 import com.example.moviedb.core.model.UiState
 import com.example.moviedb.core.ui.design_system.Loader
 import com.theapache64.rebugger.Rebugger
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
 fun MoviesRoute(
     onClick: (movieId: Int, title: String) -> Unit
 ) {
-    val viewModel = koinViewModel(MoviesViewModel::class)
+    val viewModel =  koinViewModel<MoviesViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     MoviesScreen(
         uiState = uiState,

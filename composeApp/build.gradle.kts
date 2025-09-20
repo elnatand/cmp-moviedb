@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     alias(libs.plugins.androidApplication)
     id("moviedb.kotlin.multiplatform")
-    alias(libs.plugins.jetbrainsCompose)
+    id("moviedb.kotlin.composeMultiplatform")
 }
 
 kotlin {
@@ -20,8 +20,7 @@ kotlin {
 
         androidMain {
             dependencies {
-                implementation(libs.compose.ui)
-                implementation(libs.compose.ui.tooling.preview)
+
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.koin.android)
             }
@@ -36,11 +35,9 @@ kotlin {
             implementation(projects.features.movies)
             implementation(projects.features.tvShows)
             implementation(projects.features.profile)
-
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-
-            implementation(libs.precompose)
+            implementation(libs.navigation.compose)
         }
     }
 }
@@ -74,7 +71,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-    dependencies {
-        debugImplementation(libs.compose.ui.tooling)
-    }
+//    dependencies {
+//        debugImplementation(libs.compose.ui.tooling)
+//    }
 }

@@ -1,7 +1,7 @@
 plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
-    alias(libs.plugins.jetbrainsCompose)
+    id("moviedb.kotlin.composeMultiplatform")
 }
 //android section should be before kotlin section
 android {
@@ -15,15 +15,10 @@ kotlin {
             implementation(libs.accompanist.permissions)
         }
         commonMain.dependencies {
-            api(compose.runtime)
-            api(compose.foundation)
-            api(compose.material)
-            api(compose.material3)
-            api(compose.materialIconsExtended)
-
             api(libs.kamel)
-
             api(libs.rebugger) //logs for recompositions
+            api(libs.koin.compose.viewmodel)
+            api(libs.koin.compose.navigation)
         }
     }
 }

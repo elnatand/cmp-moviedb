@@ -1,6 +1,7 @@
 plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
+    id("moviedb.kotlin.composeMultiplatform")
     alias(libs.plugins.sqldelight)
 }
 
