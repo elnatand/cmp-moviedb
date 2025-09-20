@@ -22,3 +22,9 @@ kotlin {
         }
     }
 }
+
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.example.moviedb.resources"
+    generateResClass = always
+}

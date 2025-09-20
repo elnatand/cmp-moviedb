@@ -1,0 +1,8 @@
+<resources>
+    <string name="movies">סרטים</string>
+    <string name="camera">מצלמה</string>
+    <string name="user_name">שם</string>
+    <string name="tv_shows">סדרות</string>
+    <string name="profile">פרופיל</string>
+    <string name="notifications">התראות</string>
+</resources>
