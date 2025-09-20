@@ -1,6 +1,6 @@
 *.iml
 .gradle
-.kotlin/
+.kotlin/d  fh
 /local.properties
 /.idea
 .DS_Store
