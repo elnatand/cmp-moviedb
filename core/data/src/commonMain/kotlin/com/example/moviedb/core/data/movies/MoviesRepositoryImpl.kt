@@ -1,12 +1,11 @@
 package com.example.moviedb.core.data.movies
 
-import com.example.moviedb.core.data.model.NetworkMovie
 import com.example.moviedb.core.data.model.asEntity
 import com.example.moviedb.core.data.movies.data_sources.MoviesLocalDataSource
 import com.example.moviedb.core.data.movies.data_sources.MoviesRemoteDataSource
-import com.example.moviedb.core.database.model.MovieEntity
-import com.example.moviedb.core.data.model.NetworkMovieDetails
+import com.example.moviedb.core.data.model.toDomain
 import com.example.moviedb.core.model.Movie
+import com.example.moviedb.core.model.MovieDetails
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -38,7 +37,9 @@ class MoviesRepositoryImpl(
         }
     }
 
-    override suspend fun getMovieDetails(movieId: Int): NetworkMovieDetails {
-        return moviesRemoteDataSource.getMovieDetails(movieId)
+    //TODO fetch from local data source
+    override suspend fun getMovieDetails(movieId: Int): MovieDetails {
+        return moviesRemoteDataSource.getMovieDetails(movieId).toDomain()
     }
 }
+

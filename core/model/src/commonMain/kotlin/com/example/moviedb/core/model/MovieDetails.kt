@@ -1,9 +1,9 @@
-package com.example.moviedb.core.database.model
+package com.example.moviedb.core.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MovieDetailsEntity(
+data class MovieDetails(
     val id: Int,
     val title: String,
     val overview: String,

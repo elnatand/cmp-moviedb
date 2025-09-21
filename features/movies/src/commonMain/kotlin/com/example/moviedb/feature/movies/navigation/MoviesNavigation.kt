@@ -17,7 +17,7 @@ data object MoviesRoute
 
 @Serializable
 @SerialName("movie_details")
-data class MovieDetails(
+data class MovieDetailsRoute(
     val movieId: Int,
     val title: String
 )
@@ -32,14 +32,14 @@ fun NavGraphBuilder.moviesScene(
 ) {
     composable<MoviesRoute> { entry ->
         MoviesRoute { movieId, title ->
-            navigator.navigate(MovieDetails(movieId, title))
+            navigator.navigate(MovieDetailsRoute(movieId, title))
         }
     }
 }
 
 fun NavGraphBuilder.movieDetailsScene(navigator: NavHostController) {
-    composable<MovieDetails> { entry ->
-        val params = entry.toRoute<MovieDetails>()
+    composable<MovieDetailsRoute> { entry ->
+        val params = entry.toRoute<MovieDetailsRoute>()
 
         val movieId: Int = params.movieId
         val title: String = params.title

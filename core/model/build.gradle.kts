@@ -9,10 +9,8 @@ kotlin {
     jvm()
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(libs.ktor.serialization.kotlinx.json)
-            }
+        commonMain.dependencies {
+            api(libs.ktor.serialization.kotlinx.json)
         }
     }
 }
