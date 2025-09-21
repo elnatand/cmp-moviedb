@@ -2,6 +2,7 @@ plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
     id("moviedb.kotlin.composeMultiplatform")
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 //android section should be before kotlin section
@@ -18,6 +19,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)

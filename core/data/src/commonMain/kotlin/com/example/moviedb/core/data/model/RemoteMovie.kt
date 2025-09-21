@@ -1,0 +1,17 @@
+package com.example.moviedb.core.data.model
+
+import com.example.moviedb.core.database.model.MovieEntity
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class NetworkMovie(
+    val id: Int,
+    val title: String,
+    val poster_path: String?,
+)
+
+fun NetworkMovie.asEntity() = MovieEntity(
+        id = id,
+        title = title,
+        poster_path = poster_path
+    )
