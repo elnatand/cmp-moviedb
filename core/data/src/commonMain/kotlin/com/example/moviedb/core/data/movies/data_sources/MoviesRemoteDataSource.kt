@@ -2,7 +2,7 @@ package com.example.moviedb.core.data.movies.data_sources
 
 import com.example.moviedb.core.data.model.API_KEY
 import com.example.moviedb.core.data.model.NetworkMovie
-import com.example.moviedb.core.data.model.NetworkMoviesPage
+import com.example.moviedb.core.data.model.RemoteMoviesPage
 import com.example.moviedb.core.data.model.TMDB_BASE_URL
 import com.example.moviedb.core.data.model.NetworkMovieDetails
 import io.ktor.client.HttpClient
@@ -19,7 +19,7 @@ class MoviesRemoteDataSource(
                     parameters.append("page", page.toString())
                 }
             }
-            .body<NetworkMoviesPage>()
+            .body<RemoteMoviesPage>()
         return moviesPages.results
     }
 
