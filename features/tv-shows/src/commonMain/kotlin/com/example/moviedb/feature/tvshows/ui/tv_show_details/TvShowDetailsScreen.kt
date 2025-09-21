@@ -1,6 +1,8 @@
 package com.example.moviedb.feature.tvshows.ui.tv_show_details
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -13,11 +15,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
 
 import org.koin.core.parameter.parametersOf
 import com.example.moviedb.core.ui.extansions.mirror
+import com.example.moviedb.core.ui.utils.ImageLoader
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -49,8 +50,7 @@ fun TvShowDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = { onBackPressed() }) {
                         Icon(
-                            modifier = Modifier.mirror(),
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -59,9 +59,9 @@ fun TvShowDetailsScreen(
         }
     ) {
         uiState.tvShowDetails?.let {
-            KamelImage(
-                resource = asyncPainterResource("$TMDB_IMAGE_URL${it.poster_path}"),
-                contentDescription = "",
+            ImageLoader(
+                imageUrl = "$TMDB_IMAGE_URL${it.poster_path}",
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

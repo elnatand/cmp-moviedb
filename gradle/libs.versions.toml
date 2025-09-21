@@ -1,19 +1,19 @@
-[versions]
-compose = "1.9.1"
-composeMultiplatform = "1.8.2"
-agp = "8.10.1"
+ [versions]
+
 android-minSdk = "24"
 android-compileSdk = "36"
 android-targetSdk = "36"
-androidx-activityCompose = "1.10.1"
+
+coilCompose = "3.3.0"
+kotlin = "2.2.20"
+composeMultiplatform = "1.9.0"
+agp = "8.13.0"
+androidx-activityCompose = "1.11.0"
 koin = "4.1.1"
-kotlin = "2.2.10"
-ktor = "2.3.9"
-kamel = "0.9.4"
+ktor = "3.3.0"
 navigationCompose = "2.9.0"
-rebugger = "1.0.1"
 sqldelight = "2.1.0"
-accompanist-permissions = "0.32.0"
+accompanist-permissions = "0.37.3"
 
 
 [plugins]
@@ -28,7 +28,8 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 [libraries]
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-kamel = { module = "media.kamel:kamel-image", version.ref = "kamel" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilCompose" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
@@ -41,7 +42,6 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "kto
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-rebugger = { module = "io.github.theapache64:rebugger", version.ref = "rebugger" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }

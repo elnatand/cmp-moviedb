@@ -15,10 +15,11 @@ kotlin {
             implementation(libs.accompanist.permissions)
         }
         commonMain.dependencies {
-            api(libs.kamel)
-            api(libs.rebugger) //logs for recompositions
             api(libs.koin.compose.viewmodel)
             api(libs.koin.compose.navigation)
+
+            api(libs.coil.compose)
+            api(libs.coil.ktor)
         }
     }
 }

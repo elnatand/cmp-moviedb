@@ -26,7 +26,6 @@ import com.example.moviedb.core.model.UiState
 import com.example.moviedb.core.ui.design_system.Loader
 import com.example.moviedb.resources.Res
 import com.example.moviedb.resources.movies
-import com.theapache64.rebugger.Rebugger
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -49,13 +48,6 @@ fun MoviesScreen(
     uiState: UiState<List<Movie>>,
     onClick: (Int, String) -> Unit
 ) {
-
-    Rebugger(
-        trackMap = mapOf(
-            "uiState" to uiState.data
-        ),
-    )
-
     Scaffold(
         topBar = {
             TopAppBar(
