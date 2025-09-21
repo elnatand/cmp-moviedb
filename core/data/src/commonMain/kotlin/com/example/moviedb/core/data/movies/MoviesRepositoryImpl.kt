@@ -1,11 +1,16 @@
 package com.example.moviedb.core.data.movies
 
+import com.example.moviedb.core.data.model.NetworkMovie
+import com.example.moviedb.core.data.model.asEntity
 import com.example.moviedb.core.data.movies.data_sources.MoviesLocalDataSource
 import com.example.moviedb.core.data.movies.data_sources.MoviesRemoteDataSource
+import com.example.moviedb.core.database.model.MovieEntity
+import com.example.moviedb.core.data.model.NetworkMovieDetails
 import com.example.moviedb.core.model.Movie
-import com.example.moviedb.core.model.MovieDetails
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlin.collections.map
 
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
@@ -16,13 +21,24 @@ class MoviesRepositoryImpl(
         val localMoviesPageStream = moviesLocalDataSource.getMoviesPage(page)
         if (localMoviesPageStream.first().isEmpty()) {
             val remoteMoviesPage = moviesRemoteDataSource.getMoviesPage(page)
-            moviesLocalDataSource.insertMoviesPage(movies = remoteMoviesPage, page = page)
+            moviesLocalDataSource.insertMoviesPage(
+                movies = remoteMoviesPage.map { it.asEntity() },
+                page = page
+            )
         }
 
-        return localMoviesPageStream
+        return localMoviesPageStream.map { list ->
+            list.map {
+                Movie(
+                    id = it.id,
+                    title = it.title,
+                    poster_path = it.poster_path
+                )
+            }
+        }
     }
 
-    override suspend fun getMovieDetails(movieId: Int): MovieDetails {
+    override suspend fun getMovieDetails(movieId: Int): NetworkMovieDetails {
         return moviesRemoteDataSource.getMovieDetails(movieId)
     }
 }

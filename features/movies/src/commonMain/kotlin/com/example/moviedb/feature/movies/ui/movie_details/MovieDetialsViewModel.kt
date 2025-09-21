@@ -4,7 +4,7 @@ package com.example.moviedb.feature.movies.ui.movie_details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
-import com.example.moviedb.core.model.MovieDetails
+import com.example.moviedb.core.data.model.NetworkMovieDetails
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,6 +36,6 @@ class MovieDetailsViewModel(
     }
 
     data class UiState(
-        val movieDetails: MovieDetails? = null
+        val movieDetails: NetworkMovieDetails? = null
     )
 }

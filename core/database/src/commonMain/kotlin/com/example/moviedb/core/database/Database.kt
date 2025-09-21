@@ -3,7 +3,7 @@ package com.example.moviedb.core.database
 import DatabaseDriverFactory
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import com.example.moviedb.core.model.Movie
+import com.example.moviedb.core.database.model.MovieEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -13,19 +13,19 @@ class Database(databaseDriverFactory: DatabaseDriverFactory) {
 
     private val database = MovieDbDatabase(databaseDriverFactory.createDriver())
 
-    fun getMoviesPage(page: Int): Flow<List<Movie>> = database.moviesQueries
+    fun getMoviesPage(page: Int): Flow<List<MovieEntity>> = database.moviesQueries
         .selectMovies(page.toLong())
         .asFlow()
         .mapToList(Dispatchers.IO)
         .map { list ->
             list.map {
-                Movie(
+                MovieEntity(
                     id = it.id.toInt(), title = it.title, poster_path = it.poster_path
                 )
             }
         }
 
-    fun insertMovie(movie: Movie, page: Int) {
+    fun insertMovie(movie: MovieEntity, page: Int) {
         database.moviesQueries.insert(
             id = movie.id.toLong(),
             title = movie.title,
