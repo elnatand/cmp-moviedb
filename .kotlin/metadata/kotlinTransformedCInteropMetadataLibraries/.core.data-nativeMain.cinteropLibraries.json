@@ -5,9 +5,14 @@
     "sourceSetName": "uikitMain"
   },
   {
-    "moduleId": "co.touchlab:sqliter-driver:1.3.3",
-    "file": "/Users/elnatan/StudioProjects/cmp-moviedb/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/co.touchlab-sqliter-driver-1.3.3-appleMain-cinterop/co.touchlab_sqliter-driver-cinterop-sqlite3-pnpooQ.klib",
-    "sourceSetName": "appleMain"
+    "moduleId": "androidx.sqlite:sqlite-bundled:2.6.0",
+    "file": "/Users/elnatan/StudioProjects/cmp-moviedb/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/androidx.sqlite-sqlite-bundled-2.6.0-nativeMain-cinterop/androidx.sqlite_sqlite-bundled-cinterop-androidXBundledSqlite-dCYVRw.klib",
+    "sourceSetName": "nativeMain"
+  },
+  {
+    "moduleId": "androidx.sqlite:sqlite-framework:2.6.0",
+    "file": "/Users/elnatan/StudioProjects/cmp-moviedb/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/androidx.sqlite-sqlite-framework-2.6.0-nativeMain-cinterop/androidx.sqlite_sqlite-framework-cinterop-sqlite3-5Ubkcg.klib",
+    "sourceSetName": "nativeMain"
   },
   {
     "moduleId": "io.ktor:ktor-utils:3.3.0",

@@ -10,7 +10,7 @@ The project follows Clean Architecture principles with a modular approach:
 - **Repository Pattern**: Data layer abstraction
 - **Dependency Injection**: Koin for DI across modules
 - **Compose Multiplatform**: Shared UI components
-- **SQLDelight**: Local database management
+- **Room Database**: Local database management
 
 ## 📱 Features
 
@@ -41,7 +41,7 @@ cmp-moviedb/
 │   │
 │   ├── database/                  # Local database
 │   │   └── src/
-│   │       ├── commonMain/        # SQLDelight database setup
+│   │       ├── commonMain/        # Room database setup
 │   │       ├── androidMain/       # Android database driver
 │   │       └── iosMain/           # iOS database driver
 │   │
@@ -99,7 +99,7 @@ cmp-moviedb/
 - **Kotlin Multiplatform Mobile (KMM)**
 - **Compose Multiplatform** - UI framework
 - **Koin** - Dependency injection
-- **SQLDelight** - Local database
+- **Room** - Local database
 - **Ktor** - Networking (implied from data layer)
 - **Kotlin Coroutines** - Asynchronous programming
 
@@ -143,7 +143,7 @@ cmp-moviedb/
 
 ### Core Modules
 - **core:data** - Repository implementations, data sources, and network setup
-- **core:database** - SQLDelight database configuration and platform drivers
+- **core:database** - Room database configuration and platform drivers
 - **core:model** - Shared data models and UI state definitions
 - **core:ui** - Common UI components and platform-specific utilities
 

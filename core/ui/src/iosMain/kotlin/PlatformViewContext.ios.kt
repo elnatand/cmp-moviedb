@@ -1,6 +1,7 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.ui.interop.LocalUIViewController
+import androidx.compose.ui.uikit.LocalUIViewController
+
 import platform.UIKit.UIViewController
 
 class IOSViewController(val iosController: ProvidableCompositionLocal<UIViewController>) : PlatformViewController

@@ -1,36 +1,37 @@
 package com.example.moviedb.core.database
 
-import DatabaseDriverFactory
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
+import androidx.room.ConstructedBy
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.example.moviedb.core.database.model.MovieEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
-class Database(databaseDriverFactory: DatabaseDriverFactory) {
 
-    private val database = MovieDbDatabase(databaseDriverFactory.createDriver())
-
-    fun getMoviesPage(page: Int): Flow<List<MovieEntity>> = database.moviesQueries
-        .selectMovies(page.toLong())
-        .asFlow()
-        .mapToList(Dispatchers.IO)
-        .map { list ->
-            list.map {
-                MovieEntity(
-                    id = it.id.toInt(), title = it.title, poster_path = it.poster_path
-                )
-            }
-        }
-
-    fun insertMovie(movie: MovieEntity, page: Int) {
-        database.moviesQueries.insert(
-            id = movie.id.toLong(),
-            title = movie.title,
-            poster_path = movie.poster_path,
-            page = page.toLong()
-        )
-    }
+@Database(entities = [MovieEntity::class], version = 1)
+@ConstructedBy(AppDatabaseConstructor::class)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun getMovieDao(): MovieDao
 }
+
+// The Room compiler generates the `actual` implementations.
+//@Suppress("KotlinNoActualForExpect")
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
+    override fun initialize(): AppDatabase
+}
+
+fun getRoomDatabase(
+    builder: RoomDatabase.Builder<AppDatabase>
+): AppDatabase {
+    return builder
+        .setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.IO)
+        .build()
+}
+
+fun getMovieDao(database: AppDatabase) = database.getMovieDao()
+
+

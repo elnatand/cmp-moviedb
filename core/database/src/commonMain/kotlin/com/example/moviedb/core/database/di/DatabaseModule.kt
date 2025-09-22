@@ -1,12 +1,13 @@
 package com.example.moviedb.core.database.di
-import DatabaseDriverFactory
-import com.example.moviedb.core.database.Database
+import com.example.moviedb.core.database.getMovieDao
+import com.example.moviedb.core.database.getRoomDatabase
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
+
+expect fun platformDatabaseModule(): Module
+
 val databaseModule = module {
-    single {
-        Database(
-            databaseDriverFactory = DatabaseDriverFactory()
-        )
-    }
+    single { getRoomDatabase(get()) }
+    single { getMovieDao(get()) }
 }

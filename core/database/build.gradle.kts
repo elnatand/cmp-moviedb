@@ -2,40 +2,40 @@ plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
     id("moviedb.kotlin.composeMultiplatform")
-    alias(libs.plugins.sqldelight)
+
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
-//android section should be before kotlin section
 android {
     namespace = "com.example.moviedb.core.database"
-}
-
-sqldelight {
-    databases {
-        create(name = "MovieDbDatabase") {
-            packageName.set("com.example.moviedb.core.database")
-        }
-    }
 }
 
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.sqldelight.coroutines.extensions)
             implementation(libs.koin.core)
             implementation(projects.core.model)
+
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
 
         androidMain {
             dependencies {
-                implementation(libs.sqldelight.android.driver)
-            }
-        }
-
-        iosMain {
-            dependencies {
-                implementation(libs.sqldelight.native.driver)
+                implementation(libs.androidx.room.sqlite.wrapper)
             }
         }
     }
+}
+
+dependencies{
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+   // add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
