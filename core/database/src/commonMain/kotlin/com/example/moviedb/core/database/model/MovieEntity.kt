@@ -1,8 +1,11 @@
 package com.example.moviedb.core.database.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity
 data class MovieEntity(
-    val id: Int,
+    @PrimaryKey val id: Int,
     val title: String,
     val poster_path: String?,
 )

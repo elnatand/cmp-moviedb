@@ -1,20 +1,20 @@
 package com.example.moviedb.core.data.movies.data_sources
 
-import com.example.moviedb.core.database.Database
-import com.example.moviedb.core.database.model.MovieEntity
 
+import com.example.moviedb.core.database.MovieDao
+import com.example.moviedb.core.database.model.MovieEntity
 import kotlinx.coroutines.flow.Flow
 
 class MoviesLocalDataSource(
-    private val database: Database
+    private val movieDao: MovieDao
 ) {
     fun getMoviesPage(page: Int): Flow<List<MovieEntity>> {
-        return database.getMoviesPage(page)
+        return movieDao.getAllAsFlow()
     }
 
-    fun insertMoviesPage(movies: List<MovieEntity>, page: Int) {
+   suspend fun insertMoviesPage(movies: List<MovieEntity>, page: Int) {
         movies.forEach {
-            database.insertMovie(movie = it, page = page)
+            movieDao.insert(it)
         }
     }
 }
