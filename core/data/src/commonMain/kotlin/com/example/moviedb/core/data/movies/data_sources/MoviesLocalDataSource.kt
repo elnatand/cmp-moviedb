@@ -9,12 +9,16 @@ class MoviesLocalDataSource(
     private val movieDao: MovieDao
 ) {
     fun getMoviesPage(page: Int): Flow<List<MovieEntity>> {
-        return movieDao.getAllAsFlow()
+        return movieDao.getMoviesByPageAsFlow(page)
+    }
+    fun getAllMovies(): Flow<List<MovieEntity>> {
+        return movieDao.getAllMoviesAsFlow()
     }
 
-   suspend fun insertMoviesPage(movies: List<MovieEntity>, page: Int) {
+
+   suspend fun insertMoviesPage(movies: List<MovieEntity>) {
         movies.forEach {
-            movieDao.insert(it)
+            movieDao.insertMovie(it)
         }
     }
 }

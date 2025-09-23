@@ -1,43 +1,54 @@
 package com.example.moviedb.feature.movies.ui.movies
 
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
-import com.example.moviedb.core.model.Movie
+import com.example.moviedb.feature.movies.model.MoviesUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.example.moviedb.core.model.State
-import com.example.moviedb.core.model.UiState
 
 class MoviesViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState<List<Movie>>())
+    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.LOADING))
     val uiState = _uiState.asStateFlow()
 
-    private val page = 1
-
     init {
-        getMovies()
+        loadMovies()
     }
 
-    private fun getMovies() {
+    private fun loadMovies() {
+        val initialPage = 1
         viewModelScope.launch(Dispatchers.IO) {
-             moviesRepository.observeMoviesPage(page).collect{ movies->
-                _uiState.update {
-                    it.copy(
-                        state = State.SUCCESS,
-                        data = movies
+            moviesRepository.observeAllMovies(initialPage).collect { movies ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        state = MoviesUiState.State.SUCCESS,
+                        movies = movies
                     )
                 }
             }
+        }
+    }
+
+    fun loadNextPage() {
+        _uiState.update { state ->
+            state.copy(
+                state = MoviesUiState.State.LOADING,
+                currentPage = state.currentPage + 1
+            )
+        }
+
+        val nextPage = _uiState.value.currentPage
+
+        viewModelScope.launch(Dispatchers.IO) {
+            moviesRepository.loadPage(nextPage)
         }
     }
 }

@@ -1,7 +1,6 @@
-package com.example.moviedb.core.data.model
+package com.example.moviedb.core.data.model.tv_shows
 
 
-import com.example.moviedb.core.model.MovieDetails
 import kotlinx.serialization.Serializable
 
 @Serializable

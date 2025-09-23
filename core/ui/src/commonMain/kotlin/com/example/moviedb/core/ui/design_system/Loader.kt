@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Loader(
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     CircularProgressIndicator(
         modifier = modifier.width(40.dp),

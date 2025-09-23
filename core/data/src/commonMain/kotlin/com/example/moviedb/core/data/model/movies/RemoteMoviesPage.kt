@@ -1,4 +1,4 @@
-package com.example.moviedb.core.data.model
+package com.example.moviedb.core.data.model.movies
 
 import kotlinx.serialization.Serializable
 

@@ -1,6 +1,6 @@
 package com.example.moviedb.core.data.tv_shows
 
-import com.example.moviedb.core.data.model.toDomain
+import com.example.moviedb.core.data.model.tv_shows.toDomain
 import com.example.moviedb.core.data.tv_shows.data_sources.TvShowsRemoteDataSource
 import com.example.moviedb.core.model.TvShow
 import com.example.moviedb.core.model.TvShowDetails

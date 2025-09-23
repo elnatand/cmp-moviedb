@@ -6,5 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface MoviesRepository {
     suspend fun observeMoviesPage(page: Int): Flow<List<Movie>>
+
+   suspend fun observeAllMovies(initialPage: Int): Flow<List<Movie>>
     suspend fun getMovieDetails(movieId: Int): MovieDetails
+    suspend fun loadPage(page: Int)
 }
