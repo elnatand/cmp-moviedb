@@ -1,11 +1,10 @@
 package com.example.moviedb.core.data.tv_shows.data_sources
 
 import com.example.moviedb.core.data.model.API_KEY
-import com.example.moviedb.core.data.model.NetworkTvShow
-import com.example.moviedb.core.data.model.RemoteTvShowDetails
-import com.example.moviedb.core.data.model.RemoteTvShowsPage
+import com.example.moviedb.core.data.model.tv_shows.NetworkTvShow
+import com.example.moviedb.core.data.model.tv_shows.RemoteTvShowDetails
+import com.example.moviedb.core.data.model.tv_shows.RemoteTvShowsPage
 import com.example.moviedb.core.data.model.TMDB_BASE_URL
-import com.example.moviedb.core.model.TvShowDetails
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

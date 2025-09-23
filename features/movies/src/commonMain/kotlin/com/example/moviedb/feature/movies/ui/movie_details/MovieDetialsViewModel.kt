@@ -4,7 +4,6 @@ package com.example.moviedb.feature.movies.ui.movie_details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
-import com.example.moviedb.core.data.model.NetworkMovieDetails
 import com.example.moviedb.core.model.MovieDetails
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

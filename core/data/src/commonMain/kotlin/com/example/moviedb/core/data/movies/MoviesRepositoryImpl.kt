@@ -1,9 +1,9 @@
 package com.example.moviedb.core.data.movies
 
-import com.example.moviedb.core.data.model.asEntity
+import com.example.moviedb.core.data.model.movies.asEntity
 import com.example.moviedb.core.data.movies.data_sources.MoviesLocalDataSource
 import com.example.moviedb.core.data.movies.data_sources.MoviesRemoteDataSource
-import com.example.moviedb.core.data.model.toDomain
+import com.example.moviedb.core.data.model.movies.toDomain
 import com.example.moviedb.core.model.Movie
 import com.example.moviedb.core.model.MovieDetails
 import kotlinx.coroutines.flow.Flow

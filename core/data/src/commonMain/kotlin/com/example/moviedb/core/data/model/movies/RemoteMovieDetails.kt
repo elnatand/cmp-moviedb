@@ -1,21 +1,20 @@
-package com.example.moviedb.core.data.model
+package com.example.moviedb.core.data.model.movies
 
-
-import com.example.moviedb.core.model.TvShowDetails
+import com.example.moviedb.core.model.MovieDetails
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RemoteTvShowDetails(
+data class NetworkMovieDetails(
     val id: Int,
-    val name: String,
+    val title: String,
     val overview: String,
     val poster_path: String,
     val backdrop_path: String?
 )
 
-fun RemoteTvShowDetails.toDomain() = TvShowDetails(
+fun NetworkMovieDetails.toDomain(): MovieDetails = MovieDetails(
     id = id,
-    name = name,
+    title = title,
     overview = overview,
     poster_path = poster_path,
     backdrop_path = backdrop_path
