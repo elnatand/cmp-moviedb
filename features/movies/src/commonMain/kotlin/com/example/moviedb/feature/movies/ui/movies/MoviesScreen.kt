@@ -10,8 +10,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,6 +29,7 @@ import com.example.moviedb.feature.movies.model.MoviesUiState
 import com.example.moviedb.resources.Res
 import com.example.moviedb.resources.movies
 import com.example.moviedb.resources.network_error
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -54,6 +56,10 @@ fun MoviesScreen(
     onClick: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,7 +71,7 @@ fun MoviesScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            if (uiState.movies.isNotEmpty()){
+            if (uiState.movies.isNotEmpty()) {
                 MoviesList(
                     uiState = uiState,
                     onClick = onClick,
@@ -77,21 +83,24 @@ fun MoviesScreen(
                 Loader()
             }
 
-            if (uiState.state == MoviesUiState.State.ERROR) {
-                ErrorState()
+            // Show error as SnackBar
+            LaunchedEffect(uiState.state) {
+                if (uiState.state == MoviesUiState.State.ERROR) {
+                    println("Showing SnackBar for error state")
+                    snackbarHostState.showSnackbar(
+                        message = getString(Res.string.network_error)
+                    )
+                }
             }
+
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }
 
-@Composable
-private fun ErrorState() {
-    Text(
-        text = stringResource(Res.string.network_error),
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.error
-    )
-}
 
 @Composable
 private fun MoviesList(

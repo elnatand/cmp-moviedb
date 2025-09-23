@@ -7,6 +7,7 @@ import com.example.moviedb.core.data.movies.MoviesRepository
 import com.example.moviedb.feature.movies.model.MoviesUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,6 +32,12 @@ class MoviesViewModel(
                     currentState.copy(
                         state = MoviesUiState.State.SUCCESS,
                         movies = movies
+                    )
+                }
+                delay(3000)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        state = MoviesUiState.State.ERROR,
                     )
                 }
             }
