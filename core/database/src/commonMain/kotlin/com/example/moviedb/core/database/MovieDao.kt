@@ -11,7 +11,7 @@ interface MovieDao {
     @Insert
     suspend fun insertMovie(item: MovieEntity)
 
-    @Query("SELECT * FROM MovieEntity WHERE page = :page ORDER BY id")
+    @Query("SELECT * FROM MovieEntity WHERE page = :page ORDER BY timestamp")
     fun getMoviesByPageAsFlow(page: Int): Flow<List<MovieEntity>>
 
     @Query("SELECT * FROM MovieEntity ORDER BY timestamp")

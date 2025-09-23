@@ -59,7 +59,6 @@ class MoviesRepositoryImpl(
         val remoteMoviesPage = moviesRemoteDataSource.getMoviesPage(page)
         moviesLocalDataSource.insertMoviesPage(
             movies = remoteMoviesPage.map { it.asEntity(page) },
-            page = page
         )
     }
 }

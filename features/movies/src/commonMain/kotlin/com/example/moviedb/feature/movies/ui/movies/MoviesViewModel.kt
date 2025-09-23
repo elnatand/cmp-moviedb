@@ -26,9 +26,9 @@ class MoviesViewModel(
 
 
     private fun loadMovies() {
-        val currentPage = _uiState.value.currentPage
+        val initialPage = 1
         viewModelScope.launch(Dispatchers.IO) {
-            moviesRepository.observeAllMovies(currentPage).collect { movies ->
+            moviesRepository.observeAllMovies(initialPage).collect { movies ->
                 _uiState.update { currentState ->
                     currentState.copy(
                         state = MoviesUiState.State.Success(movies),

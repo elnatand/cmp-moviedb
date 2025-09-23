@@ -16,7 +16,7 @@ class MoviesLocalDataSource(
     }
 
 
-   suspend fun insertMoviesPage(movies: List<MovieEntity>, page: Int) {
+   suspend fun insertMoviesPage(movies: List<MovieEntity>) {
         movies.forEach {
             println("inserted movie id = ${it.id} ${it.title}")
             movieDao.insertMovie(it)
