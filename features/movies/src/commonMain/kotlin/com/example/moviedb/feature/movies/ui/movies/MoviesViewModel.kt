@@ -4,7 +4,6 @@ package com.example.moviedb.feature.movies.ui.movies
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
-import com.example.moviedb.core.model.State
 import com.example.moviedb.feature.movies.model.MoviesUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -17,13 +16,12 @@ class MoviesViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.Loading))
+    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.LOADING))
     val uiState = _uiState.asStateFlow()
 
     init {
         loadMovies()
     }
-
 
     private fun loadMovies() {
         val initialPage = 1
@@ -31,8 +29,8 @@ class MoviesViewModel(
             moviesRepository.observeAllMovies(initialPage).collect { movies ->
                 _uiState.update { currentState ->
                     currentState.copy(
-                        state = MoviesUiState.State.Success(movies),
-                        hasMorePages = movies.isNotEmpty()
+                        state = MoviesUiState.State.SUCCESS,
+                        movies = movies
                     )
                 }
             }
@@ -40,12 +38,9 @@ class MoviesViewModel(
     }
 
     fun loadNextPage() {
-        val currentState = _uiState.value
-        if ( !currentState.hasMorePages) return
-
         _uiState.update { state ->
             state.copy(
-                state = MoviesUiState.State.Loading,
+                state = MoviesUiState.State.LOADING,
                 currentPage = state.currentPage + 1
             )
         }

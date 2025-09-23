@@ -5,12 +5,10 @@ import com.example.moviedb.core.model.Movie
 data class MoviesUiState(
     val state: State,
     val currentPage: Int = 1,
-    val hasMorePages: Boolean = true
+    val movies: List<Movie> = emptyList(),
 ) {
-    sealed interface State {
-        data object Loading : State
-        data object Error : State
-        data class Success(val movies: List<Movie>) : State
+    enum class State {
+        LOADING, ERROR, SUCCESS
     }
 }
 

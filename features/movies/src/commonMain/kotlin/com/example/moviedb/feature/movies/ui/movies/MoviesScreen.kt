@@ -6,13 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -45,8 +42,7 @@ fun MoviesRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     MoviesScreen(
-        state = uiState.state,
-        hasMorePages = uiState.hasMorePages,
+        uiState = uiState,
         onClick = onClick,
         onLoadNextPage = viewModel::loadNextPage
     )
@@ -56,8 +52,7 @@ fun MoviesRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesScreen(
-    state: MoviesUiState.State,
-    hasMorePages: Boolean,
+    uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit
 ) {
@@ -72,15 +67,20 @@ fun MoviesScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            when (state) {
-                MoviesUiState.State.Loading -> Loader()
-                MoviesUiState.State.Error -> ErrorState()
-                is MoviesUiState.State.Success -> SuccessState(
-                    movies = state.movies,
-                    hasMorePages = hasMorePages,
+            if (uiState.movies.isNotEmpty()) {
+                SuccessState(
+                    movies = uiState.movies,
                     onClick = onClick,
                     onLoadNextPage = onLoadNextPage
                 )
+            }
+
+            if (uiState.state == MoviesUiState.State.LOADING) {
+                Loader()
+            }
+
+            if (uiState.state == MoviesUiState.State.ERROR) {
+                ErrorState()
             }
         }
     }
@@ -98,7 +98,6 @@ private fun ErrorState() {
 @Composable
 private fun SuccessState(
     movies: List<Movie>,
-    hasMorePages: Boolean,
     onClick: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit
 ) {
@@ -114,15 +113,12 @@ private fun SuccessState(
                 val totalItemsNumber = layoutInfo.totalItemsCount
                 val lastVisibleItemIndex =
                     (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1
-                println("lastVisibleItemIndex = ${lastVisibleItemIndex}")
-                println("totalItemsNumber = ${totalItemsNumber}")
-                lastVisibleItemIndex + 1 > (totalItemsNumber) && hasMorePages
+                lastVisibleItemIndex + 6 > totalItemsNumber
             }
         }
 
         LaunchedEffect(shouldLoadMore) {
             if (shouldLoadMore) {
-                println("shouldLoadMore")
                 onLoadNextPage()
             }
         }

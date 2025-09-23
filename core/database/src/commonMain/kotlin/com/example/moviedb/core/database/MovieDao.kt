@@ -2,13 +2,14 @@ package com.example.moviedb.core.database
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.moviedb.core.database.model.MovieEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovie(item: MovieEntity)
 
     @Query("SELECT * FROM MovieEntity WHERE page = :page ORDER BY timestamp")
