@@ -5,4 +5,5 @@
     <string name="tv_shows">סדרות</string>
     <string name="profile">פרופיל</string>
     <string name="notifications">התראות</string>
+    <string name="network_error">אירעה שגיאה, נסה שוב</string>
 </resources>

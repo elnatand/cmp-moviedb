@@ -30,7 +30,8 @@ class MoviesViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             moviesRepository.observeMoviesPage(page).collect { movies ->
                 _uiState.update {
-                    it.copy(MoviesUiState.State.Success(movies))
+                    it.copy(MoviesUiState.State.Error)
+                   // it.copy(MoviesUiState.State.Success(movies))
                 }
             }
         }

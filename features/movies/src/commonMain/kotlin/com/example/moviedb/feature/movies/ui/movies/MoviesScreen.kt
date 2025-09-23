@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -20,11 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moviedb.core.model.Movie
-import com.example.moviedb.core.model.State
 import com.example.moviedb.core.ui.design_system.Loader
 import com.example.moviedb.feature.movies.model.MoviesUiState
 import com.example.moviedb.resources.Res
 import com.example.moviedb.resources.movies
+import com.example.moviedb.resources.network_error
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -71,7 +72,11 @@ fun MoviesScreen(
 
 @Composable
 private fun ErrorState() {
-
+    Text(
+        text = stringResource(Res.string.network_error),
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.error
+    )
 }
 
 @Composable
