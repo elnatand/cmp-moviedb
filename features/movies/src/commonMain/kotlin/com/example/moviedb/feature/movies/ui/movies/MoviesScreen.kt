@@ -1,7 +1,6 @@
 package com.example.moviedb.feature.movies.ui.movies
 
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -66,12 +65,13 @@ fun MoviesScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            MoviesList(
-                uiState = uiState,
-                onClick = onClick,
-                onLoadNextPage = onLoadNextPage
-            )
-
+            if (uiState.movies.isNotEmpty()){
+                MoviesList(
+                    uiState = uiState,
+                    onClick = onClick,
+                    onLoadNextPage = onLoadNextPage
+                )
+            }
 
             if (uiState.state == MoviesUiState.State.LOADING) {
                 Loader()
@@ -99,41 +99,38 @@ private fun MoviesList(
     onClick: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit
 ) {
-    AnimatedVisibility(
-        visible = uiState.movies.isNotEmpty(),
-    ) {
-        val gridState = rememberLazyGridState()
 
-        // Detect when user reaches the bottom
-        val shouldLoadMore by remember {
-            derivedStateOf {
-                val layoutInfo = gridState.layoutInfo
-                val totalItemsNumber = layoutInfo.totalItemsCount
-                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-                (lastVisibleItemIndex + 6 > totalItemsNumber) && uiState.state != MoviesUiState.State.LOADING
-            }
+    val gridState = rememberLazyGridState()
+
+    // Detect when user reaches the bottom
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val layoutInfo = gridState.layoutInfo
+            val totalItemsNumber = layoutInfo.totalItemsCount
+            val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            (lastVisibleItemIndex + 6 > totalItemsNumber) && uiState.state != MoviesUiState.State.LOADING
         }
-
-        LaunchedEffect(shouldLoadMore) {
-            if (shouldLoadMore) {
-                onLoadNextPage()
-            }
-        }
-
-        LazyVerticalGrid(
-            state = gridState,
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            verticalArrangement = Arrangement.spacedBy(5.dp),
-            modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
-            content = {
-                items(uiState.movies) {
-                    MovieCell(
-                        movie = it,
-                        onClick = onClick
-                    )
-                }
-            }
-        )
     }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
+            onLoadNextPage()
+        }
+    }
+
+    LazyVerticalGrid(
+        state = gridState,
+        columns = GridCells.Fixed(2),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
+        modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
+        content = {
+            items(uiState.movies) {
+                MovieCell(
+                    movie = it,
+                    onClick = onClick
+                )
+            }
+        }
+    )
 }
