@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.moviedb.core.model.Movie
 import com.example.moviedb.core.ui.design_system.Loader
 import com.example.moviedb.feature.movies.model.MoviesUiState
 import com.example.moviedb.resources.Res
@@ -67,13 +66,12 @@ fun MoviesScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            if (uiState.movies.isNotEmpty()) {
-                SuccessState(
-                    movies = uiState.movies,
-                    onClick = onClick,
-                    onLoadNextPage = onLoadNextPage
-                )
-            }
+            MoviesList(
+                uiState = uiState,
+                onClick = onClick,
+                onLoadNextPage = onLoadNextPage
+            )
+
 
             if (uiState.state == MoviesUiState.State.LOADING) {
                 Loader()
@@ -96,13 +94,13 @@ private fun ErrorState() {
 }
 
 @Composable
-private fun SuccessState(
-    movies: List<Movie>,
+private fun MoviesList(
+    uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit
 ) {
     AnimatedVisibility(
-        visible = movies.isNotEmpty(),
+        visible = uiState.movies.isNotEmpty(),
     ) {
         val gridState = rememberLazyGridState()
 
@@ -111,9 +109,8 @@ private fun SuccessState(
             derivedStateOf {
                 val layoutInfo = gridState.layoutInfo
                 val totalItemsNumber = layoutInfo.totalItemsCount
-                val lastVisibleItemIndex =
-                    (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1
-                lastVisibleItemIndex + 6 > totalItemsNumber
+                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                (lastVisibleItemIndex + 6 > totalItemsNumber) && uiState.state != MoviesUiState.State.LOADING
             }
         }
 
@@ -130,7 +127,7 @@ private fun SuccessState(
             verticalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
             content = {
-                items(movies) {
+                items(uiState.movies) {
                     MovieCell(
                         movie = it,
                         onClick = onClick
