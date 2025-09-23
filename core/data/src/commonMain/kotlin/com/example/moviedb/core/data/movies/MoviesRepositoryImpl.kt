@@ -19,11 +19,24 @@ class MoviesRepositoryImpl(
     override suspend fun observeMoviesPage(page: Int): Flow<List<Movie>> {
         val localMoviesPageStream = moviesLocalDataSource.getMoviesPage(page)
         if (localMoviesPageStream.first().isEmpty()) {
-            val remoteMoviesPage = moviesRemoteDataSource.getMoviesPage(page)
-            moviesLocalDataSource.insertMoviesPage(
-                movies = remoteMoviesPage.map { it.asEntity(page) },
-                page = page
-            )
+            loadPage(page)
+        }
+
+        return localMoviesPageStream.map { list ->
+            list.map {
+                Movie(
+                    id = it.id,
+                    title = it.title,
+                    poster_path = it.poster_path
+                )
+            }
+        }
+    }
+
+    override suspend fun observeAllMovies(initialPage: Int): Flow<List<Movie>> {
+        val localMoviesPageStream = moviesLocalDataSource.getAllMovies()
+        if (localMoviesPageStream.first().isEmpty()) {
+            loadPage(initialPage)
         }
 
         return localMoviesPageStream.map { list ->
@@ -40,6 +53,14 @@ class MoviesRepositoryImpl(
     //TODO fetch from local data source
     override suspend fun getMovieDetails(movieId: Int): MovieDetails {
         return moviesRemoteDataSource.getMovieDetails(movieId).toDomain()
+    }
+
+    override suspend fun loadPage(page: Int) {
+        val remoteMoviesPage = moviesRemoteDataSource.getMoviesPage(page)
+        moviesLocalDataSource.insertMoviesPage(
+            movies = remoteMoviesPage.map { it.asEntity(page) },
+            page = page
+        )
     }
 }
 

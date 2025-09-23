@@ -20,20 +20,40 @@ class MoviesViewModel(
     private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.Loading))
     val uiState = _uiState.asStateFlow()
 
-    private val page = 1
-
     init {
-        getMovies()
+        loadMovies()
     }
 
-    private fun getMovies() {
+
+    private fun loadMovies() {
+        val currentPage = _uiState.value.currentPage
         viewModelScope.launch(Dispatchers.IO) {
-            moviesRepository.observeMoviesPage(page).collect { movies ->
-                _uiState.update {
-                    it.copy(MoviesUiState.State.Error)
-                   // it.copy(MoviesUiState.State.Success(movies))
+            moviesRepository.observeAllMovies(currentPage).collect { movies ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        state = MoviesUiState.State.Success(movies),
+                        hasMorePages = movies.isNotEmpty()
+                    )
                 }
             }
+        }
+    }
+
+    fun loadNextPage() {
+        val currentState = _uiState.value
+        if ( !currentState.hasMorePages) return
+
+        _uiState.update { state ->
+            state.copy(
+                state = MoviesUiState.State.Loading,
+                currentPage = state.currentPage + 1
+            )
+        }
+
+        val nextPage = _uiState.value.currentPage
+
+        viewModelScope.launch(Dispatchers.IO) {
+            moviesRepository.loadPage(nextPage)
         }
     }
 }

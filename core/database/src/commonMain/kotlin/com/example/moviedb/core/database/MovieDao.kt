@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MovieDao {
     @Insert
-    suspend fun insert(item: MovieEntity)
+    suspend fun insertMovie(item: MovieEntity)
 
-    @Query("SELECT count(*) FROM MovieEntity")
-    suspend fun count(): Int
+    @Query("SELECT * FROM MovieEntity WHERE page = :page ORDER BY id")
+    fun getMoviesByPageAsFlow(page: Int): Flow<List<MovieEntity>>
 
-    @Query("SELECT * FROM MovieEntity")
-    fun getAllAsFlow(): Flow<List<MovieEntity>>
+    @Query("SELECT * FROM MovieEntity ORDER BY timestamp")
+    fun getAllMoviesAsFlow(): Flow<List<MovieEntity>>
 }
