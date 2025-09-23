@@ -56,11 +56,11 @@ fun MoviesScreen(
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
             when (uiState.state) {
-                State.LOADING -> Loader(modifier = Modifier.padding(paddingValues))
+                State.LOADING -> Loader()
                 State.ERROR -> ErrorState()
                 State.SUCCESS -> uiState.data?.let {
                     SuccessState(it, onClick)
