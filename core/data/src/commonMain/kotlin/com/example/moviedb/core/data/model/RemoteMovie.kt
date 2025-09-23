@@ -10,8 +10,9 @@ data class NetworkMovie(
     val poster_path: String?,
 )
 
-fun NetworkMovie.asEntity() = MovieEntity(
-        id = id,
-        title = title,
-        poster_path = poster_path
-    )
+fun NetworkMovie.asEntity(page: Int) = MovieEntity(
+    id = id,
+    page = page,
+    title = title,
+    poster_path = poster_path
+)

@@ -21,7 +21,7 @@ class MoviesRepositoryImpl(
         if (localMoviesPageStream.first().isEmpty()) {
             val remoteMoviesPage = moviesRemoteDataSource.getMoviesPage(page)
             moviesLocalDataSource.insertMoviesPage(
-                movies = remoteMoviesPage.map { it.asEntity() },
+                movies = remoteMoviesPage.map { it.asEntity(page) },
                 page = page
             )
         }
