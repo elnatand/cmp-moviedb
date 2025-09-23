@@ -58,8 +58,6 @@ fun MoviesScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-
-
     Scaffold(
         topBar = {
             TopAppBar(
