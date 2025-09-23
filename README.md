@@ -173,3 +173,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - Handle dispatchers
 - Move API KEYS
+- Movie and TV Show details
