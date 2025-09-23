@@ -168,3 +168,8 @@ The project uses Gradle version catalogs and custom convention plugins for depen
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## TODOs
+
+- Handle dispatchers
+- Move API KEYS
