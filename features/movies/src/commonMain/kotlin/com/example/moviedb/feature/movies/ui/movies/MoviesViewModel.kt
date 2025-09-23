@@ -1,25 +1,23 @@
 package com.example.moviedb.feature.movies.ui.movies
 
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
-import com.example.moviedb.core.model.Movie
+import com.example.moviedb.core.model.State
+import com.example.moviedb.feature.movies.model.MoviesUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.example.moviedb.core.model.State
-import com.example.moviedb.core.model.UiState
 
 class MoviesViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState<List<Movie>>())
+    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.Loading))
     val uiState = _uiState.asStateFlow()
 
     private val page = 1
@@ -30,12 +28,9 @@ class MoviesViewModel(
 
     private fun getMovies() {
         viewModelScope.launch(Dispatchers.IO) {
-             moviesRepository.observeMoviesPage(page).collect{ movies->
+            moviesRepository.observeMoviesPage(page).collect { movies ->
                 _uiState.update {
-                    it.copy(
-                        state = State.SUCCESS,
-                        data = movies
-                    )
+                    it.copy(MoviesUiState.State.Success(movies))
                 }
             }
         }

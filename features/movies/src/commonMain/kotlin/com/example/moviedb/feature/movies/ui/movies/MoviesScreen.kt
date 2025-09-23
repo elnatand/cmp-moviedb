@@ -4,7 +4,6 @@ package com.example.moviedb.feature.movies.ui.movies
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -15,15 +14,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.moviedb.core.model.Movie
 import com.example.moviedb.core.model.State
-import com.example.moviedb.core.model.UiState
 import com.example.moviedb.core.ui.design_system.Loader
+import com.example.moviedb.feature.movies.model.MoviesUiState
 import com.example.moviedb.resources.Res
 import com.example.moviedb.resources.movies
 import org.jetbrains.compose.resources.stringResource
@@ -35,17 +34,19 @@ fun MoviesRoute(
     onClick: (movieId: Int, title: String) -> Unit
 ) {
     val viewModel = koinViewModel<MoviesViewModel>()
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     MoviesScreen(
-        uiState = uiState,
+        state = uiState.state,
         onClick = onClick
     )
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesScreen(
-    uiState: UiState<List<Movie>>,
+    state: MoviesUiState.State,
     onClick: (Int, String) -> Unit
 ) {
     Scaffold(
@@ -59,12 +60,10 @@ fun MoviesScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            when (uiState.state) {
-                State.LOADING -> Loader()
-                State.ERROR -> ErrorState()
-                State.SUCCESS -> uiState.data?.let {
-                    SuccessState(it, onClick)
-                } ?: ErrorState()
+            when (state) {
+                MoviesUiState.State.Loading -> Loader()
+                MoviesUiState.State.Error -> ErrorState()
+                is MoviesUiState.State.Success -> SuccessState(state.movies, onClick)
             }
         }
     }
