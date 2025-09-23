@@ -34,7 +34,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun MoviesRoute(
     onClick: (movieId: Int, title: String) -> Unit
 ) {
-    val viewModel =  koinViewModel<MoviesViewModel>()
+    val viewModel = koinViewModel<MoviesViewModel>()
     val uiState by viewModel.uiState.collectAsState()
     MoviesScreen(
         uiState = uiState,
@@ -60,17 +60,11 @@ fun MoviesScreen(
             contentAlignment = Alignment.Center
         ) {
             when (uiState.state) {
-                State.LOADING -> {
-                    Loader(modifier = Modifier.padding(paddingValues))
-                }
-
-                State.SUCCESS -> {
-                    uiState.data?.let {
-                        SuccessState(it, paddingValues, onClick)
-                    } ?: ErrorState()
-                }
-
+                State.LOADING -> Loader(modifier = Modifier.padding(paddingValues))
                 State.ERROR -> ErrorState()
+                State.SUCCESS -> uiState.data?.let {
+                    SuccessState(it, onClick)
+                } ?: ErrorState()
             }
         }
     }
@@ -84,12 +78,10 @@ private fun ErrorState() {
 @Composable
 private fun SuccessState(
     movies: List<Movie>,
-    paddingValues: PaddingValues,
     onClick: (Int, String) -> Unit
 ) {
     AnimatedVisibility(
         visible = movies.isNotEmpty(),
-        modifier = Modifier.padding(paddingValues)
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),

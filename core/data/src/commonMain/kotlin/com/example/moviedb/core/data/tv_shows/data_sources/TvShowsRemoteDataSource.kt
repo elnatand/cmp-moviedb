@@ -15,11 +15,8 @@ class TvShowsRemoteDataSource(
     suspend fun getTvShowPage(page: Int): List<NetworkTvShow> {
         val tvShowsPages = httpClient
             .get("${TMDB_BASE_URL}tv/popular?api_key=$API_KEY") {
-                url {
-                    parameters.append("page", page.toString())
-                }
-            }
-            .body<RemoteTvShowsPage>()
+                url { parameters.append("page", page.toString()) }
+            }.body<RemoteTvShowsPage>()
         return tvShowsPages.results
     }
 
