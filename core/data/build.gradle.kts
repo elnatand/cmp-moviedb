@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
-
 android {
     namespace = "com.example.moviedb.core.data"
 }
