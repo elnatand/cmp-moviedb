@@ -17,6 +17,7 @@ class MoviesRemoteDataSource(
     private val appDispatcher: AppDispatcher
 ) {
     suspend fun getMoviesPage(page: Int): List<NetworkMovie> {
+        println("API_KEY = $API_KEY")
         val moviesPages = withContext(appDispatcher.getDispatcher()) {
             httpClient
                 .get("${TMDB_BASE_URL}movie/popular?api_key=$API_KEY") {
