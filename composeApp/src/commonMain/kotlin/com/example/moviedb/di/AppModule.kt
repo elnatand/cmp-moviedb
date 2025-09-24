@@ -2,6 +2,7 @@ package com.example.moviedb.di
 
 
 
+import com.example.moviedb.core.common.di.commonModule
 import com.example.moviedb.feature.profile.di.profileModule
 import com.example.moviedb.feature.tvshows.di.tvShowsModule
 import com.example.moviedb.feature.movies.di.moviesModule
@@ -19,6 +20,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
      */
     modules(
         platformDatabaseModule(),
+        commonModule,
         dataModule,
         databaseModule,
         moviesModule,

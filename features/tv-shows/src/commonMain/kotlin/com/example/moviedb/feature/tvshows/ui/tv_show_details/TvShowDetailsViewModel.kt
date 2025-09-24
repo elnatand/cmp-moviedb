@@ -25,7 +25,7 @@ class TvShowDetailsViewModel(
     }
 
     private fun getTvShowDetails() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val tvShowDetails = tvShowsRepository.getTvShowDetails(tvShowId)
             _uiState.update {
                 it.copy(tvShowDetails = tvShowDetails)

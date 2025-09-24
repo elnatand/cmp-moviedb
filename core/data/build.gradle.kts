@@ -1,3 +1,6 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
     id("moviedb.android.library")
     id("moviedb.kotlin.multiplatform")
@@ -5,18 +8,37 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
-//android section should be before kotlin section
+val secretKeyProperties: Properties by lazy {
+    val secretKeyPropertiesFile = rootProject.file("secrets.properties")
+    Properties().apply { secretKeyPropertiesFile.inputStream().use { secret -> load(secret) } }
+}
+
 android {
     namespace = "com.example.moviedb.core.data"
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    buildTypes {
+        getByName("debug") {
+            buildConfigField("String", "TMDB_API_KEY", "\"${secretKeyProperties.getProperty("TMDB_API_KEY")}\"")
+        }
+        getByName("release") {
+            buildConfigField("String", "TMDB_API_KEY", "\"${secretKeyProperties.getProperty("TMDB_API_KEY")}\"")
+        }
+    }
 }
 
 kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)
+            implementation(projects.core.common)
             implementation(projects.core.database)
 
             implementation(libs.koin.core)
+
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -30,3 +52,5 @@ kotlin {
         }
     }
 }
+
+

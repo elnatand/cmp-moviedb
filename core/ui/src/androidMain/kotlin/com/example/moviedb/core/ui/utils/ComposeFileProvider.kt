@@ -19,8 +19,6 @@ class ComposeFileProvider : FileProvider(
 
             val authority = context.applicationContext.packageName + ".provider"
 
-            println("getImageUri: ${tempFile.absolutePath}")
-
             return getUriForFile(
                 Objects.requireNonNull(context),
                 authority,

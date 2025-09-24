@@ -15,8 +15,6 @@ object BitmapUtils {
             return s
         } catch (e: Exception) {
             e.printStackTrace()
-            println("getBitmapFromUri Exception: ${e.message}")
-            println("getBitmapFromUri Exception: ${e.localizedMessage}")
             return null
         }
     }
