@@ -27,7 +27,7 @@ class TvShowsViewModel(
     }
 
     private fun getTvShows() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val tvShows = tvShowsRepository.getTvShowsPage(page)
             _uiState.update {
                 it.copy(tvShows = tvShows)

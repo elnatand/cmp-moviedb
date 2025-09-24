@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
 }
 
-//android section should be before kotlin section
+
 android {
     namespace = "com.example.moviedb.core.data"
 }
@@ -14,9 +14,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)
+            implementation(projects.core.common)
             implementation(projects.core.database)
 
             implementation(libs.koin.core)
+
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
