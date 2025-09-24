@@ -14,11 +14,13 @@ The project follows Clean Architecture principles with a modular approach:
 
 ## 📱 Features
 
-- **Movies**: Browse and view movie details
+- **Movies**: Browse and view movie details with infinite scroll pagination
 - **TV Shows**: Explore TV shows with detailed information
 - **Profile**: User profile management
-- **Offline Support**: Local database caching
+- **Offline Support**: Local database caching with page-based data storage
 - **Cross-platform**: Shared codebase for Android and iOS
+- **Error Handling**: Top-positioned SnackBar notifications for network errors
+- **Auto-pagination**: Automatic loading of next movie pages when scrolling to bottom
 
 ## 📁 Project Structure
 
@@ -32,6 +34,11 @@ cmp-moviedb/
 │   └── build.gradle.kts
 │
 ├── core/                          # Core modules
+│   ├── common/                    # Common utilities and dispatchers
+│   │   └── src/commonMain/kotlin/
+│   │       ├── di/                # Common DI module
+│   │       └── AppDispatchers.kt  # Coroutine dispatcher configurations
+│   │
 │   ├── data/                      # Data layer
 │   │   └── src/commonMain/kotlin/
 │   │       ├── di/                # Data module DI
@@ -99,9 +106,11 @@ cmp-moviedb/
 - **Kotlin Multiplatform Mobile (KMM)**
 - **Compose Multiplatform** - UI framework
 - **Koin** - Dependency injection
-- **Room** - Local database
+- **Room** - Local database with page-based data storage
 - **Ktor** - Networking (implied from data layer)
 - **Kotlin Coroutines** - Asynchronous programming
+- **LazyVerticalGrid** - Grid-based UI with scroll detection
+- **Material3 SnackBar** - Error notifications and user feedback
 
 ### Android
 - **Jetpack Compose** - UI toolkit
@@ -142,6 +151,7 @@ cmp-moviedb/
 ## 📦 Modules Overview
 
 ### Core Modules
+- **core:common** - Common utilities, coroutine dispatchers, and shared DI configuration
 - **core:data** - Repository implementations, data sources, and network setup
 - **core:database** - Room database configuration and platform drivers
 - **core:model** - Shared data models and UI state definitions
@@ -171,6 +181,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## TODOs
 
-- Handle dispatchers
 - Move API KEYS
 - Movie and TV Show details
+- Implement pagination for TV Shows feature
