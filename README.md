@@ -264,7 +264,7 @@ The project uses Gradle version catalogs and custom convention plugins for depen
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
+f
 ## TODOs
 - Movie and TV Show details
 - Implement pagination for TV Shows feature

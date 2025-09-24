@@ -11,7 +11,6 @@ actual class PlatformSharedImage(private val bitmap: android.graphics.Bitmap?) {
             bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
             byteArrayOutputStream.toByteArray()
         } else {
-            println("toByteArray null")
             null
         }
     }
@@ -21,7 +20,6 @@ actual class PlatformSharedImage(private val bitmap: android.graphics.Bitmap?) {
         return if (byteArray != null) {
             return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size).asImageBitmap()
         } else {
-            println("toImageBitmap null")
             null
         }
     }

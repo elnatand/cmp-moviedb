@@ -84,7 +84,6 @@ fun MoviesScreen(
             // Show error as SnackBar
             LaunchedEffect(uiState.state) {
                 if (uiState.state == MoviesUiState.State.ERROR) {
-                    println("Showing SnackBar for error state")
                     snackbarHostState.showSnackbar(
                         message = getString(Res.string.network_error)
                     )
