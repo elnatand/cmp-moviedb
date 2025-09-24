@@ -126,6 +126,92 @@ cmp-moviedb/
 - Xcode 13+ (for iOS development)
 - JDK 21
 - Kotlin Multiplatform Mobile plugin
+- TMDB API Key (see setup instructions below)
+
+### 🔑 API Key Setup
+
+This app uses The Movie Database (TMDB) API. You'll need to obtain an API key and configure it for both Android and iOS platforms.
+
+#### Step 1: Get TMDB API Key
+
+1. **Create TMDB Account**
+   - Visit [The Movie Database](https://www.themoviedb.org/)
+   - Sign up for a free account or log in if you already have one
+
+2. **Request API Key**
+   - Go to [TMDB Developer Portal](https://developer.themoviedb.org/reference/intro/getting-started)
+   - Navigate to your account settings
+   - Click on "API" in the sidebar
+   - Click "Create" and select "Developer"
+   - Fill out the application form:
+     - Application Name: `CMP MovieDB` (or your preferred name)
+     - Application Summary: Brief description of your movie app
+     - Application URL: Your app's URL or GitHub repository
+   - Agree to the terms and submit
+
+3. **Get Your API Key**
+   - Once approved, you'll receive your API key
+   - Copy the **API Key (v3 auth)** - this is what you'll use
+
+#### Step 2: Configure Android (secrets.properties)
+
+1. **Create secrets.properties file** in the project root directory:
+   ```bash
+   touch secrets.properties
+   ```
+
+2. **Add your API key** to `secrets.properties`:
+   ```properties
+   TMDB_API_KEY=your_actual_api_key_here
+   ```
+
+   Replace `your_actual_api_key_here` with your actual TMDB API key.
+
+3. **Verify .gitignore** - The file should already be excluded from Git:
+   ```gitignore
+   /secrets.properties
+   ```
+
+#### Step 3: Configure iOS (Secrets.plist)
+
+1. **Create Secrets.plist** from the template:
+   ```bash
+   cp iosApp/iosApp/Secrets.plist.template iosApp/iosApp/Secrets.plist
+   ```
+
+2. **Edit Secrets.plist** and replace the placeholder:
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+   <plist version="1.0">
+   <dict>
+       <key>apiKey</key>
+       <string>your_actual_api_key_here</string>
+   </dict>
+   </plist>
+   ```
+
+3. **Add to Xcode project** (if not already added):
+   - Open the iOS project in Xcode
+   - Drag `Secrets.plist` into the project navigator
+   - Ensure it's added to the target's "Copy Bundle Resources" phase
+
+#### Step 4: Verify Setup
+
+Both files should contain the same API key but in different formats:
+
+**secrets.properties**:
+```properties
+TMDB_API_KEY=abcd1234567890efgh
+```
+
+**Secrets.plist**:
+```xml
+<key>apiKey</key>
+<string>abcd1234567890efgh</string>
+```
+
+> ⚠️ **Important**: Never commit these files to version control. They are already excluded in `.gitignore`.
 
 ### Running the Project
 
@@ -180,7 +266,7 @@ The project uses Gradle version catalogs and custom convention plugins for depen
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## TODOs
-
-- Move API KEYS
 - Movie and TV Show details
 - Implement pagination for TV Shows feature
+- Add unit tests for pagination logic
+- Implement error retry mechanism
