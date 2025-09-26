@@ -22,8 +22,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +50,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
+import com.example.moviedb.core.model.MovieDetails
+import com.example.moviedb.core.ui.design_system.Loader
 import com.example.moviedb.core.ui.extansions.mirror
 import com.example.moviedb.core.ui.utils.ImageLoader
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,10 +65,12 @@ fun MovieDetailsRoute(
 ) {
     val viewModel = koinViewModel<MovieDetailsViewModel> { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
+
     MovieDetailsScreen(
         uiState = uiState,
         title = title,
         onBackPressed = onBackPressed,
+        onRetry = viewModel::retry
     )
 }
 
@@ -74,6 +80,7 @@ fun MovieDetailsScreen(
     uiState: MovieDetailsViewModel.UiState,
     onBackPressed: () -> Unit,
     title: String,
+    onRetry: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -89,11 +96,72 @@ fun MovieDetailsScreen(
                 })
         }
     ) { paddingValues ->
-        uiState.movieDetails?.let { movie ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            when {
+                uiState.isLoading -> {
+                    Loader()
+                }
+                uiState.errorMessage != null -> {
+                    ErrorContent(
+                        message = uiState.errorMessage,
+                        onRetry = onRetry
+                    )
+                }
+                uiState.movieDetails != null -> {
+                    MovieDetailsContent(movie = uiState.movieDetails)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorContent(
+    message: String,
+    onRetry: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Error loading movie details",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.error,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Button(
+            onClick = onRetry,
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Retry",
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Retry")
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MovieDetailsContent(movie: MovieDetails) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
             ) {
                 // Hero Section with Backdrop and Poster
@@ -325,8 +393,6 @@ fun MovieDetailsScreen(
                     }
                 }
             }
-        }
-    }
 }
 
 @Composable

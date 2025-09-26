@@ -28,14 +28,35 @@ class MovieDetailsViewModel(
 
    private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch {
-            val movieDetails = moviesRepository.getMovieDetails(movieId)
-            _uiState.update {
-                it.copy(movieDetails = movieDetails)
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            try {
+                val movieDetails = moviesRepository.getMovieDetails(movieId)
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        movieDetails = movieDetails,
+                        errorMessage = null
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "Unknown error occurred"
+                    )
+                }
             }
         }
     }
 
+    fun retry() {
+        getMovieDetails(movieId)
+    }
+
     data class UiState(
-        val movieDetails: MovieDetails? = null
+        val isLoading: Boolean = false,
+        val movieDetails: MovieDetails? = null,
+        val errorMessage: String? = null
     )
 }
