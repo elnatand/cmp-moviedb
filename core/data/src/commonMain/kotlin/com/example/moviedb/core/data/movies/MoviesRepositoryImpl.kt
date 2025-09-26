@@ -50,7 +50,6 @@ class MoviesRepositoryImpl(
         }
     }
 
-    //TODO fetch from local data source
     override suspend fun getMovieDetails(movieId: Int): MovieDetails {
         return moviesRemoteDataSource.getMovieDetails(movieId).toDomain()
     }
