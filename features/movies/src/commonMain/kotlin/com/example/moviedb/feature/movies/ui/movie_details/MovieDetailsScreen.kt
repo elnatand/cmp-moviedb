@@ -44,7 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.model.MovieDetails
-import com.example.moviedb.core.ui.design_system.MovieDbLoader
+import com.example.moviedb.core.ui.design_system.AppLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
 import com.example.moviedb.resources.Res
 import com.example.moviedb.resources.*
@@ -78,7 +78,7 @@ private fun MovieDetailsScreen(
     ) {
         when (uiState) {
             is MovieDetailsViewModel.UiState.Loading -> {
-                MovieDbLoader()
+                AppLoader()
             }
 
             is MovieDetailsViewModel.UiState.Error -> {
