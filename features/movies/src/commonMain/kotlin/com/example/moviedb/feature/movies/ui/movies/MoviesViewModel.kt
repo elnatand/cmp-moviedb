@@ -43,9 +43,7 @@ class MoviesViewModel(
 
     fun loadNextPage() {
         _uiState.update { state ->
-            state.copy(
-                state = MoviesUiState.State.LOADING,
-            )
+            state.copy(state = MoviesUiState.State.LOADING,)
         }
 
         viewModelScope.launch {
