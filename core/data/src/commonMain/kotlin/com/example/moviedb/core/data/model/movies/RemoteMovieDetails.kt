@@ -8,7 +8,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RemoteMovieDetails(
-    @SerialName("")
     val id: Int,
     val title: String,
     val overview: String,
