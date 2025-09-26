@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,14 +32,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -76,40 +76,40 @@ fun MovieDetailsScreen(
     onBackPressed: () -> Unit,
     onRetry: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "Details") }, // TODO: Use stringResource(Res.string.details) when resources are rebuilt
-                navigationIcon = {
-                    IconButton(onClick = { onBackPressed() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                })
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
-        ) {
-            when (uiState) {
-                is MovieDetailsViewModel.UiState.Loading -> {
-                    MovieDBLoader()
-                }
-                is MovieDetailsViewModel.UiState.Error -> {
-                    ErrorContent(
-                        message = uiState.message,
-                        onRetry = onRetry
-                    )
-                }
-                is MovieDetailsViewModel.UiState.Success -> {
-                    MovieDetailsContent(movie = uiState.movieDetails)
-                }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        when (uiState) {
+            is MovieDetailsViewModel.UiState.Loading -> {
+                MovieDBLoader()
             }
+
+            is MovieDetailsViewModel.UiState.Error -> {
+                ErrorContent(
+                    message = uiState.message,
+                    onRetry = onRetry
+                )
+            }
+
+            is MovieDetailsViewModel.UiState.Success -> {
+                MovieDetailsContent(movie = uiState.movieDetails)
+            }
+        }
+
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(10.dp)
+                .background(
+                    color = Color.White,
+                    shape = CircleShape
+                ),
+            onClick = { onBackPressed() }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back ",
+                tint = Color.Black
+            )
         }
     }
 }
@@ -153,240 +153,240 @@ private fun ErrorContent(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MovieDetailsContent(movie: MovieDetails) {
-            Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        // Hero Section with Backdrop and Poster
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+        ) {
+            // Backdrop Image
+            movie.backdrop_path?.let { backdropPath ->
+                ImageLoader(
+                    imageUrl = "$TMDB_IMAGE_URL$backdropPath",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Gradient Overlay
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                // Hero Section with Backdrop and Poster
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                ) {
-                    // Backdrop Image
-                    movie.backdrop_path?.let { backdropPath ->
-                        ImageLoader(
-                            imageUrl = "$TMDB_IMAGE_URL$backdropPath",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-
-                    // Gradient Overlay
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Transparent,
-                                        Color.Black.copy(alpha = 0.7f)
-                                    )
-                                )
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.7f)
                             )
+                        )
                     )
+            )
 
-                    // Poster in top left corner
-                    movie.poster_path?.let { posterPath ->
-                        Card(
-                            modifier = Modifier
-                                .width(100.dp)
-                                .height(150.dp)
-                                .align(Alignment.TopStart)
-                                .padding(16.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                        ) {
-                            ImageLoader(
-                                imageUrl = "$TMDB_IMAGE_URL$posterPath",
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
+            // Poster in top left corner
+            movie.poster_path?.let { posterPath ->
+                Card(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .height(150.dp)
+                        .align(Alignment.TopStart)
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    ImageLoader(
+                        imageUrl = "$TMDB_IMAGE_URL$posterPath",
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
 
-                    // Title and Basic Info
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomStart)
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = movie.title,
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
+            // Title and Basic Info
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomStart)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = movie.title,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
 
-                        movie.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
-                            Text(
-                                text = tagline,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White.copy(alpha = 0.8f),
-                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                            )
-                        }
-
-                        // Rating
-                        movie.vote_average?.let { rating ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = "Rating",
-                                    tint = Color.Yellow,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Text(
-                                    text = "${(rating * 10).toInt() / 10.0}",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                movie.vote_count?.let { count ->
-                                    Text(
-                                        text = "($count votes)",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.White.copy(alpha = 0.7f)
-                                    )
-                                }
-                            }
-                        }
-                    }
+                movie.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
+                    Text(
+                        text = tagline,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    )
                 }
 
-                // Main Content
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    // Quick Info Row
+                // Rating
+                movie.vote_average?.let { rating ->
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        movie.release_date?.let { date ->
-                            InfoItem(
-                                icon = Icons.Default.DateRange,
-                                label = "Release",
-                                value = date.take(4)
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Rating",
+                            tint = Color.Yellow,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = "${(rating * 10).toInt() / 10.0}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        movie.vote_count?.let { count ->
+                            Text(
+                                text = "($count votes)",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White.copy(alpha = 0.7f)
                             )
                         }
-
-                        movie.runtime?.let { runtime ->
-                            InfoItem(
-                                icon = Icons.Default.Timer,
-                                label = "Runtime",
-                                value = "${runtime}min"
-                            )
-                        }
-
-                        movie.original_language?.let { language ->
-                            InfoItem(
-                                icon = Icons.Default.Language,
-                                label = "Language",
-                                value = language.uppercase()
-                            )
-                        }
-                    }
-
-                    // Overview Section
-                    movie.overview.takeIf { it.isNotBlank() }?.let { overview ->
-                        SectionCard(
-                            title = "Overview",
-                            content = {
-                                Text(
-                                    text = overview,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
-                                )
-                            }
-                        )
-                    }
-
-                    // Genres Section
-                    movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
-                        SectionCard(
-                            title = "Genres",
-                            content = {
-                                FlowRow(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    genres.forEach { genre ->
-                                        SuggestionChip(
-                                            onClick = { },
-                                            label = { Text(genre) },
-                                            colors = SuggestionChipDefaults.suggestionChipColors(
-                                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    }
-
-                    // Box Office Section
-                    if (movie.budget != null || movie.revenue != null) {
-                        SectionCard(
-                            title = "Box Office",
-                            content = {
-                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                    movie.budget?.takeIf { it > 0 }?.let { budget ->
-                                        BoxOfficeItem(
-                                            label = "Budget",
-                                            amount = budget
-                                        )
-                                    }
-                                    movie.revenue?.takeIf { it > 0 }?.let { revenue ->
-                                        BoxOfficeItem(
-                                            label = "Revenue",
-                                            amount = revenue
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    }
-
-                    // Production Section
-                    movie.production_companies?.takeIf { it.isNotEmpty() }?.let { companies ->
-                        SectionCard(
-                            title = "Production Companies",
-                            content = {
-                                FlowRow(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    companies.forEach { company ->
-                                        SuggestionChip(
-                                            onClick = { },
-                                            label = { Text(company) }
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    }
-
-                    // Countries Section
-                    movie.production_countries?.takeIf { it.isNotEmpty() }?.let { countries ->
-                        SectionCard(
-                            title = "Production Countries",
-                            content = {
-                                Text(
-                                    text = countries.joinToString(", "),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        )
                     }
                 }
             }
+        }
+
+        // Main Content
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            // Quick Info Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                movie.release_date?.let { date ->
+                    InfoItem(
+                        icon = Icons.Default.DateRange,
+                        label = "Release",
+                        value = date.take(4)
+                    )
+                }
+
+                movie.runtime?.let { runtime ->
+                    InfoItem(
+                        icon = Icons.Default.Timer,
+                        label = "Runtime",
+                        value = "${runtime}min"
+                    )
+                }
+
+                movie.original_language?.let { language ->
+                    InfoItem(
+                        icon = Icons.Default.Language,
+                        label = "Language",
+                        value = language.uppercase()
+                    )
+                }
+            }
+
+            // Overview Section
+            movie.overview.takeIf { it.isNotBlank() }?.let { overview ->
+                SectionCard(
+                    title = "Overview",
+                    content = {
+                        Text(
+                            text = overview,
+                            style = MaterialTheme.typography.bodyMedium,
+                            lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
+                        )
+                    }
+                )
+            }
+
+            // Genres Section
+            movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
+                SectionCard(
+                    title = "Genres",
+                    content = {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            genres.forEach { genre ->
+                                SuggestionChip(
+                                    onClick = { },
+                                    label = { Text(genre) },
+                                    colors = SuggestionChipDefaults.suggestionChipColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                                    )
+                                )
+                            }
+                        }
+                    }
+                )
+            }
+
+            // Box Office Section
+            if (movie.budget != null || movie.revenue != null) {
+                SectionCard(
+                    title = "Box Office",
+                    content = {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            movie.budget?.takeIf { it > 0 }?.let { budget ->
+                                BoxOfficeItem(
+                                    label = "Budget",
+                                    amount = budget
+                                )
+                            }
+                            movie.revenue?.takeIf { it > 0 }?.let { revenue ->
+                                BoxOfficeItem(
+                                    label = "Revenue",
+                                    amount = revenue
+                                )
+                            }
+                        }
+                    }
+                )
+            }
+
+            // Production Section
+            movie.production_companies?.takeIf { it.isNotEmpty() }?.let { companies ->
+                SectionCard(
+                    title = "Production Companies",
+                    content = {
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            companies.forEach { company ->
+                                SuggestionChip(
+                                    onClick = { },
+                                    label = { Text(company) }
+                                )
+                            }
+                        }
+                    }
+                )
+            }
+
+            // Countries Section
+            movie.production_countries?.takeIf { it.isNotEmpty() }?.let { countries ->
+                SectionCard(
+                    title = "Production Countries",
+                    content = {
+                        Text(
+                            text = countries.joinToString(", "),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -465,4 +465,60 @@ private fun BoxOfficeItem(
             color = MaterialTheme.colorScheme.primary
         )
     }
+}
+
+@Preview
+@Composable
+private fun MovieDetailsScreenSuccessPreview() {
+    val sampleMovie = MovieDetails(
+        id = 1,
+        title = "Sample Movie",
+        overview = "This is a sample movie overview that demonstrates how the movie details screen looks with content.",
+        poster_path = "/sample_poster.jpg",
+        backdrop_path = "/sample_backdrop.jpg",
+        release_date = "2023-12-01",
+        vote_average = 8.5,
+        vote_count = 1250,
+        runtime = 142,
+        tagline = "An amazing cinematic experience",
+        genres = listOf("Action", "Adventure", "Sci-Fi"),
+        original_language = "en",
+        budget = 150000000,
+        revenue = 750000000,
+        production_companies = listOf("Marvel Studios", "Disney"),
+        production_countries = listOf("United States", "United Kingdom"),
+        adult = false,
+        homepage = "https://example.com",
+        imdb_id = "tt1234567",
+        original_title = "Sample Movie",
+        popularity = 85.5,
+        status = "Released",
+        spoken_languages = listOf("English", "Spanish")
+    )
+
+    MovieDetailsScreen(
+        uiState = MovieDetailsViewModel.UiState.Success(sampleMovie),
+        onBackPressed = {},
+        onRetry = {}
+    )
+}
+
+@Preview
+@Composable
+private fun MovieDetailsScreenLoadingPreview() {
+    MovieDetailsScreen(
+        uiState = MovieDetailsViewModel.UiState.Loading,
+        onBackPressed = {},
+        onRetry = {}
+    )
+}
+
+@Preview
+@Composable
+private fun MovieDetailsScreenErrorPreview() {
+    MovieDetailsScreen(
+        uiState = MovieDetailsViewModel.UiState.Error("Failed to load movie details. Please check your internet connection."),
+        onBackPressed = {},
+        onRetry = {}
+    )
 }

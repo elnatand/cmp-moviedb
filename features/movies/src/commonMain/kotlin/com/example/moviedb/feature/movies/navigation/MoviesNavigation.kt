@@ -19,7 +19,6 @@ data object MoviesRoute
 @SerialName("movie_details")
 data class MovieDetailsRoute(
     val movieId: Int,
-    val title: String
 )
 
 fun NavHostController.navigateToMovies(navOptions: NavOptions) {
@@ -32,7 +31,7 @@ fun NavGraphBuilder.moviesScene(
 ) {
     composable<MoviesRoute> { entry ->
         MoviesRoute { movieId, title ->
-            navigator.navigate(MovieDetailsRoute(movieId, title))
+            navigator.navigate(MovieDetailsRoute(movieId))
         }
     }
 }
@@ -42,10 +41,8 @@ fun NavGraphBuilder.movieDetailsScene(navigator: NavHostController) {
         val params = entry.toRoute<MovieDetailsRoute>()
 
         val movieId: Int = params.movieId
-        val title: String = params.title
         MovieDetailsRoute(
             movieId = movieId,
-            title = title,
             onBackPressed = { navigator.popBackStack() }
         )
     }
