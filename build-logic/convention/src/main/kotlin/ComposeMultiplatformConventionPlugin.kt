@@ -17,17 +17,15 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
 
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets.apply {
-                commonMain {
-                    dependencies {
-                        implementation(dependencies.runtime)
-                        implementation(dependencies.foundation)
-                        implementation(dependencies.material)
-                        implementation(dependencies.material3)
-                        implementation(dependencies.materialIconsExtended)
-                        implementation(dependencies.ui)
-                        implementation(dependencies.components.resources)
-                        implementation(dependencies.components.uiToolingPreview)
-                    }
+                commonMain.dependencies {
+                    implementation(dependencies.runtime)
+                    implementation(dependencies.foundation)
+                    implementation(dependencies.material)
+                    implementation(dependencies.material3)
+                    implementation(dependencies.materialIconsExtended)
+                    implementation(dependencies.ui)
+                    implementation(dependencies.components.resources)
+                    implementation(dependencies.components.uiToolingPreview)
                 }
             }
         }

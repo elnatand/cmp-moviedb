@@ -15,11 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Refresh
@@ -30,7 +28,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
@@ -38,7 +35,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -49,22 +45,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.model.MovieDetails
-import com.example.moviedb.core.ui.design_system.MovieDBLoader
+import com.example.moviedb.core.ui.design_system.MovieDbLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun MovieDetailsRoute(
+fun MovieDetailsScreen(
     movieId: Int,
-    onBackPressed: () -> Unit,
 ) {
     val viewModel = koinViewModel<MovieDetailsViewModel> { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
 
     MovieDetailsScreen(
         uiState = uiState,
-        onBackPressed = onBackPressed,
         onRetry = viewModel::retry
     )
 }
@@ -73,7 +67,6 @@ fun MovieDetailsRoute(
 @Composable
 fun MovieDetailsScreen(
     uiState: MovieDetailsViewModel.UiState,
-    onBackPressed: () -> Unit,
     onRetry: () -> Unit
 ) {
     Box(
@@ -81,7 +74,7 @@ fun MovieDetailsScreen(
     ) {
         when (uiState) {
             is MovieDetailsViewModel.UiState.Loading -> {
-                MovieDBLoader()
+                MovieDbLoader()
             }
 
             is MovieDetailsViewModel.UiState.Error -> {
@@ -94,22 +87,6 @@ fun MovieDetailsScreen(
             is MovieDetailsViewModel.UiState.Success -> {
                 MovieDetailsContent(movie = uiState.movieDetails)
             }
-        }
-
-        IconButton(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(10.dp)
-                .background(
-                    color = Color.White,
-                    shape = CircleShape
-                ),
-            onClick = { onBackPressed() }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back ",
-                tint = Color.Black
-            )
         }
     }
 }
@@ -465,60 +442,4 @@ private fun BoxOfficeItem(
             color = MaterialTheme.colorScheme.primary
         )
     }
-}
-
-@Preview
-@Composable
-private fun MovieDetailsScreenSuccessPreview() {
-    val sampleMovie = MovieDetails(
-        id = 1,
-        title = "Sample Movie",
-        overview = "This is a sample movie overview that demonstrates how the movie details screen looks with content.",
-        poster_path = "/sample_poster.jpg",
-        backdrop_path = "/sample_backdrop.jpg",
-        release_date = "2023-12-01",
-        vote_average = 8.5,
-        vote_count = 1250,
-        runtime = 142,
-        tagline = "An amazing cinematic experience",
-        genres = listOf("Action", "Adventure", "Sci-Fi"),
-        original_language = "en",
-        budget = 150000000,
-        revenue = 750000000,
-        production_companies = listOf("Marvel Studios", "Disney"),
-        production_countries = listOf("United States", "United Kingdom"),
-        adult = false,
-        homepage = "https://example.com",
-        imdb_id = "tt1234567",
-        original_title = "Sample Movie",
-        popularity = 85.5,
-        status = "Released",
-        spoken_languages = listOf("English", "Spanish")
-    )
-
-    MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.UiState.Success(sampleMovie),
-        onBackPressed = {},
-        onRetry = {}
-    )
-}
-
-@Preview
-@Composable
-private fun MovieDetailsScreenLoadingPreview() {
-    MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.UiState.Loading,
-        onBackPressed = {},
-        onRetry = {}
-    )
-}
-
-@Preview
-@Composable
-private fun MovieDetailsScreenErrorPreview() {
-    MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.UiState.Error("Failed to load movie details. Please check your internet connection."),
-        onBackPressed = {},
-        onRetry = {}
-    )
 }

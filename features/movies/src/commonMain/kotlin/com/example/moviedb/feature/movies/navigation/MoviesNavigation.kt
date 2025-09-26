@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.moviedb.feature.movies.ui.movie_details.MovieDetailsRoute
+import com.example.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
 import com.example.moviedb.feature.movies.ui.movies.MoviesRoute
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -22,7 +22,7 @@ data class MovieDetailsRoute(
 )
 
 fun NavHostController.navigateToMovies(navOptions: NavOptions) {
-    navigate(MoviesRoute,navOptions)
+    navigate(MoviesRoute, navOptions)
 }
 
 
@@ -41,9 +41,9 @@ fun NavGraphBuilder.movieDetailsScene(navigator: NavHostController) {
         val params = entry.toRoute<MovieDetailsRoute>()
 
         val movieId: Int = params.movieId
-        MovieDetailsRoute(
+
+        MovieDetailsScreen(
             movieId = movieId,
-            onBackPressed = { navigator.popBackStack() }
         )
     }
 }
