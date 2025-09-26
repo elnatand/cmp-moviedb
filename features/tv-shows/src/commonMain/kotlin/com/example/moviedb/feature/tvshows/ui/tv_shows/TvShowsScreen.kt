@@ -28,6 +28,7 @@ fun TvShowsScreen(
 ) {
     val viewModel = koinViewModel<TvShowsViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+
     TvShowsScreen(
         uiState = uiState,
         onClick = onClick

@@ -13,19 +13,19 @@ class ComposeMultiplatformConventionPlugin : Plugin<Project> {
             apply(libs.findPlugin("composeCompiler").get().get().pluginId)
         }
 
-        val dependencies = extensions.getByType<ComposeExtension>().dependencies
+        val compose = extensions.getByType<ComposeExtension>().dependencies
 
         extensions.configure<KotlinMultiplatformExtension> {
             sourceSets.apply {
                 commonMain.dependencies {
-                    implementation(dependencies.runtime)
-                    implementation(dependencies.foundation)
-                    implementation(dependencies.material)
-                    implementation(dependencies.material3)
-                    implementation(dependencies.materialIconsExtended)
-                    implementation(dependencies.ui)
-                    implementation(dependencies.components.resources)
-                    implementation(dependencies.components.uiToolingPreview)
+                    implementation(compose.runtime)
+                    implementation(compose.foundation)
+                    implementation(compose.material)
+                    implementation(compose.material3)
+                    implementation(compose.materialIconsExtended)
+                    implementation(compose.ui)
+                    implementation(compose.components.resources)
+                    implementation(compose.components.uiToolingPreview)
                 }
             }
         }

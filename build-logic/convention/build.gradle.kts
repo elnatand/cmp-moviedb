@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     `kotlin-dsl`
 }
@@ -12,7 +10,6 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.plugins.composeMultiplatform.toDep())
-    compileOnly(libs.plugins.composeCompiler.toDep())
 }
 
 fun Provider<PluginDependency>.toDep() = map {
