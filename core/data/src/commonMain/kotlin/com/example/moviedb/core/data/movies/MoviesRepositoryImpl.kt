@@ -94,7 +94,6 @@ class MoviesRepositoryImpl(
         totalPages = 0
         _errorState.value = null
 
-
         loadNextPage()
 
         // Return result based on loading outcome
