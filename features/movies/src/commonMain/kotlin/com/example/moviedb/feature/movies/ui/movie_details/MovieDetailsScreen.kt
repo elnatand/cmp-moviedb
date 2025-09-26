@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,7 +41,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -51,8 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.model.MovieDetails
-import com.example.moviedb.core.ui.design_system.Loader
-import com.example.moviedb.core.ui.extansions.mirror
+import com.example.moviedb.core.ui.design_system.MovieDBLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -102,17 +99,17 @@ fun MovieDetailsScreen(
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            when {
-                uiState.isLoading -> {
-                    Loader()
+            when (uiState) {
+                is MovieDetailsViewModel.UiState.Loading -> {
+                    MovieDBLoader()
                 }
-                uiState.errorMessage != null -> {
+                is MovieDetailsViewModel.UiState.Error -> {
                     ErrorContent(
-                        message = uiState.errorMessage,
+                        message = uiState.message,
                         onRetry = onRetry
                     )
                 }
-                uiState.movieDetails != null -> {
+                is MovieDetailsViewModel.UiState.Success -> {
                     MovieDetailsContent(movie = uiState.movieDetails)
                 }
             }

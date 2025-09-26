@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
@@ -19,7 +18,7 @@ class MovieDetailsViewModel(
     private val moviesRepository: MoviesRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
+    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -28,24 +27,13 @@ class MovieDetailsViewModel(
 
    private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            _uiState.value = UiState.Loading
 
             try {
                 val movieDetails = moviesRepository.getMovieDetails(movieId)
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        movieDetails = movieDetails,
-                        errorMessage = null
-                    )
-                }
+                _uiState.value = UiState.Success(movieDetails)
             } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "Unknown error occurred"
-                    )
-                }
+                _uiState.value = UiState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -54,9 +42,9 @@ class MovieDetailsViewModel(
         getMovieDetails(movieId)
     }
 
-    data class UiState(
-        val isLoading: Boolean = false,
-        val movieDetails: MovieDetails? = null,
-        val errorMessage: String? = null
-    )
+    sealed interface UiState {
+        data object Loading : UiState
+        data class Success(val movieDetails: MovieDetails) : UiState
+        data class Error(val message: String) : UiState
+    }
 }

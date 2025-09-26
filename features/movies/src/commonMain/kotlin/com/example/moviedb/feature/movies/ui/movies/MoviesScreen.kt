@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.moviedb.core.ui.design_system.Loader
+import com.example.moviedb.core.ui.design_system.MovieDBLoader
 import com.example.moviedb.feature.movies.model.MoviesUiState
 import com.example.moviedb.resources.Res
 import com.example.moviedb.resources.movies
@@ -78,7 +78,7 @@ fun MoviesScreen(
             }
 
             if (uiState.state == MoviesUiState.State.LOADING) {
-                Loader()
+                MovieDBLoader()
             }
 
             // Show error as SnackBar
