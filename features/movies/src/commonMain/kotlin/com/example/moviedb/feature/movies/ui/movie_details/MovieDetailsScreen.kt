@@ -58,14 +58,12 @@ import org.koin.core.parameter.parametersOf
 fun MovieDetailsRoute(
     movieId: Int,
     onBackPressed: () -> Unit,
-    title: String,
 ) {
     val viewModel = koinViewModel<MovieDetailsViewModel> { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
 
     MovieDetailsScreen(
         uiState = uiState,
-        title = title,
         onBackPressed = onBackPressed,
         onRetry = viewModel::retry
     )
@@ -76,13 +74,12 @@ fun MovieDetailsRoute(
 fun MovieDetailsScreen(
     uiState: MovieDetailsViewModel.UiState,
     onBackPressed: () -> Unit,
-    title: String,
     onRetry: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = title) },
+                title = { Text(text = "Details") }, // TODO: Use stringResource(Res.string.details) when resources are rebuilt
                 navigationIcon = {
                     IconButton(onClick = { onBackPressed() }) {
                         Icon(

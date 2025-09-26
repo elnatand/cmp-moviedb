@@ -6,4 +6,5 @@
     <string name="profile">Profile</string>
     <string name="notifications">Notifications</string>
     <string name="network_error">Error occurred. Please try again.</string>
+    <string name="details">Details</string>
 </resources>
