@@ -40,7 +40,7 @@ class MoviesRepositoryImpl(
      * - Initial data loading if cache is empty
      */
     override suspend fun observeAllMovies(): Flow<AppResult<List<Movie>>> {
-        val localMoviesPageStream = moviesLocalDataSource.getAllMovies()
+        val localMoviesPageStream = moviesLocalDataSource.getAllMoviesAsFlow()
 
         // Load initial data if empty
         if (localMoviesPageStream.first().isEmpty()) {
@@ -163,7 +163,7 @@ class MoviesRepositoryImpl(
         // Return result based on loading outcome
         return _errorState.value ?: run {
             // If no error, get the current data from local storage
-            val localMovies = moviesLocalDataSource.getAllMovies().first()
+            val localMovies = moviesLocalDataSource.getAllMoviesAsFlow().first()
             AppResult.Success(
                 data = localMovies.map {
                     Movie(
