@@ -14,10 +14,6 @@ class MoviesLocalDataSource(
     private val movieDetailsDao: MovieDetailsDao,
     private val appDispatcher: AppDispatcher
 ) {
-    fun getMoviesPage(page: Int): Flow<List<MovieEntity>> {
-        return movieDao.getMoviesByPageAsFlow(page)
-    }
-
     fun getAllMovies(): Flow<List<MovieEntity>> {
         return movieDao.getAllMoviesAsFlow()
     }
