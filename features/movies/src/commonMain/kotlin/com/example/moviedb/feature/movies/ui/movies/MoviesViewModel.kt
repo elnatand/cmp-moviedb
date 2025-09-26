@@ -4,9 +4,8 @@ package com.example.moviedb.feature.movies.ui.movies
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
+import com.example.moviedb.core.model.MDResponse
 import com.example.moviedb.feature.movies.model.MoviesUiState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,18 +19,23 @@ class MoviesViewModel(
     val uiState = _uiState.asStateFlow()
 
     init {
-        loadMovies()
+        observeMovies()
     }
 
-    private fun loadMovies() {
-        val initialPage = 1
+    private fun observeMovies() {
         viewModelScope.launch {
-            moviesRepository.observeAllMovies(initialPage).collect { movies ->
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        state = MoviesUiState.State.SUCCESS,
-                        movies = movies
-                    )
+            moviesRepository.observeAllMovies().collect { response ->
+                when (response) {
+                    is MDResponse.Error -> _uiState.update { currentState ->
+                        currentState.copy(state = MoviesUiState.State.ERROR)
+                    }
+
+                    is MDResponse.Success -> _uiState.update { currentState ->
+                        currentState.copy(
+                            state = MoviesUiState.State.SUCCESS,
+                            movies = response.data
+                        )
+                    }
                 }
             }
         }
@@ -41,14 +45,11 @@ class MoviesViewModel(
         _uiState.update { state ->
             state.copy(
                 state = MoviesUiState.State.LOADING,
-                currentPage = state.currentPage + 1
             )
         }
 
-        val nextPage = _uiState.value.currentPage
-
         viewModelScope.launch {
-            moviesRepository.loadPage(nextPage)
+            moviesRepository.loadNextPage()
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.moviedb.core.data.movies.data_sources
 
 import com.example.moviedb.core.common.AppDispatcher
-import com.example.moviedb.core.common.MDResponse
+import com.example.moviedb.core.model.MDResponse
 import com.example.moviedb.core.data.model.TMDB_API_KEY
 import com.example.moviedb.core.data.model.movies.RemoteMovie
 import com.example.moviedb.core.data.model.movies.RemoteMoviesPage
@@ -17,7 +17,7 @@ class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatcher: AppDispatcher
 ) {
-    suspend fun getMoviesPage(page: Int): MDResponse<List<RemoteMovie>> {
+    suspend fun getMoviesPage(page: Int): MDResponse<RemoteMoviesPage> {
         return try {
             val moviesPages = withContext(appDispatcher.getDispatcher()) {
                 httpClient
@@ -25,7 +25,7 @@ class MoviesRemoteDataSource(
                         url { parameters.append("page", page.toString()) }
                     }.body<RemoteMoviesPage>()
             }
-            MDResponse.Success(moviesPages.results)
+            MDResponse.Success(moviesPages)
         } catch (e: Exception) {
             MDResponse.Error(
                 message = e.message ?: "Unknown error occurred",

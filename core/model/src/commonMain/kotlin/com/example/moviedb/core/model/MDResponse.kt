@@ -1,4 +1,4 @@
-package com.example.moviedb.core.common
+package com.example.moviedb.core.model
 
 sealed interface MDResponse<out T> {
     data class Success<T>(val data: T) : MDResponse<T>
@@ -27,14 +27,14 @@ inline fun <T, R> MDResponse<T>.map(transform: (T) -> R): MDResponse<R> {
     }
 }
 
-inline fun <T> MDResponse<T>.getOrNull(): T? {
+fun <T> MDResponse<T>.getOrNull(): T? {
     return when (this) {
         is MDResponse.Success -> data
         is MDResponse.Error -> null
     }
 }
 
-inline fun <T> MDResponse<T>.getOrThrow(): T {
+fun <T> MDResponse<T>.getOrThrow(): T {
     return when (this) {
         is MDResponse.Success -> data
         is MDResponse.Error -> throw throwable ?: Exception(message)
