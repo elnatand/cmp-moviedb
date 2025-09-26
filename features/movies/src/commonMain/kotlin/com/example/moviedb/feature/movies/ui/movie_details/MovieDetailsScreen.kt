@@ -124,13 +124,13 @@ fun MovieDetailsScreen(
                             )
                     )
 
-                    // Poster in top right corner
+                    // Poster in top left corner
                     movie.poster_path?.let { posterPath ->
                         Card(
                             modifier = Modifier
                                 .width(100.dp)
                                 .height(150.dp)
-                                .align(Alignment.TopEnd)
+                                .align(Alignment.TopStart)
                                 .padding(16.dp),
                             shape = RoundedCornerShape(8.dp),
                             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
