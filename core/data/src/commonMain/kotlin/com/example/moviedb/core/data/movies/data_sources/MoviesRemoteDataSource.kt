@@ -2,10 +2,10 @@ package com.example.moviedb.core.data.movies.data_sources
 
 import com.example.moviedb.core.common.AppDispatcher
 import com.example.moviedb.core.data.model.TMDB_API_KEY
-import com.example.moviedb.core.data.model.movies.NetworkMovie
+import com.example.moviedb.core.data.model.movies.RemoteMovie
 import com.example.moviedb.core.data.model.movies.RemoteMoviesPage
 import com.example.moviedb.core.data.model.TMDB_BASE_URL
-import com.example.moviedb.core.data.model.movies.NetworkMovieDetails
+import com.example.moviedb.core.data.model.movies.RemoteMovieDetails
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -16,7 +16,7 @@ class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatcher: AppDispatcher
 ) {
-    suspend fun getMoviesPage(page: Int): List<NetworkMovie> {
+    suspend fun getMoviesPage(page: Int): List<RemoteMovie> {
         val moviesPages = withContext(appDispatcher.getDispatcher()) {
             httpClient
                 .get("${TMDB_BASE_URL}movie/popular?api_key=$TMDB_API_KEY") {
@@ -27,7 +27,7 @@ class MoviesRemoteDataSource(
         return moviesPages.results
     }
 
-    suspend fun getMovieDetails(movieId: Int): NetworkMovieDetails {
+    suspend fun getMovieDetails(movieId: Int): RemoteMovieDetails {
         return httpClient
             .get("${TMDB_BASE_URL}movie/${movieId}?api_key=$TMDB_API_KEY")
             .body()

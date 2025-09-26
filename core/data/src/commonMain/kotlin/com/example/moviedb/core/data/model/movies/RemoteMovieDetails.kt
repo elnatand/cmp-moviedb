@@ -4,7 +4,7 @@ import com.example.moviedb.core.model.MovieDetails
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkMovieDetails(
+data class RemoteMovieDetails(
     val id: Int,
     val title: String,
     val overview: String,
@@ -12,7 +12,7 @@ data class NetworkMovieDetails(
     val backdrop_path: String?
 )
 
-fun NetworkMovieDetails.toDomain(): MovieDetails = MovieDetails(
+fun RemoteMovieDetails.toDomain(): MovieDetails = MovieDetails(
     id = id,
     title = title,
     overview = overview,

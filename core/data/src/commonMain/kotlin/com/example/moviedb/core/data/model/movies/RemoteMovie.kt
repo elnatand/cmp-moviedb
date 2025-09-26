@@ -6,14 +6,14 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Serializable
-data class NetworkMovie(
+data class RemoteMovie(
     val id: Int,
     val title: String,
     val poster_path: String?,
 )
 
 @OptIn(ExperimentalTime::class)
-fun NetworkMovie.asEntity(page: Int) = MovieEntity(
+fun RemoteMovie.asEntity(page: Int) = MovieEntity(
     id = id,
     timestamp = Clock.System.now().epochSeconds,
     page = page,
