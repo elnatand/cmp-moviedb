@@ -124,76 +124,72 @@ fun MovieDetailsScreen(
                             )
                     )
 
-                    // Movie Info Overlay
-                    Row(
+                    // Poster in top right corner
+                    movie.poster_path?.let { posterPath ->
+                        Card(
+                            modifier = Modifier
+                                .width(100.dp)
+                                .height(150.dp)
+                                .align(Alignment.TopEnd)
+                                .padding(16.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                        ) {
+                            ImageLoader(
+                                imageUrl = "$TMDB_IMAGE_URL$posterPath",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+
+                    // Title and Basic Info
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(Alignment.BottomStart)
                             .padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        // Poster
-                        movie.poster_path?.let { posterPath ->
-                            Card(
-                                modifier = Modifier
-                                    .width(120.dp)
-                                    .height(180.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                            ) {
-                                ImageLoader(
-                                    imageUrl = "$TMDB_IMAGE_URL$posterPath",
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
+                        Text(
+                            text = movie.title,
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        movie.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
+                            Text(
+                                text = tagline,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White.copy(alpha = 0.8f),
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                            )
                         }
 
-                        // Title and Basic Info
-                        Column(
-                            modifier = Modifier.weight(1f),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = movie.title,
-                                style = MaterialTheme.typography.headlineMedium,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            movie.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
-                                Text(
-                                    text = tagline,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color.White.copy(alpha = 0.8f),
-                                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        // Rating
+                        movie.vote_average?.let { rating ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = "Rating",
+                                    tint = Color.Yellow,
+                                    modifier = Modifier.size(24.dp)
                                 )
-                            }
-
-                            // Rating
-                            movie.vote_average?.let { rating ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Star,
-                                        contentDescription = "Rating",
-                                        tint = Color.Yellow,
-                                        modifier = Modifier.size(20.dp)
-                                    )
+                                Text(
+                                    text = "${(rating * 10).toInt() / 10.0}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                movie.vote_count?.let { count ->
                                     Text(
-                                        text = "${(rating * 10).toInt() / 10.0}",
+                                        text = "($count votes)",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.White,
-                                        fontWeight = FontWeight.SemiBold
+                                        color = Color.White.copy(alpha = 0.7f)
                                     )
-                                    movie.vote_count?.let { count ->
-                                        Text(
-                                            text = "($count votes)",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = Color.White.copy(alpha = 0.7f)
-                                        )
-                                    }
                                 }
                             }
                         }
