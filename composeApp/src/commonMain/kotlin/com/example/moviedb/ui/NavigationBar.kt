@@ -1,5 +1,6 @@
 package com.example.moviedb.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -22,26 +23,29 @@ fun NavigationBar(
     modifier: Modifier = Modifier,
     appState: AppState,
 ) {
-    NavigationBar(
-        modifier = modifier,
-        tonalElevation = 0.dp,
-        content = {
-            appState.topLevelDestinations.forEach { destination ->
-                val selected = appState.currentTopLevelDestination == destination
-                NavigationBarItem(
-                    selected = selected,
-                    onClick = { appState.navigateToTopLevelDestination(destination) },
-                    icon = {
-                        Icon(
-                            imageVector = destination.icon,
-                            contentDescription = null,
-                        )
-                    },
-                    label = { Text(stringResource(getStringRes(destination))) },
-                )
-            }
-        },
-    )
+    AnimatedVisibility(visible = appState.shouldShowBottomBar()) {
+        NavigationBar(
+            modifier = modifier,
+            tonalElevation = 0.dp,
+            content = {
+                appState.topLevelDestinations.forEach { destination ->
+                    val selected = appState.currentTopLevelDestination == destination
+                    NavigationBarItem(
+                        selected = selected,
+                        onClick = { appState.navigateToTopLevelDestination(destination) },
+                        icon = {
+                            Icon(
+                                imageVector = destination.icon,
+                                contentDescription = null,
+                            )
+                        },
+                        label = { Text(stringResource(getStringRes(destination))) },
+                    )
+                }
+            },
+        )
+    }
+
 }
 
 private fun getStringRes(destination: TopLevelDestination): StringResource {
