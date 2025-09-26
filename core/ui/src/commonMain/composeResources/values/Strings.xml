@@ -6,4 +6,20 @@
     <string name="profile">Profile</string>
     <string name="notifications">Notifications</string>
     <string name="network_error">Error occurred. Please try again.</string>
+    <string name="error_loading_movie_details">Error loading movie details</string>
+    <string name="retry">Retry</string>
+    <string name="back">Back</string>
+    <string name="rating">Rating</string>
+    <string name="votes">votes</string>
+    <string name="release">Release</string>
+    <string name="runtime">Runtime</string>
+    <string name="language">Language</string>
+    <string name="overview">Overview</string>
+    <string name="genres">Genres</string>
+    <string name="box_office">Box Office</string>
+    <string name="budget">Budget</string>
+    <string name="revenue">Revenue</string>
+    <string name="production_companies">Production Companies</string>
+    <string name="production_countries">Production Countries</string>
+    <string name="minutes_suffix">min</string>
 </resources>

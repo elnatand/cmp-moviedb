@@ -46,6 +46,9 @@ import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.model.MovieDetails
 import com.example.moviedb.core.ui.design_system.MovieDbLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
+import com.example.moviedb.resources.Res
+import com.example.moviedb.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -102,7 +105,7 @@ private fun ErrorContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Error loading movie details",
+            text = stringResource(Res.string.error_loading_movie_details),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.error,
             textAlign = TextAlign.Center
@@ -119,11 +122,11 @@ private fun ErrorContent(
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
-                contentDescription = "Retry",
+                contentDescription = stringResource(Res.string.retry),
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Retry")
+            Text(stringResource(Res.string.retry))
         }
     }
 }
@@ -215,7 +218,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                     ) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Rating",
+                            contentDescription = stringResource(Res.string.rating),
                             tint = Color.Yellow,
                             modifier = Modifier.size(24.dp)
                         )
@@ -227,7 +230,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                         )
                         movie.vote_count?.let { count ->
                             Text(
-                                text = "($count votes)",
+                                text = "($count ${stringResource(Res.string.votes)})",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.White.copy(alpha = 0.7f)
                             )
@@ -250,7 +253,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                 movie.release_date?.let { date ->
                     InfoItem(
                         icon = Icons.Default.DateRange,
-                        label = "Release",
+                        label = stringResource(Res.string.release),
                         value = date.take(4)
                     )
                 }
@@ -258,15 +261,15 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                 movie.runtime?.let { runtime ->
                     InfoItem(
                         icon = Icons.Default.Timer,
-                        label = "Runtime",
-                        value = "${runtime}min"
+                        label = stringResource(Res.string.runtime),
+                        value = "$runtime${stringResource(Res.string.minutes_suffix)}"
                     )
                 }
 
                 movie.original_language?.let { language ->
                     InfoItem(
                         icon = Icons.Default.Language,
-                        label = "Language",
+                        label = stringResource(Res.string.language),
                         value = language.uppercase()
                     )
                 }
@@ -275,7 +278,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             // Overview Section
             movie.overview.takeIf { it.isNotBlank() }?.let { overview ->
                 SectionCard(
-                    title = "Overview",
+                    title = stringResource(Res.string.overview),
                     content = {
                         Text(
                             text = overview,
@@ -289,7 +292,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             // Genres Section
             movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
                 SectionCard(
-                    title = "Genres",
+                    title = stringResource(Res.string.genres),
                     content = {
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -312,18 +315,18 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             // Box Office Section
             if (movie.budget != null || movie.revenue != null) {
                 SectionCard(
-                    title = "Box Office",
+                    title = stringResource(Res.string.box_office),
                     content = {
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             movie.budget?.takeIf { it > 0 }?.let { budget ->
                                 BoxOfficeItem(
-                                    label = "Budget",
+                                    label = stringResource(Res.string.budget),
                                     amount = budget
                                 )
                             }
                             movie.revenue?.takeIf { it > 0 }?.let { revenue ->
                                 BoxOfficeItem(
-                                    label = "Revenue",
+                                    label = stringResource(Res.string.revenue),
                                     amount = revenue
                                 )
                             }
@@ -335,7 +338,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             // Production Section
             movie.production_companies?.takeIf { it.isNotEmpty() }?.let { companies ->
                 SectionCard(
-                    title = "Production Companies",
+                    title = stringResource(Res.string.production_companies),
                     content = {
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -355,7 +358,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             // Countries Section
             movie.production_countries?.takeIf { it.isNotEmpty() }?.let { countries ->
                 SectionCard(
-                    title = "Production Countries",
+                    title = stringResource(Res.string.production_countries),
                     content = {
                         Text(
                             text = countries.joinToString(", "),
