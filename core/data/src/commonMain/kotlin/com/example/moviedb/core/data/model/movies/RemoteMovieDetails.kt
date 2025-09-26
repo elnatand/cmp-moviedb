@@ -1,5 +1,6 @@
 package com.example.moviedb.core.data.model.movies
 
+import com.example.moviedb.core.database.model.MovieDetailsEntity
 import com.example.moviedb.core.model.MovieDetails
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -118,4 +119,30 @@ fun RemoteMovieDetails.toDomain(): MovieDetails = MovieDetails(
     production_companies = production_companies?.map { it.name },
     production_countries = production_countries?.map { it.name },
     spoken_languages = spoken_languages?.map { it.english_name }
+)
+
+fun RemoteMovieDetails.toEntity(): MovieDetailsEntity = MovieDetailsEntity(
+    id = id,
+    title = title,
+    overview = overview,
+    poster_path = poster_path,
+    backdrop_path = backdrop_path,
+    release_date = release_date,
+    runtime = runtime,
+    vote_average = vote_average,
+    vote_count = vote_count,
+    adult = adult,
+    budget = budget,
+    revenue = revenue,
+    homepage = homepage,
+    imdb_id = imdb_id,
+    original_language = original_language,
+    original_title = original_title,
+    popularity = popularity,
+    status = status,
+    tagline = tagline,
+    genres = genres?.joinToString(",") { it.name },
+    production_companies = production_companies?.joinToString(",") { it.name },
+    production_countries = production_countries?.joinToString(",") { it.name },
+    spoken_languages = spoken_languages?.joinToString(",") { it.english_name }
 )

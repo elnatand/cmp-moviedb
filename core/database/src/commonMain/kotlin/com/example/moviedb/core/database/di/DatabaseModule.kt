@@ -2,6 +2,7 @@ package com.example.moviedb.core.database.di
 
 import com.example.moviedb.core.common.DISPATCHER_IO
 import com.example.moviedb.core.database.getMovieDao
+import com.example.moviedb.core.database.getMovieDetailsDao
 import com.example.moviedb.core.database.getRoomDatabase
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -18,4 +19,5 @@ val databaseModule = module {
         )
     }
     single { getMovieDao(get()) }
+    single { getMovieDetailsDao(get()) }
 }

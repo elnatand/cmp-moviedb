@@ -23,8 +23,20 @@ val dataModule = module {
     }
     single<TvShowsRepository> { TvShowRepositoryImpl(tvShowsRemoteDataSource = get()) }
 
-    single { MoviesRemoteDataSource(httpClient = get(), appDispatcher = get(named(DISPATCHER_IO))) }
-    single { MoviesLocalDataSource(get()) }
+    single {
+        MoviesRemoteDataSource(
+            httpClient = get(),
+            appDispatcher = get(named(DISPATCHER_IO))
+        )
+    }
+
+    single {
+        MoviesLocalDataSource(
+            movieDao = get(),
+            movieDetailsDao = get(),
+            appDispatcher = get(named(DISPATCHER_IO))
+        )
+    }
 
     single<MoviesRepository> {
         MoviesRepositoryImpl(
