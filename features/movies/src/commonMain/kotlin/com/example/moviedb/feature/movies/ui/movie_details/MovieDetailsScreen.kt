@@ -327,27 +327,6 @@ fun MovieDetailsScreen(
                             }
                         )
                     }
-
-                    // Additional Info Section
-                    SectionCard(
-                        title = "Additional Information",
-                        content = {
-                            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                movie.status?.let { status ->
-                                    InfoRow(label = "Status", value = status)
-                                }
-                                movie.original_title?.takeIf { it != movie.title }?.let { originalTitle ->
-                                    InfoRow(label = "Original Title", value = originalTitle)
-                                }
-                                movie.popularity?.let { popularity ->
-                                    InfoRow(label = "Popularity", value = "${(popularity * 10).toInt() / 10.0}")
-                                }
-                                movie.imdb_id?.let { imdbId ->
-                                    InfoRow(label = "IMDb ID", value = imdbId)
-                                }
-                            }
-                        }
-                    )
                 }
             }
         }
@@ -428,28 +407,6 @@ private fun BoxOfficeItem(
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-@Composable
-private fun InfoRow(
-    label: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium
         )
     }
 }
