@@ -51,7 +51,7 @@ fun MoviesScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoviesScreen(
+private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit

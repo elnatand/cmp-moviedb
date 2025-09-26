@@ -36,7 +36,7 @@ fun TvShowsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TvShowsScreen(
+private fun TvShowsScreen(
     uiState: TvShowsViewModel.UiState,
     onClick: (id: Int, title: String) -> Unit
 ) {

@@ -64,7 +64,7 @@ fun MovieDetailsScreen(
 
 
 @Composable
-fun MovieDetailsScreen(
+private fun MovieDetailsScreen(
     uiState: MovieDetailsViewModel.UiState,
     onRetry: () -> Unit
 ) {
