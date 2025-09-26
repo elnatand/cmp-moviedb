@@ -4,7 +4,7 @@ package com.example.moviedb.feature.movies.ui.movies
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
-import com.example.moviedb.core.model.MDResponse
+import com.example.moviedb.core.model.AppResult
 import com.example.moviedb.feature.movies.model.MoviesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,11 +26,11 @@ class MoviesViewModel(
         viewModelScope.launch {
             moviesRepository.observeAllMovies().collect { response ->
                 when (response) {
-                    is MDResponse.Error -> _uiState.update { currentState ->
+                    is AppResult.Error -> _uiState.update { currentState ->
                         currentState.copy(state = MoviesUiState.State.ERROR)
                     }
 
-                    is MDResponse.Success -> _uiState.update { currentState ->
+                    is AppResult.Success -> _uiState.update { currentState ->
                         currentState.copy(
                             state = MoviesUiState.State.SUCCESS,
                             movies = response.data
