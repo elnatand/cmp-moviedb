@@ -35,7 +35,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun MoviesRoute(
+fun MoviesScreen(
     onClick: (movieId: Int, title: String) -> Unit
 ) {
     val viewModel = koinViewModel<MoviesViewModel>()

@@ -44,7 +44,7 @@ import rememberGalleryManager
 
 
 @Composable
-fun ProfileRoute() {
+fun ProfileScreenWrapper() {
     ProfileScreen()
 }
 

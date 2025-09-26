@@ -22,7 +22,7 @@ import com.example.moviedb.core.ui.utils.ImageLoader
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun TvShowDetailsRoute(
+fun TvShowDetailsScreen(
     tvShowId: Int,
     tvShowTitle: String,
     onBackPressed: () -> Unit,

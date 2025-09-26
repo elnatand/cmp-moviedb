@@ -7,7 +7,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
-import com.example.moviedb.feature.movies.ui.movies.MoviesRoute
+import com.example.moviedb.feature.movies.ui.movies.MoviesScreen
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -30,7 +30,7 @@ fun NavGraphBuilder.moviesScene(
     navigator: NavHostController,
 ) {
     composable<MoviesRoute> { entry ->
-        MoviesRoute { movieId, title ->
+        MoviesScreen { movieId, title ->
             navigator.navigate(MovieDetailsRoute(movieId))
         }
     }

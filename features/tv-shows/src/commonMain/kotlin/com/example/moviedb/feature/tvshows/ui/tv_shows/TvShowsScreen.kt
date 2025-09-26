@@ -23,7 +23,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun TvShowsRoute(
+fun TvShowsScreen(
     onClick: (id: Int, title: String) -> Unit
 ) {
     val viewModel = koinViewModel<TvShowsViewModel>()
