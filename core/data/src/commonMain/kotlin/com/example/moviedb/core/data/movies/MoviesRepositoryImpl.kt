@@ -1,18 +1,17 @@
 package com.example.moviedb.core.data.movies
 
+import com.example.moviedb.core.common.MDResponse
+import com.example.moviedb.core.data.model.movies.RemoteMovie
+import com.example.moviedb.core.data.model.movies.RemoteMoviesPage
 import com.example.moviedb.core.data.model.movies.asEntity
+import com.example.moviedb.core.data.model.movies.toEntity
 import com.example.moviedb.core.data.movies.data_sources.MoviesLocalDataSource
 import com.example.moviedb.core.data.movies.data_sources.MoviesRemoteDataSource
-import com.example.moviedb.core.data.model.movies.toDomain
-import com.example.moviedb.core.data.model.movies.toEntity
-import com.example.moviedb.core.database.model.MovieDetailsEntity
 import com.example.moviedb.core.model.Movie
 import com.example.moviedb.core.model.MovieDetails
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlin.collections.map
 
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
@@ -62,10 +61,7 @@ class MoviesRepositoryImpl(
         return moviesLocalDataSource.getMoviesDetails(movieId)!!.toDomain()
     }
 
-    override suspend fun loadPage(page: Int) {
-        val remoteMoviesPage = moviesRemoteDataSource.getMoviesPage(page)
-        moviesLocalDataSource.insertMoviesPage(
-            movies = remoteMoviesPage.map { it.asEntity(page) },
-        )
+    override suspend fun loadPage(page: Int): MDResponse<List<RemoteMovie>> {
+        return moviesRemoteDataSource.getMoviesPage(page)
     }
 }

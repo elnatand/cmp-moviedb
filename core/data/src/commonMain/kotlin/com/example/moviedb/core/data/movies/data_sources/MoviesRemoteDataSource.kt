@@ -1,6 +1,7 @@
 package com.example.moviedb.core.data.movies.data_sources
 
 import com.example.moviedb.core.common.AppDispatcher
+import com.example.moviedb.core.common.MDResponse
 import com.example.moviedb.core.data.model.TMDB_API_KEY
 import com.example.moviedb.core.data.model.movies.RemoteMovie
 import com.example.moviedb.core.data.model.movies.RemoteMoviesPage
@@ -16,20 +17,34 @@ class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatcher: AppDispatcher
 ) {
-    suspend fun getMoviesPage(page: Int): List<RemoteMovie> {
-        val moviesPages = withContext(appDispatcher.getDispatcher()) {
-            httpClient
-                .get("${TMDB_BASE_URL}movie/popular?api_key=$TMDB_API_KEY") {
-                    url { parameters.append("page", page.toString()) }
-                }.body<RemoteMoviesPage>()
+    suspend fun getMoviesPage(page: Int): MDResponse<List<RemoteMovie>> {
+        return try {
+            val moviesPages = withContext(appDispatcher.getDispatcher()) {
+                httpClient
+                    .get("${TMDB_BASE_URL}movie/popular?api_key=$TMDB_API_KEY") {
+                        url { parameters.append("page", page.toString()) }
+                    }.body<RemoteMoviesPage>()
+            }
+            MDResponse.Success(moviesPages.results)
+        } catch (e: Exception) {
+            MDResponse.Error(
+                message = e.message ?: "Unknown error occurred",
+                throwable = e
+            )
         }
-
-        return moviesPages.results
     }
 
-    suspend fun getMovieDetails(movieId: Int): RemoteMovieDetails {
-        return httpClient
-            .get("${TMDB_BASE_URL}movie/${movieId}?api_key=$TMDB_API_KEY")
-            .body()
+    suspend fun getMovieDetails(movieId: Int): MDResponse<RemoteMovieDetails> {
+        return try {
+            val movieDetails = httpClient
+                .get("${TMDB_BASE_URL}movie/${movieId}?api_key=$TMDB_API_KEY")
+                .body<RemoteMovieDetails>()
+            MDResponse.Success(movieDetails)
+        } catch (e: Exception) {
+            MDResponse.Error(
+                message = e.message ?: "Unknown error occurred",
+                throwable = e
+            )
+        }
     }
 }
