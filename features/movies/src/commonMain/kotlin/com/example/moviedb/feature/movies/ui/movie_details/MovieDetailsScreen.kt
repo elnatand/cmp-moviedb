@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
@@ -63,13 +62,14 @@ fun MovieDetailsScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+
 @Composable
 fun MovieDetailsScreen(
     uiState: MovieDetailsViewModel.UiState,
     onRetry: () -> Unit
 ) {
     Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize(),
     ) {
         when (uiState) {
@@ -127,7 +127,7 @@ private fun ErrorContent(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+
 @Composable
 private fun MovieDetailsContent(movie: MovieDetails) {
     Column(
@@ -139,7 +139,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
+                .height(400.dp)
         ) {
             // Backdrop Image
             movie.backdrop_path?.let { backdropPath ->
@@ -163,14 +163,15 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                     )
             )
 
-            // Poster in top left corner
+
             movie.poster_path?.let { posterPath ->
                 Card(
                     modifier = Modifier
+                        .systemBarsPadding()
                         .width(100.dp)
                         .height(150.dp)
                         .align(Alignment.TopStart)
-                        .padding(16.dp),
+                        .padding(start = 16.dp),
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
                 ) {
