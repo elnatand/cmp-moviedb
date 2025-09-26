@@ -139,7 +139,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                .height(450.dp)
         ) {
             // Backdrop Image
             movie.backdrop_path?.let { backdropPath ->
@@ -168,8 +168,8 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                 Card(
                     modifier = Modifier
                         .systemBarsPadding()
-                        .width(100.dp)
-                        .height(150.dp)
+                        .width(120.dp)
+                        .height(180.dp)
                         .align(Alignment.TopStart)
                         .padding(start = 16.dp),
                     shape = RoundedCornerShape(8.dp),
