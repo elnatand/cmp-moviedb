@@ -8,6 +8,7 @@ import com.example.moviedb.core.model.Movie
 import com.example.moviedb.core.model.MovieDetails
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlin.collections.map
 
@@ -51,7 +52,14 @@ class MoviesRepositoryImpl(
     }
 
     override suspend fun getMovieDetails(movieId: Int): MovieDetails {
-        return moviesRemoteDataSource.getMovieDetails(movieId).toDomain()
+        val localMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId).first()
+        if (localMovieDetails == null) {
+            val remoteMovieDetails = moviesRemoteDataSource.getMovieDetails(movieId)
+            moviesLocalDataSource.insertMovieDetails(remoteMovieDetails.asEntity())
+        }
+
+
+        return.toDomain()
     }
 
     override suspend fun loadPage(page: Int) {

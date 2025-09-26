@@ -5,12 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.movies.MoviesRepository
 import com.example.moviedb.core.model.MovieDetails
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-
 
 
 class MovieDetailsViewModel(
@@ -25,10 +22,9 @@ class MovieDetailsViewModel(
         getMovieDetails(movieId)
     }
 
-   private fun getMovieDetails(movieId: Int) {
+    private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
-
             try {
                 val movieDetails = moviesRepository.getMovieDetails(movieId)
                 _uiState.value = UiState.Success(movieDetails)
