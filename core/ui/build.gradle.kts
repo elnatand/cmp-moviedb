@@ -8,6 +8,10 @@ android {
     namespace = "com.example.moviedb.core.ui"
 }
 
+dependencies{
+    debugImplementation(compose.uiTooling)
+}
+
 kotlin {
     sourceSets {
         androidMain.dependencies {

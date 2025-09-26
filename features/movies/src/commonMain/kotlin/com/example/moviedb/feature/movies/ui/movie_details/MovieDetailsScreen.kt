@@ -46,6 +46,7 @@ import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.model.MovieDetails
 import com.example.moviedb.core.ui.design_system.MovieDbLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -443,4 +444,57 @@ private fun BoxOfficeItem(
             color = MaterialTheme.colorScheme.primary
         )
     }
+}
+
+@Preview
+@Composable
+private fun MovieDetailsScreenSuccessPreview() {
+    val sampleMovie = MovieDetails(
+        id = 1,
+        title = "Sample Movie",
+        overview = "This is a sample movie overview that demonstrates how the movie details screen looks with content.",
+        poster_path = "/sample_poster.jpg",
+        backdrop_path = "/sample_backdrop.jpg",
+        release_date = "2023-12-01",
+        vote_average = 8.5,
+        vote_count = 1250,
+        runtime = 142,
+        tagline = "An amazing cinematic experience",
+        genres = listOf("Action", "Adventure", "Sci-Fi"),
+        original_language = "en",
+        budget = 150000000,
+        revenue = 750000000,
+        production_companies = listOf("Marvel Studios", "Disney"),
+        production_countries = listOf("United States", "United Kingdom"),
+        adult = false,
+        homepage = "https://example.com",
+        imdb_id = "tt1234567",
+        original_title = "Sample Movie",
+        popularity = 85.5,
+        status = "Released",
+        spoken_languages = listOf("English", "Spanish")
+    )
+
+    MovieDetailsScreen(
+        uiState = MovieDetailsViewModel.UiState.Success(sampleMovie),
+        onRetry = {}
+    )
+}
+
+@Preview
+@Composable
+private fun MovieDetailsScreenLoadingPreview() {
+    MovieDetailsScreen(
+        uiState = MovieDetailsViewModel.UiState.Loading,
+        onRetry = {}
+    )
+}
+
+@Preview
+@Composable
+private fun MovieDetailsScreenErrorPreview() {
+    MovieDetailsScreen(
+        uiState = MovieDetailsViewModel.UiState.Error("Failed to load movie details. Please check your internet connection."),
+        onRetry = {}
+    )
 }
