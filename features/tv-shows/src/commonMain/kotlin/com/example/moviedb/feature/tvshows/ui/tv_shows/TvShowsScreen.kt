@@ -16,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.moviedb.feature.tvshows.model.TvShowsUiState
 import com.example.moviedb.resources.Res
 import com.example.moviedb.resources.tv_shows
 import org.jetbrains.compose.resources.stringResource
@@ -38,7 +39,7 @@ fun TvShowsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TvShowsScreen(
-    uiState: TvShowsViewModel.UiState,
+    uiState: TvShowsUiState,
     onClick: (id: Int, title: String) -> Unit
 ) {
     Scaffold(

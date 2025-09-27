@@ -9,7 +9,9 @@ class TvShowRepositoryImpl(
     private val tvShowsRemoteDataSource: TvShowsRemoteDataSource
 ) : TvShowsRepository {
 
-    override suspend fun getTvShowsPage(page: Int): List<TvShow> {
+    private var page = 1
+
+    override suspend fun getTvShowsPage(): List<TvShow> {
         return tvShowsRemoteDataSource.getTvShowPage(page).map {
             it.toDomain()
         }
