@@ -10,6 +10,7 @@ import com.example.moviedb.core.model.AppResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.withContext
 
 class TvShowsRemoteDataSource(
@@ -32,9 +33,14 @@ class TvShowsRemoteDataSource(
 
     suspend fun getTvShowDetails(tvShowId: Int): RemoteTvShowDetails {
         return withContext(appDispatcher.getDispatcher()) {
-            httpClient
+            val httpResponse = httpClient
                 .get("${TMDB_BASE_URL}tv/${tvShowId}?api_key=$TMDB_API_KEY")
-                .body()
+
+            val jsonBody = httpResponse.bodyAsText()
+            println("getTvShowDetails JSON response for ID $tvShowId:")
+            println(jsonBody)
+
+            httpResponse.body<RemoteTvShowDetails>()
         }
     }
 }

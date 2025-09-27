@@ -1,6 +1,7 @@
 package com.example.moviedb.feature.tvshows.ui.tv_show_details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
@@ -464,10 +466,12 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
             }
 
             if (tvShow.homepage.isNotBlank()) {
+                val uriHandler = LocalUriHandler.current
                 InfoRow(
                     icon = Icons.Default.Language,
                     label = "Official Website",
-                    value = tvShow.homepage
+                    value = tvShow.homepage,
+                    onClick = { uriHandler.openUri(tvShow.homepage) }
                 )
             }
         }
@@ -475,7 +479,7 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
 }
 
 @Composable
-private fun ProductionSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun ProductionSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -518,7 +522,7 @@ private fun ProductionSection(tvShow: com.example.moviedb.core.model.TvShowDetai
 }
 
 @Composable
-private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun EpisodesSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -576,7 +580,7 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
 }
 
 @Composable
-private fun GenresSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun GenresSection(tvShow: TvShowDetails) {
     if (tvShow.genres.isNotEmpty()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -609,7 +613,7 @@ private fun GenresSection(tvShow: com.example.moviedb.core.model.TvShowDetails) 
 }
 
 @Composable
-private fun NetworksSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun NetworksSection(tvShow: TvShowDetails) {
     if (tvShow.networks.isNotEmpty()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -642,7 +646,7 @@ private fun NetworksSection(tvShow: com.example.moviedb.core.model.TvShowDetails
 }
 
 @Composable
-private fun LanguagesSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun LanguagesSection(tvShow: TvShowDetails) {
     if (tvShow.spokenLanguages.isNotEmpty() || tvShow.languages.isNotEmpty()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -683,10 +687,13 @@ private fun InfoRow(
     icon: ImageVector,
     label: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .let { if (onClick != null) it.clickable { onClick() } else it },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -707,7 +714,8 @@ private fun InfoRow(
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            color = if (onClick != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
         )
     }
 }

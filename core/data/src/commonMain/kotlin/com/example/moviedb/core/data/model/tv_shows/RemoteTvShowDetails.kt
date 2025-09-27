@@ -38,7 +38,7 @@ data class RemoteTvShowDetails(
     @SerialName("name")
     val name: String = "",
     @SerialName("next_episode_to_air")
-    val nextEpisodeToAir: String? = "",
+    val nextEpisodeToAir: Episode? = Episode(),
     @SerialName("networks")
     val networks: List<Network> = emptyList(),
     @SerialName("number_of_episodes")
@@ -110,13 +110,13 @@ data class Episode(
     @SerialName("production_code")
     val productionCode: String = "",
     @SerialName("runtime")
-    val runtime: Int = 0,
+    val runtime: Int? = 0,
     @SerialName("season_number")
     val seasonNumber: Int = 0,
     @SerialName("show_id")
     val showId: Int = 0,
     @SerialName("still_path")
-    val stillPath: String = ""
+    val stillPath: String? = ""
 )
 
 @Serializable
@@ -134,7 +134,7 @@ data class Network(
 @Serializable
 data class Season(
     @SerialName("air_date")
-    val airDate: String = "",
+    val airDate: String? = "",
     @SerialName("episode_count")
     val episodeCount: Int = 0,
     @SerialName("id")
@@ -184,6 +184,6 @@ fun RemoteTvShowDetails.toDomain() = TvShowDetails(
     createdBy = createdBy.map { it.name },
     lastEpisodeName = lastEpisodeToAir.name,
     lastEpisodeAirDate = lastEpisodeToAir.airDate,
-    nextEpisodeToAir = nextEpisodeToAir,
+    nextEpisodeToAir = nextEpisodeToAir?.airDate,
     nextEpisodeAirDate = ""
 )
