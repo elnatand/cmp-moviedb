@@ -132,7 +132,7 @@ private fun MoviesList(
         modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
         content = {
             items(uiState.movies) {
-                MovieCell(
+                MovieTile(
                     movie = it,
                     onClick = onClick
                 )

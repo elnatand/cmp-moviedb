@@ -59,7 +59,7 @@ private fun TvShowsScreen(
                 modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
                 content = {
                     items(uiState.tvShows) {
-                        TvShowCell(
+                        TvShowTile(
                             tvShow = it,
                             onClick = onClick
                         )

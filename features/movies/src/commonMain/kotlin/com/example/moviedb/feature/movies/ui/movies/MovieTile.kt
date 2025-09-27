@@ -1,4 +1,4 @@
-package com.example.moviedb.feature.tvshows.ui.tv_shows
+package com.example.moviedb.feature.movies.ui.movies
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,20 +20,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
-import com.example.moviedb.core.model.TvShow
+import com.example.moviedb.core.model.Movie
 import com.example.moviedb.core.ui.utils.ImageLoader
 
 @Composable
-fun TvShowCell(
-    tvShow: TvShow,
-    onClick: (id: Int, title: String) -> Unit
+fun MovieTile(
+    movie: Movie,
+    onClick: (movieId: Int, title: String) -> Unit
 ) {
-    val imageUrl = "$TMDB_IMAGE_URL${tvShow.poster_path ?: ""}"
+    val imageUrl = "$TMDB_IMAGE_URL${movie.poster_path ?: ""}"
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(tvShow.id, tvShow.name) },
+            .clickable { onClick(movie.id, movie.title) },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp,
@@ -46,7 +46,7 @@ fun TvShowCell(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // TV Show Poster with overlay
+            // Movie Poster with overlay
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -71,7 +71,7 @@ fun TvShowCell(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = tvShow.name,
+                        text = movie.title,
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface,
