@@ -4,8 +4,7 @@ import kotlin.apply
 plugins {
     alias(libs.plugins.moviedb.androidLibrary)
     alias(libs.plugins.moviedb.kotlinMultiplatform)
-    alias(libs.plugins.moviedb.composeMultiplatform)
-    alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.kotlinxSerialization) // for remote objects
 }
 
 val secretKeyProperties: Properties by lazy {

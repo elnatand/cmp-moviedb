@@ -11,6 +11,7 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(compose.runtime) // for coroutines dispatchers
             implementation(libs.koin.core)
         }
     }
