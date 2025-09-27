@@ -3,22 +3,21 @@ package com.example.moviedb.core.data.tv_shows.data_sources
 import com.example.moviedb.core.common.AppDispatcher
 import com.example.moviedb.core.data.model.TMDB_API_KEY
 import com.example.moviedb.core.data.model.TMDB_BASE_URL
+import com.example.moviedb.core.data.model.platformCountry
+import com.example.moviedb.core.data.model.platformLanguage
 import com.example.moviedb.core.data.model.tv_shows.RemoteTvShowDetails
 import com.example.moviedb.core.data.model.tv_shows.RemoteTvShowsPage
 import com.example.moviedb.core.model.AppResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
 import kotlinx.coroutines.withContext
 
 class TvShowsRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatcher: AppDispatcher
 ) {
-
-    private val language = "en-US"
-   // private val language = "he-IL"
+    private val language = "$platformLanguage-$platformCountry"
     suspend fun getPopularTvShowsPage(page: Int): AppResult<RemoteTvShowsPage> {
         return try {
             val tvShowsPage = withContext(appDispatcher.getDispatcher()) {
@@ -46,10 +45,6 @@ class TvShowsRemoteDataSource(
                         parameters.append("language", language)
                     }
                 }
-
-            val jsonBody = httpResponse.bodyAsText()
-            println("getTvShowDetails JSON response for ID $tvShowId:")
-            println(jsonBody)
 
             httpResponse.body<RemoteTvShowDetails>()
         }
