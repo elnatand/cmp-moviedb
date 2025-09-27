@@ -59,6 +59,34 @@ import com.example.moviedb.resources.seasons
 import com.example.moviedb.resources.episodes
 import com.example.moviedb.resources.networks
 import com.example.moviedb.resources.languages
+import com.example.moviedb.resources.episode_runtime
+import com.example.moviedb.resources.type
+import com.example.moviedb.resources.original_language
+import com.example.moviedb.resources.origin_country
+import com.example.moviedb.resources.ratings_popularity
+import com.example.moviedb.resources.rating
+import com.example.moviedb.resources.votes
+import com.example.moviedb.resources.popularity
+import com.example.moviedb.resources.score
+import com.example.moviedb.resources.series_status
+import com.example.moviedb.resources.status
+import com.example.moviedb.resources.in_production
+import com.example.moviedb.resources.total_seasons
+import com.example.moviedb.resources.content_rating
+import com.example.moviedb.resources.adult_content
+import com.example.moviedb.resources.official_website
+import com.example.moviedb.resources.production
+import com.example.moviedb.resources.created_by
+import com.example.moviedb.resources.production_companies
+import com.example.moviedb.resources.production_countries
+import com.example.moviedb.resources.last_episode
+import com.example.moviedb.resources.next_episode
+import com.example.moviedb.resources.aired_prefix
+import com.example.moviedb.resources.airs_prefix
+import com.example.moviedb.resources.spoken_languages
+import com.example.moviedb.resources.available_languages
+import com.example.moviedb.resources.yes
+import com.example.moviedb.resources.no
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -308,7 +336,7 @@ private fun BasicInfoSection(tvShow: TvShowDetails) {
             tvShow.episodeRunTime?.takeIf { it.isNotEmpty() }?.let { episodeRunTime ->
                 InfoRow(
                     icon = Icons.Default.PlayArrow,
-                    label = "Episode Runtime",
+                    label = stringResource(Res.string.episode_runtime),
                     value = "${episodeRunTime.average().toInt()} min"
                 )
             }
@@ -316,21 +344,21 @@ private fun BasicInfoSection(tvShow: TvShowDetails) {
             tvShow.type?.takeIf { it.isNotEmpty() }?.let { type ->
                 InfoRow(
                     icon = Icons.Default.Tv,
-                    label = "Type",
+                    label = stringResource(Res.string.type),
                     value = type
                 )
             }
 
             InfoRow(
                 icon = Icons.Default.Language,
-                label = "Original Language",
+                label = stringResource(Res.string.original_language),
                 value = (tvShow.originalLanguage ?: "").uppercase()
             )
 
             tvShow.originCountry?.takeIf { it.isNotEmpty() }?.let { originCountry ->
                 InfoRow(
                     icon = Icons.Default.Language,
-                    label = "Origin Country",
+                    label = stringResource(Res.string.origin_country),
                     value = originCountry.joinToString(", ")
                 )
             }
@@ -387,7 +415,7 @@ private fun RatingsSection(tvShow: TvShowDetails) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Ratings & Popularity",
+                text = stringResource(Res.string.ratings_popularity),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -397,7 +425,7 @@ private fun RatingsSection(tvShow: TvShowDetails) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 RatingCard(
-                    title = "Rating",
+                    title = stringResource(Res.string.rating),
                     value = "${((tvShow.voteAverage ?: 0.0) * 10).toInt() / 10.0}",
                     subtitle = "⭐",
                     modifier = Modifier.weight(1f)
@@ -406,18 +434,18 @@ private fun RatingsSection(tvShow: TvShowDetails) {
                 Spacer(modifier = Modifier.width(8.dp))
 
                 RatingCard(
-                    title = "Votes",
+                    title = stringResource(Res.string.votes),
                     value = "${tvShow.voteCount ?: 0}",
-                    subtitle = "votes",
+                    subtitle = stringResource(Res.string.votes),
                     modifier = Modifier.weight(1f)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
                 RatingCard(
-                    title = "Popularity",
+                    title = stringResource(Res.string.popularity),
                     value = "${(tvShow.popularity ?: 0.0).toInt()}",
-                    subtitle = "score",
+                    subtitle = stringResource(Res.string.score),
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -436,34 +464,34 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Series Status",
+                text = stringResource(Res.string.series_status),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
             InfoRow(
                 icon = Icons.Default.Tv,
-                label = "Status",
-                value = tvShow.status?.ifEmpty { "Unknown" } ?: "Unknown"
+                label = stringResource(Res.string.status),
+                value = tvShow.status?.ifEmpty { stringResource(Res.string.unknown) } ?: stringResource(Res.string.unknown)
             )
 
             InfoRow(
                 icon = Icons.Default.PlayArrow,
-                label = "In Production",
-                value = if (tvShow.inProduction == true) "Yes" else "No"
+                label = stringResource(Res.string.in_production),
+                value = if (tvShow.inProduction == true) stringResource(Res.string.yes) else stringResource(Res.string.no)
             )
 
             InfoRow(
                 icon = Icons.Default.Tv,
-                label = "Total Seasons",
+                label = stringResource(Res.string.total_seasons),
                 value = "${tvShow.seasonsCount ?: 0}"
             )
 
             if (tvShow.adult == true) {
                 InfoRow(
                     icon = Icons.Default.People,
-                    label = "Content Rating",
-                    value = "Adult Content"
+                    label = stringResource(Res.string.content_rating),
+                    value = stringResource(Res.string.adult_content)
                 )
             }
 
@@ -471,7 +499,7 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
                 val uriHandler = LocalUriHandler.current
                 InfoRow(
                     icon = Icons.Default.Language,
-                    label = "Official Website",
+                    label = stringResource(Res.string.official_website),
                     value = homepage,
                     onClick = { uriHandler.openUri(homepage) }
                 )
@@ -491,7 +519,7 @@ private fun ProductionSection(tvShow: TvShowDetails) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Production",
+                text = stringResource(Res.string.production),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -499,7 +527,7 @@ private fun ProductionSection(tvShow: TvShowDetails) {
             tvShow.createdBy?.takeIf { it.isNotEmpty() }?.let { createdBy ->
                 InfoRow(
                     icon = Icons.Default.People,
-                    label = "Created By",
+                    label = stringResource(Res.string.created_by),
                     value = createdBy.joinToString(", ")
                 )
             }
@@ -507,7 +535,7 @@ private fun ProductionSection(tvShow: TvShowDetails) {
             tvShow.productionCompanies?.takeIf { it.isNotEmpty() }?.let { productionCompanies ->
                 InfoRow(
                     icon = Icons.Default.People,
-                    label = "Production Companies",
+                    label = stringResource(Res.string.production_companies),
                     value = productionCompanies.joinToString(", ")
                 )
             }
@@ -515,7 +543,7 @@ private fun ProductionSection(tvShow: TvShowDetails) {
             tvShow.productionCountries?.takeIf { it.isNotEmpty() }?.let { productionCountries ->
                 InfoRow(
                     icon = Icons.Default.Language,
-                    label = "Production Countries",
+                    label = stringResource(Res.string.production_countries),
                     value = productionCountries.joinToString(", ")
                 )
             }
@@ -534,14 +562,14 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Episodes",
+                text = stringResource(Res.string.episodes),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
             tvShow.lastEpisodeName?.takeIf { it.isNotEmpty() }?.let { lastEpisodeName ->
                 Text(
-                    text = "Last Episode",
+                    text = stringResource(Res.string.last_episode),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
@@ -551,7 +579,7 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
                 )
                 tvShow.lastEpisodeAirDate?.takeIf { it.isNotEmpty() }?.let { lastEpisodeAirDate ->
                     Text(
-                        text = "Aired: ${formatDate(lastEpisodeAirDate)}",
+                        text = "${stringResource(Res.string.aired_prefix)}${formatDate(lastEpisodeAirDate)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -561,7 +589,7 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
             tvShow.nextEpisodeToAir?.takeIf { it.isNotEmpty() }?.let { nextEpisodeToAir ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Next Episode",
+                    text = stringResource(Res.string.next_episode),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
@@ -571,7 +599,7 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
                 )
                 tvShow.nextEpisodeAirDate?.takeIf { it.isNotEmpty() }?.let { nextEpisodeAirDate ->
                     Text(
-                        text = "Airs: ${formatDate(nextEpisodeAirDate)}",
+                        text = "${stringResource(Res.string.airs_prefix)}${formatDate(nextEpisodeAirDate)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -669,7 +697,7 @@ private fun LanguagesSection(tvShow: TvShowDetails) {
                 tvShow.spokenLanguages?.takeIf { it.isNotEmpty() }?.let { spokenLanguages ->
                     InfoRow(
                         icon = Icons.Default.Language,
-                        label = "Spoken Languages",
+                        label = stringResource(Res.string.spoken_languages),
                         value = spokenLanguages.joinToString(", ")
                     )
                 }
@@ -677,7 +705,7 @@ private fun LanguagesSection(tvShow: TvShowDetails) {
                 tvShow.languages?.takeIf { it.isNotEmpty() }?.let { languages ->
                     InfoRow(
                         icon = Icons.Default.Language,
-                        label = "Available Languages",
+                        label = stringResource(Res.string.available_languages),
                         value = languages.joinToString(", ")
                     )
                 }
