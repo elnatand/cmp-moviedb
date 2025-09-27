@@ -7,11 +7,6 @@ group = "com.example.movidb.buildlogic"
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
-    compileOnly(libs.plugins.composeMultiplatform.toDep())
-}
-
-fun Provider<PluginDependency>.toDep() = map {
-    "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version}"
 }
 
 tasks {

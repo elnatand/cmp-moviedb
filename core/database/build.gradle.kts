@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.moviedb.androidLibrary)
     alias(libs.plugins.moviedb.kotlinMultiplatform)
-    alias(libs.plugins.moviedb.composeMultiplatform)
 
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
