@@ -1,16 +1,17 @@
 # CMP MovieDB
 
-A Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform that displays movies and TV shows information. The app targets both Android and iOS platforms with shared business logic and UI components.
+A **multi-module** Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform that displays movies and TV shows information. The app targets both Android and iOS platforms with shared business logic and UI components using a modular architecture approach.
 
 ## 🏗️ Architecture
 
-The project follows Clean Architecture principles with a modular approach:
+The project follows Clean Architecture principles with a **feature-based multi-module architecture**:
 
+- **Multi-Module Design**: Separated into core modules and feature modules for scalability
 - **MVVM Pattern**: ViewModels handle UI state and business logic
-- **Repository Pattern**: Data layer abstraction
-- **Dependency Injection**: Koin for DI across modules
-- **Compose Multiplatform**: Shared UI components
-- **Room Database**: Local database management
+- **Repository Pattern**: Data layer abstraction across modules
+- **Dependency Injection**: Koin for DI coordination across all modules
+- **Compose Multiplatform**: Shared UI components in dedicated modules
+- **Room Database**: Local database management with dedicated database module
 
 ## 📱 Features
 
@@ -20,7 +21,7 @@ The project follows Clean Architecture principles with a modular approach:
 - **TV Shows**: Explore popular TV shows with pagination support
 - **TV Show Details**: View detailed information about individual TV shows
 - **Profile**: User profile management screen
-- **Cross-platform**: Shared codebase for Android and iOS
+- **Cross-platform**: Shared multi-module codebase for Android and iOS
 - **Offline Support**: Local database caching with Room for movies and movie details
 - **Auto-pagination**: Automatic loading of next pages when scrolling to bottom
 - **Error Handling**: Proper error states and loading indicators
@@ -270,11 +271,12 @@ TMDB_API_KEY=abcd1234567890efgh
 ## 🔧 Development Setup
 
 ### Architecture Details
-- **Clean Architecture** with Repository pattern
+- **Multi-Module Clean Architecture** with Repository pattern across modules
 - **MVVM** using Compose ViewModels with StateFlow
-- **Reactive UI** with Flow-based data streaming
+- **Reactive UI** with Flow-based data streaming between modules
 - **Platform-specific configs** using expect/actual pattern
-- **Modular design** with feature-based separation
+- **Feature-based modular design** with clear separation of concerns
+- **Module isolation** with well-defined APIs and dependency injection
 
 ### Build Configuration
 - **Gradle Version Catalogs** (`gradle/libs.versions.toml`)
