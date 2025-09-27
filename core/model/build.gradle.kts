@@ -1,6 +1,6 @@
 plugins {
-    id("moviedb.kotlin.multiplatform")
-    id("moviedb.kotlin.composeMultiplatform")
+    alias(libs.plugins.moviedb.kotlinMultiplatform)
+    alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
 kotlin {
