@@ -5,13 +5,13 @@
     "sourceSetName": "uikitMain"
   },
   {
-    "moduleId": "androidx.sqlite:sqlite-bundled:2.6.0",
-    "file": "/Users/elnatan/StudioProjects/cmp-moviedb/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/androidx.sqlite-sqlite-bundled-2.6.0-nativeMain-cinterop/androidx.sqlite_sqlite-bundled-cinterop-androidXBundledSqlite-dCYVRw.klib",
+    "moduleId": "androidx.sqlite:sqlite-bundled:2.6.1",
+    "file": "/Users/elnatan/StudioProjects/cmp-moviedb/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/androidx.sqlite-sqlite-bundled-2.6.1-nativeMain-cinterop/androidx.sqlite_sqlite-bundled-cinterop-androidXBundledSqlite-dCYVRw.klib",
     "sourceSetName": "nativeMain"
   },
   {
-    "moduleId": "androidx.sqlite:sqlite-framework:2.6.0",
-    "file": "/Users/elnatan/StudioProjects/cmp-moviedb/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/androidx.sqlite-sqlite-framework-2.6.0-nativeMain-cinterop/androidx.sqlite_sqlite-framework-cinterop-sqlite3-5Ubkcg.klib",
+    "moduleId": "androidx.sqlite:sqlite-framework:2.6.1",
+    "file": "/Users/elnatan/StudioProjects/cmp-moviedb/.kotlin/metadata/kotlinTransformedCInteropMetadataLibraries/androidx.sqlite-sqlite-framework-2.6.1-nativeMain-cinterop/androidx.sqlite_sqlite-framework-cinterop-sqlite3-5Ubkcg.klib",
     "sourceSetName": "nativeMain"
   },
   {
