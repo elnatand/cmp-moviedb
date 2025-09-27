@@ -60,6 +60,21 @@ import com.example.moviedb.resources.languages
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+private fun formatDate(dateString: String): String {
+    if (dateString.isEmpty()) return ""
+    return try {
+        // Input format: yyyy-mm-dd
+        val parts = dateString.split("-")
+        if (parts.size == 3) {
+            "${parts[2]}.${parts[1]}.${parts[0]}"
+        } else {
+            dateString
+        }
+    } catch (e: Exception) {
+        dateString
+    }
+}
+
 @Composable
 fun TvShowDetailsScreen(
     tvShowId: Int,
@@ -264,14 +279,14 @@ private fun BasicInfoSection(tvShow: TvShowDetails) {
             InfoRow(
                 icon = Icons.Default.CalendarToday,
                 label = stringResource(Res.string.first_air_date),
-                value = tvShow.firstAirDate.ifEmpty { stringResource(Res.string.unknown) }
+                value = formatDate(tvShow.firstAirDate).ifEmpty { stringResource(Res.string.unknown) }
             )
 
             if (tvShow.lastAirDate.isNotEmpty()) {
                 InfoRow(
                     icon = Icons.Default.CalendarToday,
                     label = stringResource(Res.string.last_air_date),
-                    value = tvShow.lastAirDate
+                    value = formatDate(tvShow.lastAirDate)
                 )
             }
 
@@ -530,7 +545,7 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                 )
                 if (tvShow.lastEpisodeAirDate.isNotEmpty()) {
                     Text(
-                        text = "Aired: ${tvShow.lastEpisodeAirDate}",
+                        text = "Aired: ${formatDate(tvShow.lastEpisodeAirDate)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -550,7 +565,7 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                 )
                 if (tvShow.nextEpisodeAirDate.isNotEmpty()) {
                     Text(
-                        text = "Airs: ${tvShow.nextEpisodeAirDate}",
+                        text = "Airs: ${formatDate(tvShow.nextEpisodeAirDate)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
