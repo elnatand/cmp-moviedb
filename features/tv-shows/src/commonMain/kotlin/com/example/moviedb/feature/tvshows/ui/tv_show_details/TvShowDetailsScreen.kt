@@ -162,9 +162,9 @@ private fun HeroSection(tvShow: TvShowDetails) {
             .height(400.dp)
     ) {
         // Backdrop Image
-        if (tvShow.backdropPath.isNotEmpty()) {
+        tvShow.backdropPath?.takeIf { it.isNotEmpty() }?.let { backdropPath ->
             ImageLoader(
-                imageUrl = "$TMDB_IMAGE_URL${tvShow.backdropPath}",
+                imageUrl = "$TMDB_IMAGE_URL$backdropPath",
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -196,7 +196,7 @@ private fun HeroSection(tvShow: TvShowDetails) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 ImageLoader(
-                    imageUrl = "$TMDB_IMAGE_URL${tvShow.posterPath}",
+                    imageUrl = "$TMDB_IMAGE_URL${tvShow.posterPath ?: ""}",
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -207,15 +207,16 @@ private fun HeroSection(tvShow: TvShowDetails) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = tvShow.name,
+                    text = tvShow.name ?: "Unknown",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
 
-                if (tvShow.originalName != tvShow.name) {
+                val originalName = tvShow.originalName
+                if (originalName != null && originalName != tvShow.name) {
                     Text(
-                        text = tvShow.originalName,
+                        text = originalName,
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White.copy(alpha = 0.8f)
                     )
@@ -237,19 +238,19 @@ private fun HeroSection(tvShow: TvShowDetails) {
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "${(tvShow.voteAverage * 10).toInt() / 10.0}",
+                            text = "${((tvShow.voteAverage ?: 0.0) * 10).toInt() / 10.0}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White
                         )
                     }
 
                     // Status
-                    if (tvShow.status.isNotEmpty()) {
+                    tvShow.status?.takeIf { it.isNotEmpty() }?.let { status ->
                         AssistChip(
                             onClick = { },
                             label = {
                                 Text(
-                                    text = tvShow.status,
+                                    text = status,
                                     style = MaterialTheme.typography.labelSmall,
                                     color = Color.White
                                 )
@@ -281,56 +282,56 @@ private fun BasicInfoSection(tvShow: TvShowDetails) {
             InfoRow(
                 icon = Icons.Default.CalendarToday,
                 label = stringResource(Res.string.first_air_date),
-                value = formatDate(tvShow.firstAirDate).ifEmpty { stringResource(Res.string.unknown) }
+                value = formatDate(tvShow.firstAirDate ?: "").ifEmpty { stringResource(Res.string.unknown) }
             )
 
-            if (tvShow.lastAirDate.isNotEmpty()) {
+            tvShow.lastAirDate?.takeIf { it.isNotEmpty() }?.let { lastAirDate ->
                 InfoRow(
                     icon = Icons.Default.CalendarToday,
                     label = stringResource(Res.string.last_air_date),
-                    value = formatDate(tvShow.lastAirDate)
+                    value = formatDate(lastAirDate)
                 )
             }
 
             InfoRow(
                 icon = Icons.Default.Tv,
                 label = stringResource(Res.string.seasons),
-                value = "${tvShow.numberOfSeasons}"
+                value = "${tvShow.numberOfSeasons ?: 0}"
             )
 
             InfoRow(
                 icon = Icons.Default.PlayArrow,
                 label = stringResource(Res.string.episodes),
-                value = "${tvShow.numberOfEpisodes}"
+                value = "${tvShow.numberOfEpisodes ?: 0}"
             )
 
-            if (tvShow.episodeRunTime.isNotEmpty()) {
+            tvShow.episodeRunTime?.takeIf { it.isNotEmpty() }?.let { episodeRunTime ->
                 InfoRow(
                     icon = Icons.Default.PlayArrow,
                     label = "Episode Runtime",
-                    value = "${tvShow.episodeRunTime.average().toInt()} min"
+                    value = "${episodeRunTime.average().toInt()} min"
                 )
             }
 
-            if (tvShow.type.isNotEmpty()) {
+            tvShow.type?.takeIf { it.isNotEmpty() }?.let { type ->
                 InfoRow(
                     icon = Icons.Default.Tv,
                     label = "Type",
-                    value = tvShow.type
+                    value = type
                 )
             }
 
             InfoRow(
                 icon = Icons.Default.Language,
                 label = "Original Language",
-                value = tvShow.originalLanguage.uppercase()
+                value = (tvShow.originalLanguage ?: "").uppercase()
             )
 
-            if (tvShow.originCountry.isNotEmpty()) {
+            tvShow.originCountry?.takeIf { it.isNotEmpty() }?.let { originCountry ->
                 InfoRow(
                     icon = Icons.Default.Language,
                     label = "Origin Country",
-                    value = tvShow.originCountry.joinToString(", ")
+                    value = originCountry.joinToString(", ")
                 )
             }
         }
@@ -339,7 +340,8 @@ private fun BasicInfoSection(tvShow: TvShowDetails) {
 
 @Composable
 private fun OverviewSection(tvShow: TvShowDetails) {
-    if (tvShow.overview.isNotBlank()) {
+    val overview = tvShow.overview
+    if (!overview.isNullOrBlank()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -355,14 +357,14 @@ private fun OverviewSection(tvShow: TvShowDetails) {
                 )
 
                 Text(
-                    text = tvShow.overview,
+                    text = overview,
                     style = MaterialTheme.typography.bodyMedium,
                     lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.4
                 )
 
-                if (tvShow.tagline.isNotBlank()) {
+                tvShow.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
                     Text(
-                        text = "\"${tvShow.tagline}\"",
+                        text = "\"$tagline\"",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary,
@@ -396,7 +398,7 @@ private fun RatingsSection(tvShow: TvShowDetails) {
             ) {
                 RatingCard(
                     title = "Rating",
-                    value = "${(tvShow.voteAverage * 10).toInt() / 10.0}",
+                    value = "${((tvShow.voteAverage ?: 0.0) * 10).toInt() / 10.0}",
                     subtitle = "⭐",
                     modifier = Modifier.weight(1f)
                 )
@@ -405,7 +407,7 @@ private fun RatingsSection(tvShow: TvShowDetails) {
 
                 RatingCard(
                     title = "Votes",
-                    value = "${tvShow.voteCount}",
+                    value = "${tvShow.voteCount ?: 0}",
                     subtitle = "votes",
                     modifier = Modifier.weight(1f)
                 )
@@ -414,7 +416,7 @@ private fun RatingsSection(tvShow: TvShowDetails) {
 
                 RatingCard(
                     title = "Popularity",
-                    value = "${tvShow.popularity.toInt()}",
+                    value = "${(tvShow.popularity ?: 0.0).toInt()}",
                     subtitle = "score",
                     modifier = Modifier.weight(1f)
                 )
@@ -442,22 +444,22 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
             InfoRow(
                 icon = Icons.Default.Tv,
                 label = "Status",
-                value = tvShow.status.ifEmpty { "Unknown" }
+                value = tvShow.status?.ifEmpty { "Unknown" } ?: "Unknown"
             )
 
             InfoRow(
                 icon = Icons.Default.PlayArrow,
                 label = "In Production",
-                value = if (tvShow.inProduction) "Yes" else "No"
+                value = if (tvShow.inProduction == true) "Yes" else "No"
             )
 
             InfoRow(
                 icon = Icons.Default.Tv,
                 label = "Total Seasons",
-                value = "${tvShow.seasonsCount}"
+                value = "${tvShow.seasonsCount ?: 0}"
             )
 
-            if (tvShow.adult) {
+            if (tvShow.adult == true) {
                 InfoRow(
                     icon = Icons.Default.People,
                     label = "Content Rating",
@@ -465,13 +467,13 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
                 )
             }
 
-            if (tvShow.homepage.isNotBlank()) {
+            tvShow.homepage?.takeIf { it.isNotBlank() }?.let { homepage ->
                 val uriHandler = LocalUriHandler.current
                 InfoRow(
                     icon = Icons.Default.Language,
                     label = "Official Website",
-                    value = tvShow.homepage,
-                    onClick = { uriHandler.openUri(tvShow.homepage) }
+                    value = homepage,
+                    onClick = { uriHandler.openUri(homepage) }
                 )
             }
         }
@@ -494,27 +496,27 @@ private fun ProductionSection(tvShow: TvShowDetails) {
                 fontWeight = FontWeight.Bold
             )
 
-            if (tvShow.createdBy.isNotEmpty()) {
+            tvShow.createdBy?.takeIf { it.isNotEmpty() }?.let { createdBy ->
                 InfoRow(
                     icon = Icons.Default.People,
                     label = "Created By",
-                    value = tvShow.createdBy.joinToString(", ")
+                    value = createdBy.joinToString(", ")
                 )
             }
 
-            if (tvShow.productionCompanies.isNotEmpty()) {
+            tvShow.productionCompanies?.takeIf { it.isNotEmpty() }?.let { productionCompanies ->
                 InfoRow(
                     icon = Icons.Default.People,
                     label = "Production Companies",
-                    value = tvShow.productionCompanies.joinToString(", ")
+                    value = productionCompanies.joinToString(", ")
                 )
             }
 
-            if (tvShow.productionCountries.isNotEmpty()) {
+            tvShow.productionCountries?.takeIf { it.isNotEmpty() }?.let { productionCountries ->
                 InfoRow(
                     icon = Icons.Default.Language,
                     label = "Production Countries",
-                    value = tvShow.productionCountries.joinToString(", ")
+                    value = productionCountries.joinToString(", ")
                 )
             }
         }
@@ -537,26 +539,26 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
                 fontWeight = FontWeight.Bold
             )
 
-            if (tvShow.lastEpisodeName.isNotEmpty()) {
+            tvShow.lastEpisodeName?.takeIf { it.isNotEmpty() }?.let { lastEpisodeName ->
                 Text(
                     text = "Last Episode",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = tvShow.lastEpisodeName,
+                    text = lastEpisodeName,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                if (tvShow.lastEpisodeAirDate.isNotEmpty()) {
+                tvShow.lastEpisodeAirDate?.takeIf { it.isNotEmpty() }?.let { lastEpisodeAirDate ->
                     Text(
-                        text = "Aired: ${formatDate(tvShow.lastEpisodeAirDate)}",
+                        text = "Aired: ${formatDate(lastEpisodeAirDate)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            tvShow.nextEpisodeToAir?.let {
+            tvShow.nextEpisodeToAir?.takeIf { it.isNotEmpty() }?.let { nextEpisodeToAir ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Next Episode",
@@ -564,12 +566,12 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = it,
+                    text = nextEpisodeToAir,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                if (tvShow.nextEpisodeAirDate.isNotEmpty()) {
+                tvShow.nextEpisodeAirDate?.takeIf { it.isNotEmpty() }?.let { nextEpisodeAirDate ->
                     Text(
-                        text = "Airs: ${formatDate(tvShow.nextEpisodeAirDate)}",
+                        text = "Airs: ${formatDate(nextEpisodeAirDate)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -581,7 +583,7 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
 
 @Composable
 private fun GenresSection(tvShow: TvShowDetails) {
-    if (tvShow.genres.isNotEmpty()) {
+    tvShow.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -600,7 +602,7 @@ private fun GenresSection(tvShow: TvShowDetails) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    tvShow.genres.forEach { genre ->
+                    genres.forEach { genre ->
                         SuggestionChip(
                             onClick = { },
                             label = { Text(text = genre) }
@@ -614,7 +616,7 @@ private fun GenresSection(tvShow: TvShowDetails) {
 
 @Composable
 private fun NetworksSection(tvShow: TvShowDetails) {
-    if (tvShow.networks.isNotEmpty()) {
+    tvShow.networks?.takeIf { it.isNotEmpty() }?.let { networks ->
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -633,7 +635,7 @@ private fun NetworksSection(tvShow: TvShowDetails) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    tvShow.networks.forEach { network ->
+                    networks.forEach { network ->
                         AssistChip(
                             onClick = { },
                             label = { Text(text = network) }
@@ -647,7 +649,9 @@ private fun NetworksSection(tvShow: TvShowDetails) {
 
 @Composable
 private fun LanguagesSection(tvShow: TvShowDetails) {
-    if (tvShow.spokenLanguages.isNotEmpty() || tvShow.languages.isNotEmpty()) {
+    val hasSpokenLanguages = tvShow.spokenLanguages?.isNotEmpty() == true
+    val hasLanguages = tvShow.languages?.isNotEmpty() == true
+    if (hasSpokenLanguages || hasLanguages) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -662,19 +666,19 @@ private fun LanguagesSection(tvShow: TvShowDetails) {
                     fontWeight = FontWeight.Bold
                 )
 
-                if (tvShow.spokenLanguages.isNotEmpty()) {
+                tvShow.spokenLanguages?.takeIf { it.isNotEmpty() }?.let { spokenLanguages ->
                     InfoRow(
                         icon = Icons.Default.Language,
                         label = "Spoken Languages",
-                        value = tvShow.spokenLanguages.joinToString(", ")
+                        value = spokenLanguages.joinToString(", ")
                     )
                 }
 
-                if (tvShow.languages.isNotEmpty()) {
+                tvShow.languages?.takeIf { it.isNotEmpty() }?.let { languages ->
                     InfoRow(
                         icon = Icons.Default.Language,
                         label = "Available Languages",
-                        value = tvShow.languages.joinToString(", ")
+                        value = languages.joinToString(", ")
                     )
                 }
             }
