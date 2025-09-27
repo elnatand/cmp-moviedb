@@ -6,6 +6,7 @@ import com.example.moviedb.core.data.model.TMDB_BASE_URL
 import com.example.moviedb.core.data.model.tv_shows.RemoteTvShow
 import com.example.moviedb.core.data.model.tv_shows.RemoteTvShowDetails
 import com.example.moviedb.core.data.model.tv_shows.RemoteTvShowsPage
+import com.example.moviedb.core.model.AppResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -15,14 +16,18 @@ class TvShowsRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatcher: AppDispatcher
 ) {
-    suspend fun getTvShowPage(page: Int): List<RemoteTvShow> {
-        val tvShowsPages = withContext(appDispatcher.getDispatcher()) {
-            httpClient
-                .get("${TMDB_BASE_URL}tv/popular?api_key=$TMDB_API_KEY") {
-                    url { parameters.append("page", page.toString()) }
-                }.body<RemoteTvShowsPage>()
+    suspend fun getTvShowsPage(page: Int): AppResult<RemoteTvShowsPage> {
+        return try {
+            val tvShowsPage = withContext(appDispatcher.getDispatcher()) {
+                httpClient
+                    .get("${TMDB_BASE_URL}tv/popular?api_key=$TMDB_API_KEY") {
+                        url { parameters.append("page", page.toString()) }
+                    }.body<RemoteTvShowsPage>()
+            }
+            AppResult.Success(tvShowsPage)
+        } catch (e: Exception) {
+            AppResult.Error(e.message ?: "Unknown error occurred")
         }
-        return tvShowsPages.results
     }
 
     suspend fun getTvShowDetails(tvShowId: Int): RemoteTvShowDetails {
@@ -31,6 +36,5 @@ class TvShowsRemoteDataSource(
                 .get("${TMDB_BASE_URL}tv/${tvShowId}?api_key=$TMDB_API_KEY")
                 .body()
         }
-
     }
 }

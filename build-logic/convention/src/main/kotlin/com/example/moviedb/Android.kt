@@ -4,15 +4,20 @@ import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 
-
+/**
+ * Configures Android-specific settings for both application and library modules
+ * Uses version catalog for SDK versions
+ */
 fun Project.configureAndroid(
     commonExtension: CommonExtension<*, *, *, *, *, *>,
 ) {
+    val sdkVersions = getAndroidSdkVersions()
+
     commonExtension.apply {
-        compileSdk = Versions.COMPILE_SDK
+        compileSdk = sdkVersions.compileSdk
 
         defaultConfig {
-            minSdk = Versions.MIN_SDK
+            minSdk = sdkVersions.minSdk
         }
 
         compileOptions {

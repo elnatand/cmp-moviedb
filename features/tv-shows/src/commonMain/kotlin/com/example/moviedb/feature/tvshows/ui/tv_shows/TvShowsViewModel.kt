@@ -1,41 +1,52 @@
 package com.example.moviedb.feature.tvshows.ui.tv_shows
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.example.moviedb.core.data.tv_shows.TvShowsRepository
-import com.example.moviedb.core.model.TvShow
-
+import com.example.moviedb.core.model.AppResult
+import com.example.moviedb.feature.tvshows.model.TvShowsUiState
 
 class TvShowsViewModel(
     private val tvShowsRepository: TvShowsRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
+    private val _uiState = MutableStateFlow(TvShowsUiState(state = TvShowsUiState.State.LOADING))
     val uiState = _uiState.asStateFlow()
 
-    private val page = 1
-
     init {
-        getTvShows()
+        observeTvShows()
     }
 
-    private fun getTvShows() {
+    private fun observeTvShows() {
         viewModelScope.launch {
-            val tvShows = tvShowsRepository.getTvShowsPage(page)
-            _uiState.update {
-                it.copy(tvShows = tvShows)
+            tvShowsRepository.observeAllTvShows().collect { response ->
+                when (response) {
+                    is AppResult.Error -> _uiState.update { currentState ->
+                        currentState.copy(state = TvShowsUiState.State.ERROR)
+                    }
+
+                    is AppResult.Success -> _uiState.update { currentState ->
+                        currentState.copy(
+                            state = TvShowsUiState.State.SUCCESS,
+                            tvShows = response.data
+                        )
+                    }
+                }
             }
         }
     }
 
-    data class UiState(
-        val tvShows: List<TvShow> = emptyList()
-    )
+    fun loadNextPage() {
+        _uiState.update { state ->
+            state.copy(state = TvShowsUiState.State.LOADING)
+        }
+
+        viewModelScope.launch {
+            tvShowsRepository.loadNextPage()
+        }
+    }
 }

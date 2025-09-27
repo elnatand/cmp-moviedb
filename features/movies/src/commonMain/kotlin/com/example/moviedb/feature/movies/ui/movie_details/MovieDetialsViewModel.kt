@@ -15,7 +15,7 @@ class MovieDetailsViewModel(
     private val moviesRepository: MoviesRepository,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+    private val _uiState = MutableStateFlow<MovieDetailsUiState>(MovieDetailsUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -24,12 +24,12 @@ class MovieDetailsViewModel(
 
     private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch {
-            _uiState.value = UiState.Loading
+            _uiState.value = MovieDetailsUiState.Loading
             try {
                 val movieDetails = moviesRepository.getMovieDetails(movieId)
-                _uiState.value = UiState.Success(movieDetails)
+                _uiState.value = MovieDetailsUiState.Success(movieDetails)
             } catch (e: Exception) {
-                _uiState.value = UiState.Error(e.message ?: "Unknown error occurred")
+                _uiState.value = MovieDetailsUiState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
@@ -38,9 +38,9 @@ class MovieDetailsViewModel(
         getMovieDetails(movieId)
     }
 
-    sealed interface UiState {
-        data object Loading : UiState
-        data class Success(val movieDetails: MovieDetails) : UiState
-        data class Error(val message: String) : UiState
+    sealed interface MovieDetailsUiState {
+        data object Loading : MovieDetailsUiState
+        data class Success(val movieDetails: MovieDetails) : MovieDetailsUiState
+        data class Error(val message: String) : MovieDetailsUiState
     }
 }

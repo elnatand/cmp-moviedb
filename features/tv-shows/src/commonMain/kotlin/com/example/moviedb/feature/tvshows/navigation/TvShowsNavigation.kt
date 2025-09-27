@@ -17,9 +17,8 @@ data object TvShowsRoute
 
 @Serializable
 @SerialName("tv_show_details")
-data class TvShowDetails(
+data class TvShowDetailsRoute(
     val tvShowId: Int,
-    val title: String
 )
 
 fun NavHostController.navigateToTvShows(
@@ -31,20 +30,17 @@ fun NavHostController.navigateToTvShows(
 fun NavGraphBuilder.tvShowsScene(navigator: NavHostController) {
     composable<TvShowsRoute> {
         TvShowsScreen { tvShowId, tvShowTitle ->
-            navigator.navigate(TvShowDetails(tvShowId, tvShowTitle))
+            navigator.navigate(TvShowDetailsRoute(tvShowId))
         }
     }
 }
 
 fun NavGraphBuilder.tvShowDetailsScene(navigator: NavHostController) {
-    composable<TvShowDetails> { entry ->
-        val params = entry.toRoute<TvShowDetails>()
+    composable<TvShowDetailsRoute> { entry ->
+        val params = entry.toRoute<TvShowDetailsRoute>()
         val tvShowId: Int = params.tvShowId
-        val tvShowTitle: String = params.title
         TvShowDetailsScreen(
             tvShowId = tvShowId,
-            tvShowTitle = tvShowTitle,
-            onBackPressed = { navigator.popBackStack() }
         )
     }
 }

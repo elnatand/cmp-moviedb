@@ -1,26 +1,31 @@
 # CMP MovieDB
 
-A Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform that displays movies and TV shows information. The app targets both Android and iOS platforms with shared business logic and UI components.
+A **multi-module** Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform that displays movies and TV shows information. The app targets both Android and iOS platforms with shared business logic and UI components using a modular architecture approach.
 
 ## 🏗️ Architecture
 
-The project follows Clean Architecture principles with a modular approach:
+The project follows Clean Architecture principles with a **feature-based multi-module architecture**:
 
+- **Multi-Module Design**: Separated into core modules and feature modules for scalability
 - **MVVM Pattern**: ViewModels handle UI state and business logic
-- **Repository Pattern**: Data layer abstraction
-- **Dependency Injection**: Koin for DI across modules
-- **Compose Multiplatform**: Shared UI components
-- **Room Database**: Local database management
+- **Repository Pattern**: Data layer abstraction across modules
+- **Dependency Injection**: Koin for DI coordination across all modules
+- **Compose Multiplatform**: Shared UI components in dedicated modules
+- **Room Database**: Local database management with dedicated database module
 
 ## 📱 Features
 
-- **Movies**: Browse and view movie details with infinite scroll pagination
-- **TV Shows**: Explore TV shows with detailed information
-- **Profile**: User profile management
-- **Offline Support**: Local database caching with page-based data storage
-- **Cross-platform**: Shared codebase for Android and iOS
-- **Error Handling**: Top-positioned SnackBar notifications for network errors
-- **Auto-pagination**: Automatic loading of next movie pages when scrolling to bottom
+### Currently Implemented
+- **Movies**: Browse popular movies with infinite scroll pagination
+- **Movie Details**: View detailed information about individual movies
+- **TV Shows**: Explore popular TV shows with pagination support
+- **TV Show Details**: View detailed information about individual TV shows
+- **Profile**: User profile management screen
+- **Cross-platform**: Shared multi-module codebase for Android and iOS
+- **Offline Support**: Local database caching with Room for movies and movie details
+- **Auto-pagination**: Automatic loading of next pages when scrolling to bottom
+- **Error Handling**: Proper error states and loading indicators
+- **Modern UI**: Material 3 design system with tile-based layouts
 
 ## 📁 Project Structure
 
@@ -103,14 +108,16 @@ cmp-moviedb/
 ## 🛠️ Technology Stack
 
 ### Shared
-- **Kotlin Multiplatform Mobile (KMM)**
-- **Compose Multiplatform** - UI framework
-- **Koin** - Dependency injection
-- **Room** - Local database with page-based data storage
-- **Ktor** - Networking (implied from data layer)
-- **Kotlin Coroutines** - Asynchronous programming
-- **LazyVerticalGrid** - Grid-based UI with scroll detection
-- **Material3 SnackBar** - Error notifications and user feedback
+- **Kotlin Multiplatform** - v2.2.20
+- **Compose Multiplatform** - v1.9.0 UI framework
+- **Koin** - v4.1.1 Dependency injection
+- **Room** - v2.8.0 Local database with SQLite bundled driver
+- **Ktor** - v3.3.0 HTTP client for API calls
+- **Kotlin Coroutines & Flow** - Asynchronous programming and reactive streams
+- **Coil** - v3.3.0 Image loading with Compose integration
+- **Kotlinx Serialization** - JSON serialization for API responses
+- **Navigation Compose** - v2.9.0 for navigation
+- **Material 3** - Design system components
 
 ### Android
 - **Jetpack Compose** - UI toolkit
@@ -122,11 +129,12 @@ cmp-moviedb/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Android Studio Arctic Fox or later
-- Xcode 13+ (for iOS development)
-- JDK 21
-- Kotlin Multiplatform Mobile plugin
-- TMDB API Key (see setup instructions below)
+- **Android Studio** - Ladybug or later with KMP plugin
+- **Xcode 15+** (for iOS development)
+- **JDK 21** (configured in project)
+- **Kotlin Multiplatform Mobile plugin**
+- **TMDB API Key** (see setup instructions below)
+- **Gradle 8.13+** (wrapper included)
 
 ### 🔑 API Key Setup
 
@@ -237,19 +245,25 @@ TMDB_API_KEY=abcd1234567890efgh
 ## 📦 Modules Overview
 
 ### Core Modules
-- **core:common** - Common utilities, coroutine dispatchers, and shared DI configuration
-- **core:data** - Repository implementations, data sources, and network setup
-- **core:database** - Room database configuration and platform drivers
-- **core:model** - Shared data models and UI state definitions
-- **core:ui** - Common UI components and platform-specific utilities
+- **core:common** - AppDispatchers, shared utilities, and common DI
+- **core:data** - Repository implementations, remote data sources, and HTTP client setup
+- **core:database** - Room database with MovieDao, MovieDetailsDao, and SQLite driver
+- **core:model** - Domain models (Movie, TvShow, MovieDetails, TvShowDetails, AppResult)
+- **core:ui** - Shared UI components, ImageLoader, design system, and platform utilities
 
 ### Feature Modules
-- **features:movies** - Complete movies feature with list and details
-- **features:tv-shows** - TV shows browsing and details functionality
-- **features:profile** - User profile management
+- **features:movies** - Movies list, movie details screens, and ViewModels
+- **features:tv-shows** - TV shows list, TV show details screens, and ViewModels
+- **features:profile** - User profile screen and ViewModel
 
 ### App Module
-- **composeApp** - Main application module with navigation and DI setup
+- **composeApp** - Main app with navigation, DI setup, and platform-specific configurations
+
+### Build Logic
+- **build-logic:convention** - Custom Gradle convention plugins with shared build configurations:
+  - `moviedb.kotlin.multiplatform` - KMP setup with iOS/Android targets
+  - `moviedb.kotlin.composeMultiplatform` - Compose Multiplatform dependencies
+  - `moviedb.android.library` - Android library configuration
 
 ## 🏛️ Architecture Layers
 
@@ -259,15 +273,61 @@ TMDB_API_KEY=abcd1234567890efgh
 
 ## 🔧 Development Setup
 
-The project uses Gradle version catalogs and custom convention plugins for dependency management. Check `build-logic/` for shared build configuration.
+### Architecture Details
+- **Multi-Module Clean Architecture** with Repository pattern across modules
+- **MVVM** using Compose ViewModels with StateFlow
+- **Reactive UI** with Flow-based data streaming between modules
+- **Platform-specific configs** using expect/actual pattern
+- **Feature-based modular design** with clear separation of concerns
+- **Module isolation** with well-defined APIs and dependency injection
+
+### Build Configuration
+- **Gradle Version Catalogs** (`gradle/libs.versions.toml`) - Centralized dependency management
+- **Custom Convention Plugins** in `build-logic/convention/` module:
+  - **KMP Convention**: Configures Kotlin Multiplatform with iOS ARM64/Simulator targets
+  - **Compose Convention**: Adds all Compose Multiplatform dependencies automatically
+  - **Android Library Convention**: Standardizes Android module configuration
+  - **Shared Android Config**: Consistent compile/target SDK versions (34), min SDK (24), JDK 21
+- **KSP** for Room database code generation
+- **Compose Resources** for shared string resources
+- **Platform-specific** configurations using expect/actual pattern
+
+### Development Commands
+```bash
+# Build all modules
+./gradlew build
+
+# Clean build
+./gradlew clean build
+
+# Android debug build
+./gradlew :composeApp:assembleDebug
+
+# Format code (if ktlint is configured)
+./gradlew ktlintFormat
+```
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-f
-## TODOs
-- Network Error and Exceptions
-- Movie and TV Show details
-- Implement pagination for TV Shows feature
-- Add unit tests for pagination logic
-- Implement error retry mechanism
+
+## 📋 Development Roadmap
+
+### High Priority
+- [ ] Add TV Show database entities and local caching (currently only Movies are cached)
+- [ ] Implement comprehensive error handling with retry mechanisms
+- [ ] Add pull-to-refresh functionality
+- [ ] Create unit tests for ViewModels and repositories
+
+### Medium Priority
+- [ ] Implement search functionality across movies and TV shows
+- [ ] Add favorites/watchlist feature with local storage
+- [ ] Enhance loading states with skeleton screens
+- [ ] Add more comprehensive movie/TV show details (cast, crew, reviews)
+
+### Low Priority
+- [ ] Add dark/light theme toggle
+- [ ] Implement offline-first architecture with better sync strategies
+- [ ] Add user authentication and personalized recommendations
+- [ ] Performance optimizations for large datasets
+- [ ] Add accessibility improvements

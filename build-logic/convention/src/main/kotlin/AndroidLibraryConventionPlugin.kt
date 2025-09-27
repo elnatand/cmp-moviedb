@@ -1,6 +1,6 @@
 import com.android.build.gradle.LibraryExtension
-import com.example.moviedb.Versions
 import com.example.moviedb.configureAndroid
+import com.example.moviedb.getAndroidSdkVersions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -15,7 +15,9 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureAndroid(this)
-                defaultConfig.targetSdk = Versions.TARGET_SDK
+
+                val sdkVersions = getAndroidSdkVersions()
+                defaultConfig.targetSdk = sdkVersions.targetSdk
             }
         }
     }
