@@ -3,9 +3,13 @@ plugins {
     id("moviedb.kotlin.multiplatform")
     id("moviedb.kotlin.composeMultiplatform")
 }
-//android section should be before kotlin section
+
 android {
     namespace = "com.example.moviedb.core.ui"
+}
+
+dependencies{
+    debugImplementation(compose.uiTooling)
 }
 
 kotlin {
@@ -13,6 +17,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
             implementation(libs.accompanist.permissions)
+            implementation(compose.preview)
         }
         commonMain.dependencies {
             api(libs.koin.compose.viewmodel)

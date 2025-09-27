@@ -1,13 +1,14 @@
 package com.example.moviedb.core.data.movies
 
+import com.example.moviedb.core.model.AppResult
 import com.example.moviedb.core.model.Movie
 import com.example.moviedb.core.model.MovieDetails
 import kotlinx.coroutines.flow.Flow
 
 interface MoviesRepository {
-    suspend fun observeMoviesPage(page: Int): Flow<List<Movie>>
 
-   suspend fun observeAllMovies(initialPage: Int): Flow<List<Movie>>
+    suspend fun observeAllMovies(): Flow<AppResult<List<Movie>>>
     suspend fun getMovieDetails(movieId: Int): MovieDetails
-    suspend fun loadPage(page: Int)
+    suspend fun loadNextPage()
+    suspend fun refresh(): AppResult<List<Movie>>
 }

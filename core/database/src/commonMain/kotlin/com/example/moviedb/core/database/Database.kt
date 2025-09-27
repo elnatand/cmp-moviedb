@@ -6,14 +6,21 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.example.moviedb.core.common.AppDispatcher
+import com.example.moviedb.core.database.model.MovieDetailsEntity
 import com.example.moviedb.core.database.model.MovieEntity
 
 
-
-@Database(entities = [MovieEntity::class], version = 1)
+@Database(
+    entities = [
+        MovieEntity::class,
+        MovieDetailsEntity::class
+    ],
+    version = 1
+)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getMovieDao(): MovieDao
+    abstract fun getMovieDetailsDao(): MovieDetailsDao
 }
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")
@@ -32,5 +39,6 @@ fun getRoomDatabase(
 }
 
 fun getMovieDao(database: AppDatabase) = database.getMovieDao()
+fun getMovieDetailsDao(database: AppDatabase) = database.getMovieDetailsDao()
 
 

@@ -4,13 +4,13 @@ import com.example.moviedb.core.model.TvShow
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class NetworkTvShow(
+data class RemoteTvShow(
     val id: Int,
     val name: String,
     val poster_path: String?,
 )
 
-fun NetworkTvShow.toDomain(): TvShow {
+fun RemoteTvShow.toDomain(): TvShow {
     return TvShow(
         id = id,
         name = name,

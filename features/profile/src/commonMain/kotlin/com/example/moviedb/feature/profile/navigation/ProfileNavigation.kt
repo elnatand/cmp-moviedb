@@ -4,7 +4,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.example.moviedb.feature.profile.ui.ProfileRoute
+import com.example.moviedb.feature.profile.ui.ProfileScreen
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -18,6 +19,6 @@ fun NavHostController.navigateToProfile(navOptions: NavOptions) {
 
 fun NavGraphBuilder.profileScene() {
     composable<ProfileRoute> { entry ->
-        ProfileRoute()
+        ProfileScreen()
     }
 }

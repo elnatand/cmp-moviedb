@@ -23,11 +23,12 @@ import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun TvShowsRoute(
+fun TvShowsScreen(
     onClick: (id: Int, title: String) -> Unit
 ) {
     val viewModel = koinViewModel<TvShowsViewModel>()
     val uiState by viewModel.uiState.collectAsState()
+
     TvShowsScreen(
         uiState = uiState,
         onClick = onClick
@@ -36,7 +37,7 @@ fun TvShowsRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TvShowsScreen(
+private fun TvShowsScreen(
     uiState: TvShowsViewModel.UiState,
     onClick: (id: Int, title: String) -> Unit
 ) {

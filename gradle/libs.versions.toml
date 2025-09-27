@@ -1,4 +1,4 @@
- [versions]
+[versions]
 
 android-minSdk = "24"
 android-compileSdk = "36"

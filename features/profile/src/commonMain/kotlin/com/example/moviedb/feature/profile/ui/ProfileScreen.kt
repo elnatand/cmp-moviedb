@@ -43,11 +43,6 @@ import rememberCameraManager
 import rememberGalleryManager
 
 
-@Composable
-fun ProfileRoute() {
-    ProfileScreen()
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen() {

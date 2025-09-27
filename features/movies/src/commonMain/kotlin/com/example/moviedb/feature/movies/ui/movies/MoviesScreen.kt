@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.moviedb.core.ui.design_system.Loader
+import com.example.moviedb.core.ui.design_system.AppLoader
 import com.example.moviedb.feature.movies.model.MoviesUiState
 import com.example.moviedb.resources.Res
 import com.example.moviedb.resources.movies
@@ -35,7 +35,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
-fun MoviesRoute(
+fun MoviesScreen(
     onClick: (movieId: Int, title: String) -> Unit
 ) {
     val viewModel = koinViewModel<MoviesViewModel>()
@@ -51,7 +51,7 @@ fun MoviesRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoviesScreen(
+private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit
@@ -78,7 +78,7 @@ fun MoviesScreen(
             }
 
             if (uiState.state == MoviesUiState.State.LOADING) {
-                Loader()
+                AppLoader()
             }
 
             // Show error as SnackBar

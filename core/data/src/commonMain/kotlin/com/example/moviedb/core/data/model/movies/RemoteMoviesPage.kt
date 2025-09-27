@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class RemoteMoviesPage(
     val page: Int,
     val total_pages: Int,
-    val results: List<NetworkMovie>
+    val results: List<RemoteMovie>
 )
