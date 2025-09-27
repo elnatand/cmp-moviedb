@@ -121,7 +121,7 @@ class MoviesRepositoryImpl(
 
         val nextPage = currentPage + 1
 
-        when (val result = moviesRemoteDataSource.getMoviesPage(nextPage)) {
+        when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage)) {
             is AppResult.Success -> {
                 totalPages = result.data.total_pages
                 val entities = result.data.results.map { it.asEntity(nextPage) }

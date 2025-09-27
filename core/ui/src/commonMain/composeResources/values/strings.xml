@@ -1,0 +1,62 @@
+<resources>
+    <string name="movies">Movies</string>
+    <string name="camera">Camera</string>
+    <string name="user_name">Name</string>
+    <string name="tv_shows">TV Shows</string>
+    <string name="profile">Profile</string>
+    <string name="notifications">Notifications</string>
+    <string name="network_error">Error occurred. Please try again.</string>
+    <string name="error_loading_movie_details">Error loading movie details</string>
+    <string name="retry">Retry</string>
+    <string name="back">Back</string>
+    <string name="rating">Rating</string>
+    <string name="votes">votes</string>
+    <string name="release">Release</string>
+    <string name="runtime">Runtime</string>
+    <string name="language">Language</string>
+    <string name="overview">Overview</string>
+    <string name="genres">Genres</string>
+    <string name="box_office">Box Office</string>
+    <string name="budget">Budget</string>
+    <string name="revenue">Revenue</string>
+    <string name="production_companies">Production Companies</string>
+    <string name="production_countries">Production Countries</string>
+    <string name="minutes_suffix">min</string>
+
+    <!-- TV Show Details Screen -->
+    <string name="series_information">Series Information</string>
+    <string name="first_air_date">First Air Date</string>
+    <string name="last_air_date">Last Air Date</string>
+    <string name="seasons">Seasons</string>
+    <string name="episodes">Episodes</string>
+    <string name="episode_runtime">Episode Runtime</string>
+    <string name="type">Type</string>
+    <string name="original_language">Original Language</string>
+    <string name="origin_country">Origin Country</string>
+    <string name="ratings_popularity">Ratings &amp; Popularity</string>
+    <string name="popularity">Popularity</string>
+    <string name="score">score</string>
+    <string name="series_status">Series Status</string>
+    <string name="status">Status</string>
+    <string name="in_production">In Production</string>
+    <string name="total_seasons">Total Seasons</string>
+    <string name="content_rating">Content Rating</string>
+    <string name="adult_content">Adult Content</string>
+    <string name="official_website">Official Website</string>
+    <string name="production">Production</string>
+    <string name="created_by">Created By</string>
+    <string name="last_episode">Last Episode</string>
+    <string name="next_episode">Next Episode</string>
+    <string name="aired_prefix">Aired: </string>
+    <string name="airs_prefix">Airs: </string>
+    <string name="networks">Networks</string>
+    <string name="languages">Languages</string>
+    <string name="spoken_languages">Spoken Languages</string>
+    <string name="available_languages">Available Languages</string>
+    <string name="unknown">Unknown</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- Error Messages -->
+    <string name="unknown_error_occurred">Unknown error occurred</string>
+</resources>

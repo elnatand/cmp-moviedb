@@ -1,6 +1,7 @@
 package com.example.moviedb.feature.tvshows.ui.tv_show_details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
@@ -45,8 +47,35 @@ import com.example.moviedb.core.model.TvShowDetails
 import com.example.moviedb.core.ui.design_system.AppErrorComponent
 import com.example.moviedb.core.ui.design_system.AppLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
+import org.jetbrains.compose.resources.stringResource
+import com.example.moviedb.resources.Res
+import com.example.moviedb.resources.overview
+import com.example.moviedb.resources.genres
+import com.example.moviedb.resources.unknown
+import com.example.moviedb.resources.series_information
+import com.example.moviedb.resources.first_air_date
+import com.example.moviedb.resources.last_air_date
+import com.example.moviedb.resources.seasons
+import com.example.moviedb.resources.episodes
+import com.example.moviedb.resources.networks
+import com.example.moviedb.resources.languages
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+private fun formatDate(dateString: String): String {
+    if (dateString.isEmpty()) return ""
+    return try {
+        // Input format: yyyy-mm-dd
+        val parts = dateString.split("-")
+        if (parts.size == 3) {
+            "${parts[2]}.${parts[1]}.${parts[0]}"
+        } else {
+            dateString
+        }
+    } catch (e: Exception) {
+        dateString
+    }
+}
 
 @Composable
 fun TvShowDetailsScreen(
@@ -73,11 +102,10 @@ fun TvShowDetailsScreen(
     ) {
         when (uiState) {
             is TvShowDetailsViewModel.TvShowDetailsUiState.Loading -> AppLoader()
-            is TvShowDetailsViewModel.TvShowDetailsUiState.Error ->
-                AppErrorComponent(
-                    message = uiState.message,
-                    onRetry = onRetry
-                )
+            is TvShowDetailsViewModel.TvShowDetailsUiState.Error -> AppErrorComponent(
+                message = uiState.message,
+                onRetry = onRetry
+            )
 
             is TvShowDetailsViewModel.TvShowDetailsUiState.Success -> {
                 Column(
@@ -134,7 +162,7 @@ private fun HeroSection(tvShow: TvShowDetails) {
             .height(400.dp)
     ) {
         // Backdrop Image
-        tvShow.backdropPath?.let { backdropPath ->
+        tvShow.backdropPath?.takeIf { it.isNotEmpty() }?.let { backdropPath ->
             ImageLoader(
                 imageUrl = "$TMDB_IMAGE_URL$backdropPath",
                 modifier = Modifier.fillMaxSize()
@@ -168,7 +196,7 @@ private fun HeroSection(tvShow: TvShowDetails) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 ImageLoader(
-                    imageUrl = "$TMDB_IMAGE_URL${tvShow.posterPath}",
+                    imageUrl = "$TMDB_IMAGE_URL${tvShow.posterPath ?: ""}",
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -179,15 +207,16 @@ private fun HeroSection(tvShow: TvShowDetails) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = tvShow.name,
+                    text = tvShow.name ?: "Unknown",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
 
-                if (tvShow.originalName != tvShow.name) {
+                val originalName = tvShow.originalName
+                if (originalName != null && originalName != tvShow.name) {
                     Text(
-                        text = tvShow.originalName,
+                        text = originalName,
                         style = MaterialTheme.typography.titleMedium,
                         color = Color.White.copy(alpha = 0.8f)
                     )
@@ -209,14 +238,14 @@ private fun HeroSection(tvShow: TvShowDetails) {
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = "${(tvShow.voteAverage * 10).toInt() / 10.0}",
+                            text = "${((tvShow.voteAverage ?: 0.0) * 10).toInt() / 10.0}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.White
                         )
                     }
 
                     // Status
-                    tvShow.status?.let { status ->
+                    tvShow.status?.takeIf { it.isNotEmpty() }?.let { status ->
                         AssistChip(
                             onClick = { },
                             label = {
@@ -235,7 +264,7 @@ private fun HeroSection(tvShow: TvShowDetails) {
 }
 
 @Composable
-private fun BasicInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun BasicInfoSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -245,46 +274,46 @@ private fun BasicInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetail
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Series Information",
+                text = stringResource(Res.string.series_information),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
             InfoRow(
                 icon = Icons.Default.CalendarToday,
-                label = "First Air Date",
-                value = tvShow.firstAirDate ?: "Unknown"
+                label = stringResource(Res.string.first_air_date),
+                value = formatDate(tvShow.firstAirDate ?: "").ifEmpty { stringResource(Res.string.unknown) }
             )
 
-            tvShow.lastAirDate?.let { lastAirDate ->
+            tvShow.lastAirDate?.takeIf { it.isNotEmpty() }?.let { lastAirDate ->
                 InfoRow(
                     icon = Icons.Default.CalendarToday,
-                    label = "Last Air Date",
-                    value = lastAirDate
+                    label = stringResource(Res.string.last_air_date),
+                    value = formatDate(lastAirDate)
                 )
             }
 
             InfoRow(
                 icon = Icons.Default.Tv,
-                label = "Seasons",
-                value = "${tvShow.numberOfSeasons}"
+                label = stringResource(Res.string.seasons),
+                value = "${tvShow.numberOfSeasons ?: 0}"
             )
 
             InfoRow(
                 icon = Icons.Default.PlayArrow,
-                label = "Episodes",
-                value = "${tvShow.numberOfEpisodes}"
+                label = stringResource(Res.string.episodes),
+                value = "${tvShow.numberOfEpisodes ?: 0}"
             )
 
-            if (tvShow.episodeRunTime.isNotEmpty()) {
+            tvShow.episodeRunTime?.takeIf { it.isNotEmpty() }?.let { episodeRunTime ->
                 InfoRow(
                     icon = Icons.Default.PlayArrow,
                     label = "Episode Runtime",
-                    value = "${tvShow.episodeRunTime.average().toInt()} min"
+                    value = "${episodeRunTime.average().toInt()} min"
                 )
             }
 
-            tvShow.type?.let { type ->
+            tvShow.type?.takeIf { it.isNotEmpty() }?.let { type ->
                 InfoRow(
                     icon = Icons.Default.Tv,
                     label = "Type",
@@ -295,14 +324,14 @@ private fun BasicInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetail
             InfoRow(
                 icon = Icons.Default.Language,
                 label = "Original Language",
-                value = tvShow.originalLanguage.uppercase()
+                value = (tvShow.originalLanguage ?: "").uppercase()
             )
 
-            if (tvShow.originCountry.isNotEmpty()) {
+            tvShow.originCountry?.takeIf { it.isNotEmpty() }?.let { originCountry ->
                 InfoRow(
                     icon = Icons.Default.Language,
                     label = "Origin Country",
-                    value = tvShow.originCountry.joinToString(", ")
+                    value = originCountry.joinToString(", ")
                 )
             }
         }
@@ -310,8 +339,9 @@ private fun BasicInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetail
 }
 
 @Composable
-private fun OverviewSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
-    if (tvShow.overview.isNotBlank()) {
+private fun OverviewSection(tvShow: TvShowDetails) {
+    val overview = tvShow.overview
+    if (!overview.isNullOrBlank()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -321,13 +351,13 @@ private fun OverviewSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Overview",
+                    text = stringResource(Res.string.overview),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
-                    text = tvShow.overview,
+                    text = overview,
                     style = MaterialTheme.typography.bodyMedium,
                     lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.4
                 )
@@ -347,7 +377,7 @@ private fun OverviewSection(tvShow: com.example.moviedb.core.model.TvShowDetails
 }
 
 @Composable
-private fun RatingsSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun RatingsSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -368,7 +398,7 @@ private fun RatingsSection(tvShow: com.example.moviedb.core.model.TvShowDetails)
             ) {
                 RatingCard(
                     title = "Rating",
-                    value = "${(tvShow.voteAverage * 10).toInt() / 10.0}",
+                    value = "${((tvShow.voteAverage ?: 0.0) * 10).toInt() / 10.0}",
                     subtitle = "⭐",
                     modifier = Modifier.weight(1f)
                 )
@@ -377,7 +407,7 @@ private fun RatingsSection(tvShow: com.example.moviedb.core.model.TvShowDetails)
 
                 RatingCard(
                     title = "Votes",
-                    value = "${tvShow.voteCount}",
+                    value = "${tvShow.voteCount ?: 0}",
                     subtitle = "votes",
                     modifier = Modifier.weight(1f)
                 )
@@ -386,7 +416,7 @@ private fun RatingsSection(tvShow: com.example.moviedb.core.model.TvShowDetails)
 
                 RatingCard(
                     title = "Popularity",
-                    value = "${tvShow.popularity.toInt()}",
+                    value = "${(tvShow.popularity ?: 0.0).toInt()}",
                     subtitle = "score",
                     modifier = Modifier.weight(1f)
                 )
@@ -396,7 +426,7 @@ private fun RatingsSection(tvShow: com.example.moviedb.core.model.TvShowDetails)
 }
 
 @Composable
-private fun SeriesInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun SeriesInfoSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -414,22 +444,22 @@ private fun SeriesInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetai
             InfoRow(
                 icon = Icons.Default.Tv,
                 label = "Status",
-                value = tvShow.status ?: "Unknown"
+                value = tvShow.status?.ifEmpty { "Unknown" } ?: "Unknown"
             )
 
             InfoRow(
                 icon = Icons.Default.PlayArrow,
                 label = "In Production",
-                value = if (tvShow.inProduction) "Yes" else "No"
+                value = if (tvShow.inProduction == true) "Yes" else "No"
             )
 
             InfoRow(
                 icon = Icons.Default.Tv,
                 label = "Total Seasons",
-                value = "${tvShow.seasonsCount}"
+                value = "${tvShow.seasonsCount ?: 0}"
             )
 
-            if (tvShow.adult) {
+            if (tvShow.adult == true) {
                 InfoRow(
                     icon = Icons.Default.People,
                     label = "Content Rating",
@@ -438,10 +468,12 @@ private fun SeriesInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetai
             }
 
             tvShow.homepage?.takeIf { it.isNotBlank() }?.let { homepage ->
+                val uriHandler = LocalUriHandler.current
                 InfoRow(
                     icon = Icons.Default.Language,
                     label = "Official Website",
-                    value = homepage
+                    value = homepage,
+                    onClick = { uriHandler.openUri(homepage) }
                 )
             }
         }
@@ -449,7 +481,7 @@ private fun SeriesInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetai
 }
 
 @Composable
-private fun ProductionSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun ProductionSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -464,27 +496,27 @@ private fun ProductionSection(tvShow: com.example.moviedb.core.model.TvShowDetai
                 fontWeight = FontWeight.Bold
             )
 
-            if (tvShow.createdBy.isNotEmpty()) {
+            tvShow.createdBy?.takeIf { it.isNotEmpty() }?.let { createdBy ->
                 InfoRow(
                     icon = Icons.Default.People,
                     label = "Created By",
-                    value = tvShow.createdBy.joinToString(", ")
+                    value = createdBy.joinToString(", ")
                 )
             }
 
-            if (tvShow.productionCompanies.isNotEmpty()) {
+            tvShow.productionCompanies?.takeIf { it.isNotEmpty() }?.let { productionCompanies ->
                 InfoRow(
                     icon = Icons.Default.People,
                     label = "Production Companies",
-                    value = tvShow.productionCompanies.joinToString(", ")
+                    value = productionCompanies.joinToString(", ")
                 )
             }
 
-            if (tvShow.productionCountries.isNotEmpty()) {
+            tvShow.productionCountries?.takeIf { it.isNotEmpty() }?.let { productionCountries ->
                 InfoRow(
                     icon = Icons.Default.Language,
                     label = "Production Countries",
-                    value = tvShow.productionCountries.joinToString(", ")
+                    value = productionCountries.joinToString(", ")
                 )
             }
         }
@@ -492,7 +524,7 @@ private fun ProductionSection(tvShow: com.example.moviedb.core.model.TvShowDetai
 }
 
 @Composable
-private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun EpisodesSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -507,7 +539,7 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                 fontWeight = FontWeight.Bold
             )
 
-            tvShow.lastEpisodeName?.let { lastEpisodeName ->
+            tvShow.lastEpisodeName?.takeIf { it.isNotEmpty() }?.let { lastEpisodeName ->
                 Text(
                     text = "Last Episode",
                     style = MaterialTheme.typography.titleMedium,
@@ -517,16 +549,16 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                     text = lastEpisodeName,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                tvShow.lastEpisodeAirDate?.let { airDate ->
+                tvShow.lastEpisodeAirDate?.takeIf { it.isNotEmpty() }?.let { lastEpisodeAirDate ->
                     Text(
-                        text = "Aired: $airDate",
+                        text = "Aired: ${formatDate(lastEpisodeAirDate)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            tvShow.nextEpisodeName?.let { nextEpisodeName ->
+            tvShow.nextEpisodeToAir?.takeIf { it.isNotEmpty() }?.let { nextEpisodeToAir ->
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Next Episode",
@@ -534,12 +566,12 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = nextEpisodeName,
+                    text = nextEpisodeToAir,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                tvShow.nextEpisodeAirDate?.let { airDate ->
+                tvShow.nextEpisodeAirDate?.takeIf { it.isNotEmpty() }?.let { nextEpisodeAirDate ->
                     Text(
-                        text = "Airs: $airDate",
+                        text = "Airs: ${formatDate(nextEpisodeAirDate)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -550,8 +582,8 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
 }
 
 @Composable
-private fun GenresSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
-    if (tvShow.genres.isNotEmpty()) {
+private fun GenresSection(tvShow: TvShowDetails) {
+    tvShow.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -561,7 +593,7 @@ private fun GenresSection(tvShow: com.example.moviedb.core.model.TvShowDetails) 
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Genres",
+                    text = stringResource(Res.string.genres),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -570,7 +602,7 @@ private fun GenresSection(tvShow: com.example.moviedb.core.model.TvShowDetails) 
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    tvShow.genres.forEach { genre ->
+                    genres.forEach { genre ->
                         SuggestionChip(
                             onClick = { },
                             label = { Text(text = genre) }
@@ -583,8 +615,8 @@ private fun GenresSection(tvShow: com.example.moviedb.core.model.TvShowDetails) 
 }
 
 @Composable
-private fun NetworksSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
-    if (tvShow.networks.isNotEmpty()) {
+private fun NetworksSection(tvShow: TvShowDetails) {
+    tvShow.networks?.takeIf { it.isNotEmpty() }?.let { networks ->
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -594,7 +626,7 @@ private fun NetworksSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Networks",
+                    text = stringResource(Res.string.networks),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -603,7 +635,7 @@ private fun NetworksSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    tvShow.networks.forEach { network ->
+                    networks.forEach { network ->
                         AssistChip(
                             onClick = { },
                             label = { Text(text = network) }
@@ -616,8 +648,10 @@ private fun NetworksSection(tvShow: com.example.moviedb.core.model.TvShowDetails
 }
 
 @Composable
-private fun LanguagesSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
-    if (tvShow.spokenLanguages.isNotEmpty() || tvShow.languages.isNotEmpty()) {
+private fun LanguagesSection(tvShow: TvShowDetails) {
+    val hasSpokenLanguages = tvShow.spokenLanguages?.isNotEmpty() == true
+    val hasLanguages = tvShow.languages?.isNotEmpty() == true
+    if (hasSpokenLanguages || hasLanguages) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -627,24 +661,24 @@ private fun LanguagesSection(tvShow: com.example.moviedb.core.model.TvShowDetail
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Languages",
+                    text = stringResource(Res.string.languages),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
 
-                if (tvShow.spokenLanguages.isNotEmpty()) {
+                tvShow.spokenLanguages?.takeIf { it.isNotEmpty() }?.let { spokenLanguages ->
                     InfoRow(
                         icon = Icons.Default.Language,
                         label = "Spoken Languages",
-                        value = tvShow.spokenLanguages.joinToString(", ")
+                        value = spokenLanguages.joinToString(", ")
                     )
                 }
 
-                if (tvShow.languages.isNotEmpty()) {
+                tvShow.languages?.takeIf { it.isNotEmpty() }?.let { languages ->
                     InfoRow(
                         icon = Icons.Default.Language,
                         label = "Available Languages",
-                        value = tvShow.languages.joinToString(", ")
+                        value = languages.joinToString(", ")
                     )
                 }
             }
@@ -657,10 +691,13 @@ private fun InfoRow(
     icon: ImageVector,
     label: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .let { if (onClick != null) it.clickable { onClick() } else it },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -681,7 +718,8 @@ private fun InfoRow(
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            color = if (onClick != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
         )
     }
 }

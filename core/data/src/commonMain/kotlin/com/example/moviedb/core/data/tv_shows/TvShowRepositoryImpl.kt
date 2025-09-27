@@ -62,7 +62,7 @@ class TvShowRepositoryImpl(
 
         val nextPage = currentPage + 1
 
-        when (val result = tvShowsRemoteDataSource.getTvShowsPage(nextPage)) {
+        when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage)) {
             is AppResult.Success -> {
                 totalPages = result.data.total_pages
                 val newTvShows = result.data.results.map { it.toDomain() }

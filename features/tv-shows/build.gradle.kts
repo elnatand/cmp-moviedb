@@ -1,7 +1,7 @@
 plugins {
-    id("moviedb.android.library")
-    id("moviedb.kotlin.multiplatform")
-    id("moviedb.kotlin.composeMultiplatform")
+    alias(libs.plugins.moviedb.androidLibrary)
+    alias(libs.plugins.moviedb.kotlinMultiplatform)
+    alias(libs.plugins.moviedb.composeMultiplatform)
     alias(libs.plugins.kotlinxSerialization) //because of the navigation key
 }
 

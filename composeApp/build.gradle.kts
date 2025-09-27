@@ -3,8 +3,8 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.androidApplication)
-    id("moviedb.kotlin.multiplatform")
-    id("moviedb.kotlin.composeMultiplatform")
+    alias(libs.plugins.moviedb.kotlinMultiplatform)
+    alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
 kotlin {

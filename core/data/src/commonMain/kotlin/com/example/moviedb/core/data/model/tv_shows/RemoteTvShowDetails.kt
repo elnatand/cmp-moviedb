@@ -11,60 +11,60 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RemoteTvShowDetails(
-    @SerialName("id")
-    val id: Int,
-    @SerialName("name")
-    val name: String,
-    @SerialName("overview")
-    val overview: String,
     @SerialName("adult")
-    val adult: Boolean = false,
+    val adult: Boolean?,
     @SerialName("backdrop_path")
-    val backdrop_path: String?,
+    val backdropPath: String?,
     @SerialName("created_by")
-    val created_by: List<CreatedBy> = emptyList(),
+    val createdBy: List<CreatedBy>?,
     @SerialName("episode_run_time")
-    val episode_run_time: List<Int> = emptyList(),
+    val episodeRunTime: List<Int>?,
     @SerialName("first_air_date")
-    val first_air_date: String?,
+    val firstAirDate: String?,
     @SerialName("genres")
-    val genres: List<Genre> = emptyList(),
+    val genres: List<Genre>?,
     @SerialName("homepage")
     val homepage: String?,
+    @SerialName("id")
+    val id: Int?,
     @SerialName("in_production")
-    val in_production: Boolean = false,
+    val inProduction: Boolean?,
     @SerialName("languages")
-    val languages: List<String> = emptyList(),
+    val languages: List<String>?,
     @SerialName("last_air_date")
-    val last_air_date: String?,
+    val lastAirDate: String?,
     @SerialName("last_episode_to_air")
-    val last_episode_to_air: Episode?,
+    val lastEpisodeToAir: Episode?,
+    @SerialName("name")
+    val name: String?,
     @SerialName("next_episode_to_air")
-    val next_episode_to_air: Episode?,
+    val nextEpisodeToAir: Episode?,
     @SerialName("networks")
-    val networks: List<Network> = emptyList(),
+    val networks: List<Network>?,
     @SerialName("number_of_episodes")
-    val number_of_episodes: Int = 0,
+    val numberOfEpisodes: Int?,
     @SerialName("number_of_seasons")
-    val number_of_seasons: Int = 0,
+    val numberOfSeasons: Int?,
     @SerialName("origin_country")
-    val origin_country: List<String> = emptyList(),
+    val originCountry: List<String>?,
     @SerialName("original_language")
-    val original_language: String,
+    val originalLanguage: String?,
     @SerialName("original_name")
-    val original_name: String,
+    val originalName: String?,
+    @SerialName("overview")
+    val overview: String?,
     @SerialName("popularity")
-    val popularity: Double = 0.0,
+    val popularity: Double?,
     @SerialName("poster_path")
-    val poster_path: String?,
+    val posterPath: String?,
     @SerialName("production_companies")
-    val production_companies: List<ProductionCompany> = emptyList(),
+    val productionCompanies: List<ProductionCompany>?,
     @SerialName("production_countries")
-    val production_countries: List<ProductionCountry> = emptyList(),
+    val productionCountries: List<ProductionCountry>?,
     @SerialName("seasons")
-    val seasons: List<Season> = emptyList(),
+    val seasons: List<Season>?,
     @SerialName("spoken_languages")
-    val spoken_languages: List<SpokenLanguage> = emptyList(),
+    val spokenLanguages: List<SpokenLanguage>?,
     @SerialName("status")
     val status: String?,
     @SerialName("tagline")
@@ -72,118 +72,118 @@ data class RemoteTvShowDetails(
     @SerialName("type")
     val type: String?,
     @SerialName("vote_average")
-    val vote_average: Double = 0.0,
+    val voteAverage: Double?,
     @SerialName("vote_count")
-    val vote_count: Int = 0
+    val voteCount: Int?
 )
 
 @Serializable
 data class CreatedBy(
     @SerialName("id")
-    val id: Int = 0,
+    val id: Int?,
     @SerialName("credit_id")
-    val credit_id: String = "",
+    val creditId: String?,
     @SerialName("name")
-    val name: String = "",
+    val name: String?,
     @SerialName("gender")
-    val gender: Int = 0,
+    val gender: Int?,
     @SerialName("profile_path")
-    val profile_path: String?
+    val profilePath: String?
 )
 
 @Serializable
 data class Episode(
     @SerialName("id")
-    val id: Int = 0,
+    val id: Int?,
     @SerialName("name")
-    val name: String = "",
+    val name: String?,
     @SerialName("overview")
-    val overview: String = "",
+    val overview: String?,
     @SerialName("vote_average")
-    val vote_average: Double = 0.0,
+    val voteAverage: Double?,
     @SerialName("vote_count")
-    val vote_count: Int = 0,
+    val voteCount: Int?,
     @SerialName("air_date")
-    val air_date: String?,
+    val airDate: String?,
     @SerialName("episode_number")
-    val episode_number: Int = 0,
+    val episodeNumber: Int?,
     @SerialName("production_code")
-    val production_code: String = "",
+    val productionCode: String?,
     @SerialName("runtime")
-    val runtime: Int? = null,
+    val runtime: Int?,
     @SerialName("season_number")
-    val season_number: Int = 0,
+    val seasonNumber: Int?,
     @SerialName("show_id")
-    val show_id: Int = 0,
+    val showId: Int?,
     @SerialName("still_path")
-    val still_path: String?
+    val stillPath: String?
 )
 
 @Serializable
 data class Network(
     @SerialName("id")
-    val id: Int = 0,
+    val id: Int?,
     @SerialName("logo_path")
-    val logo_path: String?,
+    val logoPath: String?,
     @SerialName("name")
-    val name: String = "",
+    val name: String?,
     @SerialName("origin_country")
-    val origin_country: String = ""
+    val originCountry: String?
 )
 
 @Serializable
 data class Season(
     @SerialName("air_date")
-    val air_date: String?,
+    val airDate: String?,
     @SerialName("episode_count")
-    val episode_count: Int = 0,
+    val episodeCount: Int?,
     @SerialName("id")
-    val id: Int = 0,
+    val id: Int?,
     @SerialName("name")
-    val name: String = "",
+    val name: String?,
     @SerialName("overview")
-    val overview: String = "",
+    val overview: String?,
     @SerialName("poster_path")
-    val poster_path: String?,
+    val posterPath: String?,
     @SerialName("season_number")
-    val season_number: Int = 0,
+    val seasonNumber: Int?,
     @SerialName("vote_average")
-    val vote_average: Double = 0.0
+    val voteAverage: Float?
 )
 
 fun RemoteTvShowDetails.toDomain() = TvShowDetails(
     id = id,
     name = name,
     overview = overview,
-    posterPath = poster_path,
-    backdropPath = backdrop_path,
+    posterPath = posterPath,
+    backdropPath = backdropPath,
     adult = adult,
-    firstAirDate = first_air_date,
-    lastAirDate = last_air_date,
-    numberOfEpisodes = number_of_episodes,
-    numberOfSeasons = number_of_seasons,
-    episodeRunTime = episode_run_time,
+    firstAirDate = firstAirDate,
+    lastAirDate = lastAirDate,
+    numberOfEpisodes = numberOfEpisodes,
+    numberOfSeasons = numberOfSeasons,
+    episodeRunTime = episodeRunTime,
     status = status,
     tagline = tagline,
     type = type,
-    voteAverage = vote_average,
-    voteCount = vote_count,
+    voteAverage = voteAverage,
+    voteCount = voteCount,
     popularity = popularity,
-    originalName = original_name,
-    originalLanguage = original_language,
-    originCountry = origin_country,
+    originalName = originalName,
+    originalLanguage = originalLanguage,
+    originCountry = originCountry,
     homepage = homepage,
-    inProduction = in_production,
+    inProduction = inProduction,
     languages = languages,
-    genres = genres.map { it.name },
-    networks = networks.map { it.name },
-    productionCompanies = production_companies.map { it.name },
-    productionCountries = production_countries.map { it.name },
-    spokenLanguages = spoken_languages.map { it.english_name },
-    seasonsCount = seasons.size,
-    createdBy = created_by.map { it.name },
-    lastEpisodeName = last_episode_to_air?.name,
-    lastEpisodeAirDate = last_episode_to_air?.air_date,
-    nextEpisodeName = next_episode_to_air?.name,
-    nextEpisodeAirDate = next_episode_to_air?.air_date
+    genres = genres?.map { it.name },
+    networks = networks?.mapNotNull { it.name },
+    productionCompanies = productionCompanies?.map { it.name },
+    productionCountries = productionCountries?.map { it.name },
+    spokenLanguages = spokenLanguages?.map { it.english_name },
+    seasonsCount = seasons?.size,
+    createdBy = createdBy?.mapNotNull { it.name },
+    lastEpisodeName = lastEpisodeToAir?.name,
+    lastEpisodeAirDate = lastEpisodeToAir?.airDate,
+    nextEpisodeToAir = nextEpisodeToAir?.airDate,
+    nextEpisodeAirDate = null
 )

@@ -16,12 +16,19 @@ class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatcher: AppDispatcher
 ) {
-    suspend fun getMoviesPage(page: Int): AppResult<RemoteMoviesPage> {
+
+    private val language = "en-US"
+    // private val language = "he-IL"
+    suspend fun getPopularMoviesPage(page: Int): AppResult<RemoteMoviesPage> {
         return try {
             val moviesPages = withContext(appDispatcher.getDispatcher()) {
                 httpClient
-                    .get("${TMDB_BASE_URL}movie/popular?api_key=$TMDB_API_KEY") {
-                        url { parameters.append("page", page.toString()) }
+                    .get("${TMDB_BASE_URL}movie/popular") {
+                        url {
+                            parameters.append("api_key", TMDB_API_KEY)
+                            parameters.append("page", page.toString())
+                            parameters.append("language", language)
+                        }
                     }.body<RemoteMoviesPage>()
             }
             AppResult.Success(moviesPages)
@@ -36,7 +43,12 @@ class MoviesRemoteDataSource(
     suspend fun getMovieDetails(movieId: Int): AppResult<RemoteMovieDetails> {
         return try {
             val movieDetails = httpClient
-                .get("${TMDB_BASE_URL}movie/${movieId}?api_key=$TMDB_API_KEY")
+                .get("${TMDB_BASE_URL}movie/${movieId}"){
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("language", language)
+                    }
+                }
                 .body<RemoteMovieDetails>()
             AppResult.Success(movieDetails)
         } catch (e: Exception) {
