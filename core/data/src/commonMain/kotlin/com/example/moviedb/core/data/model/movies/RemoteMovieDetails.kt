@@ -16,17 +16,17 @@ data class RemoteMovieDetails(
     @SerialName("overview")
     val overview: String,
     @SerialName("poster_path")
-    val poster_path: String?,
+    val posterPath: String?,
     @SerialName("backdrop_path")
-    val backdrop_path: String?,
+    val backdropPath: String?,
     @SerialName("release_date")
-    val release_date: String?,
+    val releaseDate: String?,
     @SerialName("runtime")
     val runtime: Int?,
     @SerialName("vote_average")
-    val vote_average: Double?,
+    val voteAverage: Double?,
     @SerialName("vote_count")
-    val vote_count: Int?,
+    val voteCount: Int?,
     @SerialName("adult")
     val adult: Boolean?,
     @SerialName("budget")
@@ -36,11 +36,11 @@ data class RemoteMovieDetails(
     @SerialName("homepage")
     val homepage: String?,
     @SerialName("imdb_id")
-    val imdb_id: String?,
+    val imdbId: String?,
     @SerialName("original_language")
-    val original_language: String?,
+    val originalLanguage: String?,
     @SerialName("original_title")
-    val original_title: String?,
+    val originalTitle: String?,
     @SerialName("popularity")
     val popularity: Double?,
     @SerialName("status")
@@ -50,11 +50,11 @@ data class RemoteMovieDetails(
     @SerialName("genres")
     val genres: List<Genre>?,
     @SerialName("production_companies")
-    val production_companies: List<ProductionCompany>?,
+    val productionCompanies: List<ProductionCompany>?,
     @SerialName("production_countries")
-    val production_countries: List<ProductionCountry>?,
+    val productionCountries: List<ProductionCountry>?,
     @SerialName("spoken_languages")
-    val spoken_languages: List<SpokenLanguage>?
+    val spokenLanguages: List<SpokenLanguage>?
 )
 
 @Serializable
@@ -70,17 +70,17 @@ data class ProductionCompany(
     @SerialName("id")
     val id: Int,
     @SerialName("logo_path")
-    val logo_path: String?,
+    val logoPath: String?,
     @SerialName("name")
     val name: String,
     @SerialName("origin_country")
-    val origin_country: String
+    val originCountry: String
 )
 
 @Serializable
 data class ProductionCountry(
     @SerialName("iso_3166_1")
-    val iso_3166_1: String,
+    val iso31661: String,
     @SerialName("name")
     val name: String
 )
@@ -88,61 +88,35 @@ data class ProductionCountry(
 @Serializable
 data class SpokenLanguage(
     @SerialName("english_name")
-    val english_name: String,
+    val englishName: String,
     @SerialName("iso_639_1")
-    val iso_639_1: String,
+    val iso6391: String,
     @SerialName("name")
     val name: String
-)
-
-fun RemoteMovieDetails.toDomain(): MovieDetails = MovieDetails(
-    id = id,
-    title = title,
-    overview = overview,
-    poster_path = poster_path,
-    backdrop_path = backdrop_path,
-    release_date = release_date,
-    runtime = runtime,
-    vote_average = vote_average,
-    vote_count = vote_count,
-    adult = adult,
-    budget = budget,
-    revenue = revenue,
-    homepage = homepage,
-    imdb_id = imdb_id,
-    original_language = original_language,
-    original_title = original_title,
-    popularity = popularity,
-    status = status,
-    tagline = tagline,
-    genres = genres?.map { it.name },
-    production_companies = production_companies?.map { it.name },
-    production_countries = production_countries?.map { it.name },
-    spoken_languages = spoken_languages?.map { it.english_name }
 )
 
 fun RemoteMovieDetails.toEntity(): MovieDetailsEntity = MovieDetailsEntity(
     id = id,
     title = title,
     overview = overview,
-    poster_path = poster_path,
-    backdrop_path = backdrop_path,
-    release_date = release_date,
+    posterPath = posterPath,
+    backdropPath = backdropPath,
+    releaseDate = releaseDate,
     runtime = runtime,
-    vote_average = vote_average,
-    vote_count = vote_count,
+    voteAverage = voteAverage,
+    voteCount = voteCount,
     adult = adult,
     budget = budget,
     revenue = revenue,
     homepage = homepage,
-    imdb_id = imdb_id,
-    original_language = original_language,
-    original_title = original_title,
+    imdbId = imdbId,
+    originalLanguage = originalLanguage,
+    originalTitle = originalTitle,
     popularity = popularity,
     status = status,
     tagline = tagline,
     genres = genres?.joinToString(",") { it.name },
-    production_companies = production_companies?.joinToString(",") { it.name },
-    production_countries = production_countries?.joinToString(",") { it.name },
-    spoken_languages = spoken_languages?.joinToString(",") { it.english_name }
+    productionCompanies = productionCompanies?.joinToString(",") { it.name },
+    productionCountries = productionCountries?.joinToString(",") { it.name },
+    spokenLanguages = spokenLanguages?.joinToString(",") { it.englishName }
 )
