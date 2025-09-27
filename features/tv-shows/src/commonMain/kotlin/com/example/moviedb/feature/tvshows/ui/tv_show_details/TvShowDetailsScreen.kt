@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
+import com.example.moviedb.core.model.TvShowDetails
 import com.example.moviedb.core.ui.design_system.AppErrorComponent
 import com.example.moviedb.core.ui.design_system.AppLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
@@ -126,7 +127,7 @@ fun TvShowDetailsScreen(
 }
 
 @Composable
-private fun HeroSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun HeroSection(tvShow: TvShowDetails) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
