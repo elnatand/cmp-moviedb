@@ -41,6 +41,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
+import com.example.moviedb.core.ui.design_system.AppErrorComponent
+import com.example.moviedb.core.ui.design_system.AppLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -54,6 +56,7 @@ fun TvShowDetailsScreen(
 
     TvShowDetailsScreen(
         uiState = uiState,
+        onRetry = viewModel::retry
     )
 }
 
@@ -61,78 +64,61 @@ fun TvShowDetailsScreen(
 @Composable
 fun TvShowDetailsScreen(
     uiState: TvShowDetailsViewModel.TvShowDetailsUiState,
+    onRetry: () -> Unit
 ) {
-    when (uiState) {
-        is TvShowDetailsViewModel.TvShowDetailsUiState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Loading...",
-                    style = MaterialTheme.typography.bodyLarge
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        when (uiState) {
+            is TvShowDetailsViewModel.TvShowDetailsUiState.Loading -> AppLoader()
+            is TvShowDetailsViewModel.TvShowDetailsUiState.Error ->
+                AppErrorComponent(
+                    message = uiState.message,
+                    onRetry = onRetry
                 )
-            }
-        }
 
-        is TvShowDetailsViewModel.TvShowDetailsUiState.Error -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+            is TvShowDetailsViewModel.TvShowDetailsUiState.Success -> {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Text(
-                        text = "Error: ${uiState.message}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-        }
+                    // Hero Section with Backdrop and Poster
+                    HeroSection(tvShow = uiState.tvShowDetails)
 
-        is TvShowDetailsViewModel.TvShowDetailsUiState.Success -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                // Hero Section with Backdrop and Poster
-                HeroSection(tvShow = uiState.tvShowDetails)
+                    // Content Section
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                    ) {
+                        // Basic Info Section
+                        BasicInfoSection(tvShow = uiState.tvShowDetails)
 
-                // Content Section
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    // Basic Info Section
-                    BasicInfoSection(tvShow = uiState.tvShowDetails)
+                        // Overview Section
+                        OverviewSection(tvShow = uiState.tvShowDetails)
 
-                    // Overview Section
-                    OverviewSection(tvShow = uiState.tvShowDetails)
+                        // Ratings and Stats Section
+                        RatingsSection(tvShow = uiState.tvShowDetails)
 
-                    // Ratings and Stats Section
-                    RatingsSection(tvShow = uiState.tvShowDetails)
+                        // Series Information Section
+                        SeriesInfoSection(tvShow = uiState.tvShowDetails)
 
-                    // Series Information Section
-                    SeriesInfoSection(tvShow = uiState.tvShowDetails)
+                        // Production Section
+                        ProductionSection(tvShow = uiState.tvShowDetails)
 
-                    // Production Section
-                    ProductionSection(tvShow = uiState.tvShowDetails)
+                        // Episodes Section
+                        EpisodesSection(tvShow = uiState.tvShowDetails)
 
-                    // Episodes Section
-                    EpisodesSection(tvShow = uiState.tvShowDetails)
+                        // Genres Section
+                        GenresSection(tvShow = uiState.tvShowDetails)
 
-                    // Genres Section
-                    GenresSection(tvShow = uiState.tvShowDetails)
+                        // Networks Section
+                        NetworksSection(tvShow = uiState.tvShowDetails)
 
-                    // Networks Section
-                    NetworksSection(tvShow = uiState.tvShowDetails)
-
-                    // Languages Section
-                    LanguagesSection(tvShow = uiState.tvShowDetails)
+                        // Languages Section
+                        LanguagesSection(tvShow = uiState.tvShowDetails)
+                    }
                 }
             }
         }

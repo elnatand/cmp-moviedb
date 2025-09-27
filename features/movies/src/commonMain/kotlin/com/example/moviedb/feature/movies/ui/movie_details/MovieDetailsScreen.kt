@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.moviedb.core.data.model.TMDB_IMAGE_URL
 import com.example.moviedb.core.model.MovieDetails
+import com.example.moviedb.core.ui.design_system.AppErrorComponent
 import com.example.moviedb.core.ui.design_system.AppLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
 import com.example.moviedb.resources.Res
@@ -77,56 +78,16 @@ private fun MovieDetailsScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         when (uiState) {
-            is MovieDetailsViewModel.MovieDetailsUiState.Loading -> {
-                AppLoader()
-            }
+            is MovieDetailsViewModel.MovieDetailsUiState.Loading -> AppLoader()
 
-            is MovieDetailsViewModel.MovieDetailsUiState.Error -> {
-                ErrorContent(
-                    message = uiState.message,
-                    onRetry = onRetry
-                )
-            }
+            is MovieDetailsViewModel.MovieDetailsUiState.Error -> AppErrorComponent(
+                message = uiState.message,
+                onRetry = onRetry
+            )
 
             is MovieDetailsViewModel.MovieDetailsUiState.Success -> {
                 MovieDetailsContent(movie = uiState.movieDetails)
             }
-        }
-    }
-}
-
-@Composable
-private fun ErrorContent(
-    message: String,
-    onRetry: () -> Unit
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = stringResource(Res.string.error_loading_movie_details),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.error,
-            textAlign = TextAlign.Center
-        )
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Button(
-            onClick = onRetry,
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = stringResource(Res.string.retry),
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(Res.string.retry))
         }
     }
 }
