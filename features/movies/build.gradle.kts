@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.moviedb.movies"
+    namespace = "com.elna.moviedb.movies"
 }
 
 kotlin {

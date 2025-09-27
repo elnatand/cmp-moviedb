@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.moviedb.core.database"
+    namespace = "com.elna.moviedb.core.database"
 }
 
 kotlin {
