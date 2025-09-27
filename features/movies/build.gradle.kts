@@ -2,10 +2,9 @@ plugins {
     alias(libs.plugins.moviedb.androidLibrary)
     alias(libs.plugins.moviedb.kotlinMultiplatform)
     alias(libs.plugins.moviedb.composeMultiplatform)
-    alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.kotlinxSerialization) // for navigation routes
 }
 
-//android section should be before kotlin section
 android {
     namespace = "com.example.moviedb.movies"
 }
