@@ -69,7 +69,7 @@ fun MovieDetailsScreen(
 
 @Composable
 private fun MovieDetailsScreen(
-    uiState: MovieDetailsViewModel.UiState,
+    uiState: MovieDetailsViewModel.MovieDetailsUiState,
     onRetry: () -> Unit
 ) {
     Box(
@@ -77,18 +77,18 @@ private fun MovieDetailsScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         when (uiState) {
-            is MovieDetailsViewModel.UiState.Loading -> {
+            is MovieDetailsViewModel.MovieDetailsUiState.Loading -> {
                 AppLoader()
             }
 
-            is MovieDetailsViewModel.UiState.Error -> {
+            is MovieDetailsViewModel.MovieDetailsUiState.Error -> {
                 ErrorContent(
                     message = uiState.message,
                     onRetry = onRetry
                 )
             }
 
-            is MovieDetailsViewModel.UiState.Success -> {
+            is MovieDetailsViewModel.MovieDetailsUiState.Success -> {
                 MovieDetailsContent(movie = uiState.movieDetails)
             }
         }
@@ -479,7 +479,7 @@ private fun MovieDetailsScreenSuccessPreview() {
     )
 
     MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.UiState.Success(sampleMovie),
+        uiState = MovieDetailsViewModel.MovieDetailsUiState.Success(sampleMovie),
         onRetry = {}
     )
 }
@@ -488,7 +488,7 @@ private fun MovieDetailsScreenSuccessPreview() {
 @Composable
 private fun MovieDetailsScreenLoadingPreview() {
     MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.UiState.Loading,
+        uiState = MovieDetailsViewModel.MovieDetailsUiState.Loading,
         onRetry = {}
     )
 }
@@ -497,7 +497,7 @@ private fun MovieDetailsScreenLoadingPreview() {
 @Composable
 private fun MovieDetailsScreenErrorPreview() {
     MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.UiState.Error("Failed to load movie details. Please check your internet connection."),
+        uiState = MovieDetailsViewModel.MovieDetailsUiState.Error("Failed to load movie details. Please check your internet connection."),
         onRetry = {}
     )
 }

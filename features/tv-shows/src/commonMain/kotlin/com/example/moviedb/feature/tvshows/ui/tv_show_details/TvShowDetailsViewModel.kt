@@ -3,8 +3,6 @@ package com.example.moviedb.feature.tvshows.ui.tv_show_details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.tv_shows.TvShowsRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,7 +15,7 @@ class TvShowDetailsViewModel(
     private val tvShowsRepository: TvShowsRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
+    private val _uiState = MutableStateFlow(TvShowDetailsUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -33,7 +31,7 @@ class TvShowDetailsViewModel(
         }
     }
 
-    data class UiState(
+    data class TvShowDetailsUiState(
         val tvShowDetails: TvShowDetails? = null
     )
 }
