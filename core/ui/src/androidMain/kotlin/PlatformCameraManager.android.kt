@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.example.moviedb.core.ui.utils.BitmapUtils
-import com.example.moviedb.core.ui.utils.ComposeFileProvider
+import com.elna.moviedb.core.ui.utils.BitmapUtils
+import com.elna.moviedb.core.ui.utils.ComposeFileProvider
 
 
 @Composable

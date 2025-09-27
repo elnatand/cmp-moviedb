@@ -1,6 +1,6 @@
 import com.android.build.gradle.LibraryExtension
-import com.example.moviedb.configureAndroid
-import com.example.moviedb.getAndroidSdkVersions
+import com.elna.moviedb.configureAndroid
+import com.elna.moviedb.getAndroidSdkVersions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure

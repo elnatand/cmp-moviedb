@@ -1,4 +1,4 @@
-import com.example.moviedb.libs
+import com.elna.moviedb.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
