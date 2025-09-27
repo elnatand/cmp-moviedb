@@ -110,7 +110,7 @@ data class Episode(
     @SerialName("production_code")
     val production_code: String = "",
     @SerialName("runtime")
-    val runtime: Int = 0,
+    val runtime: Int? = null,
     @SerialName("season_number")
     val season_number: Int = 0,
     @SerialName("show_id")
