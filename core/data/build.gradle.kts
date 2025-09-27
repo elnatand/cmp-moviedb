@@ -13,7 +13,7 @@ val secretKeyProperties: Properties by lazy {
 }
 
 android {
-    namespace = "com.example.moviedb.core.data"
+    namespace = "com.elna.moviedb.core.data"
 
     buildFeatures {
         buildConfig = true

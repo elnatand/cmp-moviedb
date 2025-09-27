@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.moviedb.core.ui"
+    namespace = "com.elna.moviedb.core.ui"
 }
 
 dependencies{
@@ -40,6 +40,6 @@ kotlin {
 
 compose.resources {
     publicResClass = true
-    packageOfResClass = "com.example.moviedb.resources"
+    packageOfResClass = "com.elna.moviedb.resources"
     generateResClass = always
 }

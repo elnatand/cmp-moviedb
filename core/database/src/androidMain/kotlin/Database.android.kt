@@ -1,7 +1,7 @@
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.moviedb.core.database.AppDatabase
+import com.elna.moviedb.core.database.AppDatabase
 
 fun getDatabaseBuilder(context: Context): RoomDatabase.Builder<AppDatabase> {
     val appContext = context.applicationContext

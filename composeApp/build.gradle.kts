@@ -46,7 +46,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.example.moviedb"
+    namespace = "com.elna.moviedb"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
@@ -54,7 +54,7 @@ android {
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
-        applicationId = "com.example.moviedb"
+        applicationId = "com.elna.moviedb"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
