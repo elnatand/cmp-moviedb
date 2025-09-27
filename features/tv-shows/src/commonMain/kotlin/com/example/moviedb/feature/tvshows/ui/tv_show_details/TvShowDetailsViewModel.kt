@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.moviedb.core.data.tv_shows.TvShowsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.example.moviedb.core.model.TvShowDetails
 
@@ -15,23 +14,32 @@ class TvShowDetailsViewModel(
     private val tvShowsRepository: TvShowsRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(TvShowDetailsUiState())
+    private val _uiState = MutableStateFlow<TvShowDetailsUiState>(TvShowDetailsUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
-        getTvShowDetails()
+        getTvShowDetails(tvShowId)
     }
 
-    private fun getTvShowDetails() {
+    private fun getTvShowDetails(tvShowId: Int) {
         viewModelScope.launch {
-            val tvShowDetails = tvShowsRepository.getTvShowDetails(tvShowId)
-            _uiState.update {
-                it.copy(tvShowDetails = tvShowDetails)
+            _uiState.value = TvShowDetailsUiState.Loading
+            try {
+                val tvShowDetails = tvShowsRepository.getTvShowDetails(tvShowId)
+                _uiState.value = TvShowDetailsUiState.Success(tvShowDetails)
+            } catch (e: Exception) {
+                _uiState.value = TvShowDetailsUiState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }
 
-    data class TvShowDetailsUiState(
-        val tvShowDetails: TvShowDetails? = null
-    )
+    fun retry() {
+        getTvShowDetails(tvShowId)
+    }
+
+    sealed interface TvShowDetailsUiState {
+        data object Loading : TvShowDetailsUiState
+        data class Success(val tvShowDetails: TvShowDetails) : TvShowDetailsUiState
+        data class Error(val message: String) : TvShowDetailsUiState
+    }
 }

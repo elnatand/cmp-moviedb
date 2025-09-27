@@ -62,47 +62,78 @@ fun TvShowDetailsScreen(
 fun TvShowDetailsScreen(
     uiState: TvShowDetailsViewModel.TvShowDetailsUiState,
 ) {
-
-    uiState.tvShowDetails?.let { tvShow ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            // Hero Section with Backdrop and Poster
-            HeroSection(tvShow = tvShow)
-
-            // Content Section
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
+    when (uiState) {
+        is TvShowDetailsViewModel.TvShowDetailsUiState.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                // Basic Info Section
-                BasicInfoSection(tvShow = tvShow)
+                Text(
+                    text = "Loading...",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
 
-                // Overview Section
-                OverviewSection(tvShow = tvShow)
+        is TvShowDetailsViewModel.TvShowDetailsUiState.Error -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Error: ${uiState.message}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        }
 
-                // Ratings and Stats Section
-                RatingsSection(tvShow = tvShow)
+        is TvShowDetailsViewModel.TvShowDetailsUiState.Success -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // Hero Section with Backdrop and Poster
+                HeroSection(tvShow = uiState.tvShowDetails)
 
-                // Series Information Section
-                SeriesInfoSection(tvShow = tvShow)
+                // Content Section
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                ) {
+                    // Basic Info Section
+                    BasicInfoSection(tvShow = uiState.tvShowDetails)
 
-                // Production Section
-                ProductionSection(tvShow = tvShow)
+                    // Overview Section
+                    OverviewSection(tvShow = uiState.tvShowDetails)
 
-                // Episodes Section
-                EpisodesSection(tvShow = tvShow)
+                    // Ratings and Stats Section
+                    RatingsSection(tvShow = uiState.tvShowDetails)
 
-                // Genres Section
-                GenresSection(tvShow = tvShow)
+                    // Series Information Section
+                    SeriesInfoSection(tvShow = uiState.tvShowDetails)
 
-                // Networks Section
-                NetworksSection(tvShow = tvShow)
+                    // Production Section
+                    ProductionSection(tvShow = uiState.tvShowDetails)
 
-                // Languages Section
-                LanguagesSection(tvShow = tvShow)
+                    // Episodes Section
+                    EpisodesSection(tvShow = uiState.tvShowDetails)
+
+                    // Genres Section
+                    GenresSection(tvShow = uiState.tvShowDetails)
+
+                    // Networks Section
+                    NetworksSection(tvShow = uiState.tvShowDetails)
+
+                    // Languages Section
+                    LanguagesSection(tvShow = uiState.tvShowDetails)
+                }
             }
         }
     }
