@@ -45,6 +45,18 @@ import com.example.moviedb.core.model.TvShowDetails
 import com.example.moviedb.core.ui.design_system.AppErrorComponent
 import com.example.moviedb.core.ui.design_system.AppLoader
 import com.example.moviedb.core.ui.utils.ImageLoader
+import org.jetbrains.compose.resources.stringResource
+import com.example.moviedb.resources.Res
+import com.example.moviedb.resources.overview
+import com.example.moviedb.resources.genres
+import com.example.moviedb.resources.unknown
+import com.example.moviedb.resources.series_information
+import com.example.moviedb.resources.first_air_date
+import com.example.moviedb.resources.last_air_date
+import com.example.moviedb.resources.seasons
+import com.example.moviedb.resources.episodes
+import com.example.moviedb.resources.networks
+import com.example.moviedb.resources.languages
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -73,11 +85,10 @@ fun TvShowDetailsScreen(
     ) {
         when (uiState) {
             is TvShowDetailsViewModel.TvShowDetailsUiState.Loading -> AppLoader()
-            is TvShowDetailsViewModel.TvShowDetailsUiState.Error ->
-                AppErrorComponent(
-                    message = uiState.message,
-                    onRetry = onRetry
-                )
+            is TvShowDetailsViewModel.TvShowDetailsUiState.Error -> AppErrorComponent(
+                message = uiState.message,
+                onRetry = onRetry
+            )
 
             is TvShowDetailsViewModel.TvShowDetailsUiState.Success -> {
                 Column(
@@ -235,7 +246,7 @@ private fun HeroSection(tvShow: TvShowDetails) {
 }
 
 @Composable
-private fun BasicInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun BasicInfoSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -245,34 +256,34 @@ private fun BasicInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetail
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Series Information",
+                text = stringResource(Res.string.series_information),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
             InfoRow(
                 icon = Icons.Default.CalendarToday,
-                label = "First Air Date",
-                value = tvShow.firstAirDate ?: "Unknown"
+                label = stringResource(Res.string.first_air_date),
+                value = tvShow.firstAirDate ?: stringResource(Res.string.unknown)
             )
 
             tvShow.lastAirDate?.let { lastAirDate ->
                 InfoRow(
                     icon = Icons.Default.CalendarToday,
-                    label = "Last Air Date",
+                    label = stringResource(Res.string.last_air_date),
                     value = lastAirDate
                 )
             }
 
             InfoRow(
                 icon = Icons.Default.Tv,
-                label = "Seasons",
+                label = stringResource(Res.string.seasons),
                 value = "${tvShow.numberOfSeasons}"
             )
 
             InfoRow(
                 icon = Icons.Default.PlayArrow,
-                label = "Episodes",
+                label = stringResource(Res.string.episodes),
                 value = "${tvShow.numberOfEpisodes}"
             )
 
@@ -310,7 +321,7 @@ private fun BasicInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetail
 }
 
 @Composable
-private fun OverviewSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun OverviewSection(tvShow: TvShowDetails) {
     if (tvShow.overview.isNotBlank()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -321,7 +332,7 @@ private fun OverviewSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Overview",
+                    text = stringResource(Res.string.overview),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -347,7 +358,7 @@ private fun OverviewSection(tvShow: com.example.moviedb.core.model.TvShowDetails
 }
 
 @Composable
-private fun RatingsSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun RatingsSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -396,7 +407,7 @@ private fun RatingsSection(tvShow: com.example.moviedb.core.model.TvShowDetails)
 }
 
 @Composable
-private fun SeriesInfoSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
+private fun SeriesInfoSection(tvShow: TvShowDetails) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -561,7 +572,7 @@ private fun GenresSection(tvShow: com.example.moviedb.core.model.TvShowDetails) 
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Genres",
+                    text = stringResource(Res.string.genres),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -594,7 +605,7 @@ private fun NetworksSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Networks",
+                    text = stringResource(Res.string.networks),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -627,7 +638,7 @@ private fun LanguagesSection(tvShow: com.example.moviedb.core.model.TvShowDetail
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = "Languages",
+                    text = stringResource(Res.string.languages),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
