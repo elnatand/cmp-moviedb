@@ -264,10 +264,13 @@ The project uses Gradle version catalogs and custom convention plugins for depen
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-f
-## TODOs
-- Network Error and Exceptions
-- Movie and TV Show details
-- Implement pagination for TV Shows feature
-- Add unit tests for pagination logic
-- Implement error retry mechanism
+
+## 📋 TODOs
+
+### Medium Priority
+- [ ] Implement search functionality across movies and TV shows
+- [ ] Add favorites/watchlist feature with local storage
+
+### Low Priority
+- [ ] Add dark/light theme toggle
+- [ ] Implement offline mode with better caching strategies
