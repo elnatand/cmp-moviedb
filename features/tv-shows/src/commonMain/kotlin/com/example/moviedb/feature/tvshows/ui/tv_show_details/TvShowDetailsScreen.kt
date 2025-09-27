@@ -58,82 +58,61 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun TvShowDetailsScreen(
     tvShowId: Int,
-    tvShowTitle: String,
-    onBackPressed: () -> Unit,
 ) {
     val viewModel = koinViewModel<TvShowDetailsViewModel> { parametersOf(tvShowId) }
     val uiState by viewModel.uiState.collectAsState()
+
     TvShowDetailsScreen(
         uiState = uiState,
-        tvShowTitle = tvShowTitle,
-        onBackPressed = onBackPressed
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+
 @Composable
 fun TvShowDetailsScreen(
     uiState: TvShowDetailsViewModel.UiState,
-    tvShowTitle: String,
-    onBackPressed: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = tvShowTitle) },
-                navigationIcon = {
-                    IconButton(onClick = { onBackPressed() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
-        }
-    ) { paddingValues ->
-        uiState.tvShowDetails?.let { tvShow ->
+
+    uiState.tvShowDetails?.let { tvShow ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            // Hero Section with Backdrop and Poster
+            HeroSection(tvShow = tvShow)
+
+            // Content Section
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(paddingValues)
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Hero Section with Backdrop and Poster
-                HeroSection(tvShow = tvShow)
+                // Basic Info Section
+                BasicInfoSection(tvShow = tvShow)
 
-                // Content Section
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
-                ) {
-                    // Basic Info Section
-                    BasicInfoSection(tvShow = tvShow)
+                // Overview Section
+                OverviewSection(tvShow = tvShow)
 
-                    // Overview Section
-                    OverviewSection(tvShow = tvShow)
+                // Ratings and Stats Section
+                RatingsSection(tvShow = tvShow)
 
-                    // Ratings and Stats Section
-                    RatingsSection(tvShow = tvShow)
+                // Series Information Section
+                SeriesInfoSection(tvShow = tvShow)
 
-                    // Series Information Section
-                    SeriesInfoSection(tvShow = tvShow)
+                // Production Section
+                ProductionSection(tvShow = tvShow)
 
-                    // Production Section
-                    ProductionSection(tvShow = tvShow)
+                // Episodes Section
+                EpisodesSection(tvShow = tvShow)
 
-                    // Episodes Section
-                    EpisodesSection(tvShow = tvShow)
+                // Genres Section
+                GenresSection(tvShow = tvShow)
 
-                    // Genres Section
-                    GenresSection(tvShow = tvShow)
+                // Networks Section
+                NetworksSection(tvShow = tvShow)
 
-                    // Networks Section
-                    NetworksSection(tvShow = tvShow)
-
-                    // Languages Section
-                    LanguagesSection(tvShow = tvShow)
-                }
+                // Languages Section
+                LanguagesSection(tvShow = tvShow)
             }
         }
     }
@@ -235,7 +214,8 @@ private fun HeroSection(tvShow: com.example.moviedb.core.model.TvShowDetails) {
                             label = {
                                 Text(
                                     text = status,
-                                    style = MaterialTheme.typography.labelSmall
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = Color.White
                                 )
                             }
                         )
