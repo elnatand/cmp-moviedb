@@ -17,12 +17,19 @@ class TvShowsRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatcher: AppDispatcher
 ) {
+
+   // private val language = "en-US"
+    private val language = "he-IL"
     suspend fun getTvShowsPage(page: Int): AppResult<RemoteTvShowsPage> {
         return try {
             val tvShowsPage = withContext(appDispatcher.getDispatcher()) {
                 httpClient
-                    .get("${TMDB_BASE_URL}tv/popular?api_key=$TMDB_API_KEY") {
-                        url { parameters.append("page", page.toString()) }
+                    .get("${TMDB_BASE_URL}tv/popular") {
+                        url {
+                            parameters.append("api_key", TMDB_API_KEY)
+                            parameters.append("page", page.toString())
+                            parameters.append("language", language)
+                        }
                     }.body<RemoteTvShowsPage>()
             }
             AppResult.Success(tvShowsPage)
@@ -34,7 +41,12 @@ class TvShowsRemoteDataSource(
     suspend fun getTvShowDetails(tvShowId: Int): RemoteTvShowDetails {
         return withContext(appDispatcher.getDispatcher()) {
             val httpResponse = httpClient
-                .get("${TMDB_BASE_URL}tv/${tvShowId}?api_key=$TMDB_API_KEY")
+                .get("${TMDB_BASE_URL}tv/${tvShowId}") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("language", language)
+                    }
+                }
 
             val jsonBody = httpResponse.bodyAsText()
             println("getTvShowDetails JSON response for ID $tvShowId:")
