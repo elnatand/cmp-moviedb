@@ -1,5 +1,6 @@
 package com.example.moviedb.core.database.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.moviedb.core.model.MovieDetails
@@ -9,50 +10,61 @@ data class MovieDetailsEntity(
     @PrimaryKey val id: Int,
     val title: String,
     val overview: String,
-    val poster_path: String?,
-    val backdrop_path: String?,
-    val release_date: String?,
+    @ColumnInfo(name = "poster_path")
+    val posterPath: String?,
+    @ColumnInfo(name = "backdrop_path")
+    val backdropPath: String?,
+    @ColumnInfo(name = "release_date")
+    val releaseDate: String?,
     val runtime: Int?,
-    val vote_average: Double?,
-    val vote_count: Int?,
+    @ColumnInfo(name = "vote_average")
+    val voteAverage: Double?,
+    @ColumnInfo(name = "vote_count") val
+    voteCount: Int?,
     val adult: Boolean?,
     val budget: Long?,
     val revenue: Long?,
     val homepage: String?,
-    val imdb_id: String?,
-    val original_language: String?,
-    val original_title: String?,
+    @ColumnInfo(name = "imdb_id")
+    val imdbId: String?,
+    @ColumnInfo(name = "original_language")
+    val originalLanguage: String?,
+    @ColumnInfo(name = "original_title")
+    val originalTitle: String?,
     val popularity: Double?,
     val status: String?,
     val tagline: String?,
     val genres: String?,
-    val production_companies: String?,
-    val production_countries: String?,
-    val spoken_languages: String?
+    @ColumnInfo(name = "production_companies")
+    val productionCompanies: String?,
+    @ColumnInfo(name = "production_countries")
+    val productionCountries: String?,
+    @ColumnInfo(name = "spoken_languages")
+    val spokenLanguages: String?
 ) {
     fun toDomain(): MovieDetails = MovieDetails(
         id = id,
         title = title,
         overview = overview,
-        poster_path = poster_path,
-        backdrop_path = backdrop_path,
-        release_date = release_date,
+        poster_path = posterPath,
+        backdrop_path = backdropPath,
+        release_date = releaseDate,
         runtime = runtime,
-        vote_average = vote_average,
-        vote_count = vote_count,
+        vote_average = voteAverage,
+        vote_count = voteCount,
         adult = adult,
         budget = budget,
         revenue = revenue,
         homepage = homepage,
-        imdb_id = imdb_id,
-        original_language = original_language,
-        original_title = original_title,
+        imdb_id = imdbId,
+        original_language = originalLanguage,
+        original_title = originalTitle,
         popularity = popularity,
         status = status,
         tagline = tagline,
         genres = genres?.split(",")?.filter { it.isNotBlank() },
-        production_companies = production_companies?.split(",")?.filter { it.isNotBlank() },
-        production_countries = production_countries?.split(",")?.filter { it.isNotBlank() },
-        spoken_languages = spoken_languages?.split(",")?.filter { it.isNotBlank() }
+        production_companies = productionCompanies?.split(",")?.filter { it.isNotBlank() },
+        production_countries = productionCountries?.split(",")?.filter { it.isNotBlank() },
+        spoken_languages = spokenLanguages?.split(",")?.filter { it.isNotBlank() }
     )
 }

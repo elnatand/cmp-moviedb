@@ -1,11 +1,13 @@
 package com.example.moviedb.core.data.movies.data_sources
 
 import com.example.moviedb.core.common.AppDispatcher
-import com.example.moviedb.core.model.AppResult
 import com.example.moviedb.core.data.model.TMDB_API_KEY
-import com.example.moviedb.core.data.model.movies.RemoteMoviesPage
 import com.example.moviedb.core.data.model.TMDB_BASE_URL
 import com.example.moviedb.core.data.model.movies.RemoteMovieDetails
+import com.example.moviedb.core.data.model.movies.RemoteMoviesPage
+import com.example.moviedb.core.data.model.platformCountry
+import com.example.moviedb.core.data.model.platformLanguage
+import com.example.moviedb.core.model.AppResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -17,8 +19,7 @@ class MoviesRemoteDataSource(
     private val appDispatcher: AppDispatcher
 ) {
 
-    private val language = "en-US"
-    // private val language = "he-IL"
+    private val language = "$platformLanguage-$platformCountry"
     suspend fun getPopularMoviesPage(page: Int): AppResult<RemoteMoviesPage> {
         return try {
             val moviesPages = withContext(appDispatcher.getDispatcher()) {
