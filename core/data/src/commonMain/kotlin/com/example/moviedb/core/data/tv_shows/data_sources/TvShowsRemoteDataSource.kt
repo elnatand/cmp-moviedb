@@ -3,7 +3,6 @@ package com.example.moviedb.core.data.tv_shows.data_sources
 import com.example.moviedb.core.common.AppDispatcher
 import com.example.moviedb.core.data.model.TMDB_API_KEY
 import com.example.moviedb.core.data.model.TMDB_BASE_URL
-import com.example.moviedb.core.data.model.tv_shows.RemoteTvShow
 import com.example.moviedb.core.data.model.tv_shows.RemoteTvShowDetails
 import com.example.moviedb.core.data.model.tv_shows.RemoteTvShowsPage
 import com.example.moviedb.core.model.AppResult
@@ -20,7 +19,7 @@ class TvShowsRemoteDataSource(
 
     private val language = "en-US"
    // private val language = "he-IL"
-    suspend fun getTvShowsPage(page: Int): AppResult<RemoteTvShowsPage> {
+    suspend fun getPopularTvShowsPage(page: Int): AppResult<RemoteTvShowsPage> {
         return try {
             val tvShowsPage = withContext(appDispatcher.getDispatcher()) {
                 httpClient
