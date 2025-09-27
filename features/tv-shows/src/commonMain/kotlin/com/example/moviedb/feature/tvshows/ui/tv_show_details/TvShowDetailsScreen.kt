@@ -145,9 +145,9 @@ private fun HeroSection(tvShow: TvShowDetails) {
             .height(400.dp)
     ) {
         // Backdrop Image
-        tvShow.backdropPath?.let { backdropPath ->
+        if (tvShow.backdropPath.isNotEmpty()) {
             ImageLoader(
-                imageUrl = "$TMDB_IMAGE_URL$backdropPath",
+                imageUrl = "$TMDB_IMAGE_URL${tvShow.backdropPath}",
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -227,12 +227,12 @@ private fun HeroSection(tvShow: TvShowDetails) {
                     }
 
                     // Status
-                    tvShow.status?.let { status ->
+                    if (tvShow.status.isNotEmpty()) {
                         AssistChip(
                             onClick = { },
                             label = {
                                 Text(
-                                    text = status,
+                                    text = tvShow.status,
                                     style = MaterialTheme.typography.labelSmall,
                                     color = Color.White
                                 )
@@ -264,14 +264,14 @@ private fun BasicInfoSection(tvShow: TvShowDetails) {
             InfoRow(
                 icon = Icons.Default.CalendarToday,
                 label = stringResource(Res.string.first_air_date),
-                value = tvShow.firstAirDate ?: stringResource(Res.string.unknown)
+                value = tvShow.firstAirDate.ifEmpty { stringResource(Res.string.unknown) }
             )
 
-            tvShow.lastAirDate?.let { lastAirDate ->
+            if (tvShow.lastAirDate.isNotEmpty()) {
                 InfoRow(
                     icon = Icons.Default.CalendarToday,
                     label = stringResource(Res.string.last_air_date),
-                    value = lastAirDate
+                    value = tvShow.lastAirDate
                 )
             }
 
@@ -295,11 +295,11 @@ private fun BasicInfoSection(tvShow: TvShowDetails) {
                 )
             }
 
-            tvShow.type?.let { type ->
+            if (tvShow.type.isNotEmpty()) {
                 InfoRow(
                     icon = Icons.Default.Tv,
                     label = "Type",
-                    value = type
+                    value = tvShow.type
                 )
             }
 
@@ -343,9 +343,9 @@ private fun OverviewSection(tvShow: TvShowDetails) {
                     lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.4
                 )
 
-                tvShow.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
+                if (tvShow.tagline.isNotBlank()) {
                     Text(
-                        text = "\"$tagline\"",
+                        text = "\"${tvShow.tagline}\"",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary,
@@ -425,7 +425,7 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
             InfoRow(
                 icon = Icons.Default.Tv,
                 label = "Status",
-                value = tvShow.status ?: "Unknown"
+                value = tvShow.status.ifEmpty { "Unknown" }
             )
 
             InfoRow(
@@ -448,11 +448,11 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
                 )
             }
 
-            tvShow.homepage?.takeIf { it.isNotBlank() }?.let { homepage ->
+            if (tvShow.homepage.isNotBlank()) {
                 InfoRow(
                     icon = Icons.Default.Language,
                     label = "Official Website",
-                    value = homepage
+                    value = tvShow.homepage
                 )
             }
         }
@@ -518,26 +518,26 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                 fontWeight = FontWeight.Bold
             )
 
-            tvShow.lastEpisodeName?.let { lastEpisodeName ->
+            if (tvShow.lastEpisodeName.isNotEmpty()) {
                 Text(
                     text = "Last Episode",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = lastEpisodeName,
+                    text = tvShow.lastEpisodeName,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                tvShow.lastEpisodeAirDate?.let { airDate ->
+                if (tvShow.lastEpisodeAirDate.isNotEmpty()) {
                     Text(
-                        text = "Aired: $airDate",
+                        text = "Aired: ${tvShow.lastEpisodeAirDate}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            tvShow.nextEpisodeName?.let { nextEpisodeName ->
+            tvShow.nextEpisodeToAir?.let {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Next Episode",
@@ -545,12 +545,12 @@ private fun EpisodesSection(tvShow: com.example.moviedb.core.model.TvShowDetails
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = nextEpisodeName,
+                    text = it,
                     style = MaterialTheme.typography.bodyMedium
                 )
-                tvShow.nextEpisodeAirDate?.let { airDate ->
+                if (tvShow.nextEpisodeAirDate.isNotEmpty()) {
                     Text(
-                        text = "Airs: $airDate",
+                        text = "Airs: ${tvShow.nextEpisodeAirDate}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
