@@ -260,7 +260,10 @@ TMDB_API_KEY=abcd1234567890efgh
 - **composeApp** - Main app with navigation, DI setup, and platform-specific configurations
 
 ### Build Logic
-- **build-logic:convention** - Custom Gradle convention plugins for consistent builds
+- **build-logic:convention** - Custom Gradle convention plugins with shared build configurations:
+  - `moviedb.kotlin.multiplatform` - KMP setup with iOS/Android targets
+  - `moviedb.kotlin.composeMultiplatform` - Compose Multiplatform dependencies
+  - `moviedb.android.library` - Android library configuration
 
 ## 🏛️ Architecture Layers
 
@@ -279,11 +282,15 @@ TMDB_API_KEY=abcd1234567890efgh
 - **Module isolation** with well-defined APIs and dependency injection
 
 ### Build Configuration
-- **Gradle Version Catalogs** (`gradle/libs.versions.toml`)
-- **Custom Convention Plugins** in `build-logic/convention/`
+- **Gradle Version Catalogs** (`gradle/libs.versions.toml`) - Centralized dependency management
+- **Custom Convention Plugins** in `build-logic/convention/` module:
+  - **KMP Convention**: Configures Kotlin Multiplatform with iOS ARM64/Simulator targets
+  - **Compose Convention**: Adds all Compose Multiplatform dependencies automatically
+  - **Android Library Convention**: Standardizes Android module configuration
+  - **Shared Android Config**: Consistent compile/target SDK versions (34), min SDK (24), JDK 21
 - **KSP** for Room database code generation
 - **Compose Resources** for shared string resources
-- **Platform-specific** manifests and configurations
+- **Platform-specific** configurations using expect/actual pattern
 
 ### Development Commands
 ```bash
