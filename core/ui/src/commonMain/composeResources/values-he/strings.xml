@@ -1,0 +1,62 @@
+<resources>
+    <string name="movies">סרטים</string>
+    <string name="camera">מצלמה</string>
+    <string name="user_name">שם</string>
+    <string name="tv_shows">סדרות</string>
+    <string name="profile">פרופיל</string>
+    <string name="notifications">התראות</string>
+    <string name="network_error">אירעה שגיאה, נסה שוב</string>
+    <string name="error_loading_movie_details">שגיאה בטעינת פרטי הסרט</string>
+    <string name="retry">נסה שוב</string>
+    <string name="back">חזור</string>
+    <string name="rating">דירוג</string>
+    <string name="votes">הצבעות</string>
+    <string name="release">שחרור</string>
+    <string name="runtime">משך</string>
+    <string name="language">שפה</string>
+    <string name="overview">סקירה</string>
+    <string name="genres">ז'אנרים</string>
+    <string name="box_office">קופות</string>
+    <string name="budget">תקציב</string>
+    <string name="revenue">הכנסות</string>
+    <string name="production_companies">חברות הפקה</string>
+    <string name="production_countries">מדינות הפקה</string>
+    <string name="minutes_suffix">דק׳</string>
+
+    <!-- TV Show Details Screen -->
+    <string name="series_information">פרטי הסדרה</string>
+    <string name="first_air_date">תאריך שידור ראשון</string>
+    <string name="last_air_date">תאריך שידור אחרון</string>
+    <string name="seasons">עונות</string>
+    <string name="episodes">פרקים</string>
+    <string name="episode_runtime">משך פרק</string>
+    <string name="type">סוג</string>
+    <string name="original_language">שפה מקורית</string>
+    <string name="origin_country">מדינת מקור</string>
+    <string name="ratings_popularity">דירוגים ופופולריות</string>
+    <string name="popularity">פופולריות</string>
+    <string name="score">ניקוד</string>
+    <string name="series_status">סטטוס הסדרה</string>
+    <string name="status">סטטוס</string>
+    <string name="in_production">בהפקה</string>
+    <string name="total_seasons">סה״כ עונות</string>
+    <string name="content_rating">דירוג תוכן</string>
+    <string name="adult_content">תוכן למבוגרים</string>
+    <string name="official_website">אתר רשמי</string>
+    <string name="production">הפקה</string>
+    <string name="created_by">יוצר</string>
+    <string name="last_episode">פרק אחרון</string>
+    <string name="next_episode">פרק הבא</string>
+    <string name="aired_prefix">שודר: </string>
+    <string name="airs_prefix">ישודר: </string>
+    <string name="networks">רשתות</string>
+    <string name="languages">שפות</string>
+    <string name="spoken_languages">שפות דיבור</string>
+    <string name="available_languages">שפות זמינות</string>
+    <string name="unknown">לא ידוע</string>
+    <string name="yes">כן</string>
+    <string name="no">לא</string>
+
+    <!-- Error Messages -->
+    <string name="unknown_error_occurred">אירעה שגיאה לא ידועה</string>
+</resources>

@@ -1,0 +1,18 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+/secrets.properties
+/.idea
+.DS_Store
+build/
+/captures
+.externalNativeBuild
+.cxx
+iosApp/iosApp.xcworkspace/*
+iosApp/iosApp.xcodeproj/*
+!iosApp/iosApp.xcodeproj/project.pbxproj
+
+# Secrets and API Keys
+**/Secrets.plist
+iosApp/iosApp/Secrets.plist

@@ -1,0 +1,103 @@
+package com.elna.moviedb.core.data.tv_shows
+
+import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.core.model.TvShow
+import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.core.network.TvShowsRemoteDataSource
+import com.elna.moviedb.core.network.model.tv_shows.toDomain
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+
+class TvShowRepositoryImpl(
+    private val tvShowsRemoteDataSource: TvShowsRemoteDataSource
+) : TvShowsRepository {
+
+    private var currentPage = 0
+    private var totalPages = 0
+
+    private val _tvShows = MutableStateFlow<List<TvShow>>(emptyList())
+    private val _errorState = MutableStateFlow<AppResult.Error?>(null)
+
+    /**
+     * Observes all TV shows from memory with reactive error handling.
+     *
+     * This function returns a Flow that combines in-memory TV show data with error state,
+     * automatically loading the first page if no data is cached in memory.
+     *
+     * @return Flow<AppResult<List<TvShow>>> A reactive flow that emits:
+     *   - AppResult.Success with list of TV shows when data is available and no errors
+     *   - AppResult.Error when there are loading errors from loadNextPage()
+     */
+    override suspend fun observeAllTvShows(): Flow<AppResult<List<TvShow>>> {
+        // Load initial data if empty
+        if (_tvShows.value.isEmpty()) {
+            loadNextPage()
+        }
+
+        return combine(
+            _tvShows,
+            _errorState
+        ) { tvShows, error ->
+            // Return error if present
+            error?.let { return@combine it }
+
+            // Return success with TV show data
+            AppResult.Success(tvShows)
+        }
+    }
+
+    /**
+     * Loads the next page of TV shows from the remote API.
+     *
+     * This function handles pagination by:
+     * 1. Clearing any previous error state
+     * 2. Calculating the next page number based on current page
+     * 3. Fetching data from remote API
+     * 4. On success: updating total pages, appending data to memory list, and updating current page
+     * 5. On error: storing error state in reactive _errorState for UI consumption
+     */
+    override suspend fun loadNextPage() {
+        _errorState.value = null
+
+        val nextPage = currentPage + 1
+
+        when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage)) {
+            is AppResult.Success -> {
+                totalPages = result.data.totalPages
+                val newTvShows = result.data.results.map { it.toDomain() }
+                _tvShows.value = _tvShows.value + newTvShows
+                currentPage = nextPage
+            }
+
+            is AppResult.Error -> {
+                _errorState.value = result
+            }
+        }
+    }
+
+    /**
+     * Refreshes the TV show data by resetting pagination state and loading fresh data.
+     *
+     * This function performs a complete refresh by:
+     * 1. Resetting pagination state (currentPage = 0, totalPages = 0)
+     * 2. Clearing any previous error state and in-memory data
+     * 3. Loading the first page of TV shows via loadNextPage()
+     * 4. Returning the result based on the loading outcome
+     */
+    override suspend fun refresh(): AppResult<List<TvShow>> {
+        currentPage = 0
+        totalPages = 0
+        _errorState.value = null
+        _tvShows.value = emptyList()
+
+        loadNextPage()
+
+        // Return result based on loading outcome
+        return _errorState.value ?: AppResult.Success(_tvShows.value)
+    }
+
+    override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
+        return tvShowsRemoteDataSource.getTvShowDetails(tvShowId).toDomain()
+    }
+}
