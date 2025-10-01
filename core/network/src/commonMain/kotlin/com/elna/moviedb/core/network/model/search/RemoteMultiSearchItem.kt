@@ -76,6 +76,15 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
                 backdropPath = backdropPath?.let { TMDB_IMAGE_URL + it }
             )
         }
+        "person" -> {
+            val personName = name ?: return null
+            SearchResultItem.PersonItem(
+                id = id,
+                name = personName,
+                knownForDepartment = knownForDepartment,
+                profilePath = posterPath?.let { TMDB_IMAGE_URL + it }
+            )
+        }
         else -> null
     }
 }
