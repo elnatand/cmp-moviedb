@@ -6,7 +6,7 @@
     <string name="profile">פרופיל</string>
     <string name="notifications">התראות</string>
     <string name="network_error">אירעה שגיאה, נסה שוב</string>
-    <string name="error_loading_movie_details">שגיאה בטעינת פרטי הסרט</string>
+    <string name="error_title">שגיאה בטעינת פרטי הסרט</string>
     <string name="retry">נסה שוב</string>
     <string name="back">חזור</string>
     <string name="rating">דירוג</string>

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.elna.moviedb.movies"
+    namespace = "com.elna.moviedb.search"
 }
 
 kotlin {

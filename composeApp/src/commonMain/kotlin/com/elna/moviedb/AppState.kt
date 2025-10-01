@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.elna.moviedb.feature.profile.navigation.navigateToProfile
+import com.elna.moviedb.feature.search.navigation.navigateToSearch
 import com.elna.moviedb.feature.tvshows.navigation.navigateToTvShows
 import com.elna.moviedb.feature.movies.navigation.navigateToMovies
 import com.elna.moviedb.navigation.TopLevelDestination
@@ -84,6 +85,7 @@ class AppState(
             when (topLevelDestination) {
                 TopLevelDestination.MOVIES -> navController.navigateToMovies(topLevelNavOptions)
                 TopLevelDestination.TV_SHOWS -> navController.navigateToTvShows(topLevelNavOptions)
+                TopLevelDestination.SEARCH -> navController.navigateToSearch(topLevelNavOptions)
                 TopLevelDestination.PROFILE -> navController.navigateToProfile(topLevelNavOptions)
             }
         }

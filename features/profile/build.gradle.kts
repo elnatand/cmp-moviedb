@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
     alias(libs.plugins.moviedb.composeMultiplatform)
-    alias(libs.plugins.kotlinxSerialization)  // for navigation routes
 }
 
 android {

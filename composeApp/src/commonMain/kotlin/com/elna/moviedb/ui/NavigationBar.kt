@@ -13,6 +13,7 @@ import com.elna.moviedb.navigation.TopLevelDestination
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.movies
 import com.elna.moviedb.resources.profile
+import com.elna.moviedb.resources.search
 import com.elna.moviedb.resources.tv_shows
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -52,6 +53,7 @@ private fun getStringRes(destination: TopLevelDestination): StringResource {
     return when (destination) {
         TopLevelDestination.MOVIES -> Res.string.movies
         TopLevelDestination.TV_SHOWS -> Res.string.tv_shows
+        TopLevelDestination.SEARCH -> Res.string.search
         TopLevelDestination.PROFILE -> Res.string.profile
     }
 }

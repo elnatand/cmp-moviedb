@@ -6,6 +6,7 @@ import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.platformCountry
 import com.elna.moviedb.core.network.model.platformLanguage
+import com.elna.moviedb.core.network.model.search.RemoteSearchTvShowsPage
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowsPage
 import io.ktor.client.HttpClient

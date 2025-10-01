@@ -8,6 +8,7 @@ import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.core.network.model.movies.RemoteMoviesPage
 import com.elna.moviedb.core.network.model.platformCountry
 import com.elna.moviedb.core.network.model.platformLanguage
+import com.elna.moviedb.core.network.model.search.RemoteSearchMoviesPage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

@@ -6,20 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsScreen
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowsScreen
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
-@Serializable
-@SerialName("tv_shows")
-data object TvShowsRoute
-
-@Serializable
-@SerialName("tv_show_details")
-data class TvShowDetailsRoute(
-    val tvShowId: Int,
-)
 
 fun NavHostController.navigateToTvShows(
     navOptions: NavOptions? = null

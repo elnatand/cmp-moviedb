@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.error_loading_movie_details
+import com.elna.moviedb.resources.error_title
 import com.elna.moviedb.resources.retry
 import org.jetbrains.compose.resources.stringResource
 
@@ -32,7 +32,7 @@ fun AppErrorComponent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = stringResource(Res.string.error_loading_movie_details),
+            text = stringResource(Res.string.error_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.error,
             textAlign = TextAlign.Center
