@@ -12,29 +12,29 @@ data class RemoteMultiSearchItem(
     @SerialName("id")
     val id: Int,
     @SerialName("media_type")
-    val mediaType: String,
+    val mediaType: String? = null,
     @SerialName("poster_path")
-    val posterPath: String?,
+    val posterPath: String? = null,
     @SerialName("backdrop_path")
-    val backdropPath: String?,
+    val backdropPath: String? = null,
     @SerialName("overview")
-    val overview: String?,
+    val overview: String? = null,
     @SerialName("vote_average")
-    val voteAverage: Double?,
+    val voteAverage: Double?=null,
     @SerialName("vote_count")
-    val voteCount: Int?,
+    val voteCount: Int? = null,
     @SerialName("popularity")
-    val popularity: Double?,
+    val popularity: Double? = null,
     @SerialName("adult")
-    val adult: Boolean?,
+    val adult: Boolean? = null,
     @SerialName("genre_ids")
-    val genreIds: List<Int>?,
+    val genreIds: List<Int>? = null,
     @SerialName("original_language")
-    val originalLanguage: String?,
+    val originalLanguage: String? = null,
     @SerialName("known_for")
-    val knownFor: List<RemoteMultiSearchItem>?,
+    val knownFor: List<RemoteMultiSearchItem>? = null,
     @SerialName("known_for_department")
-    val knownForDepartment: String?,
+    val knownForDepartment: String? = null,
 
 //    @SerialName("title")
 //    val title: String?,
