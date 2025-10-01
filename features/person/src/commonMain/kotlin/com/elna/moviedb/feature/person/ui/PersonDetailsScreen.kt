@@ -260,7 +260,7 @@ private fun PersonDetailsContent(person: PersonDetails) {
                         person.popularity?.let { popularity ->
                             DetailItem(
                                 label = stringResource(Res.string.popularity),
-                                value = String.format("%.1f", popularity)
+                                value = "${(popularity * 10).toInt() / 10.0}"
                             )
                         }
                     }
