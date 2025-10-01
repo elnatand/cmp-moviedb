@@ -13,6 +13,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 
 class SearchRemoteDataSource(
     private val httpClient: HttpClient,
@@ -34,6 +35,11 @@ class SearchRemoteDataSource(
                         }
                     }.body<RemoteMultiSearchPage>()
             }
+
+            val json = Json { prettyPrint = true }
+            println("Search Results JSON:")
+            println(json.encodeToString(RemoteMultiSearchPage.serializer(), searchResults))
+
             AppResult.Success(searchResults)
         } catch (e: Exception) {
             AppResult.Error(

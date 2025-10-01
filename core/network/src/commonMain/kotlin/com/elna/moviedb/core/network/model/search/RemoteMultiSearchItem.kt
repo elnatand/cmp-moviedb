@@ -31,59 +31,51 @@ data class RemoteMultiSearchItem(
     val genreIds: List<Int>? = null,
     @SerialName("original_language")
     val originalLanguage: String? = null,
-    @SerialName("known_for")
-    val knownFor: List<RemoteMultiSearchItem>? = null,
     @SerialName("known_for_department")
     val knownForDepartment: String? = null,
-
-//    @SerialName("title")
-//    val title: String?,
-//    @SerialName("original_title")
-//    val originalTitle: String?,
-//    @SerialName("release_date")
-//    val releaseDate: String?,
-//    @SerialName("video")
-//    val video: Boolean?,
-//
-//    @SerialName("name")
-//    val name: String?,
-//    @SerialName("original_name")
-//    val originalName: String?,
-//    @SerialName("first_air_date")
-//    val firstAirDate: String?,
-//    @SerialName("origin_country")
-//    val originCountry: List<String>?,
-//
-//    @SerialName("profile_path")
-//    val profilePath: String?,
-
-//    @SerialName("gender")
-//    val gender: Int?,
-
-
+    @SerialName("title")
+    val title: String? = null,
+    @SerialName("name")
+    val name: String? = null,
+    @SerialName("release_date")
+    val releaseDate: String? = null,
+    @SerialName("first_air_date")
+    val firstAirDate: String? = null,
 )
 
 
 fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
     return when (mediaType) {
-//        "movie" -> R
-//
-//
-//        "tv" -> name?.let {
-//            SearchResultItem.TvShowItem(
-//                tvShow = TvShow(
-//                    id = id,
-//                    name = it,
-//                    poster_path = "$TMDB_IMAGE_URL$posterPath"
-//                ),
-//                overview = overview,
-//                firstAirDate = firstAirDate,
-//                voteAverage = voteAverage,
-//                voteCount = voteCount,
-//                backdropPath = backdropPath?.let { path -> "$TMDB_IMAGE_URL$path" }
-//            )
-//        }
-
+        "movie" -> {
+            val movieTitle = title ?: return null
+            SearchResultItem.MovieItem(
+                movie = Movie(
+                    id = id,
+                    title = movieTitle,
+                    poster_path = posterPath?.let { TMDB_IMAGE_URL + it }
+                ),
+                overview = overview,
+                releaseDate = releaseDate,
+                voteAverage = voteAverage,
+                voteCount = voteCount,
+                backdropPath = backdropPath?.let { TMDB_IMAGE_URL + it }
+            )
+        }
+        "tv" -> {
+            val tvShowName = name ?: return null
+            SearchResultItem.TvShowItem(
+                tvShow = TvShow(
+                    id = id,
+                    name = tvShowName,
+                    poster_path = posterPath?.let { TMDB_IMAGE_URL + it }
+                ),
+                overview = overview,
+                firstAirDate = firstAirDate,
+                voteAverage = voteAverage,
+                voteCount = voteCount,
+                backdropPath = backdropPath?.let { TMDB_IMAGE_URL + it }
+            )
+        }
         else -> null
     }
 }
