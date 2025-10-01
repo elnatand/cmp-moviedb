@@ -64,6 +64,7 @@
     <string name="search">Search</string>
     <string name="search_hint">Search movies and TV shows...</string>
     <string name="all">All</string>
+    <string name="people">People</string>
     <string name="no_results_found">No results found</string>
     <string name="search_for_movies_and_tv_shows">Search for movies and TV shows</string>
     <string name="no_poster_available">No poster available</string>

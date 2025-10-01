@@ -121,6 +121,16 @@ class SearchViewModel(
                         }
                     }
                 }
+                SearchFilter.PEOPLE -> {
+                    var flowResult: AppResult<List<SearchResultItem.PersonItem>>? = null
+                    searchRepository.searchPeople(query, page).collect { flowResult = it }
+                    flowResult?.let {
+                        when (it) {
+                            is AppResult.Success -> AppResult.Success(it.data.map { item -> item as SearchResultItem })
+                            is AppResult.Error -> AppResult.Error(message = it.message, throwable = it.throwable)
+                        }
+                    }
+                }
             }
 
             _uiState.update { currentState ->
