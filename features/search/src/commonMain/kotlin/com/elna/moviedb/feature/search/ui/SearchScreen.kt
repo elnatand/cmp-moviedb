@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.SearchFilter
@@ -18,10 +20,29 @@ import com.elna.moviedb.feature.search.model.SearchUiState
 import com.elna.moviedb.feature.search.ui.components.SearchBar
 import com.elna.moviedb.feature.search.ui.components.SearchEmptyState
 import com.elna.moviedb.feature.search.ui.components.SearchFilters
+import org.koin.compose.viewmodel.koinViewModel
 import com.elna.moviedb.feature.search.ui.components.SearchResultItem as SearchResultItemComponent
 
 @Composable
 fun SearchScreen(
+    onMovieClicked: (Int) -> Unit,
+    onTvShowClicked: (Int) -> Unit,
+) {
+    val viewModel = koinViewModel<SearchViewModel>()
+    val uiState by viewModel.uiState.collectAsState()
+
+    SearchScreen(
+        uiState = uiState,
+        onSearchQueryChanged = viewModel::onSearchQueryChanged,
+        onFilterChanged = viewModel::onFilterChanged,
+        onRetry = viewModel::onRetry,
+        onMovieClicked = onMovieClicked,
+        onTvShowClicked = onTvShowClicked
+    )
+}
+
+@Composable
+private fun SearchScreen(
     uiState: SearchUiState,
     onSearchQueryChanged: (String) -> Unit,
     onFilterChanged: (SearchFilter) -> Unit,
