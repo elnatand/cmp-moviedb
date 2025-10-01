@@ -6,20 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
+import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
 import com.elna.moviedb.feature.movies.ui.movies.MoviesScreen
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
-@Serializable
-@SerialName("movies")
-data object MoviesRoute
-
-@Serializable
-@SerialName("movie_details")
-data class MovieDetailsRoute(
-    val movieId: Int,
-)
 
 fun NavHostController.navigateToMovies(navOptions: NavOptions) {
     navigate(MoviesRoute, navOptions)
