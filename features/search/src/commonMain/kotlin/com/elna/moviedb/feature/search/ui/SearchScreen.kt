@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -61,89 +62,69 @@ private fun SearchScreen(
     onTvShowClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize()
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            SearchBar(
-                query = uiState.searchQuery,
-                onQueryChanged = onSearchQueryChanged
-            )
 
-            SearchFilters(
-                selectedFilter = uiState.selectedFilter,
-                onFilterChanged = onFilterChanged
-            )
+    Column(modifier = modifier.fillMaxSize().systemBarsPadding()) {
+        SearchBar(
+            query = uiState.searchQuery,
+            onQueryChanged = onSearchQueryChanged
+        )
 
-            when {
-                uiState.isLoading -> {
-                    AppLoader(modifier = Modifier.fillMaxSize())
-                }
+        SearchFilters(
+            selectedFilter = uiState.selectedFilter,
+            onFilterChanged = onFilterChanged
+        )
 
-                uiState.errorMessage != null -> {
-                    AppErrorComponent(
-                        message = uiState.errorMessage,
-                        onRetry = onRetry
-                    )
-                }
+        when {
+            uiState.isLoading -> {
+                AppLoader()
+            }
 
-                uiState.searchResults.isEmpty() -> {
-                    SearchEmptyState(
-                        hasSearched = uiState.hasSearched,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+            uiState.errorMessage != null -> {
+                AppErrorComponent(
+                    message = uiState.errorMessage,
+                    onRetry = onRetry
+                )
+            }
 
-                else -> {
-                    val listState = rememberLazyListState()
+            uiState.searchResults.isEmpty() -> {
+                SearchEmptyState(
+                    hasSearched = uiState.hasSearched,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
-                    val shouldLoadMore by remember {
-                        derivedStateOf {
-                            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
-                            val totalItems = listState.layoutInfo.totalItemsCount
-                            lastVisibleItem?.index == totalItems - 1 && totalItems > 0
-                        }
+            else -> {
+                val listState = rememberLazyListState()
+
+                val shouldLoadMore by remember {
+                    derivedStateOf {
+                        val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+                        val totalItems = listState.layoutInfo.totalItemsCount
+                        lastVisibleItem?.index == totalItems - 6 && totalItems > 0
                     }
+                }
 
-                    LaunchedEffect(shouldLoadMore) {
-                        if (shouldLoadMore && uiState.hasMorePages && !uiState.isLoadingMore) {
-                            onLoadMore()
-                        }
+                LaunchedEffect(shouldLoadMore) {
+                    if (shouldLoadMore && uiState.hasMorePages && !uiState.isLoadingMore) {
+                        onLoadMore()
                     }
+                }
 
-                    LazyColumn(
-                        state = listState,
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(uiState.searchResults) { item ->
-                            SearchResultItemComponent(
-                                item = item,
-                                onItemClicked = {
-                                    when (item) {
-                                        is SearchResultItem.MovieItem -> onMovieClicked(item.movie.id)
-                                        is SearchResultItem.TvShowItem -> onTvShowClicked(item.tvShow.id)
-                                    }
-                                }
-                            )
-                        }
-
-                        if (uiState.isLoadingMore) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator()
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(uiState.searchResults) { item ->
+                        SearchResultItemComponent(
+                            item = item,
+                            onItemClicked = {
+                                when (item) {
+                                    is SearchResultItem.MovieItem -> onMovieClicked(item.movie.id)
+                                    is SearchResultItem.TvShowItem -> onTvShowClicked(item.tvShow.id)
                                 }
                             }
-                        }
+                        )
                     }
                 }
             }
