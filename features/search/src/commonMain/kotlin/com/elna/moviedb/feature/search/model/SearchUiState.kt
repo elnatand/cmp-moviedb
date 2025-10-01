@@ -8,7 +8,10 @@ data class SearchUiState(
     val searchResults: List<SearchResultItem> = emptyList(),
     val selectedFilter: SearchFilter = SearchFilter.ALL,
     val isLoading: Boolean = false,
+    val isLoadingMore: Boolean = false,
     val errorMessage: String? = null,
     val totalResults: Int = 0,
-    val hasSearched: Boolean = false
+    val hasSearched: Boolean = false,
+    val currentPage: Int = 1,
+    val hasMorePages: Boolean = true
 )

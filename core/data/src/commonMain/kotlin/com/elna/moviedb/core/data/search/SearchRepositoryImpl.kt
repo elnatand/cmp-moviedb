@@ -11,13 +11,13 @@ class SearchRepositoryImpl(
     private val searchRemoteDataSource: SearchRemoteDataSource
 ) : SearchRepository {
 
-    override fun searchMovies(query: String): Flow<AppResult<List<SearchResultItem.MovieItem>>> = flow {
+    override fun searchMovies(query: String, page: Int): Flow<AppResult<List<SearchResultItem.MovieItem>>> = flow {
         if (query.isBlank()) {
             emit(AppResult.Success(emptyList()))
             return@flow
         }
 
-        val result = searchRemoteDataSource.searchMovies(query, 1)
+        val result = searchRemoteDataSource.searchMovies(query, page)
         when (result) {
             is AppResult.Success -> {
                 val movieItems = result.data.results.map { it.toSearchResult() }
@@ -29,13 +29,13 @@ class SearchRepositoryImpl(
         }
     }
 
-    override fun searchTvShows(query: String): Flow<AppResult<List<SearchResultItem.TvShowItem>>> = flow {
+    override fun searchTvShows(query: String, page: Int): Flow<AppResult<List<SearchResultItem.TvShowItem>>> = flow {
         if (query.isBlank()) {
             emit(AppResult.Success(emptyList()))
             return@flow
         }
 
-        val result = searchRemoteDataSource.searchTvShows(query, 1)
+        val result = searchRemoteDataSource.searchTvShows(query, page)
         when (result) {
             is AppResult.Success -> {
                 val tvShowItems = result.data.results.map { it.toSearchResult() }
@@ -47,13 +47,13 @@ class SearchRepositoryImpl(
         }
     }
 
-    override fun searchAll(query: String): Flow<AppResult<List<SearchResultItem>>> = flow {
+    override fun searchAll(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>> = flow {
         if (query.isBlank()) {
             emit(AppResult.Success(emptyList()))
             return@flow
         }
 
-        val result = searchRemoteDataSource.searchMulti(query, 1)
+        val result = searchRemoteDataSource.searchMulti(query, page)
         when (result) {
             is AppResult.Success -> {
                 val searchItems = result.data.results.mapNotNull { it.toSearchResult() }

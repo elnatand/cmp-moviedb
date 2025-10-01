@@ -5,7 +5,7 @@ import com.elna.moviedb.core.model.SearchResultItem
 import kotlinx.coroutines.flow.Flow
 
 interface SearchRepository {
-    fun searchMovies(query: String): Flow<AppResult<List<SearchResultItem.MovieItem>>>
-    fun searchTvShows(query: String): Flow<AppResult<List<SearchResultItem.TvShowItem>>>
-    fun searchAll(query: String): Flow<AppResult<List<SearchResultItem>>>
+    fun searchMovies(query: String, page: Int): Flow<AppResult<List<SearchResultItem.MovieItem>>>
+    fun searchTvShows(query: String, page: Int): Flow<AppResult<List<SearchResultItem.TvShowItem>>>
+    fun searchAll(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>>
 }
