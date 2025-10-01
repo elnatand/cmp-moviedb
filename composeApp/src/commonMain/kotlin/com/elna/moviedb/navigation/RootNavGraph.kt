@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.feature.movies.navigation.movieDetailsScene
 import com.elna.moviedb.feature.movies.navigation.moviesScene
+import com.elna.moviedb.feature.person.navigation.personDetailsScene
 import com.elna.moviedb.feature.profile.navigation.profileScene
 import com.elna.moviedb.feature.search.navigation.searchScene
 import com.elna.moviedb.feature.tvshows.navigation.tvShowDetailsScene
@@ -27,5 +28,6 @@ fun RootNavGraph(
         tvShowDetailsScene(navController)
         searchScene(navController)
         profileScene()
+        personDetailsScene(navController)
     }
 }

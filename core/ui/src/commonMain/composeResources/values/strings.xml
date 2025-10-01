@@ -67,4 +67,14 @@
     <string name="no_results_found">No results found</string>
     <string name="search_for_movies_and_tv_shows">Search for movies and TV shows</string>
     <string name="no_poster_available">No poster available</string>
+
+    <!-- Person Details Screen -->
+    <string name="birthday">Birthday</string>
+    <string name="deathday">Deathday</string>
+    <string name="gender">Gender</string>
+    <string name="birthplace">Birthplace</string>
+    <string name="biography">Biography</string>
+    <string name="also_known_as">Also Known As</string>
+    <string name="personal_details">Personal Details</string>
+    <string name="place_of_birth">Place of Birth</string>
 </resources>
