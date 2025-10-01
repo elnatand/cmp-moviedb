@@ -76,7 +76,12 @@ private fun SearchScreen(
 
         when {
             uiState.isLoading -> {
-                AppLoader()
+                Box(
+                    contentAlignment = Alignment.TopCenter,
+                    modifier = modifier.fillMaxSize()
+                ) {
+                    AppLoader(modifier.padding(top = 100.dp))
+                }
             }
 
             uiState.errorMessage != null -> {

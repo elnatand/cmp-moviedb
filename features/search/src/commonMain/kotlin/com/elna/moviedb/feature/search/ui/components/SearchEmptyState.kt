@@ -26,9 +26,8 @@ fun SearchEmptyState(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(32.dp),
+        modifier = modifier.fillMaxSize().padding(horizontal = 32.dp, vertical = 100.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = Icons.Default.Search,
