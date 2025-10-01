@@ -6,7 +6,7 @@
     <string name="profile">Profile</string>
     <string name="notifications">Notifications</string>
     <string name="network_error">Error occurred. Please try again.</string>
-    <string name="error_loading_movie_details">Error loading movie details</string>
+    <string name="error_title">Error occurred</string>
     <string name="retry">Retry</string>
     <string name="back">Back</string>
     <string name="rating">Rating</string>
