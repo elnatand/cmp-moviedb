@@ -17,7 +17,7 @@ class SearchRepositoryImpl(
             return@flow
         }
 
-        val result = moviesRemoteDataSource.searchMovies(query, 1)
+        val result = searchRemoteDataSource.searchMovies(query, 1)
         when (result) {
             is AppResult.Success -> {
                 val movieItems = result.data.results.map { it.toSearchResult() }
@@ -35,7 +35,7 @@ class SearchRepositoryImpl(
             return@flow
         }
 
-        val result = tvShowsRemoteDataSource.searchTvShows(query, 1)
+        val result = searchRemoteDataSource.searchTvShows(query, 1)
         when (result) {
             is AppResult.Success -> {
                 val tvShowItems = result.data.results.map { it.toSearchResult() }

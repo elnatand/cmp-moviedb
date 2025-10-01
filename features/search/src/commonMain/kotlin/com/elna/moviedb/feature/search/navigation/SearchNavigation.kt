@@ -6,10 +6,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.elna.moviedb.feature.movies.navigation.MovieDetailsRoute
 import com.elna.moviedb.feature.search.ui.SearchScreen
 import com.elna.moviedb.feature.search.ui.SearchViewModel
-import com.elna.moviedb.feature.tvshows.navigation.TvShowDetailsRoute
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -33,10 +31,10 @@ fun NavGraphBuilder.searchScene(navigator: NavHostController) {
             onFilterChanged = viewModel::onFilterChanged,
             onRetry = viewModel::onRetry,
             onMovieClicked = { movieId ->
-                navigator.navigate(MovieDetailsRoute(movieId))
+            //    navigator.navigate(MovieDetailsRoute(movieId))
             },
             onTvShowClicked = { tvShowId ->
-                navigator.navigate(TvShowDetailsRoute(tvShowId))
+            //    navigator.navigate(TvShowDetailsRoute(tvShowId))
             }
         )
     }
