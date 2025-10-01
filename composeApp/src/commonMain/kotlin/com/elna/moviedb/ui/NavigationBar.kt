@@ -52,6 +52,7 @@ private fun getStringRes(destination: TopLevelDestination): StringResource {
     return when (destination) {
         TopLevelDestination.MOVIES -> Res.string.movies
         TopLevelDestination.TV_SHOWS -> Res.string.tv_shows
+        TopLevelDestination.SEARCH -> Res.string.search
         TopLevelDestination.PROFILE -> Res.string.profile
     }
 }

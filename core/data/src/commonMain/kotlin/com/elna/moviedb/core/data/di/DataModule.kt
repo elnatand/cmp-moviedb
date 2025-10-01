@@ -3,6 +3,8 @@ package com.elna.moviedb.core.data.di
 import com.elna.moviedb.core.common.DISPATCHER_IO
 import com.elna.moviedb.core.data.movies.MoviesRepository
 import com.elna.moviedb.core.data.movies.MoviesRepositoryImpl
+import com.elna.moviedb.core.data.search.SearchRepository
+import com.elna.moviedb.core.data.search.SearchRepositoryImpl
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.data.tv_shows.TvShowRepositoryImpl
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
@@ -25,6 +27,12 @@ val dataModule = module {
         MoviesRepositoryImpl(
             moviesRemoteDataSource = get(),
             moviesLocalDataSource = get()
+        )
+    }
+
+    single<SearchRepository> {
+        SearchRepositoryImpl(
+            searchRemoteDataSource = get()
         )
     }
 }
