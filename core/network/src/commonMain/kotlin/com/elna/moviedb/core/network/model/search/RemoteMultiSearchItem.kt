@@ -31,61 +31,59 @@ data class RemoteMultiSearchItem(
     val genreIds: List<Int>?,
     @SerialName("original_language")
     val originalLanguage: String?,
-
-    @SerialName("title")
-    val title: String?,
-    @SerialName("original_title")
-    val originalTitle: String?,
-    @SerialName("release_date")
-    val releaseDate: String?,
-    @SerialName("video")
-    val video: Boolean?,
-
-    @SerialName("name")
-    val name: String?,
-    @SerialName("original_name")
-    val originalName: String?,
-    @SerialName("first_air_date")
-    val firstAirDate: String?,
-    @SerialName("origin_country")
-    val originCountry: List<String>?,
-
-    @SerialName("profile_path")
-    val profilePath: String?,
+    @SerialName("known_for")
+    val knownFor: List<RemoteMultiSearchItem>?,
     @SerialName("known_for_department")
-    val knownForDepartment: String?
+    val knownForDepartment: String?,
+
+//    @SerialName("title")
+//    val title: String?,
+//    @SerialName("original_title")
+//    val originalTitle: String?,
+//    @SerialName("release_date")
+//    val releaseDate: String?,
+//    @SerialName("video")
+//    val video: Boolean?,
+//
+//    @SerialName("name")
+//    val name: String?,
+//    @SerialName("original_name")
+//    val originalName: String?,
+//    @SerialName("first_air_date")
+//    val firstAirDate: String?,
+//    @SerialName("origin_country")
+//    val originCountry: List<String>?,
+//
+//    @SerialName("profile_path")
+//    val profilePath: String?,
+
+//    @SerialName("gender")
+//    val gender: Int?,
+
+
 )
+
 
 fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
     return when (mediaType) {
-        "movie" -> title?.let {
-            SearchResultItem.MovieItem(
-                movie = Movie(
-                    id = id,
-                    title = it,
-                    poster_path = "$TMDB_IMAGE_URL$posterPath"
-                ),
-                overview = overview,
-                releaseDate = releaseDate,
-                voteAverage = voteAverage,
-                voteCount = voteCount,
-                backdropPath = backdropPath?.let { path -> "$TMDB_IMAGE_URL$path" }
-            )
-        }
-        "tv" -> name?.let {
-            SearchResultItem.TvShowItem(
-                tvShow = TvShow(
-                    id = id,
-                    name = it,
-                    poster_path = "$TMDB_IMAGE_URL$posterPath"
-                ),
-                overview = overview,
-                firstAirDate = firstAirDate,
-                voteAverage = voteAverage,
-                voteCount = voteCount,
-                backdropPath = backdropPath?.let { path -> "$TMDB_IMAGE_URL$path" }
-            )
-        }
+//        "movie" -> R
+//
+//
+//        "tv" -> name?.let {
+//            SearchResultItem.TvShowItem(
+//                tvShow = TvShow(
+//                    id = id,
+//                    name = it,
+//                    poster_path = "$TMDB_IMAGE_URL$posterPath"
+//                ),
+//                overview = overview,
+//                firstAirDate = firstAirDate,
+//                voteAverage = voteAverage,
+//                voteCount = voteCount,
+//                backdropPath = backdropPath?.let { path -> "$TMDB_IMAGE_URL$path" }
+//            )
+//        }
+
         else -> null
     }
 }
