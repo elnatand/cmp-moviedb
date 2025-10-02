@@ -1,4 +1,5 @@
 <resources>
+    <string name="popular_movies">סרטים פופולריים</string>
     <string name="movies">סרטים</string>
     <string name="camera">מצלמה</string>
     <string name="user_name">שם</string>
@@ -59,4 +60,23 @@
 
     <!-- Error Messages -->
     <string name="unknown_error_occurred">אירעה שגיאה לא ידועה</string>
+
+    <!-- Search Feature -->
+    <string name="search">חיפוש</string>
+    <string name="search_hint">חפש סרטים וסדרות...</string>
+    <string name="all">הכל</string>
+    <string name="people">אנשים</string>
+    <string name="no_results_found">לא נמצאו תוצאות</string>
+    <string name="search_for_movies_and_tv_shows">חפש סרטים וסדרות</string>
+    <string name="no_poster_available">אין פוסטר זמין</string>
+
+    <!-- Person Details Screen -->
+    <string name="birthday">תאריך לידה</string>
+    <string name="deathday">תאריך פטירה</string>
+    <string name="gender">מגדר</string>
+    <string name="birthplace">מקום לידה</string>
+    <string name="biography">ביוגרפיה</string>
+    <string name="also_known_as">ידוע גם בשם</string>
+    <string name="personal_details">פרטים אישיים</string>
+    <string name="place_of_birth">מקום לידה</string>
 </resources>
