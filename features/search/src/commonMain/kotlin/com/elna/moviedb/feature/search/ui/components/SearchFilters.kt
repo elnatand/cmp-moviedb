@@ -12,6 +12,7 @@ import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.all
 import com.elna.moviedb.resources.movies
+import com.elna.moviedb.resources.people
 import com.elna.moviedb.resources.tv_shows
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -41,5 +42,6 @@ private fun getFilterLabel(filter: SearchFilter): StringResource {
         SearchFilter.ALL -> Res.string.all
         SearchFilter.MOVIES -> Res.string.movies
         SearchFilter.TV_SHOWS -> Res.string.tv_shows
+        SearchFilter.PEOPLE -> Res.string.people
     }
 }

@@ -1,4 +1,5 @@
 <resources>
+    <string name="popular_movies">أفلام شائعة</string>
     <string name="movies">أفلام</string>
     <string name="camera">كاميرا</string>
     <string name="user_name">الاسم</string>
@@ -23,6 +24,7 @@
     <string name="production_countries">بلدان الإنتاج</string>
     <string name="minutes_suffix">دقيقة</string>
 
+    <!-- TV Show Details Screen -->
     <string name="series_information">معلومات المسلسل</string>
     <string name="first_air_date">تاريخ أول عرض</string>
     <string name="last_air_date">تاريخ آخر عرض</string>
@@ -56,5 +58,25 @@
     <string name="yes">نعم</string>
     <string name="no">لا</string>
 
+    <!-- Error Messages -->
     <string name="unknown_error_occurred">حدث خطأ غير معروف</string>
+
+    <!-- Search Feature -->
+    <string name="search">بحث</string>
+    <string name="search_hint">ابحث عن الأفلام والمسلسلات...</string>
+    <string name="all">الكل</string>
+    <string name="people">الأشخاص</string>
+    <string name="no_results_found">لم يتم العثور على نتائج</string>
+    <string name="search_for_movies_and_tv_shows">ابحث عن الأفلام والمسلسلات</string>
+    <string name="no_poster_available">لا توجد ملصق متاح</string>
+
+    <!-- Person Details Screen -->
+    <string name="birthday">تاريخ الميلاد</string>
+    <string name="deathday">تاريخ الوفاة</string>
+    <string name="gender">الجنس</string>
+    <string name="birthplace">مكان الميلاد</string>
+    <string name="biography">السيرة الذاتية</string>
+    <string name="also_known_as">معروف أيضًا باسم</string>
+    <string name="personal_details">التفاصيل الشخصية</string>
+    <string name="place_of_birth">مكان الميلاد</string>
 </resources>

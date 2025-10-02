@@ -44,6 +44,7 @@ kotlin {
             implementation(projects.features.tvShows)
             implementation(projects.features.search)
             implementation(projects.features.profile)
+            implementation(projects.features.person)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.navigation.compose)

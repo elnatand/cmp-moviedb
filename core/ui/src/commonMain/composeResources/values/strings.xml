@@ -1,4 +1,5 @@
 <resources>
+    <string name="popular_movies">Popular Movies</string>
     <string name="movies">Movies</string>
     <string name="camera">Camera</string>
     <string name="user_name">Name</string>
@@ -64,7 +65,18 @@
     <string name="search">Search</string>
     <string name="search_hint">Search movies and TV shows...</string>
     <string name="all">All</string>
+    <string name="people">People</string>
     <string name="no_results_found">No results found</string>
     <string name="search_for_movies_and_tv_shows">Search for movies and TV shows</string>
     <string name="no_poster_available">No poster available</string>
+
+    <!-- Person Details Screen -->
+    <string name="birthday">Birthday</string>
+    <string name="deathday">Deathday</string>
+    <string name="gender">Gender</string>
+    <string name="birthplace">Birthplace</string>
+    <string name="biography">Biography</string>
+    <string name="also_known_as">Also Known As</string>
+    <string name="personal_details">Personal Details</string>
+    <string name="place_of_birth">Place of Birth</string>
 </resources>

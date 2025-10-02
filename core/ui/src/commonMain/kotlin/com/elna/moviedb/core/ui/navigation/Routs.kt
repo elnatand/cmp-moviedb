@@ -30,3 +30,9 @@ object SearchRoute
 @Serializable
 @SerialName("profile")
 data object ProfileRoute
+
+@Serializable
+@SerialName("person_details")
+data class PersonDetailsRoute(
+    val personId: Int,
+)

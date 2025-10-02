@@ -43,10 +43,12 @@ fun SearchResultItem(
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            println("item: $item")
             ImageLoader(
                 imageUrl = when (item) {
                     is SearchResultItem.MovieItem -> item.movie.poster_path ?: ""
                     is SearchResultItem.TvShowItem -> item.tvShow.poster_path ?: ""
+                    is SearchResultItem.PersonItem -> item.profilePath ?: ""
                 },
                 modifier = Modifier
                     .size(80.dp, 120.dp)
@@ -61,6 +63,7 @@ fun SearchResultItem(
                     text = when (item) {
                         is SearchResultItem.MovieItem -> item.movie.title
                         is SearchResultItem.TvShowItem -> item.tvShow.name
+                        is SearchResultItem.PersonItem -> item.name
                     },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
@@ -68,14 +71,29 @@ fun SearchResultItem(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                item.overview?.let { overview ->
-                    Text(
-                        text = overview,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 3,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                when (item) {
+                    is SearchResultItem.PersonItem -> {
+                        item.knownForDepartment?.let { department ->
+                            Text(
+                                text = department,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                    else -> {
+                        item.overview?.let { overview ->
+                            Text(
+                                text = overview,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
                 }
 
                 Row(
@@ -95,7 +113,7 @@ fun SearchResultItem(
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
-                                    text = "%.1f".format(rating),
+                                    text = "${(rating * 10).toInt() / 10.0}",
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
@@ -124,6 +142,9 @@ fun SearchResultItem(
                                     )
                                 }
                             }
+                        }
+                        is SearchResultItem.PersonItem -> {
+                            // No additional date info for person
                         }
                     }
                 }

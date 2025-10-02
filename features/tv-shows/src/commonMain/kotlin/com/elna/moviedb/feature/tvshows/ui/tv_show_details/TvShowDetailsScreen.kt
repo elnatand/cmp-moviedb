@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
@@ -46,63 +48,49 @@ import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.ImageLoader
-import org.jetbrains.compose.resources.stringResource
+import com.elna.moviedb.core.ui.utils.formatDate
 import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.overview
-import com.elna.moviedb.resources.genres
-import com.elna.moviedb.resources.unknown
-import com.elna.moviedb.resources.series_information
-import com.elna.moviedb.resources.first_air_date
-import com.elna.moviedb.resources.last_air_date
-import com.elna.moviedb.resources.seasons
-import com.elna.moviedb.resources.episodes
-import com.elna.moviedb.resources.networks
-import com.elna.moviedb.resources.languages
-import com.elna.moviedb.resources.episode_runtime
-import com.elna.moviedb.resources.type
-import com.elna.moviedb.resources.original_language
-import com.elna.moviedb.resources.origin_country
-import com.elna.moviedb.resources.ratings_popularity
-import com.elna.moviedb.resources.rating
-import com.elna.moviedb.resources.votes
-import com.elna.moviedb.resources.popularity
-import com.elna.moviedb.resources.score
-import com.elna.moviedb.resources.series_status
-import com.elna.moviedb.resources.status
-import com.elna.moviedb.resources.in_production
-import com.elna.moviedb.resources.total_seasons
-import com.elna.moviedb.resources.content_rating
 import com.elna.moviedb.resources.adult_content
-import com.elna.moviedb.resources.official_website
-import com.elna.moviedb.resources.production
-import com.elna.moviedb.resources.created_by
-import com.elna.moviedb.resources.production_companies
-import com.elna.moviedb.resources.production_countries
-import com.elna.moviedb.resources.last_episode
-import com.elna.moviedb.resources.next_episode
 import com.elna.moviedb.resources.aired_prefix
 import com.elna.moviedb.resources.airs_prefix
-import com.elna.moviedb.resources.spoken_languages
 import com.elna.moviedb.resources.available_languages
-import com.elna.moviedb.resources.yes
+import com.elna.moviedb.resources.content_rating
+import com.elna.moviedb.resources.created_by
+import com.elna.moviedb.resources.episode_runtime
+import com.elna.moviedb.resources.episodes
+import com.elna.moviedb.resources.first_air_date
+import com.elna.moviedb.resources.genres
+import com.elna.moviedb.resources.in_production
+import com.elna.moviedb.resources.languages
+import com.elna.moviedb.resources.last_air_date
+import com.elna.moviedb.resources.last_episode
+import com.elna.moviedb.resources.networks
+import com.elna.moviedb.resources.next_episode
 import com.elna.moviedb.resources.no
+import com.elna.moviedb.resources.official_website
+import com.elna.moviedb.resources.origin_country
+import com.elna.moviedb.resources.original_language
+import com.elna.moviedb.resources.overview
+import com.elna.moviedb.resources.popularity
+import com.elna.moviedb.resources.production
+import com.elna.moviedb.resources.production_companies
+import com.elna.moviedb.resources.production_countries
+import com.elna.moviedb.resources.rating
+import com.elna.moviedb.resources.ratings_popularity
+import com.elna.moviedb.resources.score
+import com.elna.moviedb.resources.seasons
+import com.elna.moviedb.resources.series_information
+import com.elna.moviedb.resources.series_status
+import com.elna.moviedb.resources.spoken_languages
+import com.elna.moviedb.resources.status
+import com.elna.moviedb.resources.total_seasons
+import com.elna.moviedb.resources.type
+import com.elna.moviedb.resources.unknown
+import com.elna.moviedb.resources.votes
+import com.elna.moviedb.resources.yes
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-
-private fun formatDate(dateString: String): String {
-    if (dateString.isEmpty()) return ""
-    return try {
-        // Input format: yyyy-mm-dd
-        val parts = dateString.split("-")
-        if (parts.size == 3) {
-            "${parts[2]}.${parts[1]}.${parts[0]}"
-        } else {
-            dateString
-        }
-    } catch (e: Exception) {
-        dateString
-    }
-}
 
 @Composable
 fun TvShowDetailsScreen(
@@ -186,7 +174,7 @@ private fun HeroSection(tvShow: TvShowDetails) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(400.dp)
+            .height(450.dp)
     ) {
         // Backdrop Image
         tvShow.backdropPath?.takeIf { it.isNotEmpty() }?.let { backdropPath ->
@@ -210,78 +198,72 @@ private fun HeroSection(tvShow: TvShowDetails) {
                 )
         )
 
-        // Poster and Title
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Poster
+        // Poster
+        tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
             Card(
-                modifier = Modifier.size(width = 120.dp, height = 180.dp),
+                modifier = Modifier
+                    .systemBarsPadding()
+                    .width(120.dp)
+                    .height(180.dp)
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp),
+                shape = RoundedCornerShape(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 ImageLoader(
-                    imageUrl = "${tvShow.posterPath ?: ""}",
+                    imageUrl = posterPath,
                     modifier = Modifier.fillMaxSize()
                 )
             }
+        }
 
-            // Title and Basic Info
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+        // Title and Basic Info
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomStart)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = tvShow.name ?: stringResource(Res.string.unknown),
+                style = MaterialTheme.typography.headlineLarge,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+
+            tvShow.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
                 Text(
-                    text = tvShow.name ?: "Unknown",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    text = tagline,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 )
+            }
 
-                val originalName = tvShow.originalName
-                if (originalName != null && originalName != tvShow.name) {
-                    Text(
-                        text = originalName,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color.White.copy(alpha = 0.8f)
-                    )
-                }
-
+            // Rating
+            tvShow.voteAverage?.let { rating ->
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    // Rating
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = Color.Yellow,
-                            modifier = Modifier.size(16.dp)
-                        )
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = stringResource(Res.string.rating),
+                        tint = Color.Yellow,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Text(
+                        text = "${(rating * 10).toInt() / 10.0}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    tvShow.voteCount?.let { count ->
                         Text(
-                            text = "${((tvShow.voteAverage ?: 0.0) * 10).toInt() / 10.0}",
+                            text = "($count ${stringResource(Res.string.votes)})",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White
-                        )
-                    }
-
-                    // Status
-                    tvShow.status?.takeIf { it.isNotEmpty() }?.let { status ->
-                        AssistChip(
-                            onClick = { },
-                            label = {
-                                Text(
-                                    text = status,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Color.White
-                                )
-                            }
+                            color = Color.White.copy(alpha = 0.7f)
                         )
                     }
                 }

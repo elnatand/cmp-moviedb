@@ -36,6 +36,7 @@ import com.elna.moviedb.feature.search.ui.components.SearchResultItem as SearchR
 fun SearchScreen(
     onMovieClicked: (Int) -> Unit,
     onTvShowClicked: (Int) -> Unit,
+    onPersonClicked: (Int) -> Unit,
 ) {
     val viewModel = koinViewModel<SearchViewModel>()
     val uiState by viewModel.uiState.collectAsState()
@@ -47,7 +48,8 @@ fun SearchScreen(
         onRetry = viewModel::onRetry,
         onLoadMore = viewModel::onLoadMore,
         onMovieClicked = onMovieClicked,
-        onTvShowClicked = onTvShowClicked
+        onTvShowClicked = onTvShowClicked,
+        onPersonClicked = onPersonClicked
     )
 }
 
@@ -60,6 +62,7 @@ private fun SearchScreen(
     onLoadMore: () -> Unit,
     onMovieClicked: (Int) -> Unit,
     onTvShowClicked: (Int) -> Unit,
+    onPersonClicked: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -127,6 +130,7 @@ private fun SearchScreen(
                                 when (item) {
                                     is SearchResultItem.MovieItem -> onMovieClicked(item.movie.id)
                                     is SearchResultItem.TvShowItem -> onTvShowClicked(item.tvShow.id)
+                                    is SearchResultItem.PersonItem -> onPersonClicked(item.id)
                                 }
                             }
                         )

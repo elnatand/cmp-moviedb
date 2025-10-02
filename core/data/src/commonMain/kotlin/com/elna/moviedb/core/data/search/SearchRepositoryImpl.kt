@@ -47,6 +47,24 @@ class SearchRepositoryImpl(
         }
     }
 
+    override fun searchPeople(query: String, page: Int): Flow<AppResult<List<SearchResultItem.PersonItem>>> = flow {
+        if (query.isBlank()) {
+            emit(AppResult.Success(emptyList()))
+            return@flow
+        }
+
+        val result = searchRemoteDataSource.searchPeople(query, page)
+        when (result) {
+            is AppResult.Success -> {
+                val personItems = result.data.results.map { it.toSearchResult() }
+                emit(AppResult.Success(personItems))
+            }
+            is AppResult.Error -> {
+                emit(AppResult.Error(message = result.message, throwable = result.throwable))
+            }
+        }
+    }
+
     override fun searchAll(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>> = flow {
         if (query.isBlank()) {
             emit(AppResult.Success(emptyList()))

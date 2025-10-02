@@ -102,7 +102,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                 .height(450.dp)
         ) {
             // Backdrop Image
-            movie.backdrop_path?.let { backdropPath ->
+            movie.backdropPath?.let { backdropPath ->
                 ImageLoader(
                     imageUrl = backdropPath,
                     modifier = Modifier.fillMaxSize()
@@ -124,7 +124,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             )
 
 
-            movie.poster_path?.let { posterPath ->
+            movie.posterPath?.let { posterPath ->
                 Card(
                     modifier = Modifier
                         .systemBarsPadding()
@@ -167,7 +167,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                 }
 
                 // Rating
-                movie.vote_average?.let { rating ->
+                movie.voteAverage?.let { rating ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -184,7 +184,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                             color = Color.White,
                             fontWeight = FontWeight.SemiBold
                         )
-                        movie.vote_count?.let { count ->
+                        movie.voteCount?.let { count ->
                             Text(
                                 text = "($count ${stringResource(Res.string.votes)})",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -206,7 +206,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                movie.release_date?.let { date ->
+                movie.releaseDate?.let { date ->
                     InfoItem(
                         icon = Icons.Default.DateRange,
                         label = stringResource(Res.string.release),
@@ -218,11 +218,11 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                     InfoItem(
                         icon = Icons.Default.Timer,
                         label = stringResource(Res.string.runtime),
-                        value = "$runtime${stringResource(Res.string.minutes_suffix)}"
+                        value = "$runtime ${stringResource(Res.string.minutes_suffix)}"
                     )
                 }
 
-                movie.original_language?.let { language ->
+                movie.originalLanguage?.let { language ->
                     InfoItem(
                         icon = Icons.Default.Language,
                         label = stringResource(Res.string.language),
@@ -292,7 +292,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             }
 
             // Production Section
-            movie.production_companies?.takeIf { it.isNotEmpty() }?.let { companies ->
+            movie.productionCompanies?.takeIf { it.isNotEmpty() }?.let { companies ->
                 SectionCard(
                     title = stringResource(Res.string.production_companies),
                     content = {
@@ -312,7 +312,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             }
 
             // Countries Section
-            movie.production_countries?.takeIf { it.isNotEmpty() }?.let { countries ->
+            movie.productionCountries?.takeIf { it.isNotEmpty() }?.let { countries ->
                 SectionCard(
                     title = stringResource(Res.string.production_countries),
                     content = {
@@ -412,26 +412,26 @@ private fun MovieDetailsScreenSuccessPreview() {
         id = 1,
         title = "Sample Movie",
         overview = "This is a sample movie overview that demonstrates how the movie details screen looks with content.",
-        poster_path = "/sample_poster.jpg",
-        backdrop_path = "/sample_backdrop.jpg",
-        release_date = "2023-12-01",
-        vote_average = 8.5,
-        vote_count = 1250,
+        posterPath = "/sample_poster.jpg",
+        backdropPath = "/sample_backdrop.jpg",
+        releaseDate = "2023-12-01",
+        voteAverage = 8.5,
+        voteCount = 1250,
         runtime = 142,
         tagline = "An amazing cinematic experience",
         genres = listOf("Action", "Adventure", "Sci-Fi"),
-        original_language = "en",
+        originalLanguage = "en",
         budget = 150000000,
         revenue = 750000000,
-        production_companies = listOf("Marvel Studios", "Disney"),
-        production_countries = listOf("United States", "United Kingdom"),
+        productionCompanies = listOf("Marvel Studios", "Disney"),
+        productionCountries = listOf("United States", "United Kingdom"),
         adult = false,
         homepage = "https://example.com",
-        imdb_id = "tt1234567",
-        original_title = "Sample Movie",
+        imdbId = "tt1234567",
+        originalTitle = "Sample Movie",
         popularity = 85.5,
         status = "Released",
-        spoken_languages = listOf("English", "Spanish")
+        spokenLanguages = listOf("English", "Spanish")
     )
 
     MovieDetailsScreen(

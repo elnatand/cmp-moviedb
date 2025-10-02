@@ -1,4 +1,5 @@
 <resources>
+    <string name="popular_movies">लोकप्रिय फ़िल्में</string>
     <string name="movies">फ़िल्में</string>
     <string name="camera">कैमरा</string>
     <string name="user_name">नाम</string>
@@ -23,6 +24,7 @@
     <string name="production_countries">निर्माण देश</string>
     <string name="minutes_suffix">मिनट</string>
 
+    <!-- TV Show Details Screen -->
     <string name="series_information">श्रृंखला की जानकारी</string>
     <string name="first_air_date">पहली प्रसारण तिथि</string>
     <string name="last_air_date">अंतिम प्रसारण तिथि</string>
@@ -56,5 +58,25 @@
     <string name="yes">हाँ</string>
     <string name="no">नहीं</string>
 
+    <!-- Error Messages -->
     <string name="unknown_error_occurred">अज्ञात त्रुटि हुई</string>
+
+    <!-- Search Feature -->
+    <string name="search">खोजें</string>
+    <string name="search_hint">फ़िल्में और टीवी शो खोजें...</string>
+    <string name="all">सभी</string>
+    <string name="people">लोग</string>
+    <string name="no_results_found">कोई परिणाम नहीं मिला</string>
+    <string name="search_for_movies_and_tv_shows">फ़िल्में और टीवी शो खोजें</string>
+    <string name="no_poster_available">कोई पोस्टर उपलब्ध नहीं</string>
+
+    <!-- Person Details Screen -->
+    <string name="birthday">जन्मदिन</string>
+    <string name="deathday">मृत्यु तिथि</string>
+    <string name="gender">लिंग</string>
+    <string name="birthplace">जन्म स्थान</string>
+    <string name="biography">जीवनी</string>
+    <string name="also_known_as">इस नाम से भी जाना जाता है</string>
+    <string name="personal_details">व्यक्तिगत विवरण</string>
+    <string name="place_of_birth">जन्म स्थान</string>
 </resources>
