@@ -15,8 +15,6 @@ dependencies{
 kotlin {
     sourceSets {
         androidMain.dependencies {
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.accompanist.permissions)
             implementation(compose.preview)
         }
         commonMain.dependencies {
