@@ -9,6 +9,8 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.model)
+
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.koin.core)

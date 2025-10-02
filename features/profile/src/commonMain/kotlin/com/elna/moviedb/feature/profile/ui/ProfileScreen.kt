@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.arabic
 import com.elna.moviedb.resources.cancel
@@ -36,11 +37,6 @@ import com.elna.moviedb.resources.profile
 import com.elna.moviedb.resources.select_language
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-
-data class Language(
-    val code: String,
-    val nameRes: org.jetbrains.compose.resources.StringResource
-)
 
 @Composable
 fun ProfileScreen() {
@@ -57,36 +53,35 @@ fun ProfileScreen() {
 @Composable
 private fun ProfileScreen(
     selectedLanguage: String,
-    onLanguageSelected: (String) -> Unit
+    onLanguageSelected: (AppLanguage) -> Unit
 ) {
-    val languages = listOf(
-        Language("en", Res.string.english),
-        Language("hi", Res.string.hindi),
-        Language("ar", Res.string.arabic),
-        Language("he", Res.string.hebrew)
-    )
-
     var expanded by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
-    var pendingLanguageCode by remember { mutableStateOf<String?>(null) }
+    var pendingLanguage by remember { mutableStateOf<AppLanguage?>(null) }
 
-    val selectedLanguageObj = languages.find { it.code == selectedLanguage } ?: languages[0]
+    val selectedAppLanguage = AppLanguage.getAppLanguageByCode(selectedLanguage)
+    val selectedNameRes = when (selectedAppLanguage) {
+        AppLanguage.ENGLISH -> Res.string.english
+        AppLanguage.HINDI -> Res.string.hindi
+        AppLanguage.ARABIC -> Res.string.arabic
+        AppLanguage.HEBREW -> Res.string.hebrew
+    }
 
     // Confirmation Dialog
-    if (showConfirmDialog && pendingLanguageCode != null) {
+    if (showConfirmDialog && pendingLanguage != null) {
         AlertDialog(
             onDismissRequest = {
                 showConfirmDialog = false
-                pendingLanguageCode = null
+                pendingLanguage = null
             },
             title = { Text(stringResource(Res.string.change_language_title)) },
             text = { Text(stringResource(Res.string.change_language_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        pendingLanguageCode?.let { onLanguageSelected(it) }
+                        pendingLanguage?.let { onLanguageSelected(it) }
                         showConfirmDialog = false
-                        pendingLanguageCode = null
+                        pendingLanguage = null
                     }
                 ) {
                     Text(stringResource(Res.string.confirm))
@@ -96,7 +91,7 @@ private fun ProfileScreen(
                 TextButton(
                     onClick = {
                         showConfirmDialog = false
-                        pendingLanguageCode = null
+                        pendingLanguage = null
                     }
                 ) {
                     Text(stringResource(Res.string.cancel))
@@ -122,7 +117,7 @@ private fun ProfileScreen(
                 onExpandedChange = { expanded = it }
             ) {
                 OutlinedTextField(
-                    value = stringResource(selectedLanguageObj.nameRes),
+                    value = stringResource(selectedNameRes),
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(Res.string.select_language)) },
@@ -136,13 +131,19 @@ private fun ProfileScreen(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    languages.forEach { language ->
+                    AppLanguage.entries.forEach { appLanguage ->
+                        val nameRes = when (appLanguage) {
+                            AppLanguage.ENGLISH -> Res.string.english
+                            AppLanguage.HINDI -> Res.string.hindi
+                            AppLanguage.ARABIC -> Res.string.arabic
+                            AppLanguage.HEBREW -> Res.string.hebrew
+                        }
                         DropdownMenuItem(
-                            text = { Text(stringResource(language.nameRes)) },
+                            text = { Text(stringResource(nameRes)) },
                             onClick = {
                                 expanded = false
-                                if (language.code != selectedLanguage) {
-                                    pendingLanguageCode = language.code
+                                if (appLanguage.code != selectedLanguage) {
+                                    pendingLanguage = appLanguage
                                     showConfirmDialog = true
                                 }
                             },

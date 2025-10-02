@@ -6,31 +6,31 @@ import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.core.network.model.movies.RemoteMoviesPage
-import com.elna.moviedb.core.network.model.platformCountry
-import com.elna.moviedb.core.network.model.platformLanguage
-import com.elna.moviedb.core.network.model.search.RemoteSearchMoviesPage
+import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.model.AppLanguage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
+    private val preferencesManager: PreferencesManager,
     private val appDispatcher: AppDispatcher
 ) {
 
-    private val language = "$platformLanguage-$platformCountry"
-    suspend fun getPopularMoviesPage(page: Int): AppResult<RemoteMoviesPage> {
+   suspend fun getPopularMoviesPage(page: Int): AppResult<RemoteMoviesPage> {
         return try {
             val moviesPages = withContext(appDispatcher.getDispatcher()) {
-                httpClient
-                    .get("${TMDB_BASE_URL}movie/popular") {
-                        url {
-                            parameters.append("api_key", TMDB_API_KEY)
-                            parameters.append("page", page.toString())
-                            parameters.append("language", language)
-                        }
-                    }.body<RemoteMoviesPage>()
+                val language = getLanguage()
+                httpClient.get("${TMDB_BASE_URL}movie/popular") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("page", page.toString())
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteMoviesPage>()
             }
             AppResult.Success(moviesPages)
         } catch (e: Exception) {
@@ -43,14 +43,15 @@ class MoviesRemoteDataSource(
 
     suspend fun getMovieDetails(movieId: Int): AppResult<RemoteMovieDetails> {
         return try {
-            val movieDetails = httpClient
-                .get("${TMDB_BASE_URL}movie/${movieId}"){
+            val movieDetails = withContext(appDispatcher.getDispatcher()) {
+                val language = getLanguage()
+                httpClient.get("${TMDB_BASE_URL}movie/${movieId}") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
                     }
-                }
-                .body<RemoteMovieDetails>()
+                }.body<RemoteMovieDetails>()
+            }
             AppResult.Success(movieDetails)
         } catch (e: Exception) {
             AppResult.Error(
@@ -58,5 +59,11 @@ class MoviesRemoteDataSource(
                 throwable = e
             )
         }
+    }
+
+    suspend fun getLanguage(): String {
+        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
+        return "$languageCode-$countryCode"
     }
 }

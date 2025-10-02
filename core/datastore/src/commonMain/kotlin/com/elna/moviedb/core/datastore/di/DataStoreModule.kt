@@ -1,7 +1,9 @@
 package com.elna.moviedb.core.datastore.di
 
 import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.datastore.PreferencesManagerImpl
 import org.koin.core.module.Module
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 /**
@@ -16,7 +18,5 @@ expect val platformDataStoreModule: Module
 val dataStoreModule = module {
     includes(platformDataStoreModule)
 
-    single {
-        PreferencesManager(get())
-    }
+    single { PreferencesManagerImpl(get()) } bind PreferencesManager::class
 }
