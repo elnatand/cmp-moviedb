@@ -5,6 +5,7 @@ import androidx.compose.runtime.ProvidedValue
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import java.util.Locale
+import androidx.compose.ui.platform.LocalResources
 
 
 actual object LocalAppLocale {
@@ -26,7 +27,7 @@ actual object LocalAppLocale {
         }
         Locale.setDefault(new)
         configuration.setLocale(new)
-        val resources = LocalContext.current.resources
+        val resources = LocalResources.current
 
         resources.updateConfiguration(configuration, resources.displayMetrics)
         return LocalConfiguration.provides(configuration)
