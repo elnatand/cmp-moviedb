@@ -16,12 +16,17 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen() {
 
     val viewModel = koinViewModel<ProfileViewModel>()
 
+    ProfileScreen(viewModel.getLanguage())
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileScreen(language: String) {
     Scaffold(
         topBar = {
             TopAppBar(

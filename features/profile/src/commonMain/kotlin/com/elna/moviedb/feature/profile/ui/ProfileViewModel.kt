@@ -10,10 +10,14 @@ import kotlinx.coroutines.launch
 class ProfileViewModel(
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {
+    fun getLanguage(): String {
+        return ""
+    }
 
     init {
-        val x = preferencesManager.getLanguage()
+
         viewModelScope.launch {
+            val x = preferencesManager.getLanguage()
             println("datastoreLanguage: ${x.first()}")
         }
     }
