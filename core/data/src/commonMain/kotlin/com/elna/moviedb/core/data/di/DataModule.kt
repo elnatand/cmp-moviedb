@@ -15,7 +15,12 @@ import org.koin.dsl.module
 
 val dataModule = module {
 
-    single<TvShowsRepository> { TvShowRepositoryImpl(tvShowsRemoteDataSource = get()) }
+    single<TvShowsRepository> {
+        TvShowRepositoryImpl(
+            tvShowsRemoteDataSource = get(),
+            preferencesManager = get()
+        )
+    }
 
     single {
         MoviesLocalDataSource(
