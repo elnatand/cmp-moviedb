@@ -79,4 +79,11 @@
     <string name="also_known_as">Also Known As</string>
     <string name="personal_details">Personal Details</string>
     <string name="place_of_birth">Place of Birth</string>
+
+    <!-- Profile Screen -->
+    <string name="select_language">Select Language</string>
+    <string name="english">English</string>
+    <string name="hindi">Hindi</string>
+    <string name="arabic">Arabic</string>
+    <string name="hebrew">Hebrew</string>
 </resources>

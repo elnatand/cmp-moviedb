@@ -79,4 +79,11 @@
     <string name="also_known_as">معروف أيضًا باسم</string>
     <string name="personal_details">التفاصيل الشخصية</string>
     <string name="place_of_birth">مكان الميلاد</string>
+
+    <!-- Profile Screen -->
+    <string name="select_language">اختر اللغة</string>
+    <string name="english">الإنجليزية</string>
+    <string name="hindi">الهندية</string>
+    <string name="arabic">العربية</string>
+    <string name="hebrew">العبرية</string>
 </resources>

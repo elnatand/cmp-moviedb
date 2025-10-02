@@ -79,4 +79,11 @@
     <string name="also_known_as">इस नाम से भी जाना जाता है</string>
     <string name="personal_details">व्यक्तिगत विवरण</string>
     <string name="place_of_birth">जन्म स्थान</string>
+
+    <!-- Profile Screen -->
+    <string name="select_language">भाषा चुनें</string>
+    <string name="english">अंग्रेज़ी</string>
+    <string name="hindi">हिंदी</string>
+    <string name="arabic">अरबी</string>
+    <string name="hebrew">इब्रानी</string>
 </resources>
