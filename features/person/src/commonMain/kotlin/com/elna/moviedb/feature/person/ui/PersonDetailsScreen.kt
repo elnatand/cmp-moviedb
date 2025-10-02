@@ -40,6 +40,7 @@ import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.formatDate
 import com.elna.moviedb.feature.person.model.PersonUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.also_known_as
@@ -75,7 +76,7 @@ private fun PersonDetailsScreen(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().systemBarsPadding(),
     ) {
         when (uiState) {
             is PersonUiState.Loading -> AppLoader()
@@ -94,16 +95,6 @@ private fun PersonDetailsScreen(
 
 @Composable
 private fun PersonDetailsContent(person: PersonDetails) {
-    fun formatDate(date: String): String {
-        // Expecting date in yyyy-MM-dd format, converting to dd.MM.yyyy
-        val parts = date.split("-")
-        return if (parts.size == 3) {
-            "${parts[2]}.${parts[1]}.${parts[0]}"
-        } else {
-            date
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,7 +104,6 @@ private fun PersonDetailsContent(person: PersonDetails) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp)
         ) {
             // Background with gradient
             Box(
@@ -134,8 +124,7 @@ private fun PersonDetailsContent(person: PersonDetails) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.Center)
-                    .systemBarsPadding()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {

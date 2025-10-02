@@ -46,63 +46,49 @@ import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.ImageLoader
-import org.jetbrains.compose.resources.stringResource
+import com.elna.moviedb.core.ui.utils.formatDate
 import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.overview
-import com.elna.moviedb.resources.genres
-import com.elna.moviedb.resources.unknown
-import com.elna.moviedb.resources.series_information
-import com.elna.moviedb.resources.first_air_date
-import com.elna.moviedb.resources.last_air_date
-import com.elna.moviedb.resources.seasons
-import com.elna.moviedb.resources.episodes
-import com.elna.moviedb.resources.networks
-import com.elna.moviedb.resources.languages
-import com.elna.moviedb.resources.episode_runtime
-import com.elna.moviedb.resources.type
-import com.elna.moviedb.resources.original_language
-import com.elna.moviedb.resources.origin_country
-import com.elna.moviedb.resources.ratings_popularity
-import com.elna.moviedb.resources.rating
-import com.elna.moviedb.resources.votes
-import com.elna.moviedb.resources.popularity
-import com.elna.moviedb.resources.score
-import com.elna.moviedb.resources.series_status
-import com.elna.moviedb.resources.status
-import com.elna.moviedb.resources.in_production
-import com.elna.moviedb.resources.total_seasons
-import com.elna.moviedb.resources.content_rating
 import com.elna.moviedb.resources.adult_content
-import com.elna.moviedb.resources.official_website
-import com.elna.moviedb.resources.production
-import com.elna.moviedb.resources.created_by
-import com.elna.moviedb.resources.production_companies
-import com.elna.moviedb.resources.production_countries
-import com.elna.moviedb.resources.last_episode
-import com.elna.moviedb.resources.next_episode
 import com.elna.moviedb.resources.aired_prefix
 import com.elna.moviedb.resources.airs_prefix
-import com.elna.moviedb.resources.spoken_languages
 import com.elna.moviedb.resources.available_languages
-import com.elna.moviedb.resources.yes
+import com.elna.moviedb.resources.content_rating
+import com.elna.moviedb.resources.created_by
+import com.elna.moviedb.resources.episode_runtime
+import com.elna.moviedb.resources.episodes
+import com.elna.moviedb.resources.first_air_date
+import com.elna.moviedb.resources.genres
+import com.elna.moviedb.resources.in_production
+import com.elna.moviedb.resources.languages
+import com.elna.moviedb.resources.last_air_date
+import com.elna.moviedb.resources.last_episode
+import com.elna.moviedb.resources.networks
+import com.elna.moviedb.resources.next_episode
 import com.elna.moviedb.resources.no
+import com.elna.moviedb.resources.official_website
+import com.elna.moviedb.resources.origin_country
+import com.elna.moviedb.resources.original_language
+import com.elna.moviedb.resources.overview
+import com.elna.moviedb.resources.popularity
+import com.elna.moviedb.resources.production
+import com.elna.moviedb.resources.production_companies
+import com.elna.moviedb.resources.production_countries
+import com.elna.moviedb.resources.rating
+import com.elna.moviedb.resources.ratings_popularity
+import com.elna.moviedb.resources.score
+import com.elna.moviedb.resources.seasons
+import com.elna.moviedb.resources.series_information
+import com.elna.moviedb.resources.series_status
+import com.elna.moviedb.resources.spoken_languages
+import com.elna.moviedb.resources.status
+import com.elna.moviedb.resources.total_seasons
+import com.elna.moviedb.resources.type
+import com.elna.moviedb.resources.unknown
+import com.elna.moviedb.resources.votes
+import com.elna.moviedb.resources.yes
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-
-private fun formatDate(dateString: String): String {
-    if (dateString.isEmpty()) return ""
-    return try {
-        // Input format: yyyy-mm-dd
-        val parts = dateString.split("-")
-        if (parts.size == 3) {
-            "${parts[2]}.${parts[1]}.${parts[0]}"
-        } else {
-            dateString
-        }
-    } catch (e: Exception) {
-        dateString
-    }
-}
 
 @Composable
 fun TvShowDetailsScreen(
@@ -223,7 +209,7 @@ private fun HeroSection(tvShow: TvShowDetails) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 ImageLoader(
-                    imageUrl = "${tvShow.posterPath ?: ""}",
+                    imageUrl = tvShow.posterPath ?: "",
                     modifier = Modifier.fillMaxSize()
                 )
             }
