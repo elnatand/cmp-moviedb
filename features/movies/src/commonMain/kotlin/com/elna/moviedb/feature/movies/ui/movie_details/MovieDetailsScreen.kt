@@ -218,7 +218,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                     InfoItem(
                         icon = Icons.Default.Timer,
                         label = stringResource(Res.string.runtime),
-                        value = "$runtime${stringResource(Res.string.minutes_suffix)}"
+                        value = "$runtime ${stringResource(Res.string.minutes_suffix)}"
                     )
                 }
 
