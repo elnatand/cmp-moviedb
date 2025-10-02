@@ -83,9 +83,9 @@
     <!-- Profile Screen -->
     <string name="select_language">Select Language</string>
     <string name="english">English</string>
-    <string name="hindi">Hindi</string>
-    <string name="arabic">Arabic</string>
-    <string name="hebrew">Hebrew</string>
+    <string name="hindi">हिंदी</string>
+    <string name="arabic">العربية</string>
+    <string name="hebrew">עברית</string>
     <string name="change_language_title">Change Language</string>
     <string name="change_language_message">Are you sure you want to change the app language?</string>
     <string name="confirm">Confirm</string>

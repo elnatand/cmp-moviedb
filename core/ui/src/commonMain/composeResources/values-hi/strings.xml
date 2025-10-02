@@ -82,10 +82,10 @@
 
     <!-- Profile Screen -->
     <string name="select_language">भाषा चुनें</string>
-    <string name="english">अंग्रेज़ी</string>
+    <string name="english">English</string>
     <string name="hindi">हिंदी</string>
-    <string name="arabic">अरबी</string>
-    <string name="hebrew">इब्रानी</string>
+    <string name="arabic">العربية</string>
+    <string name="hebrew">עברית</string>
     <string name="change_language_title">भाषा बदलें</string>
     <string name="change_language_message">क्या आप वाकई ऐप की भाषा बदलना चाहते हैं?</string>
     <string name="confirm">पुष्टि करें</string>
