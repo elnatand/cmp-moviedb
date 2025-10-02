@@ -86,4 +86,8 @@
     <string name="hindi">הינדי</string>
     <string name="arabic">ערבית</string>
     <string name="hebrew">עברית</string>
+    <string name="change_language_title">שינוי שפה</string>
+    <string name="change_language_message">האם אתה בטוח שברצונך לשנות את שפת האפליקציה?</string>
+    <string name="confirm">אישור</string>
+    <string name="cancel">ביטול</string>
 </resources>

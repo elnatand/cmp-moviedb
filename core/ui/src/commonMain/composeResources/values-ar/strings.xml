@@ -86,4 +86,8 @@
     <string name="hindi">الهندية</string>
     <string name="arabic">العربية</string>
     <string name="hebrew">العبرية</string>
+    <string name="change_language_title">تغيير اللغة</string>
+    <string name="change_language_message">هل أنت متأكد من تغيير لغة التطبيق؟</string>
+    <string name="confirm">تأكيد</string>
+    <string name="cancel">إلغاء</string>
 </resources>

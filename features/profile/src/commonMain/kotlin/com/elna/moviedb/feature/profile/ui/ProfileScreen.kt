@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -12,6 +13,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,6 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.arabic
+import com.elna.moviedb.resources.cancel
+import com.elna.moviedb.resources.change_language_message
+import com.elna.moviedb.resources.change_language_title
+import com.elna.moviedb.resources.confirm
 import com.elna.moviedb.resources.english
 import com.elna.moviedb.resources.hebrew
 import com.elna.moviedb.resources.hindi
@@ -61,7 +67,43 @@ private fun ProfileScreen(
     )
 
     var expanded by remember { mutableStateOf(false) }
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var pendingLanguageCode by remember { mutableStateOf<String?>(null) }
+
     val selectedLanguageObj = languages.find { it.code == selectedLanguage } ?: languages[0]
+
+    // Confirmation Dialog
+    if (showConfirmDialog && pendingLanguageCode != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showConfirmDialog = false
+                pendingLanguageCode = null
+            },
+            title = { Text(stringResource(Res.string.change_language_title)) },
+            text = { Text(stringResource(Res.string.change_language_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pendingLanguageCode?.let { onLanguageSelected(it) }
+                        showConfirmDialog = false
+                        pendingLanguageCode = null
+                    }
+                ) {
+                    Text(stringResource(Res.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showConfirmDialog = false
+                        pendingLanguageCode = null
+                    }
+                ) {
+                    Text(stringResource(Res.string.cancel))
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -98,8 +140,11 @@ private fun ProfileScreen(
                         DropdownMenuItem(
                             text = { Text(stringResource(language.nameRes)) },
                             onClick = {
-                                onLanguageSelected(language.code)
                                 expanded = false
+                                if (language.code != selectedLanguage) {
+                                    pendingLanguageCode = language.code
+                                    showConfirmDialog = true
+                                }
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )

@@ -86,4 +86,8 @@
     <string name="hindi">हिंदी</string>
     <string name="arabic">अरबी</string>
     <string name="hebrew">इब्रानी</string>
+    <string name="change_language_title">भाषा बदलें</string>
+    <string name="change_language_message">क्या आप वाकई ऐप की भाषा बदलना चाहते हैं?</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="cancel">रद्द करें</string>
 </resources>
