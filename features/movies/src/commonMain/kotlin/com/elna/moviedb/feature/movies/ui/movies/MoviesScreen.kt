@@ -27,8 +27,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MoviesUiState
 import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.movies
 import com.elna.moviedb.resources.network_error
+import com.elna.moviedb.resources.popular_movies
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,7 +61,7 @@ private fun MoviesScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(Res.string.movies)) },
+                title = { Text(text = stringResource(Res.string.popular_movies)) },
             )
         }
     ) { paddingValues ->

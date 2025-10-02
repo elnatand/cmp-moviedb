@@ -1,4 +1,5 @@
 <resources>
+    <string name="popular_movies">Popular Movies</string>
     <string name="movies">Movies</string>
     <string name="camera">Camera</string>
     <string name="user_name">Name</string>
