@@ -15,6 +15,8 @@ data class RemoteMultiSearchItem(
     val mediaType: String? = null,
     @SerialName("poster_path")
     val posterPath: String? = null,
+    @SerialName("profile_path")
+    val profilePath: String? = null,
     @SerialName("backdrop_path")
     val backdropPath: String? = null,
     @SerialName("overview")
@@ -82,7 +84,7 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
                 id = id,
                 name = personName,
                 knownForDepartment = knownForDepartment,
-                profilePath = posterPath?.let { TMDB_IMAGE_URL + it }
+                profilePath = profilePath?.let { TMDB_IMAGE_URL + it }
             )
         }
         else -> null

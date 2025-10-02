@@ -43,6 +43,7 @@ fun SearchResultItem(
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            println("item: $item")
             ImageLoader(
                 imageUrl = when (item) {
                     is SearchResultItem.MovieItem -> item.movie.poster_path ?: ""
@@ -112,7 +113,7 @@ fun SearchResultItem(
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
-                                    text = "%.1f".format(rating),
+                                    text = "${(rating * 10).toInt() / 10.0}",
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
