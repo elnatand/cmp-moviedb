@@ -27,6 +27,7 @@ import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.network_error
+import com.elna.moviedb.resources.popular_tv_shows
 import com.elna.moviedb.resources.tv_shows
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -58,7 +59,7 @@ private fun TvShowsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(Res.string.tv_shows)) },
+                title = { Text(text = stringResource(Res.string.popular_tv_shows)) },
             )
         }
     ) { paddingValues ->
