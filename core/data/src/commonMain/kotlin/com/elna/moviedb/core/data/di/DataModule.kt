@@ -28,7 +28,8 @@ val dataModule = module {
     single<MoviesRepository> {
         MoviesRepositoryImpl(
             moviesRemoteDataSource = get(),
-            moviesLocalDataSource = get()
+            moviesLocalDataSource = get(),
+            preferencesManager = get()
         )
     }
 

@@ -17,4 +17,7 @@ interface MovieDao {
 
     @Query("SELECT * FROM MovieEntity ORDER BY timestamp")
     fun getAllMoviesAsFlow(): Flow<List<MovieEntity>>
+
+    @Query("DELETE FROM MovieEntity")
+    suspend fun clearAllMovies()
 }
