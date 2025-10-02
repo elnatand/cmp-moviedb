@@ -13,11 +13,14 @@ import androidx.compose.ui.unit.dp
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.profile
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen() {
+
+    val viewModel = koinViewModel<ProfileViewModel>()
 
     Scaffold(
         topBar = {
