@@ -15,13 +15,11 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -35,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,7 +42,15 @@ import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.feature.person.model.PersonUiState
 import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.*
+import com.elna.moviedb.resources.also_known_as
+import com.elna.moviedb.resources.biography
+import com.elna.moviedb.resources.birthday
+import com.elna.moviedb.resources.birthplace
+import com.elna.moviedb.resources.deathday
+import com.elna.moviedb.resources.gender
+import com.elna.moviedb.resources.personal_details
+import com.elna.moviedb.resources.place_of_birth
+import com.elna.moviedb.resources.popularity
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -89,6 +94,16 @@ private fun PersonDetailsScreen(
 
 @Composable
 private fun PersonDetailsContent(person: PersonDetails) {
+    fun formatDate(date: String): String {
+        // Expecting date in yyyy-MM-dd format, converting to dd.MM.yyyy
+        val parts = date.split("-")
+        return if (parts.size == 3) {
+            "${parts[2]}.${parts[1]}.${parts[0]}"
+        } else {
+            date
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -173,7 +188,7 @@ private fun PersonDetailsContent(person: PersonDetails) {
                     InfoItem(
                         icon = Icons.Default.Cake,
                         label = stringResource(Res.string.birthday),
-                        value = birthday
+                        value = formatDate(birthday)
                     )
                 }
 
@@ -234,14 +249,14 @@ private fun PersonDetailsContent(person: PersonDetails) {
                         person.birthday?.let { birthday ->
                             DetailItem(
                                 label = stringResource(Res.string.birthday),
-                                value = birthday
+                                value = formatDate(birthday)
                             )
                         }
 
                         person.deathday?.let { deathday ->
                             DetailItem(
                                 label = stringResource(Res.string.deathday),
-                                value = deathday
+                                value = formatDate(deathday)
                             )
                         }
 
