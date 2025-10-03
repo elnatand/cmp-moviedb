@@ -144,7 +144,7 @@ class MoviesRepositoryImpl(
 
         when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
-                totalPages = result.data.totaPages
+                totalPages = result.data.totalPages
                 val entities = result.data.results.map { it.asEntity(nextPage) }
                 moviesLocalDataSource.insertMoviesPage(entities)
                 currentPage = nextPage

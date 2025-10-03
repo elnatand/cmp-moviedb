@@ -8,4 +8,4 @@ import platform.Foundation.dictionaryWithContentsOfFile
 actual val TMDB_API_KEY: String = NSBundle.mainBundle.pathForResource("Secrets", "plist")?.let {
     val map = NSDictionary.dictionaryWithContentsOfFile(it)
     map?.get("apiKey") as? String
-} ?: ""
+} ?: error("TMDB_API_KEY not found in Secrets.plist")
