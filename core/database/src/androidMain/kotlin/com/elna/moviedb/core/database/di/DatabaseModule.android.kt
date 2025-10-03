@@ -5,7 +5,7 @@ import com.elna.moviedb.core.database.AppDatabase
 import getDatabaseBuilder
 import org.koin.dsl.module
 
-actual fun platformDatabaseModule() = module {
+internal actual fun platformDatabaseBuilder() = module {
     single<RoomDatabase.Builder<AppDatabase>> {
         getDatabaseBuilder(get())
     }

@@ -9,10 +9,9 @@ import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-
-expect fun platformDatabaseModule(): Module
-
 val databaseModule = module {
+    includes(platformDatabaseBuilder())
+
     single {
         getRoomDatabase(
             builder = get(),
@@ -29,3 +28,5 @@ val databaseModule = module {
         )
     }
 }
+
+internal expect fun platformDatabaseBuilder(): Module
