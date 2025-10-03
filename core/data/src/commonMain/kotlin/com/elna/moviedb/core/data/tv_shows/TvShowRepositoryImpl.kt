@@ -14,9 +14,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/**
+ * Implementation of TvShowsRepository that manages TV show data from remote API.
+ *
+ * **Lifecycle:** This repository is an application-scoped singleton managed by Koin DI.
+ * The [repositoryScope] is never cancelled and lives for the entire application lifetime.
+ * This is intentional as the repository maintains app-wide state and language change observers.
+ *
+ * @param tvShowsRemoteDataSource Remote data source for fetching TV shows from API
+ * @param preferencesManager Manager for accessing app preferences (language, etc.)
+ * @param appDispatcher Dispatcher provider for coroutine execution
+ */
 class TvShowRepositoryImpl(
     private val tvShowsRemoteDataSource: TvShowsRemoteDataSource,
     private val preferencesManager: PreferencesManager,
@@ -28,6 +40,11 @@ class TvShowRepositoryImpl(
 
     private val _tvShows = MutableStateFlow<List<TvShow>>(emptyList())
     private val _errorState = MutableStateFlow<AppResult.Error?>(null)
+
+    /**
+     * Application-scoped coroutine scope that lives for the entire app lifetime.
+     * Never cancelled as this repository is a singleton.
+     */
     private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatcher.getDispatcher())
 
     init {
@@ -35,6 +52,7 @@ class TvShowRepositoryImpl(
         repositoryScope.launch {
             preferencesManager.getAppLanguageCode()
                 .distinctUntilChanged()
+                .drop(1) // Skip initial emission to avoid clearing on screen entry
                 .collect {
                     currentPage = 0
                     totalPages = 0

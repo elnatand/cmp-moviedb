@@ -16,9 +16,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/**
+ * Implementation of MoviesRepository that manages movie data from remote API and local cache.
+ *
+ * **Lifecycle:** This repository is an application-scoped singleton managed by Koin DI.
+ * The [repositoryScope] is never cancelled and lives for the entire application lifetime.
+ * This is intentional as the repository maintains app-wide state and language change observers.
+ *
+ * @param moviesRemoteDataSource Remote data source for fetching movies from API
+ * @param moviesLocalDataSource Local data source for caching movies in database
+ * @param preferencesManager Manager for accessing app preferences (language, etc.)
+ * @param appDispatcher Dispatcher provider for coroutine execution
+ */
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
     private val moviesLocalDataSource: MoviesLocalDataSource,
@@ -30,6 +43,11 @@ class MoviesRepositoryImpl(
     private var totalPages = 0
 
     private val _errorState = MutableStateFlow<AppResult.Error?>(null)
+
+    /**
+     * Application-scoped coroutine scope that lives for the entire app lifetime.
+     * Never cancelled as this repository is a singleton.
+     */
     private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatcher.getDispatcher())
 
     init {
@@ -37,6 +55,7 @@ class MoviesRepositoryImpl(
         repositoryScope.launch {
             preferencesManager.getAppLanguageCode()
                 .distinctUntilChanged()
+                .drop(1) // Skip initial emission to avoid clearing on screen entry
                 .collect {
                     clearMovies()
                     loadNextPage()
