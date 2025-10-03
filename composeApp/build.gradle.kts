@@ -53,6 +53,17 @@ kotlin {
             implementation(compose.components.resources)
         }
     }
+
+    //remove expect actual warning
+    targets.configureEach {
+        compilations.configureEach {
+            compileTaskProvider.configure{
+                compilerOptions {
+                    freeCompilerArgs.add("-Xexpect-actual-classes")
+                }
+            }
+        }
+    }
 }
 
 android {
