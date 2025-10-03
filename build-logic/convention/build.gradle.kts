@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.elna.movidb.buildlogic"
+group = "com.elna.moviedb.buildlogic"
 
 dependencies {
     compileOnly(libs.android.gradlePlugin)
