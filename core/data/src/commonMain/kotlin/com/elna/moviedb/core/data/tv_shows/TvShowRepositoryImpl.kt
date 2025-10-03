@@ -102,6 +102,11 @@ class TvShowRepositoryImpl(
      * 5. On error: storing error state in reactive _errorState for UI consumption
      */
     override suspend fun loadNextPage() {
+
+        if (totalPages > 0 && currentPage >= totalPages) {
+            return  // All pages loaded
+        }
+
         _errorState.value = null
 
         val nextPage = currentPage + 1

@@ -28,7 +28,7 @@ class TvShowDetailsViewModel(
                 val tvShowDetails = tvShowsRepository.getTvShowDetails(tvShowId)
                 _uiState.value = TvShowDetailsUiState.Success(tvShowDetails)
             } catch (e: Exception) {
-                _uiState.value = TvShowDetailsUiState.Error(e.message ?: "Unknown error occurred") // TODO: Use context.getString() for error messages
+                _uiState.value = TvShowDetailsUiState.Error(e.message ?: "Unknown error occurred")
             }
         }
     }

@@ -157,6 +157,10 @@ class MoviesRepositoryImpl(
      */
     override suspend fun loadNextPage() {
 
+        if (totalPages > 0 && currentPage >= totalPages) {
+            return  // All pages loaded
+        }
+
         _errorState.value = null
 
         val nextPage = currentPage + 1
