@@ -33,8 +33,6 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.model)
             implementation(projects.core.common)
-            implementation(projects.core.database)
-            implementation(projects.core.datastore)
 
             implementation(libs.koin.core)
 

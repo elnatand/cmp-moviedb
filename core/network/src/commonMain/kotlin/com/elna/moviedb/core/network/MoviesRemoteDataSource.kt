@@ -6,24 +6,19 @@ import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.core.network.model.movies.RemoteMoviesPage
-import com.elna.moviedb.core.datastore.PreferencesManager
-import com.elna.moviedb.core.model.AppLanguage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
-    private val preferencesManager: PreferencesManager,
     private val appDispatcher: AppDispatcher
 ) {
 
-   suspend fun getPopularMoviesPage(page: Int): AppResult<RemoteMoviesPage> {
+   suspend fun getPopularMoviesPage(page: Int, language: String): AppResult<RemoteMoviesPage> {
         return try {
             val moviesPages = withContext(appDispatcher.getDispatcher()) {
-                val language = getLanguage()
                 httpClient.get("${TMDB_BASE_URL}movie/popular") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -41,10 +36,9 @@ class MoviesRemoteDataSource(
         }
     }
 
-    suspend fun getMovieDetails(movieId: Int): AppResult<RemoteMovieDetails> {
+    suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
         return try {
             val movieDetails = withContext(appDispatcher.getDispatcher()) {
-                val language = getLanguage()
                 httpClient.get("${TMDB_BASE_URL}movie/${movieId}") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -59,11 +53,5 @@ class MoviesRemoteDataSource(
                 throwable = e
             )
         }
-    }
-
-    suspend fun getLanguage(): String {
-        val languageCode = preferencesManager.getAppLanguageCode().first()
-        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
-        return "$languageCode-$countryCode"
     }
 }

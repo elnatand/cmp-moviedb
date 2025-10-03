@@ -33,13 +33,15 @@ val dataModule = module {
 
     single<SearchRepository> {
         SearchRepositoryImpl(
-            searchRemoteDataSource = get()
+            searchRemoteDataSource = get(),
+            preferencesManager = get()
         )
     }
 
     single<PersonRepository> {
         PersonRepositoryImpl(
-            personRemoteDataSource = get()
+            personRemoteDataSource = get(),
+            preferencesManager = get()
         )
     }
 }

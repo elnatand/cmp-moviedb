@@ -2,6 +2,7 @@ package com.elna.moviedb.core.data.tv_shows
 
 import com.elna.moviedb.core.common.AppDispatcher
 import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowDetails
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class TvShowRepositoryImpl(
@@ -33,7 +35,7 @@ class TvShowRepositoryImpl(
         repositoryScope.launch {
             preferencesManager.getAppLanguageCode()
                 .distinctUntilChanged()
-                .collect { _ ->
+                .collect {
                     currentPage = 0
                     totalPages = 0
                     _errorState.value = null
@@ -86,7 +88,7 @@ class TvShowRepositoryImpl(
 
         val nextPage = currentPage + 1
 
-        when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage)) {
+        when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 totalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { it.toDomain() }
@@ -122,6 +124,12 @@ class TvShowRepositoryImpl(
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
-        return tvShowsRemoteDataSource.getTvShowDetails(tvShowId).toDomain()
+        return tvShowsRemoteDataSource.getTvShowDetails(tvShowId, getLanguage()).toDomain()
+    }
+
+    private suspend fun getLanguage(): String {
+        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
+        return "$languageCode-$countryCode"
     }
 }

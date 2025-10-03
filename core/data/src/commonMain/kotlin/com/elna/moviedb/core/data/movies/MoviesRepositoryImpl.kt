@@ -2,14 +2,14 @@ package com.elna.moviedb.core.data.movies
 
 
 import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
-import com.elna.moviedb.core.network.model.movies.asEntity
-import com.elna.moviedb.core.network.model.movies.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
@@ -37,7 +37,7 @@ class MoviesRepositoryImpl(
         repositoryScope.launch {
             preferencesManager.getAppLanguageCode()
                 .distinctUntilChanged()
-                .collect { _ ->
+                .collect {
                     clearMovies()
                     loadNextPage()
                 }
@@ -105,9 +105,9 @@ class MoviesRepositoryImpl(
     override suspend fun getMovieDetails(movieId: Int): MovieDetails {
         val localMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId)
         if (localMovieDetails == null) {
-            when (val result = moviesRemoteDataSource.getMovieDetails(movieId)) {
+            when (val result = moviesRemoteDataSource.getMovieDetails(movieId, getLanguage())) {
                 is AppResult.Success -> {
-                    moviesLocalDataSource.insertMovieDetails(result.data.toEntity())
+                    moviesLocalDataSource.insertMovieDetails(result.data.asEntity())
                 }
 
                 is AppResult.Error -> {
@@ -142,7 +142,7 @@ class MoviesRepositoryImpl(
 
         val nextPage = currentPage + 1
 
-        when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage)) {
+        when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 totalPages = result.data.totaPages
                 val entities = result.data.results.map { it.asEntity(nextPage) }
@@ -208,5 +208,11 @@ class MoviesRepositoryImpl(
         totalPages = 0
         _errorState.value = null
         moviesLocalDataSource.clearAllMovies()
+    }
+
+    private suspend fun getLanguage(): String {
+        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
+        return "$languageCode-$countryCode"
     }
 }
