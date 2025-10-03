@@ -1,43 +1,62 @@
 package com.elna.moviedb.core.data.movies
 
 
-import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.common.AppDispatchers
+import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
-import com.elna.moviedb.core.network.model.movies.asEntity
-import com.elna.moviedb.core.network.model.movies.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/**
+ * Implementation of MoviesRepository that manages movie data from remote API and local cache.
+ *
+ * **Lifecycle:** This repository is an application-scoped singleton managed by Koin DI.
+ * The [repositoryScope] is never cancelled and lives for the entire application lifetime.
+ * This is intentional as the repository maintains app-wide state and language change observers.
+ *
+ * @param moviesRemoteDataSource Remote data source for fetching movies from API
+ * @param moviesLocalDataSource Local data source for caching movies in database
+ * @param preferencesManager Manager for accessing app preferences (language, etc.)
+ * @param appDispatchers Dispatcher provider for coroutine execution
+ */
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
     private val moviesLocalDataSource: MoviesLocalDataSource,
     private val preferencesManager: PreferencesManager,
-    private val appDispatcher: AppDispatcher
+    private val appDispatchers: AppDispatchers
 ) : MoviesRepository {
 
     private var currentPage = 0
     private var totalPages = 0
 
     private val _errorState = MutableStateFlow<AppResult.Error?>(null)
-    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatcher.getDispatcher())
+
+    /**
+     * Application-scoped coroutine scope that lives for the entire app lifetime.
+     * Never cancelled as this repository is a singleton.
+     */
+    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
 
     init {
         // Listen to language changes and clear movies when language changes
         repositoryScope.launch {
             preferencesManager.getAppLanguageCode()
                 .distinctUntilChanged()
-                .collect { _ ->
+                .drop(1) // Skip initial emission to avoid clearing on screen entry
+                .collect {
                     clearMovies()
                     loadNextPage()
                 }
@@ -105,9 +124,9 @@ class MoviesRepositoryImpl(
     override suspend fun getMovieDetails(movieId: Int): MovieDetails {
         val localMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId)
         if (localMovieDetails == null) {
-            when (val result = moviesRemoteDataSource.getMovieDetails(movieId)) {
+            when (val result = moviesRemoteDataSource.getMovieDetails(movieId, getLanguage())) {
                 is AppResult.Success -> {
-                    moviesLocalDataSource.insertMovieDetails(result.data.toEntity())
+                    moviesLocalDataSource.insertMovieDetails(result.data.asEntity())
                 }
 
                 is AppResult.Error -> {
@@ -138,13 +157,17 @@ class MoviesRepositoryImpl(
      */
     override suspend fun loadNextPage() {
 
+        if (totalPages > 0 && currentPage >= totalPages) {
+            return  // All pages loaded
+        }
+
         _errorState.value = null
 
         val nextPage = currentPage + 1
 
-        when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage)) {
+        when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
-                totalPages = result.data.totaPages
+                totalPages = result.data.totalPages
                 val entities = result.data.results.map { it.asEntity(nextPage) }
                 moviesLocalDataSource.insertMoviesPage(entities)
                 currentPage = nextPage
@@ -208,5 +231,11 @@ class MoviesRepositoryImpl(
         totalPages = 0
         _errorState.value = null
         moviesLocalDataSource.clearAllMovies()
+    }
+
+    private suspend fun getLanguage(): String {
+        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
+        return "$languageCode-$countryCode"
     }
 }

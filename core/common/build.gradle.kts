@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
-    alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
 android {
@@ -10,10 +9,7 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.model)
-            implementation(projects.core.model)
-            implementation(compose.runtime) // for coroutines dispatchers
-            implementation(compose.runtime) // for coroutines dispatchers
+            implementation(libs.kotlinx.coroutines.core) // for AppDispatchers
             implementation(libs.koin.core)
         }
     }

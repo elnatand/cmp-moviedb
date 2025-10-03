@@ -5,7 +5,3 @@ plugins {
 android {
     namespace = "com.elna.moviedb.core.model"
 }
-
-kotlin {
-    jvm()
-}

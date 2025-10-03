@@ -1,6 +1,5 @@
 package com.elna.moviedb.core.network.model.movies
 
-import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -93,30 +92,4 @@ data class SpokenLanguage(
     val iso6391: String,
     @SerialName("name")
     val name: String
-)
-
-fun RemoteMovieDetails.toEntity(): MovieDetailsEntity = MovieDetailsEntity(
-    id = id,
-    title = title,
-    overview = overview,
-    posterPath = "$TMDB_IMAGE_URL$posterPath",
-    backdropPath = "$TMDB_IMAGE_URL$backdropPath",
-    releaseDate = releaseDate,
-    runtime = runtime,
-    voteAverage = voteAverage,
-    voteCount = voteCount,
-    adult = adult,
-    budget = budget,
-    revenue = revenue,
-    homepage = homepage,
-    imdbId = imdbId,
-    originalLanguage = originalLanguage,
-    originalTitle = originalTitle,
-    popularity = popularity,
-    status = status,
-    tagline = tagline,
-    genres = genres?.joinToString(",") { it.name },
-    productionCompanies = productionCompanies?.joinToString(",") { it.name },
-    productionCountries = productionCountries?.joinToString(",") { it.name },
-    spokenLanguages = spokenLanguages?.joinToString(",") { it.englishName }
 )

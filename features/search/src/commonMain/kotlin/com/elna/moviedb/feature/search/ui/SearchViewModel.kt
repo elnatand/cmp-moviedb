@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -96,39 +97,26 @@ class SearchViewModel(
             }
 
             val result = when (filter) {
-                SearchFilter.ALL -> {
-                    var flowResult: AppResult<List<SearchResultItem>>? = null
-                    searchRepository.searchAll(query, page).collect { flowResult = it }
-                    flowResult
-                }
+                SearchFilter.ALL -> searchRepository.searchAll(query, page).first()
+
                 SearchFilter.MOVIES -> {
-                    var flowResult: AppResult<List<SearchResultItem.MovieItem>>? = null
-                    searchRepository.searchMovies(query, page).collect { flowResult = it }
-                    flowResult?.let {
-                        when (it) {
-                            is AppResult.Success -> AppResult.Success(it.data.map { item -> item as SearchResultItem })
-                            is AppResult.Error -> AppResult.Error(message = it.message, throwable = it.throwable)
-                        }
+                    when (val movieResult = searchRepository.searchMovies(query, page).first()) {
+                        is AppResult.Success -> AppResult.Success(movieResult.data.map { it as SearchResultItem })
+                        is AppResult.Error -> movieResult
                     }
                 }
+
                 SearchFilter.TV_SHOWS -> {
-                    var flowResult: AppResult<List<SearchResultItem.TvShowItem>>? = null
-                    searchRepository.searchTvShows(query, page).collect { flowResult = it }
-                    flowResult?.let {
-                        when (it) {
-                            is AppResult.Success -> AppResult.Success(it.data.map { item -> item as SearchResultItem })
-                            is AppResult.Error -> AppResult.Error(message = it.message, throwable = it.throwable)
-                        }
+                    when (val tvShowResult = searchRepository.searchTvShows(query, page).first()) {
+                        is AppResult.Success -> AppResult.Success(tvShowResult.data.map { it as SearchResultItem })
+                        is AppResult.Error -> tvShowResult
                     }
                 }
+
                 SearchFilter.PEOPLE -> {
-                    var flowResult: AppResult<List<SearchResultItem.PersonItem>>? = null
-                    searchRepository.searchPeople(query, page).collect { flowResult = it }
-                    flowResult?.let {
-                        when (it) {
-                            is AppResult.Success -> AppResult.Success(it.data.map { item -> item as SearchResultItem })
-                            is AppResult.Error -> AppResult.Error(message = it.message, throwable = it.throwable)
-                        }
+                    when (val peopleResult = searchRepository.searchPeople(query, page).first()) {
+                        is AppResult.Success -> AppResult.Success(peopleResult.data.map { it as SearchResultItem })
+                        is AppResult.Error -> peopleResult
                     }
                 }
             }
@@ -158,10 +146,6 @@ class SearchViewModel(
                             errorMessage = result.message
                         )
                     }
-                    null -> currentState.copy(
-                        isLoading = false,
-                        isLoadingMore = false
-                    )
                 }
             }
         }

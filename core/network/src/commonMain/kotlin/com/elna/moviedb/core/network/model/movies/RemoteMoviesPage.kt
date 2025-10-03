@@ -8,7 +8,7 @@ data class RemoteMoviesPage(
     @SerialName("page")
     val page: Int,
     @SerialName("total_pages")
-    val totaPages: Int,
+    val totalPages: Int,
     @SerialName("results")
     val results: List<RemoteMovie>
 )

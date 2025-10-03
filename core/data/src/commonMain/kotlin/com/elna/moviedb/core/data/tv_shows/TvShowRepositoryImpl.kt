@@ -1,7 +1,8 @@
 package com.elna.moviedb.core.data.tv_shows
 
-import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowDetails
@@ -13,12 +14,25 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/**
+ * Implementation of TvShowsRepository that manages TV show data from remote API.
+ *
+ * **Lifecycle:** This repository is an application-scoped singleton managed by Koin DI.
+ * The [repositoryScope] is never cancelled and lives for the entire application lifetime.
+ * This is intentional as the repository maintains app-wide state and language change observers.
+ *
+ * @param tvShowsRemoteDataSource Remote data source for fetching TV shows from API
+ * @param preferencesManager Manager for accessing app preferences (language, etc.)
+ * @param appDispatchers Dispatcher provider for coroutine execution
+ */
 class TvShowRepositoryImpl(
     private val tvShowsRemoteDataSource: TvShowsRemoteDataSource,
     private val preferencesManager: PreferencesManager,
-    private val appDispatcher: AppDispatcher
+    private val appDispatchers: AppDispatchers
 ) : TvShowsRepository {
 
     private var currentPage = 0
@@ -26,14 +40,20 @@ class TvShowRepositoryImpl(
 
     private val _tvShows = MutableStateFlow<List<TvShow>>(emptyList())
     private val _errorState = MutableStateFlow<AppResult.Error?>(null)
-    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatcher.getDispatcher())
+
+    /**
+     * Application-scoped coroutine scope that lives for the entire app lifetime.
+     * Never cancelled as this repository is a singleton.
+     */
+    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
 
     init {
         // Listen to language changes and refresh TV shows when language changes
         repositoryScope.launch {
             preferencesManager.getAppLanguageCode()
                 .distinctUntilChanged()
-                .collect { _ ->
+                .drop(1) // Skip initial emission to avoid clearing on screen entry
+                .collect {
                     currentPage = 0
                     totalPages = 0
                     _errorState.value = null
@@ -82,11 +102,16 @@ class TvShowRepositoryImpl(
      * 5. On error: storing error state in reactive _errorState for UI consumption
      */
     override suspend fun loadNextPage() {
+
+        if (totalPages > 0 && currentPage >= totalPages) {
+            return  // All pages loaded
+        }
+
         _errorState.value = null
 
         val nextPage = currentPage + 1
 
-        when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage)) {
+        when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 totalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { it.toDomain() }
@@ -122,6 +147,12 @@ class TvShowRepositoryImpl(
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
-        return tvShowsRemoteDataSource.getTvShowDetails(tvShowId).toDomain()
+        return tvShowsRemoteDataSource.getTvShowDetails(tvShowId, getLanguage()).toDomain()
+    }
+
+    private suspend fun getLanguage(): String {
+        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
+        return "$languageCode-$countryCode"
     }
 }
