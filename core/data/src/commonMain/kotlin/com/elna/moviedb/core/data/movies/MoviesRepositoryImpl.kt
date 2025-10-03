@@ -1,7 +1,7 @@
 package com.elna.moviedb.core.data.movies
 
 
-import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.datastore.PreferencesManager
@@ -30,13 +30,13 @@ import kotlinx.coroutines.launch
  * @param moviesRemoteDataSource Remote data source for fetching movies from API
  * @param moviesLocalDataSource Local data source for caching movies in database
  * @param preferencesManager Manager for accessing app preferences (language, etc.)
- * @param appDispatcher Dispatcher provider for coroutine execution
+ * @param appDispatchers Dispatcher provider for coroutine execution
  */
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
     private val moviesLocalDataSource: MoviesLocalDataSource,
     private val preferencesManager: PreferencesManager,
-    private val appDispatcher: AppDispatcher
+    private val appDispatchers: AppDispatchers
 ) : MoviesRepository {
 
     private var currentPage = 0
@@ -48,7 +48,7 @@ class MoviesRepositoryImpl(
      * Application-scoped coroutine scope that lives for the entire app lifetime.
      * Never cancelled as this repository is a singleton.
      */
-    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatcher.getDispatcher())
+    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
 
     init {
         // Listen to language changes and clear movies when language changes

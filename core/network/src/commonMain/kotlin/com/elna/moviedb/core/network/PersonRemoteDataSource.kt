@@ -1,6 +1,6 @@
 package com.elna.moviedb.core.network
 
-import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
@@ -12,12 +12,12 @@ import kotlinx.coroutines.withContext
 
 class PersonRemoteDataSource(
     private val httpClient: HttpClient,
-    private val appDispatcher: AppDispatcher
+    private val appDispatchers: AppDispatchers
 ) {
 
     suspend fun getPersonDetails(personId: Int, language: String): AppResult<RemotePersonDetails> {
         return try {
-            val personDetails = withContext(appDispatcher.getDispatcher()) {
+            val personDetails = withContext(appDispatchers.io) {
                 httpClient.get("${TMDB_BASE_URL}person/$personId") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)

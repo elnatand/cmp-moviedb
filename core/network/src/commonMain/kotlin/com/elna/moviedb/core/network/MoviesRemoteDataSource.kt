@@ -1,6 +1,6 @@
 package com.elna.moviedb.core.network
 
-import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
@@ -13,12 +13,12 @@ import kotlinx.coroutines.withContext
 
 class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
-    private val appDispatcher: AppDispatcher
+    private val appDispatchers: AppDispatchers
 ) {
 
    suspend fun getPopularMoviesPage(page: Int, language: String): AppResult<RemoteMoviesPage> {
         return try {
-            val moviesPages = withContext(appDispatcher.getDispatcher()) {
+            val moviesPages = withContext(appDispatchers.io) {
                 httpClient.get("${TMDB_BASE_URL}movie/popular") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -38,7 +38,7 @@ class MoviesRemoteDataSource(
 
     suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
         return try {
-            val movieDetails = withContext(appDispatcher.getDispatcher()) {
+            val movieDetails = withContext(appDispatchers.io) {
                 httpClient.get("${TMDB_BASE_URL}movie/${movieId}") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)

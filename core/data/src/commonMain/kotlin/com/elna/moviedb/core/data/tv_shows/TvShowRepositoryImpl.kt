@@ -1,6 +1,6 @@
 package com.elna.moviedb.core.data.tv_shows
 
-import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
@@ -27,12 +27,12 @@ import kotlinx.coroutines.launch
  *
  * @param tvShowsRemoteDataSource Remote data source for fetching TV shows from API
  * @param preferencesManager Manager for accessing app preferences (language, etc.)
- * @param appDispatcher Dispatcher provider for coroutine execution
+ * @param appDispatchers Dispatcher provider for coroutine execution
  */
 class TvShowRepositoryImpl(
     private val tvShowsRemoteDataSource: TvShowsRemoteDataSource,
     private val preferencesManager: PreferencesManager,
-    private val appDispatcher: AppDispatcher
+    private val appDispatchers: AppDispatchers
 ) : TvShowsRepository {
 
     private var currentPage = 0
@@ -45,7 +45,7 @@ class TvShowRepositoryImpl(
      * Application-scoped coroutine scope that lives for the entire app lifetime.
      * Never cancelled as this repository is a singleton.
      */
-    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatcher.getDispatcher())
+    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
 
     init {
         // Listen to language changes and refresh TV shows when language changes

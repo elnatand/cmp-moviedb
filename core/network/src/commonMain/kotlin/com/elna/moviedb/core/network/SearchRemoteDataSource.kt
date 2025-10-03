@@ -1,6 +1,6 @@
 package com.elna.moviedb.core.network
 
-import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
 
 class SearchRemoteDataSource(
     private val httpClient: HttpClient,
-    private val appDispatcher: AppDispatcher
+    private val appDispatchers: AppDispatchers
 ) {
 
     suspend fun searchMulti(
@@ -24,7 +24,7 @@ class SearchRemoteDataSource(
         language: String
     ): AppResult<RemoteMultiSearchPage> {
         return try {
-            val searchResults = withContext(appDispatcher.getDispatcher()) {
+            val searchResults = withContext(appDispatchers.io) {
                 httpClient.get("${TMDB_BASE_URL}search/multi") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -50,7 +50,7 @@ class SearchRemoteDataSource(
         language: String
     ): AppResult<RemoteSearchMoviesPage> {
         return try {
-            val searchResults = withContext(appDispatcher.getDispatcher()) {
+            val searchResults = withContext(appDispatchers.io) {
                 httpClient.get("${TMDB_BASE_URL}search/movie") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -76,7 +76,7 @@ class SearchRemoteDataSource(
         language: String
     ): AppResult<RemoteSearchTvShowsPage> {
         return try {
-            val searchResults = withContext(appDispatcher.getDispatcher()) {
+            val searchResults = withContext(appDispatchers.io) {
                 httpClient.get("${TMDB_BASE_URL}search/tv") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -102,7 +102,7 @@ class SearchRemoteDataSource(
         language: String
     ): AppResult<RemoteSearchPeoplePage> {
         return try {
-            val searchResults = withContext(appDispatcher.getDispatcher()) {
+            val searchResults = withContext(appDispatchers.io) {
                 httpClient.get("${TMDB_BASE_URL}search/person") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)

@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
 
@@ -30,11 +30,11 @@ expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
 
 fun getRoomDatabase(
     builder: RoomDatabase.Builder<AppDatabase>,
-    appDispatcher: AppDispatcher
+    appDispatchers: AppDispatchers
 ): AppDatabase {
     return builder
         .setDriver(BundledSQLiteDriver())
-        .setQueryCoroutineContext(appDispatcher.getDispatcher())
+        .setQueryCoroutineContext(appDispatchers.io)
         .build()
 }
 
