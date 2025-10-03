@@ -1,5 +1,6 @@
 <resources>
     <string name="popular_movies">Popular Movies</string>
+    <string name="popular_tv_shows">Popular TV shows</string>
     <string name="movies">Movies</string>
     <string name="camera">Camera</string>
     <string name="user_name">Name</string>
@@ -79,4 +80,15 @@
     <string name="also_known_as">Also Known As</string>
     <string name="personal_details">Personal Details</string>
     <string name="place_of_birth">Place of Birth</string>
+
+    <!-- Profile Screen -->
+    <string name="select_language">Select Language</string>
+    <string name="english">English</string>
+    <string name="hindi">हिंदी</string>
+    <string name="arabic">العربية</string>
+    <string name="hebrew">עברית</string>
+    <string name="change_language_title">Change Language</string>
+    <string name="change_language_message">Are you sure you want to change the app language?</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
 </resources>

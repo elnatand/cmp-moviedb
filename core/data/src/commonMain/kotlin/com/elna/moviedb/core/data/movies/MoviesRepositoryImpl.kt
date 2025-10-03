@@ -1,27 +1,48 @@
 package com.elna.moviedb.core.data.movies
 
 
+import com.elna.moviedb.core.common.AppDispatcher
 import com.elna.moviedb.core.database.MoviesLocalDataSource
+import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
 import com.elna.moviedb.core.network.model.movies.asEntity
 import com.elna.moviedb.core.network.model.movies.toEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
-    private val moviesLocalDataSource: MoviesLocalDataSource
+    private val moviesLocalDataSource: MoviesLocalDataSource,
+    private val preferencesManager: PreferencesManager,
+    private val appDispatcher: AppDispatcher
 ) : MoviesRepository {
 
     private var currentPage = 0
     private var totalPages = 0
 
     private val _errorState = MutableStateFlow<AppResult.Error?>(null)
+    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatcher.getDispatcher())
+
+    init {
+        // Listen to language changes and clear movies when language changes
+        repositoryScope.launch {
+            preferencesManager.getAppLanguageCode()
+                .distinctUntilChanged()
+                .collect { _ ->
+                    clearMovies()
+                    loadNextPage()
+                }
+        }
+    }
 
 
     /**
@@ -174,5 +195,18 @@ class MoviesRepositoryImpl(
                 }
             )
         }
+    }
+
+    /**
+     * Clears all cached movies from local storage and resets pagination state.
+     *
+     * This function should be called when language changes to ensure movies
+     * are re-fetched in the new language.
+     */
+    override suspend fun clearMovies() {
+        currentPage = 0
+        totalPages = 0
+        _errorState.value = null
+        moviesLocalDataSource.clearAllMovies()
     }
 }

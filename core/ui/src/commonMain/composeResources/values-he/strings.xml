@@ -1,5 +1,6 @@
 <resources>
     <string name="popular_movies">סרטים פופולריים</string>
+    <string name="popular_tv_shows">סדרות פופולריות</string>
     <string name="movies">סרטים</string>
     <string name="camera">מצלמה</string>
     <string name="user_name">שם</string>
@@ -79,4 +80,15 @@
     <string name="also_known_as">ידוע גם בשם</string>
     <string name="personal_details">פרטים אישיים</string>
     <string name="place_of_birth">מקום לידה</string>
+
+    <!-- Profile Screen -->
+    <string name="select_language">בחר שפה</string>
+    <string name="english">English</string>
+    <string name="hindi">हिंदी</string>
+    <string name="arabic">العربية</string>
+    <string name="hebrew">עברית</string>
+    <string name="change_language_title">שינוי שפה</string>
+    <string name="change_language_message">האם אתה בטוח שברצונך לשנות את שפת האפליקציה?</string>
+    <string name="confirm">אישור</string>
+    <string name="cancel">ביטול</string>
 </resources>

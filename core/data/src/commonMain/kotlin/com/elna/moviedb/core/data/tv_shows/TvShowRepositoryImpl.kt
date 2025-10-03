@@ -1,16 +1,24 @@
 package com.elna.moviedb.core.data.tv_shows
 
+import com.elna.moviedb.core.common.AppDispatcher
+import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.network.TvShowsRemoteDataSource
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 class TvShowRepositoryImpl(
-    private val tvShowsRemoteDataSource: TvShowsRemoteDataSource
+    private val tvShowsRemoteDataSource: TvShowsRemoteDataSource,
+    private val preferencesManager: PreferencesManager,
+    private val appDispatcher: AppDispatcher
 ) : TvShowsRepository {
 
     private var currentPage = 0
@@ -18,6 +26,22 @@ class TvShowRepositoryImpl(
 
     private val _tvShows = MutableStateFlow<List<TvShow>>(emptyList())
     private val _errorState = MutableStateFlow<AppResult.Error?>(null)
+    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatcher.getDispatcher())
+
+    init {
+        // Listen to language changes and refresh TV shows when language changes
+        repositoryScope.launch {
+            preferencesManager.getAppLanguageCode()
+                .distinctUntilChanged()
+                .collect { _ ->
+                    currentPage = 0
+                    totalPages = 0
+                    _errorState.value = null
+                    _tvShows.value = emptyList()
+                    loadNextPage()
+                }
+        }
+    }
 
     /**
      * Observes all TV shows from memory with reactive error handling.

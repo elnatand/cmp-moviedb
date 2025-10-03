@@ -1,5 +1,6 @@
 <resources>
     <string name="popular_movies">लोकप्रिय फ़िल्में</string>
+    <string name="popular_tv_shows">लोकप्रिय टीवी शो</string>
     <string name="movies">फ़िल्में</string>
     <string name="camera">कैमरा</string>
     <string name="user_name">नाम</string>
@@ -79,4 +80,15 @@
     <string name="also_known_as">इस नाम से भी जाना जाता है</string>
     <string name="personal_details">व्यक्तिगत विवरण</string>
     <string name="place_of_birth">जन्म स्थान</string>
+
+    <!-- Profile Screen -->
+    <string name="select_language">भाषा चुनें</string>
+    <string name="english">English</string>
+    <string name="hindi">हिंदी</string>
+    <string name="arabic">العربية</string>
+    <string name="hebrew">עברית</string>
+    <string name="change_language_title">भाषा बदलें</string>
+    <string name="change_language_message">क्या आप वाकई ऐप की भाषा बदलना चाहते हैं?</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="cancel">रद्द करें</string>
 </resources>

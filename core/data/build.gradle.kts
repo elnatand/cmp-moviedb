@@ -13,6 +13,7 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.core.network)
             implementation(projects.core.database)
+            implementation(projects.core.datastore)
 
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)

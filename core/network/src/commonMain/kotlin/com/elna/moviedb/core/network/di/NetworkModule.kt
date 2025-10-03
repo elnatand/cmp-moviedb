@@ -16,6 +16,7 @@ val networkModule = module {
     single {
         TvShowsRemoteDataSource(
             httpClient = get(),
+            preferencesManager = get(),
             appDispatcher = get(named(DISPATCHER_IO))
         )
     }
@@ -23,6 +24,7 @@ val networkModule = module {
     single {
         MoviesRemoteDataSource(
             httpClient = get(),
+            preferencesManager = get(),
             appDispatcher = get(named(DISPATCHER_IO))
         )
     }
@@ -30,6 +32,7 @@ val networkModule = module {
     single {
         SearchRemoteDataSource(
             httpClient = get(),
+            preferencesManager = get(),
             appDispatcher = get(named(DISPATCHER_IO))
         )
     }
@@ -37,6 +40,7 @@ val networkModule = module {
     single {
         PersonRemoteDataSource(
             httpClient = get(),
+            preferencesManager = get(),
             appDispatcher = get(named(DISPATCHER_IO))
         )
     }

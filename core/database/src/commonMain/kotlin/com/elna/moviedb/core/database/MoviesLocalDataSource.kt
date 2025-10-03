@@ -31,4 +31,11 @@ class MoviesLocalDataSource(
     suspend fun insertMovieDetails(movieDetails: MovieDetailsEntity) {
         movieDetailsDao.insertMovieDetails(movieDetails)
     }
+
+    suspend fun clearAllMovies() {
+        withContext(appDispatcher.getDispatcher()) {
+            movieDao.clearAllMovies()
+            movieDetailsDao.clearAllMovieDetails()
+        }
+    }
 }
