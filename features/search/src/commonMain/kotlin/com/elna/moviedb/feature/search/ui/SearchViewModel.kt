@@ -146,10 +146,6 @@ class SearchViewModel(
                             errorMessage = result.message
                         )
                     }
-                    null -> currentState.copy(
-                        isLoading = false,
-                        isLoadingMore = false
-                    )
                 }
             }
         }
