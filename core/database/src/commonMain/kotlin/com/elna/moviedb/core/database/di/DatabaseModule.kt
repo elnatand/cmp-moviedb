@@ -26,7 +26,6 @@ val databaseModule = module {
         MoviesLocalDataSource(
             movieDao = get(),
             movieDetailsDao = get(),
-            appDispatcher = get(named(DISPATCHER_IO))
         )
     }
 }
