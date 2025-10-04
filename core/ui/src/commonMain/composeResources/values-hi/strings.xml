@@ -91,4 +91,10 @@
     <string name="change_language_message">क्या आप वाकई ऐप की भाषा बदलना चाहते हैं?</string>
     <string name="confirm">पुष्टि करें</string>
     <string name="cancel">रद्द करें</string>
+
+    <!-- Theme Settings -->
+    <string name="select_theme">थीम चुनें</string>
+    <string name="theme_light">हल्का</string>
+    <string name="theme_dark">गहरा</string>
+    <string name="theme_system">सिस्टम डिफ़ॉल्ट</string>
 </resources>

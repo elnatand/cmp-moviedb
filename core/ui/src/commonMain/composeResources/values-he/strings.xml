@@ -91,4 +91,10 @@
     <string name="change_language_message">האם אתה בטוח שברצונך לשנות את שפת האפליקציה?</string>
     <string name="confirm">אישור</string>
     <string name="cancel">ביטול</string>
+
+    <!-- Theme Settings -->
+    <string name="select_theme">בחר ערכת נושא</string>
+    <string name="theme_light">בהיר</string>
+    <string name="theme_dark">כהה</string>
+    <string name="theme_system">ברירת מחדל של המערכת</string>
 </resources>
