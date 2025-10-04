@@ -18,7 +18,7 @@ class ProfileViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = "en"
+            initialValue = AppLanguage.ENGLISH.code
         )
 
     val selectedTheme: StateFlow<String> = preferencesManager.getAppTheme()

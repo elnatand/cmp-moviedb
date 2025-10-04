@@ -1,13 +1,13 @@
 package com.elna.moviedb
 
+import Theme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
-import com.elna.moviedb.core.ui.theme.AppTheme
-import com.elna.moviedb.core.ui.theme.isSystemInDarkTheme
 import com.elna.moviedb.navigation.RootNavGraph
 import com.elna.moviedb.ui.Localization
 import com.elna.moviedb.ui.NavigationBar
@@ -17,17 +17,13 @@ import org.koin.compose.koinInject
 fun App() {
     val appState: AppState = rememberAppState()
     val preferencesManager: PreferencesManager = koinInject()
-    val themeValue by preferencesManager.getAppTheme().collectAsState(AppTheme.SYSTEM.value)
-    val currentTheme = AppTheme.getAppThemeByValue(themeValue)
+    val selectedLanguage by preferencesManager.getAppLanguageCode()
+        .collectAsStateWithLifecycle(AppLanguage.ENGLISH.code)
+    val selectedTheme by preferencesManager.getAppTheme()
+        .collectAsStateWithLifecycle(AppTheme.SYSTEM.value)
 
-    val darkTheme = when (currentTheme) {
-        AppTheme.LIGHT -> false
-        AppTheme.DARK -> true
-        AppTheme.SYSTEM -> isSystemInDarkTheme()
-    }
-
-    Localization {
-        AppTheme(darkTheme = darkTheme) {
+    Localization(selectedLanguage) {
+        Theme(selectedTheme) {
             Scaffold(
                 bottomBar = {
                     NavigationBar(appState = appState)
