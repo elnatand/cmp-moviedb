@@ -31,7 +31,7 @@
 	<dict/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -46,18 +46,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-<key>CFBundleLocalizations</key><array>
-<string>en</string>
-<string>he</string>
-<key>NSCameraUsageDescription</key>
-<string>whatever</string>
-</array>
-<key>NSAppTransportSecurity</key>
-<dict>
-  <!--Include to allow all connections (DANGER)-->
-  <key>NSAllowsArbitraryLoads</key>
-      <true/>
-</dict>
-
 </dict>
 </plist>
