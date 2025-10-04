@@ -17,10 +17,10 @@ navigationCompose = "2.9.0"
 room = "2.8.1"
 sqlite = "2.6.1"
 datastore = "1.1.7"
-google-services = "4.4.2"
-firebase-crashlytics-plugin = "3.0.2"
-firebase-crashlytics = "19.2.1"
-firebase-analytics = "22.1.2"
+google-services = "4.4.3"
+firebase-crashlytics-plugin = "3.0.6"
+firebase-crashlytics = "20.0.2"
+firebase-analytics = "23.0.0"
 
 
 [plugins]

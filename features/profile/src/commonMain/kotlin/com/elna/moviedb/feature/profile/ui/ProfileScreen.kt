@@ -54,8 +54,7 @@ fun ProfileScreen() {
         selectedLanguage = selectedLanguage,
         selectedTheme = selectedTheme,
         onLanguageSelected = viewModel::setLanguage,
-        onThemeSelected = viewModel::setTheme,
-        onTestCrash = viewModel::testCrash
+        onThemeSelected = viewModel::setTheme
     )
 }
 
@@ -65,8 +64,7 @@ private fun ProfileScreen(
     selectedLanguage: String,
     selectedTheme: String,
     onLanguageSelected: (AppLanguage) -> Unit,
-    onThemeSelected: (AppTheme) -> Unit,
-    onTestCrash: () -> Unit
+    onThemeSelected: (AppTheme) -> Unit
 ) {
     var languageExpanded by remember { mutableStateOf(false) }
     var themeExpanded by remember { mutableStateOf(false) }
@@ -213,16 +211,6 @@ private fun ProfileScreen(
                         )
                     }
                 }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Test Crash Button
-            Button(
-                onClick = onTestCrash,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Test Crash")
             }
         }
     }

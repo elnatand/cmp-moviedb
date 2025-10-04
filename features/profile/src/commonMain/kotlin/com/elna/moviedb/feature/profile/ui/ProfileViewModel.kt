@@ -39,8 +39,4 @@ class ProfileViewModel(
             preferencesManager.setAppTheme(theme)
         }
     }
-
-    fun testCrash() {
-        throw RuntimeException("Test crash triggered from ProfileScreen")
-    }
 }
