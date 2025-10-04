@@ -1,9 +1,20 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.moviedb.composeMultiplatform)
+}
+
+// Load google-services.json check
+val googleServicesFile = file("google-services.json")
+val hasGoogleServices = googleServicesFile.exists()
+
+if (hasGoogleServices) {
+    apply(plugin = libs.plugins.google.services.get().pluginId)
+    apply(plugin = libs.plugins.firebase.crashlytics.get().pluginId)
 }
 
 kotlin {
@@ -27,6 +38,12 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.koin.android)
+
+                // Firebase Crashlytics - conditionally added
+                if (hasGoogleServices) {
+                    implementation(libs.firebase.crashlytics)
+                    implementation(libs.firebase.analytics)
+                }
             }
         }
 

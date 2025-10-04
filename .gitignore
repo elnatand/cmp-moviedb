@@ -16,3 +16,7 @@ iosApp/iosApp.xcodeproj/*
 # Secrets and API Keys
 **/Secrets.plist
 iosApp/iosApp/Secrets.plist
+
+# Firebase Configuration Files
+**/google-services.json
+**/GoogleService-Info.plist

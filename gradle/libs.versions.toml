@@ -17,6 +17,10 @@ navigationCompose = "2.9.0"
 room = "2.8.1"
 sqlite = "2.6.1"
 datastore = "1.1.7"
+google-services = "4.4.2"
+firebase-crashlytics-plugin = "3.0.2"
+firebase-crashlytics = "19.2.1"
+firebase-analytics = "22.1.2"
 
 
 [plugins]
@@ -28,6 +32,8 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics-plugin" }
 
 moviedb-kotlinMultiplatform = { id = "moviedb.kotlin.multiplatform" }
 moviedb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform" }
@@ -55,6 +61,9 @@ androidx-room-sqlite-wrapper = { module = "androidx.room:room-sqlite-wrapper", v
 
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebase-crashlytics" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebase-analytics" }
 
 # Build logic dependencies
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }

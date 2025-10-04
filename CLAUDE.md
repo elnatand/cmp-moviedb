@@ -141,6 +141,36 @@ features/
 - Use `ImageLoader` component from `core/ui`
 - Handle missing images gracefully
 
+## Firebase Crashlytics (Optional)
+
+Crashlytics is **completely optional** and won't block the build:
+
+### Setup (Optional)
+1. Create Firebase project at https://console.firebase.google.com/
+2. Download `google-services.json` to `composeApp/` directory
+3. Enable Crashlytics in Firebase Console
+4. See `CRASHLYTICS_SETUP.md` for detailed instructions
+
+### Usage
+```kotlin
+class MovieViewModel(
+    private val crashlytics: CrashlyticsLogger
+) : ViewModel() {
+    fun loadMovies() {
+        crashlytics.tryCatchSuspend(defaultValue = emptyList()) {
+            // Code that might throw
+        }
+    }
+}
+```
+
+### Key Points
+- App builds and runs without Firebase configuration
+- Automatically uses no-op logger when not configured
+- Uses expect/actual pattern for cross-platform support
+- **Android**: Full Firebase Crashlytics support (optional)
+- **iOS**: Native Firebase via SPM (Swift/ObjC crashes only, Kotlin exceptions logged to console)
+
 ## UI/UX Guidelines
 
 ### Design Principles
