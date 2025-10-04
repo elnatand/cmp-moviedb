@@ -26,8 +26,6 @@ kotlin {
     sourceSets {
         androidMain {
             dependencies {
-
-                implementation(libs.androidx.activity.compose)
                 implementation(libs.koin.android)
             }
         }
