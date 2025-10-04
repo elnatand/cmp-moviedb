@@ -12,6 +12,8 @@
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		23061D9D2E9107FE00981490 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 23061D9C2E9107FE00981490 /* GoogleService-Info.plist */; };
 		238B65242E83FDF000AFCBF0 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 238B65232E83FDF000AFCBF0 /* Secrets.plist */; };
+		23DB9D1C2E911D7000F3DDF3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 23061D9F2E910C9500981490 /* FirebaseCore */; };
+		23DB9D1D2E911D7000F3DDF3 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 23061DA02E910C9500981490 /* FirebaseCrashlytics */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +34,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				23DB9D1D2E911D7000F3DDF3 /* FirebaseCrashlytics in Frameworks */,
+				23DB9D1C2E911D7000F3DDF3 /* FirebaseCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,8 +107,8 @@
 				F36B1CEB2AD83DDC00CB74D5 /* Compile Kotlin Framework */,
 				7555FF77242A565900829871 /* Sources */,
 				7555FF79242A565900829871 /* Resources */,
-				EBA74D7A2AF529B400BD32C0 /* ShellScript */,
 				23BD992A2E91105B004BA095 /* Frameworks */,
+				23DB9D1F2E911DC000F3DDF3 /* Upload Crashlytics dSYMs */,
 			);
 			buildRules = (
 			);
@@ -171,7 +175,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		EBA74D7A2AF529B400BD32C0 /* ShellScript */ = {
+		23DB9D1F2E911DC000F3DDF3 /* Upload Crashlytics dSYMs */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -180,13 +184,14 @@
 			);
 			inputPaths = (
 			);
+			name = "Upload Crashlytics dSYMs";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n  \"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\" \\\n    -gsp \"${PROJECT_DIR}/iosApp/GoogleService-Info.plist\" \\\n    -p ios \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n";
 		};
 		F36B1CEB2AD83DDC00CB74D5 /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
