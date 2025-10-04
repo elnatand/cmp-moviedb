@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.elna.moviedb.core.model.AppLanguage
+import com.elna.moviedb.core.model.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -22,6 +23,7 @@ internal class PreferencesManagerImpl(private val dataStore: DataStore<Preferenc
      */
     private object PreferenceKeys {
         val LANGUAGE = stringPreferencesKey("language")
+        val THEME = stringPreferencesKey("theme")
     }
 
     /**
@@ -57,6 +59,20 @@ internal class PreferencesManagerImpl(private val dataStore: DataStore<Preferenc
      */
     override suspend fun setAppLanguageCode(language: AppLanguage) {
         setStringPreference(PreferenceKeys.LANGUAGE, language.code)
+    }
+
+    /**
+     * Get theme preference
+     */
+    override fun getAppTheme(): Flow<String> {
+        return getStringPreference(PreferenceKeys.THEME, AppTheme.SYSTEM.value)
+    }
+
+    /**
+     * Set theme preference
+     */
+    override suspend fun setAppTheme(theme: AppTheme) {
+        setStringPreference(PreferenceKeys.THEME, theme.value)
     }
 
     /**
