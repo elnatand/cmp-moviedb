@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.model.AppLanguage
+import com.elna.moviedb.core.model.AppTheme
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.arabic
 import com.elna.moviedb.resources.cancel
@@ -35,6 +36,10 @@ import com.elna.moviedb.resources.hebrew
 import com.elna.moviedb.resources.hindi
 import com.elna.moviedb.resources.profile
 import com.elna.moviedb.resources.select_language
+import com.elna.moviedb.resources.select_theme
+import com.elna.moviedb.resources.theme_dark
+import com.elna.moviedb.resources.theme_light
+import com.elna.moviedb.resources.theme_system
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -42,10 +47,13 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProfileScreen() {
     val viewModel = koinViewModel<ProfileViewModel>()
     val selectedLanguage by viewModel.selectedLanguage.collectAsStateWithLifecycle()
+    val selectedTheme by viewModel.selectedTheme.collectAsStateWithLifecycle()
 
     ProfileScreen(
         selectedLanguage = selectedLanguage,
-        onLanguageSelected = viewModel::setLanguage
+        selectedTheme = selectedTheme,
+        onLanguageSelected = viewModel::setLanguage,
+        onThemeSelected = viewModel::setTheme
     )
 }
 
@@ -53,9 +61,12 @@ fun ProfileScreen() {
 @Composable
 private fun ProfileScreen(
     selectedLanguage: String,
-    onLanguageSelected: (AppLanguage) -> Unit
+    selectedTheme: String,
+    onLanguageSelected: (AppLanguage) -> Unit,
+    onThemeSelected: (AppTheme) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var languageExpanded by remember { mutableStateOf(false) }
+    var themeExpanded by remember { mutableStateOf(false) }
     var showConfirmDialog by remember { mutableStateOf(false) }
     var pendingLanguage by remember { mutableStateOf<AppLanguage?>(null) }
 
@@ -112,24 +123,25 @@ private fun ProfileScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Language Selector
             ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = it }
+                expanded = languageExpanded,
+                onExpandedChange = { languageExpanded = it }
             ) {
                 OutlinedTextField(
                     value = stringResource(selectedNameRes),
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(Res.string.select_language)) },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .menuAnchor(type = androidx.compose.material3.MenuAnchorType.PrimaryNotEditable)
                 )
 
                 ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    expanded = languageExpanded,
+                    onDismissRequest = { languageExpanded = false }
                 ) {
                     AppLanguage.entries.forEach { appLanguage ->
                         val nameRes = when (appLanguage) {
@@ -141,11 +153,58 @@ private fun ProfileScreen(
                         DropdownMenuItem(
                             text = { Text(stringResource(nameRes)) },
                             onClick = {
-                                expanded = false
+                                languageExpanded = false
                                 if (appLanguage.code != selectedLanguage) {
                                     pendingLanguage = appLanguage
                                     showConfirmDialog = true
                                 }
+                            },
+                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Theme Selector
+            val selectedAppTheme = AppTheme.getAppThemeByValue(selectedTheme)
+            val selectedThemeNameRes = when (selectedAppTheme) {
+                AppTheme.LIGHT -> Res.string.theme_light
+                AppTheme.DARK -> Res.string.theme_dark
+                AppTheme.SYSTEM -> Res.string.theme_system
+            }
+
+            ExposedDropdownMenuBox(
+                expanded = themeExpanded,
+                onExpandedChange = { themeExpanded = it }
+            ) {
+                OutlinedTextField(
+                    value = stringResource(selectedThemeNameRes),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(Res.string.select_theme)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = themeExpanded) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor(type = androidx.compose.material3.MenuAnchorType.PrimaryNotEditable)
+                )
+
+                ExposedDropdownMenu(
+                    expanded = themeExpanded,
+                    onDismissRequest = { themeExpanded = false }
+                ) {
+                    AppTheme.entries.forEach { appTheme ->
+                        val themeNameRes = when (appTheme) {
+                            AppTheme.LIGHT -> Res.string.theme_light
+                            AppTheme.DARK -> Res.string.theme_dark
+                            AppTheme.SYSTEM -> Res.string.theme_system
+                        }
+                        DropdownMenuItem(
+                            text = { Text(stringResource(themeNameRes)) },
+                            onClick = {
+                                themeExpanded = false
+                                onThemeSelected(appTheme)
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )

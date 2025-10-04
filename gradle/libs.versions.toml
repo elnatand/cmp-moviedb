@@ -5,10 +5,9 @@ android-compileSdk = "36"
 android-targetSdk = "36"
 
 kotlin = "2.2.20"
-ksp = "2.2.20-2.0.2"
+ksp = "2.2.20-2.0.3"
 composeMultiplatform = "1.9.0"
 agp = "8.13.0"
-androidx-activityCompose = "1.11.0"
 koin = "4.1.1"
 ktor = "3.3.0"
 coil = "3.3.0"
@@ -34,13 +33,11 @@ moviedb-kotlinMultiplatform = { id = "moviedb.kotlin.multiplatform" }
 moviedb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform" }
 
 [libraries]
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
-koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 koin-compose-navigation = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
