@@ -46,7 +46,15 @@ class MoviesRepositoryImpl(
     private var totalPages = 0
 
     private val _initialLoadError = MutableStateFlow<AppResult.Error?>(null)
-    private val _paginationError = MutableSharedFlow<String>(replay = 0)
+
+    /**
+     * SharedFlow for pagination errors with extraBufferCapacity = 1.
+     *
+     * extraBufferCapacity = 1 ensures that if an error is emitted before the UI subscriber
+     * is ready to collect, the error won't be lost. Without this, emit() could suspend
+     * indefinitely if there are no active collectors, potentially blocking the repository.
+     */
+    private val _paginationError = MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 1)
 
     /**
      * Exposes pagination errors as a SharedFlow for UI consumption.
