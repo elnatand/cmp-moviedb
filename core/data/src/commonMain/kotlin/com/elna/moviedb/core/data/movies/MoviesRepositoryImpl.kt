@@ -13,7 +13,10 @@ import com.elna.moviedb.core.network.MoviesRemoteDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -42,7 +45,14 @@ class MoviesRepositoryImpl(
     private var currentPage = 0
     private var totalPages = 0
 
-    private val _errorState = MutableStateFlow<AppResult.Error?>(null)
+    private val _initialLoadError = MutableStateFlow<AppResult.Error?>(null)
+    private val _paginationError = MutableSharedFlow<String>(replay = 0)
+
+    /**
+     * Exposes pagination errors as a SharedFlow for UI consumption.
+     * Emits error messages when loading additional pages fails.
+     */
+    override val paginationErrors: SharedFlow<String> = _paginationError.asSharedFlow()
 
     /**
      * Application-scoped coroutine scope that lives for the entire app lifetime.
@@ -65,19 +75,21 @@ class MoviesRepositoryImpl(
 
 
     /**
-     * Observes all movies from local storage with reactive error handling.
+     * Observes all movies from local storage with offline-first architecture.
      *
-     * This function returns a Flow that combines local movie data with error state,
-     * automatically loading the first page if no data is cached locally.
+     * This function implements an offline-first approach where:
+     * 1. Local database is the source of truth
+     * 2. Remote errors only shown when cache is empty (initial load)
+     * 3. Pagination errors are emitted separately via paginationErrors flow
      *
-     * @return Flow<MDResponse<List<Movie>>> A reactive flow that emits:
-     *   - AppResult.Success with list of movies when data is available and no errors
-     *   - AppResult.Error when there are loading errors from loadNextPage()
+     * @return Flow<AppResult<List<Movie>>> A reactive flow that emits:
+     *   - AppResult.Success with cached movies (even during pagination errors)
+     *   - AppResult.Error only when initial load fails and cache is empty
      *
      * The flow automatically reacts to:
      * - Changes in local movie data
-     * - Error state changes from network operations
-     * - Initial data loading if cache is empty
+     * - Initial load error state
+     * - Triggers initial data loading if cache is empty
      */
     override suspend fun observeAllMovies(): Flow<AppResult<List<Movie>>> {
         val localMoviesPageStream = moviesLocalDataSource.getAllMoviesAsFlow()
@@ -89,21 +101,26 @@ class MoviesRepositoryImpl(
 
         return combine(
             localMoviesPageStream,
-            _errorState
+            _initialLoadError
         ) { movieEntities, error ->
-            // Return error if present
-            error?.let { return@combine it }
+            when {
+                // Offline-first: Always show local data if available
+                movieEntities.isNotEmpty() -> AppResult.Success(
+                    data = movieEntities.map {
+                        Movie(
+                            id = it.id,
+                            title = it.title,
+                            poster_path = it.poster_path
+                        )
+                    }
+                )
 
-            // Return success with movie data
-            AppResult.Success(
-                data = movieEntities.map {
-                    Movie(
-                        id = it.id,
-                        title = it.title,
-                        poster_path = it.poster_path
-                    )
-                }
-            )
+                // Only show error if cache is empty (initial load failed)
+                error != null -> error
+
+                // Empty success state
+                else -> AppResult.Success(emptyList())
+            }
         }
     }
 
@@ -138,22 +155,24 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Loads the next page of movies from the remote API.
+     * Loads the next page of movies from the remote API with offline-first error handling.
      *
      * This function handles pagination by:
-     * 1. Clearing any previous error state
-     * 2. Calculating the next page number based on current page
-     * 3. Fetching data from remote API
-     * 4. On success: updating total pages, caching data locally, and updating current page
-     * 5. On error: storing error state in reactive _errorState for UI consumption
+     * 1. Determining if this is an initial load or pagination
+     * 2. Fetching data from remote API
+     * 3. On success: updating total pages, caching data locally, clearing error states
+     * 4. On error:
+     *    - Initial load (page 0): Sets _initialLoadError to block UI
+     *    - Pagination: Emits error via _paginationError for snackbar display
      *
-     * The error state is automatically propagated to observeAllMovies() subscribers
-     * through the reactive _errorState flow.
+     * Error handling strategy:
+     * - Initial load errors prevent UI from showing (show error screen)
+     * - Pagination errors are non-blocking (show snackbar while keeping cached data)
      *
      * Side effects:
      * - Updates currentPage and totalPages on successful load
      * - Caches new movie data in local storage
-     * - Emits error state reactively if API call fails
+     * - Emits appropriate error based on context (initial vs pagination)
      */
     override suspend fun loadNextPage() {
 
@@ -161,9 +180,8 @@ class MoviesRepositoryImpl(
             return  // All pages loaded
         }
 
-        _errorState.value = null
-
         val nextPage = currentPage + 1
+        val isInitialLoad = currentPage == 0
 
         when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
@@ -171,10 +189,21 @@ class MoviesRepositoryImpl(
                 val entities = result.data.results.map { it.asEntity(nextPage) }
                 moviesLocalDataSource.insertMoviesPage(entities)
                 currentPage = nextPage
+
+                // Clear initial error on successful load
+                if (isInitialLoad) {
+                    _initialLoadError.value = null
+                }
             }
 
             is AppResult.Error -> {
-                _errorState.value = result
+                if (isInitialLoad) {
+                    // Initial load failed - block UI with error screen
+                    _initialLoadError.value = result
+                } else {
+                    // Pagination failed - emit non-blocking error for snackbar
+                    _paginationError.emit(result.message)
+                }
             }
         }
     }
@@ -184,13 +213,13 @@ class MoviesRepositoryImpl(
      *
      * This function performs a complete refresh by:
      * 1. Resetting pagination state (currentPage = 0, totalPages = 0)
-     * 2. Clearing any previous error state
+     * 2. Clearing any previous error states
      * 3. Loading the first page of movies via loadNextPage()
      * 4. Returning the result based on the loading outcome
      *
-     * @return MDResponse<List<Movie>> Either:
-     *   - MDResponse.Success with the refreshed list of movies if successful
-     *   - MDResponse.Error if the refresh operation failed
+     * @return AppResult<List<Movie>> Either:
+     *   - AppResult.Success with the refreshed list of movies if successful
+     *   - AppResult.Error if the refresh operation failed
      *
      * Note: This function immediately returns the result of the refresh operation.
      * For reactive updates, use observeAllMovies() which will automatically
@@ -200,12 +229,12 @@ class MoviesRepositoryImpl(
 
         currentPage = 0
         totalPages = 0
-        _errorState.value = null
+        _initialLoadError.value = null
 
         loadNextPage()
 
         // Return result based on loading outcome
-        return _errorState.value ?: run {
+        return _initialLoadError.value ?: run {
             // If no error, get the current data from local storage
             val localMovies = moviesLocalDataSource.getAllMoviesAsFlow().first()
             AppResult.Success(
@@ -229,7 +258,7 @@ class MoviesRepositoryImpl(
     override suspend fun clearMovies() {
         currentPage = 0
         totalPages = 0
-        _errorState.value = null
+        _initialLoadError.value = null
         moviesLocalDataSource.clearAllMovies()
     }
 

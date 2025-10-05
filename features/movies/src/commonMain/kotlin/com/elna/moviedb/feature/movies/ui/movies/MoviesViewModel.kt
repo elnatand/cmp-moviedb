@@ -18,6 +18,11 @@ class MoviesViewModel(
     private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.LOADING))
     val uiState = _uiState.asStateFlow()
 
+    /**
+     * Exposes pagination errors for UI to display as snackbars.
+     */
+    val paginationErrors = moviesRepository.paginationErrors
+
     init {
         observeMovies()
     }
@@ -42,10 +47,6 @@ class MoviesViewModel(
     }
 
     fun loadNextPage() {
-        _uiState.update { state ->
-            state.copy(state = MoviesUiState.State.LOADING,)
-        }
-
         viewModelScope.launch {
             moviesRepository.loadNextPage()
         }

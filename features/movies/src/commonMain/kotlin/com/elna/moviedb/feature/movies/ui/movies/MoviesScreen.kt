@@ -29,7 +29,7 @@ import com.elna.moviedb.feature.movies.model.MoviesUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.network_error
 import com.elna.moviedb.resources.popular_movies
-import org.jetbrains.compose.resources.getString
+import kotlinx.coroutines.flow.SharedFlow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -44,7 +44,8 @@ fun MoviesScreen(
     MoviesScreen(
         uiState = uiState,
         onClick = onClick,
-        onLoadNextPage = viewModel::loadNextPage
+        onLoadNextPage = viewModel::loadNextPage,
+        paginationErrors = viewModel.paginationErrors
     )
 }
 
@@ -54,9 +55,20 @@ fun MoviesScreen(
 private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
-    onLoadNextPage: () -> Unit
+    onLoadNextPage: () -> Unit,
+    paginationErrors: SharedFlow<String>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Listen for pagination errors and show snackbar
+    LaunchedEffect(Unit) {
+        paginationErrors.collect { errorMessage ->
+            snackbarHostState.showSnackbar(
+                message = errorMessage,
+                withDismissAction = true
+            )
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -69,24 +81,24 @@ private fun MoviesScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            if (uiState.movies.isNotEmpty()) {
-                MoviesList(
-                    uiState = uiState,
-                    onClick = onClick,
-                    onLoadNextPage = onLoadNextPage
-                )
-            }
-
-            if (uiState.state == MoviesUiState.State.LOADING) {
-                AppLoader()
-            }
-
-            // Show error as SnackBar
-            LaunchedEffect(uiState.state) {
-                if (uiState.state == MoviesUiState.State.ERROR) {
-                    snackbarHostState.showSnackbar(
-                        message = getString(Res.string.network_error)
+            when {
+                // Show cached data if available (offline-first)
+                uiState.movies.isNotEmpty() -> {
+                    MoviesList(
+                        uiState = uiState,
+                        onClick = onClick,
+                        onLoadNextPage = onLoadNextPage
                     )
+                }
+
+                // Show error screen only when cache is empty and initial load failed
+                uiState.state == MoviesUiState.State.ERROR -> {
+                    Text(text = stringResource(Res.string.network_error))
+                }
+
+                // Show loader when initially loading (no cached data yet)
+                uiState.state == MoviesUiState.State.LOADING -> {
+                    AppLoader()
                 }
             }
 
