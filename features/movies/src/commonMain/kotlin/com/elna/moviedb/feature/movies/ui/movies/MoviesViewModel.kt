@@ -51,4 +51,10 @@ class MoviesViewModel(
             moviesRepository.loadNextPage()
         }
     }
+
+    fun retry() {
+        viewModelScope.launch {
+            moviesRepository.loadNextPage()
+        }
+    }
 }

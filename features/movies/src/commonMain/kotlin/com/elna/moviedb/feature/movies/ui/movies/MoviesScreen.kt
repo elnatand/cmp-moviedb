@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MoviesUiState
 import com.elna.moviedb.resources.Res
@@ -45,7 +46,8 @@ fun MoviesScreen(
         uiState = uiState,
         onClick = onClick,
         onLoadNextPage = viewModel::loadNextPage,
-        paginationErrors = viewModel.paginationErrors
+        paginationErrors = viewModel.paginationErrors,
+        onRetry = viewModel::retry
     )
 }
 
@@ -56,7 +58,8 @@ private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
     onLoadNextPage: () -> Unit,
-    paginationErrors: SharedFlow<String>
+    paginationErrors: SharedFlow<String>,
+    onRetry: () -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -93,7 +96,10 @@ private fun MoviesScreen(
 
                 // Show error screen only when cache is empty and initial load failed
                 uiState.state == MoviesUiState.State.ERROR -> {
-                    Text(text = stringResource(Res.string.network_error))
+                    AppErrorComponent(
+                        message = stringResource(Res.string.network_error),
+                        onRetry = onRetry
+                    )
                 }
 
                 // Show loader when initially loading (no cached data yet)
