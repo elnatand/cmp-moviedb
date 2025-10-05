@@ -26,11 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.feature.movies.model.MoviesIntent
+import com.elna.moviedb.feature.movies.model.MoviesSideEffect
 import com.elna.moviedb.feature.movies.model.MoviesUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.network_error
 import com.elna.moviedb.resources.popular_movies
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -45,9 +47,8 @@ fun MoviesScreen(
     MoviesScreen(
         uiState = uiState,
         onClick = onClick,
-        onLoadNextPage = viewModel::loadNextPage,
-        paginationErrors = viewModel.paginationErrors,
-        onRetry = viewModel::retry
+        onIntent = viewModel::handleIntent,
+        sideEffects = viewModel.sideEffect
     )
 }
 
@@ -57,19 +58,22 @@ fun MoviesScreen(
 private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
-    onLoadNextPage: () -> Unit,
-    paginationErrors: SharedFlow<String>,
-    onRetry: () -> Unit
+    onIntent: (MoviesIntent) -> Unit,
+    sideEffects: Flow<MoviesSideEffect>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Listen for pagination errors and show snackbar
+    // Handle side effects (one-time events)
     LaunchedEffect(Unit) {
-        paginationErrors.collect { errorMessage ->
-            snackbarHostState.showSnackbar(
-                message = errorMessage,
-                withDismissAction = true
-            )
+        sideEffects.collect { effect ->
+            when (effect) {
+                is MoviesSideEffect.ShowPaginationError -> {
+                    snackbarHostState.showSnackbar(
+                        message = effect.message,
+                        withDismissAction = true
+                    )
+                }
+            }
         }
     }
 
@@ -90,7 +94,7 @@ private fun MoviesScreen(
                     MoviesList(
                         uiState = uiState,
                         onClick = onClick,
-                        onLoadNextPage = onLoadNextPage
+                        onLoadMore = { onIntent(MoviesIntent.LoadNextPage) }
                     )
                 }
 
@@ -98,7 +102,7 @@ private fun MoviesScreen(
                 uiState.state == MoviesUiState.State.ERROR -> {
                     AppErrorComponent(
                         message = stringResource(Res.string.network_error),
-                        onRetry = onRetry
+                        onRetry = { onIntent(MoviesIntent.Retry) }
                     )
                 }
 
@@ -121,7 +125,7 @@ private fun MoviesScreen(
 private fun MoviesList(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
-    onLoadNextPage: () -> Unit
+    onLoadMore: () -> Unit
 ) {
 
     val gridState = rememberLazyGridState()
@@ -138,7 +142,7 @@ private fun MoviesList(
 
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
-            onLoadNextPage()
+            onLoadMore()
         }
     }
 
