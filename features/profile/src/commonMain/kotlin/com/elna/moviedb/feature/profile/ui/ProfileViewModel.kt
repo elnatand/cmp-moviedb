@@ -5,36 +5,61 @@ import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
+import com.elna.moviedb.feature.profile.model.ProfileIntent
+import com.elna.moviedb.feature.profile.model.ProfileUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel following MVI (Model-View-Intent) pattern for Profile screen.
+ *
+ * MVI Components:
+ * - Model: [ProfileUiState] - Immutable state representing the UI
+ * - View: ProfileScreen - Renders the state and dispatches intents
+ * - Intent: [ProfileIntent] - User actions/intentions
+ */
 class ProfileViewModel(
     private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
-    val selectedLanguage: StateFlow<String> = preferencesManager.getAppLanguageCode()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AppLanguage.ENGLISH.code
+    val uiState: StateFlow<ProfileUiState> = combine(
+        preferencesManager.getAppLanguageCode(),
+        preferencesManager.getAppTheme()
+    ) { languageCode, theme ->
+        ProfileUiState(
+            selectedLanguageCode = languageCode,
+            selectedThemeValue = theme
         )
-
-    val selectedTheme: StateFlow<String> = preferencesManager.getAppTheme()
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = AppTheme.SYSTEM.value
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ProfileUiState(
+            selectedLanguageCode = AppLanguage.ENGLISH.code,
+            selectedThemeValue = AppTheme.SYSTEM.value
         )
+    )
 
-    fun setLanguage(language: AppLanguage) {
+    /**
+     * Main entry point for handling user intents.
+     * All UI interactions should go through this method.
+     */
+    fun handleIntent(intent: ProfileIntent) {
+        when (intent) {
+            is ProfileIntent.SetLanguage -> setLanguage(intent.language)
+            is ProfileIntent.SetTheme -> setTheme(intent.theme)
+        }
+    }
+
+    private fun setLanguage(language: AppLanguage) {
         viewModelScope.launch {
             preferencesManager.setAppLanguageCode(language)
         }
     }
 
-    fun setTheme(theme: AppTheme) {
+    private fun setTheme(theme: AppTheme) {
         viewModelScope.launch {
             preferencesManager.setAppTheme(theme)
         }

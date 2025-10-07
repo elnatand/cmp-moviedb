@@ -43,7 +43,7 @@ fun TvShowsScreen(
     TvShowsScreen(
         uiState = uiState,
         onClick = onClick,
-        onLoadNextPage = viewModel::loadNextPage
+        onLoadNextPage = { viewModel.handleIntent(com.elna.moviedb.feature.tvshows.model.TvShowsIntent.LoadNextPage) }
     )
 }
 

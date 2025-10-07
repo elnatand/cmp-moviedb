@@ -64,7 +64,7 @@ fun PersonDetailsScreen(
 
     PersonDetailsScreen(
         uiState = uiState,
-        onRetry = viewModel::retry
+        onRetry = { viewModel.handleIntent(com.elna.moviedb.feature.person.model.PersonDetailsIntent.Retry) }
     )
 }
 

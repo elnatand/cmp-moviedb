@@ -1,25 +1,43 @@
 package com.elna.moviedb.feature.movies.ui.movie_details
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.movies.MoviesRepository
 import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.feature.movies.model.MovieDetailsIntent
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-
+/**
+ * ViewModel following MVI (Model-View-Intent) pattern for Movie Details screen.
+ *
+ * MVI Components:
+ * - Model: [MovieDetailsUiState] - Immutable state representing the UI
+ * - View: MovieDetailsScreen - Renders the state and dispatches intents
+ * - Intent: [MovieDetailsIntent] - User actions/intentions
+ */
 class MovieDetailsViewModel(
     private val movieId: Int,
     private val moviesRepository: MoviesRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MovieDetailsUiState>(MovieDetailsUiState.Loading)
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<MovieDetailsUiState> = _uiState.asStateFlow()
 
     init {
         getMovieDetails(movieId)
+    }
+
+    /**
+     * Main entry point for handling user intents.
+     * All UI interactions should go through this method.
+     */
+    fun handleIntent(intent: MovieDetailsIntent) {
+        when (intent) {
+            MovieDetailsIntent.Retry -> retry()
+        }
     }
 
     private fun getMovieDetails(movieId: Int) {
@@ -34,7 +52,7 @@ class MovieDetailsViewModel(
         }
     }
 
-    fun retry() {
+    private fun retry() {
         getMovieDetails(movieId)
     }
 

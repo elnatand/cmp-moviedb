@@ -43,10 +43,10 @@ fun SearchScreen(
 
     SearchScreen(
         uiState = uiState,
-        onSearchQueryChanged = viewModel::onSearchQueryChanged,
-        onFilterChanged = viewModel::onFilterChanged,
-        onRetry = viewModel::onRetry,
-        onLoadMore = viewModel::onLoadMore,
+        onSearchQueryChanged = { viewModel.handleIntent(com.elna.moviedb.feature.search.model.SearchIntent.UpdateSearchQuery(it)) },
+        onFilterChanged = { viewModel.handleIntent(com.elna.moviedb.feature.search.model.SearchIntent.UpdateFilter(it)) },
+        onRetry = { viewModel.handleIntent(com.elna.moviedb.feature.search.model.SearchIntent.Retry) },
+        onLoadMore = { viewModel.handleIntent(com.elna.moviedb.feature.search.model.SearchIntent.LoadMore) },
         onMovieClicked = onMovieClicked,
         onTvShowClicked = onTvShowClicked,
         onPersonClicked = onPersonClicked

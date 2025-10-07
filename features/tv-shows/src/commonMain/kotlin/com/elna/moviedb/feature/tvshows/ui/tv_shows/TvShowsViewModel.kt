@@ -3,22 +3,43 @@ package com.elna.moviedb.feature.tvshows.ui.tv_shows
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.feature.tvshows.model.TvShowsIntent
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 
+/**
+ * ViewModel following MVI (Model-View-Intent) pattern for TV Shows screen.
+ *
+ * MVI Components:
+ * - Model: [TvShowsUiState] - Immutable state representing the UI
+ * - View: TvShowsScreen - Renders the state and dispatches intents
+ * - Intent: [TvShowsIntent] - User actions/intentions
+ */
 class TvShowsViewModel(
     private val tvShowsRepository: TvShowsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TvShowsUiState(state = TvShowsUiState.State.LOADING))
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<TvShowsUiState> = _uiState.asStateFlow()
 
     init {
         observeTvShows()
+    }
+
+    /**
+     * Main entry point for handling user intents.
+     * All UI interactions should go through this method.
+     */
+    fun handleIntent(intent: TvShowsIntent) {
+        when (intent) {
+            TvShowsIntent.LoadNextPage -> loadNextPage()
+            TvShowsIntent.Retry -> retry()
+        }
     }
 
     private fun observeTvShows() {
@@ -40,11 +61,13 @@ class TvShowsViewModel(
         }
     }
 
-    fun loadNextPage() {
-        _uiState.update { state ->
-            state.copy(state = TvShowsUiState.State.LOADING)
+    private fun loadNextPage() {
+        viewModelScope.launch {
+            tvShowsRepository.loadNextPage()
         }
+    }
 
+    private fun retry() {
         viewModelScope.launch {
             tvShowsRepository.loadNextPage()
         }

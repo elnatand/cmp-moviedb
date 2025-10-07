@@ -3,21 +3,41 @@ package com.elna.moviedb.feature.person.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.person.PersonRepository
+import com.elna.moviedb.feature.person.model.PersonDetailsIntent
 import com.elna.moviedb.feature.person.model.PersonUiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel following MVI (Model-View-Intent) pattern for Person Details screen.
+ *
+ * MVI Components:
+ * - Model: [PersonUiState] - Immutable state representing the UI
+ * - View: PersonDetailsScreen - Renders the state and dispatches intents
+ * - Intent: [PersonDetailsIntent] - User actions/intentions
+ */
 class PersonDetailsViewModel(
     private val personId: Int,
     private val personRepository: PersonRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PersonUiState>(PersonUiState.Loading)
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<PersonUiState> = _uiState.asStateFlow()
 
     init {
         getPersonDetails(personId)
+    }
+
+    /**
+     * Main entry point for handling user intents.
+     * All UI interactions should go through this method.
+     */
+    fun handleIntent(intent: PersonDetailsIntent) {
+        when (intent) {
+            PersonDetailsIntent.Retry -> retry()
+        }
     }
 
     private fun getPersonDetails(personId: Int) {
@@ -32,7 +52,7 @@ class PersonDetailsViewModel(
         }
     }
 
-    fun retry() {
+    private fun retry() {
         getPersonDetails(personId)
     }
 }
