@@ -6,7 +6,7 @@ import com.elna.moviedb.core.data.search.SearchRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.model.SearchResultItem
-import com.elna.moviedb.feature.search.model.SearchIntent
+import com.elna.moviedb.feature.search.model.SearchEvent
 import com.elna.moviedb.feature.search.model.SearchUiState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
  * MVI Components:
  * - Model: [SearchUiState] - Immutable state representing the UI
  * - View: SearchScreen - Renders the state and dispatches intents
- * - Intent: [SearchIntent] - User actions/intentions
+ * - Intent: [SearchEvent] - User actions/intentions
  */
 @OptIn(FlowPreview::class)
 class SearchViewModel(
@@ -52,12 +52,12 @@ class SearchViewModel(
      * Main entry point for handling user intents.
      * All UI interactions should go through this method.
      */
-    fun handleIntent(intent: SearchIntent) {
+    fun onEvent(intent: SearchEvent) {
         when (intent) {
-            is SearchIntent.UpdateSearchQuery -> onSearchQueryChanged(intent.query)
-            is SearchIntent.UpdateFilter -> onFilterChanged(intent.filter)
-            SearchIntent.LoadMore -> onLoadMore()
-            SearchIntent.Retry -> onRetry()
+            is SearchEvent.UpdateSearchQuery -> onSearchQueryChanged(intent.query)
+            is SearchEvent.UpdateFilter -> onFilterChanged(intent.filter)
+            SearchEvent.LoadMore -> onLoadMore()
+            SearchEvent.Retry -> onRetry()
         }
     }
 

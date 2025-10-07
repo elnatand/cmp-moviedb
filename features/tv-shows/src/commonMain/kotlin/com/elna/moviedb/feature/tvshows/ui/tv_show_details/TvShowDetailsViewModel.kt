@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
 import com.elna.moviedb.core.model.TvShowDetails
-import com.elna.moviedb.feature.tvshows.model.TvShowDetailsIntent
+import com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
  * MVI Components:
  * - Model: [TvShowDetailsUiState] - Immutable state representing the UI
  * - View: TvShowDetailsScreen - Renders the state and dispatches intents
- * - Intent: [TvShowDetailsIntent] - User actions/intentions
+ * - Intent: [TvShowDetailsEvent] - User actions/intentions
  */
 class TvShowDetailsViewModel(
     private val tvShowId: Int,
@@ -34,9 +34,9 @@ class TvShowDetailsViewModel(
      * Main entry point for handling user intents.
      * All UI interactions should go through this method.
      */
-    fun handleIntent(intent: TvShowDetailsIntent) {
+    fun onEvent(intent: TvShowDetailsEvent) {
         when (intent) {
-            TvShowDetailsIntent.Retry -> retry()
+            TvShowDetailsEvent.Retry -> retry()
         }
     }
 

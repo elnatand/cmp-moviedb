@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.movies.MoviesRepository
 import com.elna.moviedb.core.model.MovieDetails
-import com.elna.moviedb.feature.movies.model.MovieDetailsIntent
+import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
  * MVI Components:
  * - Model: [MovieDetailsUiState] - Immutable state representing the UI
  * - View: MovieDetailsScreen - Renders the state and dispatches intents
- * - Intent: [MovieDetailsIntent] - User actions/intentions
+ * - Intent: [MovieDetailsEvent] - User actions/intentions
  */
 class MovieDetailsViewModel(
     private val movieId: Int,
@@ -34,9 +34,9 @@ class MovieDetailsViewModel(
      * Main entry point for handling user intents.
      * All UI interactions should go through this method.
      */
-    fun handleIntent(intent: MovieDetailsIntent) {
+    fun onEvent(intent: MovieDetailsEvent) {
         when (intent) {
-            MovieDetailsIntent.Retry -> retry()
+            MovieDetailsEvent.Retry -> retry()
         }
     }
 

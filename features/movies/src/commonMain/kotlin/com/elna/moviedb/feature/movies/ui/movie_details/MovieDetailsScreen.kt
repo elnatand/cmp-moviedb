@@ -70,7 +70,7 @@ fun MovieDetailsScreen(
 
     MovieDetailsScreen(
         uiState = uiState,
-        onRetry = { viewModel.handleIntent(com.elna.moviedb.feature.movies.model.MovieDetailsIntent.Retry) }
+        onRetry = { viewModel.onEvent(com.elna.moviedb.feature.movies.model.MovieDetailsEvent.Retry) }
     )
 }
 

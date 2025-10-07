@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
-import com.elna.moviedb.feature.movies.model.MoviesIntent
+import com.elna.moviedb.feature.movies.model.MoviesEvent
 import com.elna.moviedb.feature.movies.model.MoviesSideEffect
 import com.elna.moviedb.feature.movies.model.MoviesUiState
 import com.elna.moviedb.resources.Res
@@ -47,7 +47,7 @@ fun MoviesScreen(
     MoviesScreen(
         uiState = uiState,
         onClick = onClick,
-        onIntent = viewModel::handleIntent,
+        onEvent = viewModel::onEvent,
         sideEffects = viewModel.sideEffect
     )
 }
@@ -58,7 +58,7 @@ fun MoviesScreen(
 private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
-    onIntent: (MoviesIntent) -> Unit,
+    onEvent: (MoviesEvent) -> Unit,
     sideEffects: Flow<MoviesSideEffect>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -94,7 +94,7 @@ private fun MoviesScreen(
                     MoviesList(
                         uiState = uiState,
                         onClick = onClick,
-                        onLoadMore = { onIntent(MoviesIntent.LoadNextPage) }
+                        onLoadMore = { onEvent(MoviesEvent.LoadNextPage) }
                     )
                 }
 
@@ -102,7 +102,7 @@ private fun MoviesScreen(
                 uiState.state == MoviesUiState.State.ERROR -> {
                     AppErrorComponent(
                         message = stringResource(Res.string.network_error),
-                        onRetry = { onIntent(MoviesIntent.Retry) }
+                        onRetry = { onEvent(MoviesEvent.Retry) }
                     )
                 }
 

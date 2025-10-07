@@ -11,17 +11,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.feature.tvshows.model.TvShowsIntent
+import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.model.TvShowsSideEffect
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 
 /**
  * ViewModel following MVI (Model-View-Intent) pattern for TV Shows screen.
+ * Implements Android's unidirectional data flow (UDF) pattern.
  *
- * MVI Components:
+ * UDF Components:
  * - Model: [TvShowsUiState] - Immutable state representing the UI
- * - View: TvShowsScreen - Renders the state and dispatches intents
- * - Intent: [TvShowsIntent] - User actions/intentions
+ * - View: TvShowsScreen - Renders the state and dispatches events
+ * - Event: [TvShowsEvent] - User actions/events
  * - Side Effects: [TvShowsSideEffect] - One-time events (e.g., show snackbar)
  */
 class TvShowsViewModel(
@@ -40,13 +41,13 @@ class TvShowsViewModel(
     }
 
     /**
-     * Main entry point for handling user intents.
+     * Main entry point for handling user events.
      * All UI interactions should go through this method.
      */
-    fun handleIntent(intent: TvShowsIntent) {
-        when (intent) {
-            TvShowsIntent.LoadNextPage -> loadNextPage()
-            TvShowsIntent.Retry -> retry()
+    fun onEvent(event: TvShowsEvent) {
+        when (event) {
+            TvShowsEvent.LoadNextPage -> loadNextPage()
+            TvShowsEvent.Retry -> retry()
         }
     }
 

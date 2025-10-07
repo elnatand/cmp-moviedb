@@ -51,8 +51,8 @@ fun ProfileScreen() {
     ProfileScreen(
         selectedLanguage = uiState.selectedLanguageCode,
         selectedTheme = uiState.selectedThemeValue,
-        onLanguageSelected = { viewModel.handleIntent(com.elna.moviedb.feature.profile.model.ProfileIntent.SetLanguage(it)) },
-        onThemeSelected = { viewModel.handleIntent(com.elna.moviedb.feature.profile.model.ProfileIntent.SetTheme(it)) }
+        onLanguageSelected = { viewModel.onEvent(com.elna.moviedb.feature.profile.model.ProfileEvent.SetLanguage(it)) },
+        onThemeSelected = { viewModel.onEvent(com.elna.moviedb.feature.profile.model.ProfileEvent.SetTheme(it)) }
     )
 }
 

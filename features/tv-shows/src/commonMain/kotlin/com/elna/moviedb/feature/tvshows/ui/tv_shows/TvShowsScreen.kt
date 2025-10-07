@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
-import com.elna.moviedb.feature.tvshows.model.TvShowsIntent
+import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.model.TvShowsSideEffect
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 import com.elna.moviedb.resources.Res
@@ -45,7 +45,7 @@ fun TvShowsScreen(
     TvShowsScreen(
         uiState = uiState,
         onClick = onClick,
-        onIntent = viewModel::handleIntent,
+        onEvent = viewModel::onEvent,
         sideEffects = viewModel.sideEffect
     )
 }
@@ -55,7 +55,7 @@ fun TvShowsScreen(
 private fun TvShowsScreen(
     uiState: TvShowsUiState,
     onClick: (id: Int, title: String) -> Unit,
-    onIntent: (TvShowsIntent) -> Unit,
+    onEvent: (TvShowsEvent) -> Unit,
     sideEffects: Flow<TvShowsSideEffect>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -91,7 +91,7 @@ private fun TvShowsScreen(
                     TvShowsList(
                         uiState = uiState,
                         onClick = onClick,
-                        onLoadMore = { onIntent(TvShowsIntent.LoadNextPage) }
+                        onLoadMore = { onEvent(TvShowsEvent.LoadNextPage) }
                     )
                 }
 
@@ -99,7 +99,7 @@ private fun TvShowsScreen(
                 uiState.state == TvShowsUiState.State.ERROR -> {
                     AppErrorComponent(
                         message = stringResource(Res.string.network_error),
-                        onRetry = { onIntent(TvShowsIntent.Retry) }
+                        onRetry = { onEvent(TvShowsEvent.Retry) }
                     )
                 }
 

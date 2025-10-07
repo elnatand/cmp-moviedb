@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
-import com.elna.moviedb.feature.profile.model.ProfileIntent
+import com.elna.moviedb.feature.profile.model.ProfileEvent
 import com.elna.moviedb.feature.profile.model.ProfileUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
  * MVI Components:
  * - Model: [ProfileUiState] - Immutable state representing the UI
  * - View: ProfileScreen - Renders the state and dispatches intents
- * - Intent: [ProfileIntent] - User actions/intentions
+ * - Intent: [ProfileEvent] - User actions/intentions
  */
 class ProfileViewModel(
     private val preferencesManager: PreferencesManager
@@ -46,10 +46,10 @@ class ProfileViewModel(
      * Main entry point for handling user intents.
      * All UI interactions should go through this method.
      */
-    fun handleIntent(intent: ProfileIntent) {
+    fun onEvent(intent: ProfileEvent) {
         when (intent) {
-            is ProfileIntent.SetLanguage -> setLanguage(intent.language)
-            is ProfileIntent.SetTheme -> setTheme(intent.theme)
+            is ProfileEvent.SetLanguage -> setLanguage(intent.language)
+            is ProfileEvent.SetTheme -> setTheme(intent.theme)
         }
     }
 

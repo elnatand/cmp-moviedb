@@ -3,7 +3,7 @@ package com.elna.moviedb.feature.person.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.person.PersonRepository
-import com.elna.moviedb.feature.person.model.PersonDetailsIntent
+import com.elna.moviedb.feature.person.model.PersonDetailsEvent
 import com.elna.moviedb.feature.person.model.PersonUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
  * MVI Components:
  * - Model: [PersonUiState] - Immutable state representing the UI
  * - View: PersonDetailsScreen - Renders the state and dispatches intents
- * - Intent: [PersonDetailsIntent] - User actions/intentions
+ * - Intent: [PersonDetailsEvent] - User actions/intentions
  */
 class PersonDetailsViewModel(
     private val personId: Int,
@@ -34,9 +34,9 @@ class PersonDetailsViewModel(
      * Main entry point for handling user intents.
      * All UI interactions should go through this method.
      */
-    fun handleIntent(intent: PersonDetailsIntent) {
+    fun onEvent(intent: PersonDetailsEvent) {
         when (intent) {
-            PersonDetailsIntent.Retry -> retry()
+            PersonDetailsEvent.Retry -> retry()
         }
     }
 

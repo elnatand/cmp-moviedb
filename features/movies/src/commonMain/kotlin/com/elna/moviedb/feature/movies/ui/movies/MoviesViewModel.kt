@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.movies.MoviesRepository
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.feature.movies.model.MoviesIntent
+import com.elna.moviedb.feature.movies.model.MoviesEvent
 import com.elna.moviedb.feature.movies.model.MoviesSideEffect
 import com.elna.moviedb.feature.movies.model.MoviesUiState
 import kotlinx.coroutines.channels.Channel
@@ -18,11 +18,12 @@ import kotlinx.coroutines.launch
 
 /**
  * ViewModel following MVI (Model-View-Intent) pattern for Movies screen.
+ * Implements Android's unidirectional data flow (UDF) pattern.
  *
- * MVI Components:
+ * UDF Components:
  * - Model: [MoviesUiState] - Immutable state representing the UI
- * - View: MoviesScreen - Renders the state and dispatches intents
- * - Intent: [MoviesIntent] - User actions/intentions
+ * - View: MoviesScreen - Renders the state and dispatches events
+ * - Event: [MoviesEvent] - User actions/events
  * - Side Effects: [MoviesSideEffect] - One-time events (e.g., show snackbar)
  */
 class MoviesViewModel(
@@ -41,13 +42,13 @@ class MoviesViewModel(
     }
 
     /**
-     * Main entry point for handling user intents.
+     * Main entry point for handling user events.
      * All UI interactions should go through this method.
      */
-    fun handleIntent(intent: MoviesIntent) {
-        when (intent) {
-            MoviesIntent.LoadNextPage -> loadNextPage()
-            MoviesIntent.Retry -> retry()
+    fun onEvent(event: MoviesEvent) {
+        when (event) {
+            MoviesEvent.LoadNextPage -> loadNextPage()
+            MoviesEvent.Retry -> retry()
         }
     }
 
