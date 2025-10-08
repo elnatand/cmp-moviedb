@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppLanguage
@@ -29,8 +28,6 @@ internal class PreferencesManagerImpl(private val dataStore: DataStore<Preferenc
         val THEME = stringPreferencesKey("theme")
         val MOVIES_CURRENT_PAGE = intPreferencesKey("movies_current_page")
         val MOVIES_TOTAL_PAGES = intPreferencesKey("movies_total_pages")
-        val MOVIES_LAST_UPDATED = longPreferencesKey("movies_last_updated")
-        val MOVIES_LANGUAGE = stringPreferencesKey("movies_language")
     }
 
     /**
@@ -89,9 +86,7 @@ internal class PreferencesManagerImpl(private val dataStore: DataStore<Preferenc
         return dataStore.data.map { preferences ->
             PaginationState(
                 currentPage = preferences[PreferenceKeys.MOVIES_CURRENT_PAGE] ?: 0,
-                totalPages = preferences[PreferenceKeys.MOVIES_TOTAL_PAGES] ?: 0,
-                lastUpdated = preferences[PreferenceKeys.MOVIES_LAST_UPDATED] ?: 0L,
-                language = preferences[PreferenceKeys.MOVIES_LANGUAGE] ?: ""
+                totalPages = preferences[PreferenceKeys.MOVIES_TOTAL_PAGES] ?: 0
             )
         }
     }
@@ -103,8 +98,6 @@ internal class PreferencesManagerImpl(private val dataStore: DataStore<Preferenc
         dataStore.edit { preferences ->
             preferences[PreferenceKeys.MOVIES_CURRENT_PAGE] = state.currentPage
             preferences[PreferenceKeys.MOVIES_TOTAL_PAGES] = state.totalPages
-            preferences[PreferenceKeys.MOVIES_LAST_UPDATED] = state.lastUpdated
-            preferences[PreferenceKeys.MOVIES_LANGUAGE] = state.language
         }
     }
 

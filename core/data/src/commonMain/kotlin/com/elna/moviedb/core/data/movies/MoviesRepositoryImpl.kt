@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 /**
  * Implementation of MoviesRepository that manages movie data from remote API and local cache.
@@ -126,15 +124,11 @@ class MoviesRepositoryImpl(
         val currentLanguage = getLanguage()
         val paginationState = preferencesManager.getMoviesPaginationState().first()
 
-        // Reset pagination if language changed
-        val currentPage = if (paginationState.language != currentLanguage) 0 else paginationState.currentPage
-        val totalPages = if (paginationState.language != currentLanguage) 0 else paginationState.totalPages
-
-        if (totalPages > 0 && currentPage >= totalPages) {
+        if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
             return AppResult.Success(Unit)  // All pages loaded
         }
 
-        val nextPage = currentPage + 1
+        val nextPage = paginationState.currentPage + 1
 
         return when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, currentLanguage)) {
             is AppResult.Success -> {
@@ -143,13 +137,10 @@ class MoviesRepositoryImpl(
                 moviesLocalDataSource.insertMoviesPage(entities)
 
                 // Save pagination state to DataStore
-                @OptIn(ExperimentalTime::class)
                 preferencesManager.saveMoviesPaginationState(
                     PaginationState(
                         currentPage = nextPage,
-                        totalPages = newTotalPages,
-                        lastUpdated = Clock.System.now().epochSeconds,
-                        language = currentLanguage
+                        totalPages = newTotalPages
                     )
                 )
 
@@ -172,9 +163,7 @@ class MoviesRepositoryImpl(
         preferencesManager.saveMoviesPaginationState(
             PaginationState(
                 currentPage = 0,
-                totalPages = 0,
-                lastUpdated = 0L,
-                language = ""
+                totalPages = 0
             )
         )
 
@@ -208,8 +197,6 @@ class MoviesRepositoryImpl(
             PaginationState(
                 currentPage = 0,
                 totalPages = 0,
-                lastUpdated = 0L,
-                language = ""
             )
         )
         moviesLocalDataSource.clearAllMovies()
