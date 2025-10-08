@@ -25,6 +25,11 @@
     <string name="production_countries">بلدان الإنتاج</string>
     <string name="minutes_suffix">دقيقة</string>
 
+    <!-- Generic / Common -->
+    <string name="loading">جارٍ التحميل...</string>
+    <string name="error_loading_image">خطأ في تحميل الصورة</string>
+    <string name="image">صورة</string>
+
     <!-- TV Show Details Screen -->
     <string name="series_information">معلومات المسلسل</string>
     <string name="first_air_date">تاريخ أول عرض</string>
@@ -97,4 +102,11 @@
     <string name="theme_light">فاتح</string>
     <string name="theme_dark">داكن</string>
     <string name="theme_system">افتراضي النظام</string>
+
+    <!-- TMDB Attribution -->
+    <string name="about">حول</string>
+    <string name="data_source">مصدر البيانات</string>
+    <string name="tmdb_attribution">يستخدم هذا التطبيق TMDB API ولكنه غير معتمد أو مصدق عليه من قبل TMDB.</string>
+    <string name="powered_by_tmdb">مدعوم من</string>
+    <string name="tmdb_full_name">The Movie Database (TMDB)</string>
 </resources>

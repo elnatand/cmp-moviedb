@@ -25,6 +25,11 @@
     <string name="production_countries">Production Countries</string>
     <string name="minutes_suffix">min</string>
 
+    <!-- Generic / Common -->
+    <string name="loading">Loading...</string>
+    <string name="error_loading_image">Error loading image</string>
+    <string name="image">Image</string>
+
     <!-- TV Show Details Screen -->
     <string name="series_information">Series Information</string>
     <string name="first_air_date">First Air Date</string>
@@ -97,4 +102,11 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System Default</string>
+
+    <!-- TMDB Attribution -->
+    <string name="about">About</string>
+    <string name="data_source">Data Source</string>
+    <string name="tmdb_attribution">This application uses the TMDB API but is not endorsed, certified, or otherwise approved by TMDB.</string>
+    <string name="powered_by_tmdb">Powered by</string>
+    <string name="tmdb_full_name">The Movie Database (TMDB)</string>
 </resources>

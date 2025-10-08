@@ -25,6 +25,11 @@
     <string name="production_countries">מדינות הפקה</string>
     <string name="minutes_suffix">דק׳</string>
 
+    <!-- Generic / Common -->
+    <string name="loading">טוען...</string>
+    <string name="error_loading_image">שגיאה בטעינת התמונה</string>
+    <string name="image">תמונה</string>
+
     <!-- TV Show Details Screen -->
     <string name="series_information">פרטי הסדרה</string>
     <string name="first_air_date">תאריך שידור ראשון</string>
@@ -97,4 +102,11 @@
     <string name="theme_light">בהיר</string>
     <string name="theme_dark">כהה</string>
     <string name="theme_system">ברירת מחדל של המערכת</string>
+
+    <!-- TMDB Attribution -->
+    <string name="about">אודות</string>
+    <string name="data_source">מקור נתונים</string>
+    <string name="tmdb_attribution">אפליקציה זו משתמשת ב-TMDB API אך אינה מאושרת או מוסמכת על ידי TMDB.</string>
+    <string name="powered_by_tmdb">מופעל על ידי</string>
+    <string name="tmdb_full_name">The Movie Database (TMDB)</string>
 </resources>

@@ -25,6 +25,11 @@
     <string name="production_countries">निर्माण देश</string>
     <string name="minutes_suffix">मिनट</string>
 
+    <!-- Generic / Common -->
+    <string name="loading">लोड हो रहा है...</string>
+    <string name="error_loading_image">छवि लोड करने में त्रुटि</string>
+    <string name="image">चित्र</string>
+
     <!-- TV Show Details Screen -->
     <string name="series_information">श्रृंखला की जानकारी</string>
     <string name="first_air_date">पहली प्रसारण तिथि</string>
@@ -97,4 +102,11 @@
     <string name="theme_light">हल्का</string>
     <string name="theme_dark">गहरा</string>
     <string name="theme_system">सिस्टम डिफ़ॉल्ट</string>
+
+    <!-- TMDB Attribution -->
+    <string name="about">के बारे में</string>
+    <string name="data_source">डेटा स्रोत</string>
+    <string name="tmdb_attribution">यह एप्लिकेशन TMDB API का उपयोग करता है लेकिन TMDB द्वारा समर्थित, प्रमाणित या अनुमोदित नहीं है।</string>
+    <string name="powered_by_tmdb">द्वारा संचालित</string>
+    <string name="tmdb_full_name">The Movie Database (TMDB)</string>
 </resources>
