@@ -20,11 +20,15 @@ The project follows Clean Architecture principles with a **feature-based multi-m
 - **Movie Details**: View detailed information about individual movies
 - **TV Shows**: Explore popular TV shows with pagination support
 - **TV Show Details**: View detailed information about individual TV shows
-- **Profile**: User profile management screen
+- **Person Details**: View cast and crew member information
+- **Search**: Search functionality across movies and TV shows
+- **Profile**: User profile management with language selection
 - **Cross-platform**: Shared multi-module codebase for Android and iOS
 - **Offline Support**: Local database caching with Room for movies and movie details
+- **Persistent Pagination**: Pagination state persists across app restarts via DataStore
 - **Auto-pagination**: Automatic loading of next pages when scrolling to bottom
-- **Error Handling**: Proper error states and loading indicators
+- **Error Handling**: Distinct initial load and pagination error states with proper UI feedback
+- **Language Support**: Dynamic language switching with automatic content refresh
 - **Modern UI**: Material 3 design system with tile-based layouts
 
 ## 📁 Project Structure
@@ -40,6 +44,7 @@ cmp-moviedb/
 │   ├── common/           # Common utilities and coroutine dispatchers
 │   ├── data/             # Repository implementations and data layer
 │   ├── database/         # Room database with cross-platform drivers
+│   ├── datastore/        # DataStore preferences for pagination state & settings
 │   ├── model/            # Domain models (Movie, TvShow, AppResult)
 │   ├── network/          # Ktor HTTP client and TMDB API integration
 │   └── ui/               # Shared UI components and design system
@@ -47,7 +52,9 @@ cmp-moviedb/
 ├── features/             # Feature-specific modules
 │   ├── movies/           # Movies list and details screens
 │   ├── tv-shows/         # TV shows list and details screens
-│   └── profile/          # User profile screen
+│   ├── person/           # Person details screen (cast/crew info)
+│   ├── search/           # Search functionality
+│   └── profile/          # User profile and settings screen
 │
 ├── build-logic/          # Custom Gradle convention plugins
 ├── iosApp/               # iOS app wrapper with Xcode project
@@ -62,6 +69,7 @@ cmp-moviedb/
 - **Compose Multiplatform** - UI framework
 - **Koin** - Dependency injection
 - **Room** - Local database with SQLite bundled driver
+- **DataStore** - Typed data storage for preferences and pagination state
 - **Ktor** - HTTP client for API calls
 - **Kotlin Coroutines & Flow** - Asynchronous programming and reactive streams
 - **Coil** - Image loading with Compose integration
@@ -198,16 +206,23 @@ TMDB_API_KEY=abcd1234567890efgh
 
 ### Core Modules
 - **core:common** - AppDispatchers, shared utilities, and common DI module
-- **core:data** - Repository implementations and data source abstractions
-  - MoviesRepository & MoviesRepositoryImpl with pagination and caching
-  - TvShowRepository implementation (future enhancement)
+- **core:data** - Repository implementations with simplified architecture
+  - MoviesRepository: Offline-first with Room database caching
+  - TvShowsRepository: In-memory storage with reactive updates
+  - Clean separation: Repository provides data, ViewModel coordinates state
+  - Language-aware cache invalidation
 - **core:database** - Room database with platform-specific drivers
   - AppDatabase with MovieDao and MovieDetailsDao
   - SQLite bundled driver for cross-platform support
-  - MoviesLocalDataSource implementation
+  - MoviesLocalDataSource for offline-first movies
+- **core:datastore** - Preferences and app state management
+  - PreferencesManager for app settings (language, theme)
+  - PaginationState persistence across app restarts
+  - Platform-specific DataStore implementation
 - **core:model** - Clean architecture domain models
-  - Movie, MovieDetails, TvShow, TvShowDetails
+  - Movie, MovieDetails, TvShow, TvShowDetails, Person
   - AppResult generic wrapper for success/error handling
+  - AppLanguage enum for multi-language support
 - **core:network** - Network layer with Ktor client
   - MoviesRemoteDataSource and TvShowsRemoteDataSource
   - TMDB API integration with DTOs and mappers
@@ -219,14 +234,23 @@ TMDB_API_KEY=abcd1234567890efgh
   - Shared string resources with Hebrew translations
 
 ### Feature Modules
-- **features:movies** - Complete movies feature implementation
+- **features:movies** - Complete movies feature
   - Movies list with infinite scroll pagination
   - Movie details screen with cast and crew information
-  - ViewModels with reactive state management
-- **features:tv-shows** - TV shows feature (similar to movies)
+  - ViewModels handle loading/error states explicitly
+  - Offline-first with Room database caching
+- **features:tv-shows** - TV shows feature
   - TV shows list and details screens
-  - Reactive ViewModels with StateFlow
-- **features:profile** - User profile management
+  - In-memory caching with reactive StateFlow
+  - Similar architecture to movies feature
+- **features:person** - Person details feature
+  - Cast and crew member information
+  - Biography and filmography display
+- **features:search** - Search functionality
+  - Cross-content search (movies and TV shows)
+  - Real-time search results
+- **features:profile** - User profile and settings
+  - Language selection with automatic content refresh
   - Profile screen and ViewModel
 
 ### App Module
@@ -242,7 +266,26 @@ TMDB_API_KEY=abcd1234567890efgh
   - `moviedb.kotlin.composeMultiplatform` - Compose dependencies and resources
   - `moviedb.android.library` - Standardized Android library setup
 
-## 🏛️ Architecture Layers
+## 🏛️ Architecture Overview
+
+### Repository Pattern (Simplified)
+The project uses a simplified repository pattern where:
+- **Repository**: Passive data provider that returns `Flow<List<T>>` and handles cache invalidation
+- **ViewModel**: Active state coordinator that manages loading/error states and UI logic
+- **Clear Separation**: Repository maintains data integrity, ViewModel manages UI state
+
+### Data Storage Strategy
+- **Movies**: Offline-first with Room database for persistent caching
+- **TV Shows**: In-memory storage with reactive StateFlow updates
+- **Preferences**: DataStore for app settings and pagination state persistence
+- **Cache Invalidation**: Automatic clearing of stale data on language changes
+
+### Error Handling
+- **Initial Load Errors**: Block UI with error screen when no cached data available
+- **Pagination Errors**: Non-blocking snackbar notifications while keeping cached data visible
+- **Explicit Error States**: ViewModel explicitly handles `AppResult<Unit>` from repository operations
+
+### Architecture Layers
 
 1. **Presentation Layer** - Compose UI, ViewModels, Navigation
 2. **Domain Layer** - Business logic, Use cases (Repository interfaces)
@@ -252,8 +295,19 @@ TMDB_API_KEY=abcd1234567890efgh
 
 ### Architecture Details
 - **Multi-Module Clean Architecture** with Repository pattern across modules
-- **MVVM** using Compose ViewModels with StateFlow
+- **MVVM with Simplified Repositories**:
+  - Repository: Passive data provider returning simple `Flow<List<T>>`
+  - ViewModel: Coordinates state and handles loading/error logic
+  - Clear separation: Data layer maintains integrity, Presentation layer manages UI state
 - **Reactive UI** with Flow-based data streaming between modules
+- **Offline-First Architecture**:
+  - Movies: Room database caching with reactive updates
+  - TV Shows: In-memory storage with StateFlow
+  - Pagination state persists across app restarts via DataStore
+- **Language-Aware Cache Invalidation**: Repository observes language changes and clears stale content
+- **Error Handling Strategy**:
+  - Initial load errors: Block UI with error screen
+  - Pagination errors: Non-blocking snackbar while keeping cached data
 - **Platform-specific configs** using expect/actual pattern
 - **Feature-based modular design** with clear separation of concerns
 - **Module isolation** with well-defined APIs and dependency injection
@@ -266,6 +320,7 @@ TMDB_API_KEY=abcd1234567890efgh
   - **moviedb.android.library**: Standardizes Android module configuration
   - **Shared Android Config**: Compile/target SDK 36, min SDK 24
 - **KSP** for Room database code generation across platforms
+- **DataStore** for preferences and app state persistence
 - **Compose Resources** for shared string resources with Hebrew translations
 - **Platform-specific** configurations using expect/actual pattern
 - **Room Database** with SQLite bundled driver for offline support
@@ -312,37 +367,47 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📋 Development Roadmap
 
+### Recently Completed ✨
+- [x] Simplified repository architecture (Repository = data provider, ViewModel = state coordinator)
+- [x] DataStore integration for persistent pagination state
+- [x] Language-aware cache invalidation
+- [x] Distinct error handling for initial load vs pagination
+- [x] Person details feature with cast/crew information
+- [x] Search functionality implementation
+- [x] Profile screen with language selection
+
 ### Current Status ✅
 - [x] Multi-module Clean Architecture with KMP
-- [x] Movies feature with pagination and details
-- [x] TV Shows feature with pagination and details
+- [x] Movies feature with pagination, details, and offline support
+- [x] TV Shows feature with pagination and details (in-memory)
 - [x] Room database for offline movie storage
+- [x] DataStore for preferences and pagination state persistence
 - [x] Material 3 design system implementation
 - [x] Hebrew translations support
 - [x] Cross-platform image loading with Coil
 - [x] Reactive UI with StateFlow and Compose
+- [x] Clean error handling with proper UI feedback
 
 ### High Priority 🚀
-- [ ] Fix Java compatibility issues (downgrade to JDK 17-21)
 - [ ] Add TV Show database entities and local caching (currently only Movies cached)
-- [ ] Implement comprehensive error handling with retry mechanisms
 - [ ] Add pull-to-refresh functionality
 - [ ] Create unit tests for ViewModels and repositories
 - [ ] Add ktlint code formatting configuration
+- [ ] Enhance search with filters and advanced options
 
 ### Medium Priority 📋
-- [ ] Implement search functionality across movies and TV shows
 - [ ] Add favorites/watchlist feature with local storage
 - [ ] Enhance loading states with skeleton screens
-- [ ] Add more comprehensive movie/TV show details (reviews, videos)
+- [ ] Add more comprehensive movie/TV show details (reviews, videos, similar content)
 - [ ] Implement network connectivity detection
 - [ ] Add proguard/R8 configuration for release builds
+- [ ] Performance optimizations for pagination
 
 ### Low Priority 💡
 - [ ] Add dark/light theme toggle
-- [ ] Implement offline-first architecture with better sync strategies
 - [ ] Add user authentication and personalized recommendations
 - [ ] Performance optimizations for large datasets
 - [ ] Add accessibility improvements
 - [ ] Implement deep linking support
 - [ ] Add CI/CD pipeline with GitHub Actions
+- [ ] Add analytics and crash reporting
