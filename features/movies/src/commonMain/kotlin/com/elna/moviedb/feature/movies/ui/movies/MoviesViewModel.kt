@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
  * - Model: [MoviesUiState] - Immutable state representing the UI
  * - View: MoviesScreen - Renders the state and dispatches events
  * - Event: [MoviesEvent] - User actions/events
- * - Side Effects: [MoviesUiAction] - One-time events (e.g., show snackbar)
+ * - UI actions: [MoviesUiAction] - One-time events (e.g., show snackbar)
  */
 class MoviesViewModel(
     private val moviesRepository: MoviesRepository
