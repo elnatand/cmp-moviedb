@@ -1,17 +1,18 @@
 # CMP MovieDB
 
-A **multi-module** Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform that displays movies and TV shows information. The app targets both Android and iOS platforms with shared business logic and UI components using a modular architecture approach.
+A Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform that displays movies and TV shows information. The app targets both Android and iOS platforms with shared business logic and UI components using a modular architecture approach.
 
 ## 🏗️ Architecture
 
 The project follows Clean Architecture principles with a **feature-based multi-module architecture**:
 
 - **Multi-Module Design**: Separated into core modules and feature modules for scalability
-- **MVVM Pattern**: ViewModels handle UI state and business logic
+- **MVI Pattern**: Model-View-Intent with unidirectional data flow
 - **Repository Pattern**: Data layer abstraction across modules
 - **Dependency Injection**: Koin for DI coordination across all modules
 - **Compose Multiplatform**: Shared UI components in dedicated modules
 - **Room Database**: Local database management with dedicated database module
+- **DataStore**: Typed data storage for preferences and pagination state persistence
 
 ## 📱 Features
 
@@ -29,6 +30,7 @@ The project follows Clean Architecture principles with a **feature-based multi-m
 - **Auto-pagination**: Automatic loading of next pages when scrolling to bottom
 - **Error Handling**: Distinct initial load and pagination error states with proper UI feedback
 - **Language Support**: Dynamic language switching with automatic content refresh
+- **Dark Mode Support**: System-based dark/light theme with Material 3
 - **Modern UI**: Material 3 design system with tile-based layouts
 
 ## 📁 Project Structure
@@ -80,7 +82,6 @@ cmp-moviedb/
 
 ### Android
 - **Jetpack Compose** - UI toolkit
-- **Activity Compose** - Activity integration
 
 ### iOS
 - **SwiftUI Integration** - iOS native integration
@@ -90,7 +91,7 @@ cmp-moviedb/
 ### Prerequisites
 - **Android Studio** - Ladybug or later with KMP plugin
 - **Xcode 15+** (for iOS development)
-- **JDK 17-21** (Java 25 has compatibility issues)
+- **JDK 17-21** 
 - **Kotlin Multiplatform Mobile plugin**
 - **TMDB API Key** (see setup instructions below)
 - **Minimum SDK**: Android 24, iOS 13+
@@ -295,7 +296,10 @@ The project uses a simplified repository pattern where:
 
 ### Architecture Details
 - **Multi-Module Clean Architecture** with Repository pattern across modules
-- **MVVM with Simplified Repositories**:
+- **MVI (Model-View-Intent) with Simplified Repositories**:
+  - Model: Immutable UI state representing the screen
+  - View: Compose UI that renders state and dispatches events
+  - Intent: User events handled via `onEvent()`
   - Repository: Passive data provider returning simple `Flow<List<T>>`
   - ViewModel: Coordinates state and handles loading/error logic
   - Clear separation: Data layer maintains integrity, Presentation layer manages UI state
@@ -364,6 +368,13 @@ The project uses a simplified repository pattern where:
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🎬 TMDB Attribution
+
+This application uses the TMDB API but is not endorsed, certified, or otherwise approved by TMDB.
+
+### Data Source
+All movie and TV show data is provided by [The Movie Database (TMDB)](https://www.themoviedb.org).
 
 ## 📋 Development Roadmap
 
