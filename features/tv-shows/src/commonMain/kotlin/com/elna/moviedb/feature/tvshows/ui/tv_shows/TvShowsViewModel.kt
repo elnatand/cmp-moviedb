@@ -23,7 +23,7 @@ import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
  * - Model: [TvShowsUiState] - Immutable state representing the UI
  * - View: TvShowsScreen - Renders the state and dispatches events
  * - Event: [TvShowsEvent] - User actions/events
- * - Side Effects: [TvShowsUiAction] - One-time events (e.g., show snackbar)
+ * - UI Action: [TvShowsUiAction] - One-time events (e.g., show snackbar)
  */
 class TvShowsViewModel(
     private val tvShowsRepository: TvShowsRepository
@@ -37,7 +37,6 @@ class TvShowsViewModel(
 
     init {
         observeTvShows()
-        observePaginationErrors()
     }
 
     /**
@@ -53,18 +52,12 @@ class TvShowsViewModel(
 
     private fun observeTvShows() {
         viewModelScope.launch {
-            tvShowsRepository.observeAllTvShows().collect { response ->
-                when (response) {
-                    is AppResult.Error -> _uiState.update { currentState ->
-                        currentState.copy(state = TvShowsUiState.State.ERROR)
-                    }
-
-                    is AppResult.Success -> _uiState.update { currentState ->
-                        currentState.copy(
-                            state = TvShowsUiState.State.SUCCESS,
-                            tvShows = response.data
-                        )
-                    }
+            tvShowsRepository.observeAllTvShows().collect { tvShows ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        state = if (tvShows.isEmpty()) TvShowsUiState.State.LOADING else TvShowsUiState.State.SUCCESS,
+                        tvShows = tvShows
+                    )
                 }
             }
         }
@@ -72,21 +65,33 @@ class TvShowsViewModel(
 
     private fun loadNextPage() {
         viewModelScope.launch {
-            tvShowsRepository.loadNextPage()
-        }
-    }
-
-    private fun observePaginationErrors() {
-        viewModelScope.launch {
-            tvShowsRepository.paginationErrors.collect { errorMessage ->
-                _uiAction.send(TvShowsUiAction.ShowPaginationError(errorMessage))
+            when (val result = tvShowsRepository.loadNextPage()) {
+                is AppResult.Error -> {
+                    // If we have TV shows, show snackbar; otherwise show error screen
+                    if (_uiState.value.tvShows.isNotEmpty()) {
+                        _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
+                    } else {
+                        _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
+                    }
+                }
+                is AppResult.Success -> {
+                    // Success - TV shows are already updated via observeTvShows()
+                }
             }
         }
     }
 
     private fun retry() {
         viewModelScope.launch {
-            tvShowsRepository.loadNextPage()
+            _uiState.update { it.copy(state = TvShowsUiState.State.LOADING) }
+            when (val result = tvShowsRepository.loadNextPage()) {
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
+                }
+                is AppResult.Success -> {
+                    // Success - state will be updated via observeTvShows()
+                }
+            }
         }
     }
 }

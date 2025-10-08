@@ -11,14 +11,9 @@ import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -47,23 +42,7 @@ class TvShowRepositoryImpl(
     private var currentPage = 0
     private var totalPages = 0
 
-    private val _tvShows = MutableStateFlow<List<TvShow>>(emptyList())
-    private val _initialLoadError = MutableStateFlow<AppResult.Error?>(null)
-
-    /**
-     * SharedFlow for pagination errors with extraBufferCapacity = 1.
-     *
-     * extraBufferCapacity = 1 ensures that if an error is emitted before the UI subscriber
-     * is ready to collect, the error won't be lost. Without this, emit() could suspend
-     * indefinitely if there are no active collectors, potentially blocking the repository.
-     */
-    private val _paginationError = MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 1)
-
-    /**
-     * Exposes pagination errors as a SharedFlow for UI consumption.
-     * Emits error messages when loading additional pages fails.
-     */
-    override val paginationErrors: SharedFlow<String> = _paginationError.asSharedFlow()
+    private val tvShows = MutableStateFlow<List<TvShow>>(emptyList())
 
     /**
      * Application-scoped coroutine scope that lives for the entire app lifetime.
@@ -80,137 +59,70 @@ class TvShowRepositoryImpl(
                 .collect {
                     currentPage = 0
                     totalPages = 0
-                    _initialLoadError.value = null
-                    _tvShows.value = emptyList()
+                    tvShows.value = emptyList()
                     loadNextPage()
                 }
         }
     }
 
     /**
-     * Observes all TV shows from in-memory storage with reactive error handling.
-     *
-     * This function returns a Flow that combines in-memory TV show data with error state.
-     * Unlike the Movies repository which uses Room database for persistence, this uses
-     * in-memory storage that is cleared when the app is closed.
-     *
-     * Behavior:
-     * 1. In-memory data is shown when available
-     * 2. Initial load errors are shown only when memory is empty
-     * 3. Pagination errors are emitted separately via paginationErrors flow
-     * 4. The flow does NOT emit when memory is empty and no error (initial loading state)
-     *
-     * @return Flow<AppResult<List<TvShow>>> A reactive flow that emits:
-     *   - AppResult.Success with in-memory TV shows when data is available
-     *   - AppResult.Error only when initial load fails and memory is empty
-     *   - Nothing when memory is empty and loading (ViewModel keeps LOADING state)
-     *
-     * Note: Automatically triggers initial data loading if memory is empty.
+     * Observes all TV shows from in-memory storage.
+     * Returns a flow of TV shows from the in-memory cache.
+     * Automatically triggers initial load if cache is empty.
      */
-    override suspend fun observeAllTvShows(): Flow<AppResult<List<TvShow>>> {
-        // Load initial data if empty
-        if (_tvShows.value.isEmpty()) {
-            loadNextPage()
+    override suspend fun observeAllTvShows(): Flow<List<TvShow>> {
+        // Load initial data if empty (non-blocking)
+        repositoryScope.launch {
+            if (tvShows.value.isEmpty()) {
+                loadNextPage()
+            }
         }
 
-        return combine(
-            _tvShows,
-            _initialLoadError
-        ) { tvShows, error ->
-            when {
-                // Always show in-memory data if available (even with pagination errors)
-                tvShows.isNotEmpty() -> AppResult.Success(tvShows)
-
-                // Show error only if memory is empty (initial load failed)
-                error != null -> error
-
-                // Memory is empty and loading - return null to filter out this emission
-                else -> null
-            }
-        }.filterNotNull() // Only emit when we have data or error, not during initial loading
+        return tvShows
     }
 
     /**
-     * Loads the next page of TV shows from the remote API with proper error handling.
+     * Loads the next page of TV shows from the remote API.
      *
-     * This function handles pagination by:
-     * 1. Determining if this is an initial load or pagination
-     * 2. Fetching data from remote API
-     * 3. On success: updating total pages, appending data to memory, clearing error states
-     * 4. On error:
-     *    - Initial load (page 0): Sets _initialLoadError to block UI with error screen
-     *    - Pagination: Emits error via _paginationError for snackbar display
-     *
-     * Error handling strategy:
-     * - Initial load errors show error screen when memory is empty
-     * - Pagination errors are non-blocking (show snackbar while keeping in-memory data)
-     *
-     * Side effects:
-     * - Updates currentPage and totalPages on successful load
-     * - Stores new TV show data in memory (not persisted to disk)
-     * - Emits appropriate error based on context (initial vs pagination)
+     * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
-    override suspend fun loadNextPage() {
-
+    override suspend fun loadNextPage(): AppResult<Unit> {
         if (totalPages > 0 && currentPage >= totalPages) {
-            return  // All pages loaded
+            return AppResult.Success(Unit)  // All pages loaded
         }
 
         val nextPage = currentPage + 1
-        val isInitialLoad = currentPage == 0
 
-        when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
+        return when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 totalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { it.toDomain() }
-                _tvShows.value = _tvShows.value + newTvShows
+                tvShows.value = tvShows.value + newTvShows
                 currentPage = nextPage
 
-                // Clear initial error on successful load
-                if (isInitialLoad) {
-                    _initialLoadError.value = null
-                }
+                AppResult.Success(Unit)
             }
 
-            is AppResult.Error -> {
-                if (isInitialLoad) {
-                    // Initial load failed - block UI with error screen
-                    _initialLoadError.value = result
-                } else {
-                    // Pagination failed - emit non-blocking error for snackbar
-                    _paginationError.emit(result.message)
-                }
-            }
+            is AppResult.Error -> result
         }
     }
 
     /**
      * Refreshes the TV show data by resetting pagination state and loading fresh data.
      *
-     * This function performs a complete refresh by:
-     * 1. Resetting pagination state (currentPage = 0, totalPages = 0)
-     * 2. Clearing any previous error state and in-memory data
-     * 3. Loading the first page of TV shows via loadNextPage()
-     * 4. Returning the result based on the loading outcome
-     *
      * @return AppResult<List<TvShow>> Either:
      *   - AppResult.Success with the refreshed list of TV shows if successful
      *   - AppResult.Error if the refresh operation failed
-     *
-     * Note: This function immediately returns the result of the refresh operation.
-     * For reactive updates, use observeAllTvShows() which will automatically
-     * reflect the refreshed state.
      */
     override suspend fun refresh(): AppResult<List<TvShow>> {
         currentPage = 0
         totalPages = 0
-        _initialLoadError.value = null
-        _tvShows.value = emptyList()
+        tvShows.value = emptyList()
 
-        loadNextPage()
-
-        // Return result based on loading outcome
-        return _initialLoadError.value ?: AppResult.Success(_tvShows.value)
+        return when (val result = loadNextPage()) {
+            is AppResult.Success -> AppResult.Success(tvShows.value)
+            is AppResult.Error -> result
+        }
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
