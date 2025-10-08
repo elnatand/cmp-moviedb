@@ -5,6 +5,7 @@ import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
@@ -22,6 +23,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * Implementation of MoviesRepository that manages movie data from remote API and local cache.
@@ -41,9 +44,6 @@ class MoviesRepositoryImpl(
     private val preferencesManager: PreferencesManager,
     private val appDispatchers: AppDispatchers
 ) : MoviesRepository {
-
-    private var currentPage = 0
-    private var totalPages = 0
 
     private val _initialLoadError = MutableStateFlow<AppResult.Error?>(null)
 
@@ -166,10 +166,12 @@ class MoviesRepositoryImpl(
      * Loads the next page of movies from the remote API with offline-first error handling.
      *
      * This function handles pagination by:
-     * 1. Determining if this is an initial load or pagination
-     * 2. Fetching data from remote API
-     * 3. On success: updating total pages, caching data locally, clearing error states
-     * 4. On error:
+     * 1. Retrieving pagination state from DataStore (survives app restarts)
+     * 2. Validating language consistency (resets if language changed)
+     * 3. Determining if this is an initial load or pagination
+     * 4. Fetching data from remote API
+     * 5. On success: updating pagination state in DataStore, caching data locally, clearing error states
+     * 6. On error:
      *    - Initial load (page 0): Sets _initialLoadError to block UI
      *    - Pagination: Emits error via _paginationError for snackbar display
      *
@@ -178,11 +180,17 @@ class MoviesRepositoryImpl(
      * - Pagination errors are non-blocking (show snackbar while keeping cached data)
      *
      * Side effects:
-     * - Updates currentPage and totalPages on successful load
+     * - Updates pagination state in DataStore on successful load
      * - Caches new movie data in local storage
      * - Emits appropriate error based on context (initial vs pagination)
      */
     override suspend fun loadNextPage() {
+        val currentLanguage = getLanguage()
+        val paginationState = preferencesManager.getMoviesPaginationState().first()
+
+        // Reset pagination if language changed
+        val currentPage = if (paginationState.language != currentLanguage) 0 else paginationState.currentPage
+        val totalPages = if (paginationState.language != currentLanguage) 0 else paginationState.totalPages
 
         if (totalPages > 0 && currentPage >= totalPages) {
             return  // All pages loaded
@@ -191,12 +199,22 @@ class MoviesRepositoryImpl(
         val nextPage = currentPage + 1
         val isInitialLoad = currentPage == 0
 
-        when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, getLanguage())) {
+        when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, currentLanguage)) {
             is AppResult.Success -> {
-                totalPages = result.data.totalPages
-                val entities = result.data.results.map { it.asEntity(nextPage) }
+                val newTotalPages = result.data.totalPages
+                val entities = result.data.results.map { it.asEntity() }
                 moviesLocalDataSource.insertMoviesPage(entities)
-                currentPage = nextPage
+
+                // Save pagination state to DataStore
+                @OptIn(ExperimentalTime::class)
+                preferencesManager.saveMoviesPaginationState(
+                    PaginationState(
+                        currentPage = nextPage,
+                        totalPages = newTotalPages,
+                        lastUpdated = Clock.System.now().epochSeconds,
+                        language = currentLanguage
+                    )
+                )
 
                 // Clear initial error on successful load
                 if (isInitialLoad) {
@@ -220,7 +238,7 @@ class MoviesRepositoryImpl(
      * Refreshes the movie data by resetting pagination state and loading fresh data.
      *
      * This function performs a complete refresh by:
-     * 1. Resetting pagination state (currentPage = 0, totalPages = 0)
+     * 1. Resetting pagination state in DataStore (currentPage = 0, totalPages = 0)
      * 2. Clearing any previous error states
      * 3. Loading the first page of movies via loadNextPage()
      * 4. Returning the result based on the loading outcome
@@ -234,9 +252,15 @@ class MoviesRepositoryImpl(
      * reflect the refreshed state.
      */
     override suspend fun refresh(): AppResult<List<Movie>> {
-
-        currentPage = 0
-        totalPages = 0
+        // Reset pagination state in DataStore
+        preferencesManager.saveMoviesPaginationState(
+            com.elna.moviedb.core.datastore.model.PaginationState(
+                currentPage = 0,
+                totalPages = 0,
+                lastUpdated = 0L,
+                language = ""
+            )
+        )
         _initialLoadError.value = null
 
         loadNextPage()
@@ -264,8 +288,15 @@ class MoviesRepositoryImpl(
      * are re-fetched in the new language.
      */
     override suspend fun clearMovies() {
-        currentPage = 0
-        totalPages = 0
+        // Reset pagination state in DataStore
+        preferencesManager.saveMoviesPaginationState(
+            PaginationState(
+                currentPage = 0,
+                totalPages = 0,
+                lastUpdated = 0L,
+                language = ""
+            )
+        )
         _initialLoadError.value = null
         moviesLocalDataSource.clearAllMovies()
     }
