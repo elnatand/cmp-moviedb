@@ -38,7 +38,6 @@ class MoviesViewModel(
 
     init {
         observeMovies()
-        observePaginationErrors()
     }
 
     /**
@@ -54,40 +53,46 @@ class MoviesViewModel(
 
     private fun observeMovies() {
         viewModelScope.launch {
-            moviesRepository.observeAllMovies().collect { response ->
-                when (response) {
-                    is AppResult.Error -> _uiState.update { currentState ->
-                        currentState.copy(state = MoviesUiState.State.ERROR)
-                    }
-
-                    is AppResult.Success -> _uiState.update { currentState ->
-                        currentState.copy(
-                            state = MoviesUiState.State.SUCCESS,
-                            movies = response.data
-                        )
-                    }
+            moviesRepository.observeAllMovies().collect { movies ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        state = if (movies.isEmpty()) MoviesUiState.State.LOADING else MoviesUiState.State.SUCCESS,
+                        movies = movies
+                    )
                 }
-            }
-        }
-    }
-
-    private fun observePaginationErrors() {
-        viewModelScope.launch {
-            moviesRepository.paginationErrors.collect { errorMessage ->
-                _uiAction.send(MoviesUiAction.ShowPaginationError(errorMessage))
             }
         }
     }
 
     private fun loadNextPage() {
         viewModelScope.launch {
-            moviesRepository.loadNextPage()
+            when (val result = moviesRepository.loadNextPage()) {
+                is AppResult.Error -> {
+                    // If we have movies, show snackbar; otherwise show error screen
+                    if (_uiState.value.movies.isNotEmpty()) {
+                        _uiAction.send(MoviesUiAction.ShowPaginationError(result.message))
+                    } else {
+                        _uiState.update { it.copy(state = MoviesUiState.State.ERROR) }
+                    }
+                }
+                is AppResult.Success -> {
+                    // Success - movies are already updated via observeMovies()
+                }
+            }
         }
     }
 
     private fun retry() {
         viewModelScope.launch {
-            moviesRepository.loadNextPage()
+            _uiState.update { it.copy(state = MoviesUiState.State.LOADING) }
+            when (val result = moviesRepository.loadNextPage()) {
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(state = MoviesUiState.State.ERROR) }
+                }
+                is AppResult.Success -> {
+                    // Success - state will be updated via observeMovies()
+                }
+            }
         }
     }
 }
