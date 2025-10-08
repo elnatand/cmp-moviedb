@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
-import com.elna.moviedb.feature.tvshows.model.TvShowsSideEffect
+import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 
 /**
@@ -23,7 +23,7 @@ import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
  * - Model: [TvShowsUiState] - Immutable state representing the UI
  * - View: TvShowsScreen - Renders the state and dispatches events
  * - Event: [TvShowsEvent] - User actions/events
- * - Side Effects: [TvShowsSideEffect] - One-time events (e.g., show snackbar)
+ * - Side Effects: [TvShowsUiAction] - One-time events (e.g., show snackbar)
  */
 class TvShowsViewModel(
     private val tvShowsRepository: TvShowsRepository
@@ -32,8 +32,8 @@ class TvShowsViewModel(
     private val _uiState = MutableStateFlow(TvShowsUiState(state = TvShowsUiState.State.LOADING))
     val uiState: StateFlow<TvShowsUiState> = _uiState.asStateFlow()
 
-    private val _sideEffect = Channel<TvShowsSideEffect>(Channel.BUFFERED)
-    val sideEffect = _sideEffect.receiveAsFlow()
+    private val _uiAction = Channel<TvShowsUiAction>(Channel.BUFFERED)
+    val uiAction = _uiAction.receiveAsFlow()
 
     init {
         observeTvShows()
@@ -79,7 +79,7 @@ class TvShowsViewModel(
     private fun observePaginationErrors() {
         viewModelScope.launch {
             tvShowsRepository.paginationErrors.collect { errorMessage ->
-                _sideEffect.send(TvShowsSideEffect.ShowPaginationError(errorMessage))
+                _uiAction.send(TvShowsUiAction.ShowPaginationError(errorMessage))
             }
         }
     }

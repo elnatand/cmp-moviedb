@@ -27,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MoviesEvent
-import com.elna.moviedb.feature.movies.model.MoviesSideEffect
+import com.elna.moviedb.feature.movies.model.MoviesUiAction
 import com.elna.moviedb.feature.movies.model.MoviesUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.network_error
@@ -48,7 +48,7 @@ fun MoviesScreen(
         uiState = uiState,
         onClick = onClick,
         onEvent = viewModel::onEvent,
-        sideEffects = viewModel.sideEffect
+        uiActions = viewModel.uiAction
     )
 }
 
@@ -59,15 +59,15 @@ private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
     onEvent: (MoviesEvent) -> Unit,
-    sideEffects: Flow<MoviesSideEffect>
+    uiActions: Flow<MoviesUiAction>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Handle side effects (one-time events)
+    // Handle UI actions (one-time events)
     LaunchedEffect(Unit) {
-        sideEffects.collect { effect ->
+        uiActions.collect { effect ->
             when (effect) {
-                is MoviesSideEffect.ShowPaginationError -> {
+                is MoviesUiAction.ShowPaginationError -> {
                     snackbarHostState.showSnackbar(
                         message = effect.message,
                         withDismissAction = true

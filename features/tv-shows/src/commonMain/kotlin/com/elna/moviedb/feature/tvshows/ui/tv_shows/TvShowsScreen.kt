@@ -26,7 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
-import com.elna.moviedb.feature.tvshows.model.TvShowsSideEffect
+import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.network_error
@@ -46,7 +46,7 @@ fun TvShowsScreen(
         uiState = uiState,
         onClick = onClick,
         onEvent = viewModel::onEvent,
-        sideEffects = viewModel.sideEffect
+        uiActions = viewModel.uiAction
     )
 }
 
@@ -56,15 +56,15 @@ private fun TvShowsScreen(
     uiState: TvShowsUiState,
     onClick: (id: Int, title: String) -> Unit,
     onEvent: (TvShowsEvent) -> Unit,
-    sideEffects: Flow<TvShowsSideEffect>
+    uiActions: Flow<TvShowsUiAction>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Handle side effects (one-time events)
+    // Handle UI actions (one-time events)
     LaunchedEffect(Unit) {
-        sideEffects.collect { effect ->
+        uiActions.collect { effect ->
             when (effect) {
-                is TvShowsSideEffect.ShowPaginationError -> {
+                is TvShowsUiAction.ShowPaginationError -> {
                     snackbarHostState.showSnackbar(
                         message = effect.message,
                         withDismissAction = true
