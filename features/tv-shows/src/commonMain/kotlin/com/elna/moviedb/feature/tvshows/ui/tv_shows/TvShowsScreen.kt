@@ -23,13 +23,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
+import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.network_error
 import com.elna.moviedb.resources.popular_tv_shows
-import com.elna.moviedb.resources.tv_shows
-import org.jetbrains.compose.resources.getString
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -43,7 +45,8 @@ fun TvShowsScreen(
     TvShowsScreen(
         uiState = uiState,
         onClick = onClick,
-        onLoadNextPage = viewModel::loadNextPage
+        onEvent = viewModel::onEvent,
+        uiActions = viewModel.uiAction
     )
 }
 
@@ -52,9 +55,24 @@ fun TvShowsScreen(
 private fun TvShowsScreen(
     uiState: TvShowsUiState,
     onClick: (id: Int, title: String) -> Unit,
-    onLoadNextPage: () -> Unit
+    onEvent: (TvShowsEvent) -> Unit,
+    uiActions: Flow<TvShowsUiAction>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Handle UI actions (one-time events)
+    LaunchedEffect(Unit) {
+        uiActions.collect { effect ->
+            when (effect) {
+                is TvShowsUiAction.ShowPaginationError -> {
+                    snackbarHostState.showSnackbar(
+                        message = effect.message,
+                        withDismissAction = true
+                    )
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -67,24 +85,27 @@ private fun TvShowsScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            if (uiState.tvShows.isNotEmpty()) {
-                TvShowsList(
-                    uiState = uiState,
-                    onClick = onClick,
-                    onLoadNextPage = onLoadNextPage
-                )
-            }
-
-            if (uiState.state == TvShowsUiState.State.LOADING) {
-                AppLoader()
-            }
-
-            // Show error as SnackBar
-            LaunchedEffect(uiState.state) {
-                if (uiState.state == TvShowsUiState.State.ERROR) {
-                    snackbarHostState.showSnackbar(
-                        message = getString(Res.string.network_error)
+            when {
+                // Show in-memory data if available
+                uiState.tvShows.isNotEmpty() -> {
+                    TvShowsList(
+                        uiState = uiState,
+                        onClick = onClick,
+                        onLoadMore = { onEvent(TvShowsEvent.LoadNextPage) }
                     )
+                }
+
+                // Show error screen (only triggered when repository emits error)
+                uiState.state == TvShowsUiState.State.ERROR -> {
+                    AppErrorComponent(
+                        message = stringResource(Res.string.network_error),
+                        onRetry = { onEvent(TvShowsEvent.Retry) }
+                    )
+                }
+
+                // Show loader during initial loading (repository hasn't emitted yet)
+                uiState.state == TvShowsUiState.State.LOADING -> {
+                    AppLoader()
                 }
             }
 
@@ -100,7 +121,7 @@ private fun TvShowsScreen(
 private fun TvShowsList(
     uiState: TvShowsUiState,
     onClick: (id: Int, title: String) -> Unit,
-    onLoadNextPage: () -> Unit
+    onLoadMore: () -> Unit
 ) {
     val gridState = rememberLazyGridState()
 
@@ -116,7 +137,7 @@ private fun TvShowsList(
 
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
-            onLoadNextPage()
+            onLoadMore()
         }
     }
 

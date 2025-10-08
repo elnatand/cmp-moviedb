@@ -101,7 +101,7 @@ fun TvShowDetailsScreen(
 
     TvShowDetailsScreen(
         uiState = uiState,
-        onRetry = viewModel::retry
+        onRetry = { viewModel.onEvent(com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent.Retry) }
     )
 }
 

@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface MoviesRepository {
 
-    suspend fun observeAllMovies(): Flow<AppResult<List<Movie>>>
+    suspend fun observeAllMovies(): Flow<List<Movie>>
     suspend fun getMovieDetails(movieId: Int): MovieDetails
-    suspend fun loadNextPage()
+    suspend fun loadNextPage(): AppResult<Unit>
     suspend fun refresh(): AppResult<List<Movie>>
     suspend fun clearMovies()
 }

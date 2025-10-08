@@ -24,12 +24,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.feature.movies.model.MoviesEvent
+import com.elna.moviedb.feature.movies.model.MoviesUiAction
 import com.elna.moviedb.feature.movies.model.MoviesUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.network_error
 import com.elna.moviedb.resources.popular_movies
-import org.jetbrains.compose.resources.getString
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -44,7 +47,8 @@ fun MoviesScreen(
     MoviesScreen(
         uiState = uiState,
         onClick = onClick,
-        onLoadNextPage = viewModel::loadNextPage
+        onEvent = viewModel::onEvent,
+        uiActions = viewModel.uiAction
     )
 }
 
@@ -54,9 +58,24 @@ fun MoviesScreen(
 private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
-    onLoadNextPage: () -> Unit
+    onEvent: (MoviesEvent) -> Unit,
+    uiActions: Flow<MoviesUiAction>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Handle UI actions (one-time events)
+    LaunchedEffect(Unit) {
+        uiActions.collect { effect ->
+            when (effect) {
+                is MoviesUiAction.ShowPaginationError -> {
+                    snackbarHostState.showSnackbar(
+                        message = effect.message,
+                        withDismissAction = true
+                    )
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -69,24 +88,27 @@ private fun MoviesScreen(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            if (uiState.movies.isNotEmpty()) {
-                MoviesList(
-                    uiState = uiState,
-                    onClick = onClick,
-                    onLoadNextPage = onLoadNextPage
-                )
-            }
-
-            if (uiState.state == MoviesUiState.State.LOADING) {
-                AppLoader()
-            }
-
-            // Show error as SnackBar
-            LaunchedEffect(uiState.state) {
-                if (uiState.state == MoviesUiState.State.ERROR) {
-                    snackbarHostState.showSnackbar(
-                        message = getString(Res.string.network_error)
+            when {
+                // Show cached data if available (offline-first)
+                uiState.movies.isNotEmpty() -> {
+                    MoviesList(
+                        uiState = uiState,
+                        onClick = onClick,
+                        onLoadMore = { onEvent(MoviesEvent.LoadNextPage) }
                     )
+                }
+
+                // Show error screen only when cache is empty and initial load failed
+                uiState.state == MoviesUiState.State.ERROR -> {
+                    AppErrorComponent(
+                        message = stringResource(Res.string.network_error),
+                        onRetry = { onEvent(MoviesEvent.Retry) }
+                    )
+                }
+
+                // Show loader when initially loading (no cached data yet)
+                uiState.state == MoviesUiState.State.LOADING -> {
+                    AppLoader()
                 }
             }
 
@@ -103,7 +125,7 @@ private fun MoviesScreen(
 private fun MoviesList(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
-    onLoadNextPage: () -> Unit
+    onLoadMore: () -> Unit
 ) {
 
     val gridState = rememberLazyGridState()
@@ -120,7 +142,7 @@ private fun MoviesList(
 
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
-            onLoadNextPage()
+            onLoadMore()
         }
     }
 

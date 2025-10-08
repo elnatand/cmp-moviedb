@@ -2,51 +2,96 @@ package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
+import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 
+/**
+ * ViewModel following MVI (Model-View-Intent) pattern for TV Shows screen.
+ * Implements Android's unidirectional data flow (UDF) pattern.
+ *
+ * UDF Components:
+ * - Model: [TvShowsUiState] - Immutable state representing the UI
+ * - View: TvShowsScreen - Renders the state and dispatches events
+ * - Event: [TvShowsEvent] - User actions/events
+ * - UI Action: [TvShowsUiAction] - One-time events (e.g., show snackbar)
+ */
 class TvShowsViewModel(
     private val tvShowsRepository: TvShowsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TvShowsUiState(state = TvShowsUiState.State.LOADING))
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<TvShowsUiState> = _uiState.asStateFlow()
+
+    private val _uiAction = Channel<TvShowsUiAction>(Channel.BUFFERED)
+    val uiAction = _uiAction.receiveAsFlow()
 
     init {
         observeTvShows()
     }
 
+    /**
+     * Main entry point for handling user events.
+     * All UI interactions should go through this method.
+     */
+    fun onEvent(event: TvShowsEvent) {
+        when (event) {
+            TvShowsEvent.LoadNextPage -> loadNextPage()
+            TvShowsEvent.Retry -> retry()
+        }
+    }
+
     private fun observeTvShows() {
         viewModelScope.launch {
-            tvShowsRepository.observeAllTvShows().collect { response ->
-                when (response) {
-                    is AppResult.Error -> _uiState.update { currentState ->
-                        currentState.copy(state = TvShowsUiState.State.ERROR)
-                    }
-
-                    is AppResult.Success -> _uiState.update { currentState ->
-                        currentState.copy(
-                            state = TvShowsUiState.State.SUCCESS,
-                            tvShows = response.data
-                        )
-                    }
+            tvShowsRepository.observeAllTvShows().collect { tvShows ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        state = if (tvShows.isEmpty()) TvShowsUiState.State.LOADING else TvShowsUiState.State.SUCCESS,
+                        tvShows = tvShows
+                    )
                 }
             }
         }
     }
 
-    fun loadNextPage() {
-        _uiState.update { state ->
-            state.copy(state = TvShowsUiState.State.LOADING)
-        }
-
+    private fun loadNextPage() {
         viewModelScope.launch {
-            tvShowsRepository.loadNextPage()
+            when (val result = tvShowsRepository.loadNextPage()) {
+                is AppResult.Error -> {
+                    // If we have TV shows, show snackbar; otherwise show error screen
+                    if (_uiState.value.tvShows.isNotEmpty()) {
+                        _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
+                    } else {
+                        _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
+                    }
+                }
+                is AppResult.Success -> {
+                    // Success - TV shows are already updated via observeTvShows()
+                }
+            }
+        }
+    }
+
+    private fun retry() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(state = TvShowsUiState.State.LOADING) }
+            when (val result = tvShowsRepository.loadNextPage()) {
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
+                }
+                is AppResult.Success -> {
+                    // Success - state will be updated via observeTvShows()
+                }
+            }
         }
     }
 }

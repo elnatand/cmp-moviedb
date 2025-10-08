@@ -46,14 +46,13 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ProfileScreen() {
     val viewModel = koinViewModel<ProfileViewModel>()
-    val selectedLanguage by viewModel.selectedLanguage.collectAsStateWithLifecycle()
-    val selectedTheme by viewModel.selectedTheme.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ProfileScreen(
-        selectedLanguage = selectedLanguage,
-        selectedTheme = selectedTheme,
-        onLanguageSelected = viewModel::setLanguage,
-        onThemeSelected = viewModel::setTheme
+        selectedLanguage = uiState.selectedLanguageCode,
+        selectedTheme = uiState.selectedThemeValue,
+        onLanguageSelected = { viewModel.onEvent(com.elna.moviedb.feature.profile.model.ProfileEvent.SetLanguage(it)) },
+        onThemeSelected = { viewModel.onEvent(com.elna.moviedb.feature.profile.model.ProfileEvent.SetTheme(it)) }
     )
 }
 

@@ -6,6 +6,7 @@ import com.elna.moviedb.core.data.search.SearchRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.model.SearchResultItem
+import com.elna.moviedb.feature.search.model.SearchEvent
 import com.elna.moviedb.feature.search.model.SearchUiState
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel following MVI (Model-View-Intent) pattern for Search screen.
+ *
+ * MVI Components:
+ * - Model: [SearchUiState] - Immutable state representing the UI
+ * - View: SearchScreen - Renders the state and dispatches intents
+ * - Intent: [SearchEvent] - User actions/intentions
+ */
 @OptIn(FlowPreview::class)
 class SearchViewModel(
     private val searchRepository: SearchRepository
@@ -39,7 +48,20 @@ class SearchViewModel(
         }
     }
 
-    fun onSearchQueryChanged(query: String) {
+    /**
+     * Main entry point for handling user intents.
+     * All UI interactions should go through this method.
+     */
+    fun onEvent(intent: SearchEvent) {
+        when (intent) {
+            is SearchEvent.UpdateSearchQuery -> onSearchQueryChanged(intent.query)
+            is SearchEvent.UpdateFilter -> onFilterChanged(intent.filter)
+            SearchEvent.LoadMore -> onLoadMore()
+            SearchEvent.Retry -> onRetry()
+        }
+    }
+
+    private fun onSearchQueryChanged(query: String) {
         _uiState.update {
             it.copy(
                 searchQuery = query,
@@ -51,7 +73,7 @@ class SearchViewModel(
         }
     }
 
-    fun onFilterChanged(filter: SearchFilter) {
+    private fun onFilterChanged(filter: SearchFilter) {
         _uiState.update {
             it.copy(
                 selectedFilter = filter,
@@ -63,7 +85,7 @@ class SearchViewModel(
         }
     }
 
-    fun onLoadMore() {
+    private fun onLoadMore() {
         val currentState = _uiState.value
         if (currentState.isLoadingMore || !currentState.hasMorePages || currentState.searchQuery.isBlank()) {
             return
@@ -73,7 +95,7 @@ class SearchViewModel(
         performSearch(currentState.searchQuery, currentState.selectedFilter, nextPage, isLoadingMore = true)
     }
 
-    fun onRetry() {
+    private fun onRetry() {
         val currentState = _uiState.value
         if (currentState.searchQuery.isNotBlank()) {
             performSearch(currentState.searchQuery, currentState.selectedFilter, 1)

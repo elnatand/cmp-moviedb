@@ -9,10 +9,9 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-fun RemoteMovie.asEntity(page: Int) = MovieEntity(
+fun RemoteMovie.asEntity() = MovieEntity(
     id = id,
     timestamp = Clock.System.now().epochSeconds,
-    page = page,
     title = title,
     poster_path = "$TMDB_IMAGE_URL$posterPath"
 )

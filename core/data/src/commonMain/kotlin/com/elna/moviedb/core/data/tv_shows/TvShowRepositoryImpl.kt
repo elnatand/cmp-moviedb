@@ -12,7 +12,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
@@ -20,6 +19,11 @@ import kotlinx.coroutines.launch
 
 /**
  * Implementation of TvShowsRepository that manages TV show data from remote API.
+ *
+ * **Note:** This repository uses in-memory storage (MutableStateFlow) rather than
+ * local database caching. TV shows are fetched from the API and held in memory
+ * for the duration of the app session. For persistent offline-first storage,
+ * see MoviesRepositoryImpl which uses Room database.
  *
  * **Lifecycle:** This repository is an application-scoped singleton managed by Koin DI.
  * The [repositoryScope] is never cancelled and lives for the entire application lifetime.
@@ -38,8 +42,7 @@ class TvShowRepositoryImpl(
     private var currentPage = 0
     private var totalPages = 0
 
-    private val _tvShows = MutableStateFlow<List<TvShow>>(emptyList())
-    private val _errorState = MutableStateFlow<AppResult.Error?>(null)
+    private val tvShows = MutableStateFlow<List<TvShow>>(emptyList())
 
     /**
      * Application-scoped coroutine scope that lives for the entire app lifetime.
@@ -56,94 +59,70 @@ class TvShowRepositoryImpl(
                 .collect {
                     currentPage = 0
                     totalPages = 0
-                    _errorState.value = null
-                    _tvShows.value = emptyList()
+                    tvShows.value = emptyList()
                     loadNextPage()
                 }
         }
     }
 
     /**
-     * Observes all TV shows from memory with reactive error handling.
-     *
-     * This function returns a Flow that combines in-memory TV show data with error state,
-     * automatically loading the first page if no data is cached in memory.
-     *
-     * @return Flow<AppResult<List<TvShow>>> A reactive flow that emits:
-     *   - AppResult.Success with list of TV shows when data is available and no errors
-     *   - AppResult.Error when there are loading errors from loadNextPage()
+     * Observes all TV shows from in-memory storage.
+     * Returns a flow of TV shows from the in-memory cache.
+     * Automatically triggers initial load if cache is empty.
      */
-    override suspend fun observeAllTvShows(): Flow<AppResult<List<TvShow>>> {
-        // Load initial data if empty
-        if (_tvShows.value.isEmpty()) {
-            loadNextPage()
+    override suspend fun observeAllTvShows(): Flow<List<TvShow>> {
+        // Load initial data if empty (non-blocking)
+        repositoryScope.launch {
+            if (tvShows.value.isEmpty()) {
+                loadNextPage()
+            }
         }
 
-        return combine(
-            _tvShows,
-            _errorState
-        ) { tvShows, error ->
-            // Return error if present
-            error?.let { return@combine it }
-
-            // Return success with TV show data
-            AppResult.Success(tvShows)
-        }
+        return tvShows
     }
 
     /**
      * Loads the next page of TV shows from the remote API.
      *
-     * This function handles pagination by:
-     * 1. Clearing any previous error state
-     * 2. Calculating the next page number based on current page
-     * 3. Fetching data from remote API
-     * 4. On success: updating total pages, appending data to memory list, and updating current page
-     * 5. On error: storing error state in reactive _errorState for UI consumption
+     * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
-    override suspend fun loadNextPage() {
-
+    override suspend fun loadNextPage(): AppResult<Unit> {
         if (totalPages > 0 && currentPage >= totalPages) {
-            return  // All pages loaded
+            return AppResult.Success(Unit)  // All pages loaded
         }
-
-        _errorState.value = null
 
         val nextPage = currentPage + 1
 
-        when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
+        return when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 totalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { it.toDomain() }
-                _tvShows.value = _tvShows.value + newTvShows
+                tvShows.value = tvShows.value + newTvShows
                 currentPage = nextPage
+
+                AppResult.Success(Unit)
             }
 
-            is AppResult.Error -> {
-                _errorState.value = result
-            }
+            is AppResult.Error -> result
         }
     }
 
     /**
      * Refreshes the TV show data by resetting pagination state and loading fresh data.
      *
-     * This function performs a complete refresh by:
-     * 1. Resetting pagination state (currentPage = 0, totalPages = 0)
-     * 2. Clearing any previous error state and in-memory data
-     * 3. Loading the first page of TV shows via loadNextPage()
-     * 4. Returning the result based on the loading outcome
+     * @return AppResult<List<TvShow>> Either:
+     *   - AppResult.Success with the refreshed list of TV shows if successful
+     *   - AppResult.Error if the refresh operation failed
      */
     override suspend fun refresh(): AppResult<List<TvShow>> {
         currentPage = 0
         totalPages = 0
-        _errorState.value = null
-        _tvShows.value = emptyList()
+        tvShows.value = emptyList()
 
-        loadNextPage()
-
-        // Return result based on loading outcome
-        return _errorState.value ?: AppResult.Success(_tvShows.value)
+        return when (val result = loadNextPage()) {
+            is AppResult.Success -> AppResult.Success(tvShows.value)
+            is AppResult.Error -> result
+        }
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
