@@ -16,3 +16,6 @@ iosApp/iosApp.xcodeproj/*
 # Secrets and API Keys
 **/Secrets.plist
 iosApp/iosApp/Secrets.plist
+
+google-services.json
+GoogleService-Info.plist
