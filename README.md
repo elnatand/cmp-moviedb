@@ -406,6 +406,7 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 - [x] Person details feature with cast/crew information
 - [x] Search functionality implementation
 - [x] Profile screen with language selection
+- [x] Dark/light theme toggle
 
 ### Current Status ✅
 - [x] Multi-module Clean Architecture with KMP
@@ -435,7 +436,6 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 - [ ] Performance optimizations for pagination
 
 ### Low Priority 💡
-- [ ] Add dark/light theme toggle
 - [ ] Add user authentication and personalized recommendations
 - [ ] Performance optimizations for large datasets
 - [ ] Add accessibility improvements
