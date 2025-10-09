@@ -1,14 +1,22 @@
 package com.elna.moviedb.core.analytics
 
 import android.util.Log
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
 
 
 /**
  * Check if analytics is enabled on Android
- * Analytics is enabled if GOOGLE_ANALYTICS_ID is not empty
  */
 actual val analyticsEnabled: Boolean
-    get() =
+    get() = try {
+        // Accessing Firebase.analytics will throw if Firebase isn't set up (e.g., missing google-services)
+        Firebase.analytics
+        true
+    } catch (e: Exception) {
+        Log.d("Analytics", "Firebase Analytics not available: ${e.message}")
+        false
+    }
 
 /**
  * Create Android-specific analytics service
