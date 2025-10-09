@@ -1,14 +1,14 @@
 package com.elna.moviedb.core.analytics
 
 import android.util.Log
-import com.elna.moviedb.core.analytics.BuildConfig
+
 
 /**
  * Check if analytics is enabled on Android
  * Analytics is enabled if GOOGLE_ANALYTICS_ID is not empty
  */
 actual val analyticsEnabled: Boolean
-    get() = BuildConfig.GOOGLE_ANALYTICS_ID.isNotEmpty()
+    get() =
 
 /**
  * Create Android-specific analytics service
