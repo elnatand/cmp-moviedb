@@ -392,6 +392,10 @@ This application uses the TMDB API but is not endorsed, certified, or otherwise 
 ### Data Source
 All movie and TV show data is provided by [The Movie Database (TMDB)](https://www.themoviedb.org).
 
+## 🤖 Development Partner
+
+This app was built with the assistance of **[Claude Code](https://claude.com/claude-code)**, Anthropic's AI-powered development tool. Having Claude Code as a development partner has been transformative - it truly feels like having a real partner throughout the entire development journey. From architecting the multi-module structure to implementing complex features like offline-first architecture and multi-language support, Claude Code has been instrumental in bringing this project to life.
+
 ## 📋 Development Roadmap
 
 ### Recently Completed ✨
