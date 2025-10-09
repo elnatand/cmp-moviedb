@@ -170,7 +170,7 @@ This app uses The Movie Database (TMDB) API. You'll need to obtain an API key an
    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
    <plist version="1.0">
    <dict>
-       <key>apiKey</key>
+       <key>tmdbApiKey</key>
        <string>your_actual_api_key_here</string>
    </dict>
    </plist>
@@ -192,7 +192,7 @@ TMDB_API_KEY=abcd1234567890efgh
 
 **Secrets.plist**:
 ```xml
-<key>apiKey</key>
+<key>tmdbApiKey</key>
 <string>abcd1234567890efgh</string>
 ```
 
