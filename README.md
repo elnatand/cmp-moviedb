@@ -29,9 +29,25 @@ The project follows Clean Architecture principles with a **feature-based multi-m
 - **Persistent Pagination**: Pagination state persists across app restarts via DataStore
 - **Auto-pagination**: Automatic loading of next pages when scrolling to bottom
 - **Error Handling**: Distinct initial load and pagination error states with proper UI feedback
-- **Language Support**: Dynamic language switching with automatic content refresh
+- **Internationalization**: Support for 4 languages (English, Hebrew, Hindi, Arabic) with dynamic switching and automatic content refresh
 - **Dark Mode Support**: System-based dark/light theme with Material 3
 - **Modern UI**: Material 3 design system with tile-based layouts
+
+## 🌍 Language Support
+
+The app supports **4 languages** with full UI localization:
+
+- **English** (Default)
+- **العربية (Arabic)** - Right-to-left (RTL) layout support
+- **עברית (Hebrew)** - Right-to-left (RTL) layout support
+- **हिन्दी (Hindi)**
+
+### Features
+- Dynamic language switching from the Profile screen
+- Automatic content refresh when language changes
+- Language-aware cache invalidation
+- RTL layout support for Arabic and Hebrew
+- All string resources fully localized
 
 ## 📁 Project Structure
 
@@ -232,7 +248,7 @@ TMDB_API_KEY=abcd1234567890efgh
   - Material 3 design system components (AppLoader, AppErrorComponent)
   - ImageLoader utility with Coil integration
   - Navigation routes and UI extensions
-  - Shared string resources with Hebrew translations
+  - Shared string resources with multi-language support (English, Hebrew, Hindi, Arabic)
 
 ### Feature Modules
 - **features:movies** - Complete movies feature
@@ -325,7 +341,7 @@ The project uses a simplified repository pattern where:
   - **Shared Android Config**: Compile/target SDK 36, min SDK 24
 - **KSP** for Room database code generation across platforms
 - **DataStore** for preferences and app state persistence
-- **Compose Resources** for shared string resources with Hebrew translations
+- **Compose Resources** for shared string resources with 4-language support (English, Hebrew, Hindi, Arabic)
 - **Platform-specific** configurations using expect/actual pattern
 - **Room Database** with SQLite bundled driver for offline support
 
@@ -394,7 +410,7 @@ All movie and TV show data is provided by [The Movie Database (TMDB)](https://ww
 - [x] Room database for offline movie storage
 - [x] DataStore for preferences and pagination state persistence
 - [x] Material 3 design system implementation
-- [x] Hebrew translations support
+- [x] Multi-language support (English, Hebrew, Hindi, Arabic) with RTL layouts
 - [x] Cross-platform image loading with Coil
 - [x] Reactive UI with StateFlow and Compose
 - [x] Clean error handling with proper UI feedback
