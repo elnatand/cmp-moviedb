@@ -16,7 +16,7 @@ val moviesModule = module {
     factory { (id: Int) ->
         MovieDetailsViewModel(
             movieId = id,
-            moviesRepository = get()
+            moviesRepository = get(),
         )
     }
 }

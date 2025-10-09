@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.moviedb.composeMultiplatform)
+    alias(libs.plugins.googleServices)
 }
 
 kotlin {
@@ -38,6 +39,7 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.core.database)
             implementation(projects.core.datastore)
+            implementation(projects.core.analytics)
             implementation(projects.core.ui)
 
             implementation(projects.features.movies)

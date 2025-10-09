@@ -189,6 +189,7 @@ features/
 - **DI**: Koin
 - **Async**: Coroutines, Flow
 - **Image Loading**: Custom ImageLoader component
+- **Analytics**: Firebase Analytics (optional)
 
 ## Notes for Claude Code
 

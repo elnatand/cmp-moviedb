@@ -1,6 +1,7 @@
 package com.elna.moviedb.di
 
 
+import com.elna.moviedb.core.analytics.di.analyticsModule
 import com.elna.moviedb.core.common.di.commonModule
 import com.elna.moviedb.feature.person.di.personModule
 import com.elna.moviedb.feature.profile.di.profileModule
@@ -23,6 +24,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     modules(
         commonModule,
         networkModule,
+        analyticsModule,
         dataModule,
         databaseModule,
         dataStoreModule,

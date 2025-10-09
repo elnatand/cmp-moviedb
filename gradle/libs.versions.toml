@@ -18,6 +18,8 @@ room = "2.8.1"
 sqlite = "2.6.1"
 datastore = "1.1.7"
 
+firebase-bom = "34.3.0"
+google-services-plugin = "4.4.3"
 
 [plugins]
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
@@ -28,6 +30,7 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "google-services-plugin" }
 
 moviedb-kotlinMultiplatform = { id = "moviedb.kotlin.multiplatform" }
 moviedb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform" }
@@ -36,6 +39,8 @@ moviedb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
+android-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+android-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
