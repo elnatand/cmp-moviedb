@@ -32,6 +32,40 @@ class TvShowsRemoteDataSource(
         }
     }
 
+    suspend fun getOnTheAirTvShowsPage(page: Int, language: String): AppResult<RemoteTvShowsPage> {
+        return try {
+            val tvShowsPage = withContext(appDispatchers.io) {
+                httpClient.get("${TMDB_BASE_URL}tv/on_the_air") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("page", page.toString())
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteTvShowsPage>()
+            }
+            AppResult.Success(tvShowsPage)
+        } catch (e: Exception) {
+            AppResult.Error(e.message ?: "Unknown error occurred")
+        }
+    }
+
+    suspend fun getTopRatedTvShowsPage(page: Int, language: String): AppResult<RemoteTvShowsPage> {
+        return try {
+            val tvShowsPage = withContext(appDispatchers.io) {
+                httpClient.get("${TMDB_BASE_URL}tv/top_rated") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("page", page.toString())
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteTvShowsPage>()
+            }
+            AppResult.Success(tvShowsPage)
+        } catch (e: Exception) {
+            AppResult.Error(e.message ?: "Unknown error occurred")
+        }
+    }
+
     suspend fun getTvShowDetails(tvShowId: Int, language: String): RemoteTvShowDetails {
         return withContext(appDispatchers.io) {
             httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}") {
