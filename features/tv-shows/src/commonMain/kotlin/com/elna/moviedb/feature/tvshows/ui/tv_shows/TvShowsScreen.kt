@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
@@ -189,7 +190,7 @@ private fun TvShowsContent(
 @Composable
 private fun TvShowsSection(
     title: String,
-    tvShows: List<com.elna.moviedb.core.model.TvShow>,
+    tvShows: List<TvShow>,
     onClick: (id: Int, title: String) -> Unit,
     isLoading: Boolean,
     onLoadMore: () -> Unit
