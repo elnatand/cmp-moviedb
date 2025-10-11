@@ -1,6 +1,8 @@
 <resources>
     <string name="popular_movies">Popular Movies</string>
     <string name="popular_tv_shows">Popular TV shows</string>
+    <string name="top_rated_tv_shows">Top Rated TV Shows</string>
+    <string name="on_the_air_tv_shows">On The Air TV Shows</string>
     <string name="movies">Movies</string>
     <string name="camera">Camera</string>
     <string name="user_name">Name</string>

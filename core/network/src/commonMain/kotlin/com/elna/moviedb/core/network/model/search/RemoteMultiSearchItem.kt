@@ -69,7 +69,7 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
                 tvShow = TvShow(
                     id = id,
                     name = tvShowName,
-                    poster_path = posterPath?.let { TMDB_IMAGE_URL + it }
+                    posterPath = posterPath?.let { TMDB_IMAGE_URL + it }
                 ),
                 overview = overview,
                 firstAirDate = firstAirDate,

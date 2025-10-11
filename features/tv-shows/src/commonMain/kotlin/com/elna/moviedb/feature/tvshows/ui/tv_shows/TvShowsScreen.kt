@@ -2,13 +2,20 @@ package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -16,21 +23,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.network_error
+import com.elna.moviedb.resources.on_the_air_tv_shows
 import com.elna.moviedb.resources.popular_tv_shows
+import com.elna.moviedb.resources.top_rated_tv_shows
+import com.elna.moviedb.resources.tv_shows
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -77,7 +88,7 @@ private fun TvShowsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(Res.string.popular_tv_shows)) },
+                title = { Text(text = stringResource(Res.string.tv_shows)) },
             )
         }
     ) { paddingValues ->
@@ -87,11 +98,13 @@ private fun TvShowsScreen(
         ) {
             when {
                 // Show in-memory data if available
-                uiState.tvShows.isNotEmpty() -> {
-                    TvShowsList(
+                uiState.popularTvShows.isNotEmpty() ||
+                uiState.topRatedTvShows.isNotEmpty() ||
+                uiState.onTheAirTvShows.isNotEmpty() -> {
+                    TvShowsContent(
                         uiState = uiState,
                         onClick = onClick,
-                        onLoadMore = { onEvent(TvShowsEvent.LoadNextPage) }
+                        onEvent = onEvent
                     )
                 }
 
@@ -117,42 +130,112 @@ private fun TvShowsScreen(
 }
 
 @Composable
-private fun TvShowsList(
+private fun TvShowsContent(
     uiState: TvShowsUiState,
     onClick: (id: Int, title: String) -> Unit,
+    onEvent: (TvShowsEvent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(vertical = 8.dp)
+    ) {
+        // Popular TV Shows Section
+        if (uiState.popularTvShows.isNotEmpty()) {
+            TvShowsSection(
+                title = stringResource(Res.string.popular_tv_shows),
+                tvShows = uiState.popularTvShows,
+                onClick = onClick,
+                isLoading = uiState.isLoadingPopular,
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPagePopular) }
+            )
+        }
+
+        // Top Rated TV Shows Section
+        if (uiState.topRatedTvShows.isNotEmpty()) {
+            TvShowsSection(
+                title = stringResource(Res.string.top_rated_tv_shows),
+                tvShows = uiState.topRatedTvShows,
+                onClick = onClick,
+                isLoading = uiState.isLoadingTopRated,
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPageTopRated) }
+            )
+        }
+
+        // On The Air TV Shows Section
+        if (uiState.onTheAirTvShows.isNotEmpty()) {
+            TvShowsSection(
+                title = stringResource(Res.string.on_the_air_tv_shows),
+                tvShows = uiState.onTheAirTvShows,
+                onClick = onClick,
+                isLoading = uiState.isLoadingOnTheAir,
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPageOnTheAir) }
+            )
+        }
+        Spacer(modifier = Modifier.height(70.dp))
+    }
+}
+
+/**
+ * Displays a horizontal scrolling section of TV shows with automatic pagination.
+ * Monitors scroll position and triggers loading of more content when user scrolls near the end.
+ *
+ * @param title Section title to display
+ * @param tvShows List of TV shows to display
+ * @param onClick Callback when a TV show is clicked, receives (id, title)
+ * @param isLoading Whether pagination is currently loading
+ * @param onLoadMore Callback to trigger loading more TV shows
+ */
+@Composable
+private fun TvShowsSection(
+    title: String,
+    tvShows: List<TvShow>,
+    onClick: (id: Int, title: String) -> Unit,
+    isLoading: Boolean,
     onLoadMore: () -> Unit
 ) {
-    val gridState = rememberLazyGridState()
+    val listState = rememberLazyListState()
+    val currentIsLoading by rememberUpdatedState(isLoading)
 
-    // Detect when user reaches the bottom
-    val shouldLoadMore by remember {
-        derivedStateOf {
-            val layoutInfo = gridState.layoutInfo
+    // Automatic pagination: Detect when user scrolls near the end to trigger loading more
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val layoutInfo = listState.layoutInfo
             val totalItemsNumber = layoutInfo.totalItemsCount
             val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            (lastVisibleItemIndex + 6 > totalItemsNumber) && uiState.state != TvShowsUiState.State.LOADING
+
+            // Trigger pagination when user is 3 items away from the end
+            lastVisibleItemIndex >= totalItemsNumber - 3
+        }.collect { shouldLoadMore ->
+            if (shouldLoadMore && !currentIsLoading) {
+                onLoadMore()
+            }
         }
     }
 
-    LaunchedEffect(shouldLoadMore) {
-        if (shouldLoadMore) {
-            onLoadMore()
-        }
-    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
 
-    LazyVerticalGrid(
-        state = gridState,
-        columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp),
-        modifier = Modifier.fillMaxSize().padding(horizontal = 5.dp),
-        content = {
-            items(uiState.tvShows) {
+        LazyRow(
+            state = listState,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            items(tvShows) { tvShow ->
                 TvShowTile(
-                    tvShow = it,
+                    tvShow = tvShow,
                     onClick = onClick
                 )
             }
         }
-    )
+    }
 }

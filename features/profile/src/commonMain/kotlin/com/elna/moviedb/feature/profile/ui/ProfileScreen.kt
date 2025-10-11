@@ -259,7 +259,7 @@ private fun ProfileScreen(
 
                     ImageLoader(
                         imageUrl = tmdbLogoUrl,
-                        modifier = Modifier.size(120.dp).clickable {
+                        modifier = Modifier.size(width = 170.dp, height = 120.dp).clickable {
                             uriHandler.openUri(tmdbUrl)
                         },
                         contentDescription = stringResource(Res.string.tmdb_full_name)

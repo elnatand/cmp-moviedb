@@ -26,7 +26,7 @@ fun ImageLoader(
     SubcomposeAsyncImage(
         model = imageUrl,
         contentDescription = contentDescription ?: stringResource(Res.string.image),
-        contentScale = ContentScale.Fit,
+        contentScale = ContentScale.Crop,
         modifier = modifier,
         loading = {
             Box(

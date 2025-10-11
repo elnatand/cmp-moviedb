@@ -1,6 +1,8 @@
 <resources>
     <string name="popular_movies">लोकप्रिय फ़िल्में</string>
     <string name="popular_tv_shows">लोकप्रिय टीवी शो</string>
+    <string name="top_rated_tv_shows">शीर्ष रेटेड टीवी शो</string>
+    <string name="on_the_air_tv_shows">प्रसारित टीवी शो</string>
     <string name="movies">फ़िल्में</string>
     <string name="camera">कैमरा</string>
     <string name="user_name">नाम</string>
