@@ -23,6 +23,9 @@ data class TvShowsUiState(
     val isLoadingTopRated: Boolean = false,
     val isLoadingOnTheAir: Boolean = false
 ) {
+
+    val hasAnyData: Boolean
+        get() = popularTvShows.isNotEmpty() || topRatedTvShows.isNotEmpty() || onTheAirTvShows.isNotEmpty()
     enum class State {
         LOADING, ERROR, SUCCESS
     }

@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -194,6 +195,7 @@ private fun TvShowsSection(
     onLoadMore: () -> Unit
 ) {
     val listState = rememberLazyListState()
+    val currentIsLoading by rememberUpdatedState(isLoading)
 
     // Automatic pagination: Detect when user scrolls near the end to trigger loading more
     LaunchedEffect(listState) {
@@ -205,7 +207,7 @@ private fun TvShowsSection(
             // Trigger pagination when user is 3 items away from the end
             lastVisibleItemIndex >= totalItemsNumber - 3
         }.collect { shouldLoadMore ->
-            if (shouldLoadMore && !isLoading) {
+            if (shouldLoadMore && !currentIsLoading) {
                 onLoadMore()
             }
         }

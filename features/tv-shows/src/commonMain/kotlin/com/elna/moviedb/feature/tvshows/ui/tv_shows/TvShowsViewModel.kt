@@ -14,6 +14,9 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 /**
  * ViewModel following MVI (Model-View-Intent) pattern for TV Shows screen.
@@ -57,11 +60,8 @@ class TvShowsViewModel(
         viewModelScope.launch {
             tvShowsRepository.observePopularTvShows().collect { tvShows ->
                 _uiState.update { currentState ->
-                    val allLoaded = currentState.popularTvShows.isNotEmpty() ||
-                                   currentState.topRatedTvShows.isNotEmpty() ||
-                                   currentState.onTheAirTvShows.isNotEmpty()
                     currentState.copy(
-                        state = if (allLoaded) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
+                        state = if (currentState.hasAnyData) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
                         popularTvShows = tvShows
                     )
                 }
@@ -72,11 +72,8 @@ class TvShowsViewModel(
         viewModelScope.launch {
             tvShowsRepository.observeTopRatedTvShows().collect { tvShows ->
                 _uiState.update { currentState ->
-                    val allLoaded = currentState.popularTvShows.isNotEmpty() ||
-                                   currentState.topRatedTvShows.isNotEmpty() ||
-                                   currentState.onTheAirTvShows.isNotEmpty()
                     currentState.copy(
-                        state = if (allLoaded) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
+                        state = if (currentState.hasAnyData) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
                         topRatedTvShows = tvShows
                     )
                 }
@@ -87,11 +84,8 @@ class TvShowsViewModel(
         viewModelScope.launch {
             tvShowsRepository.observeOnTheAirTvShows().collect { tvShows ->
                 _uiState.update { currentState ->
-                    val allLoaded = currentState.popularTvShows.isNotEmpty() ||
-                                   currentState.topRatedTvShows.isNotEmpty() ||
-                                   currentState.onTheAirTvShows.isNotEmpty()
                     currentState.copy(
-                        state = if (allLoaded) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
+                        state = if (currentState.hasAnyData) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
                         onTheAirTvShows = tvShows
                     )
                 }
@@ -114,6 +108,7 @@ class TvShowsViewModel(
                         _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
                     }
                 }
+
                 is AppResult.Success -> {
                     _uiState.update { it.copy(isLoadingPopular = false) }
                     // Success - TV shows are already updated via observeTvShows()
@@ -132,8 +127,11 @@ class TvShowsViewModel(
                     _uiState.update { it.copy(isLoadingTopRated = false) }
                     if (_uiState.value.topRatedTvShows.isNotEmpty()) {
                         _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
+                    } else {
+                        _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
                     }
                 }
+
                 is AppResult.Success -> {
                     _uiState.update { it.copy(isLoadingTopRated = false) }
                 }
@@ -151,8 +149,11 @@ class TvShowsViewModel(
                     _uiState.update { it.copy(isLoadingOnTheAir = false) }
                     if (_uiState.value.onTheAirTvShows.isNotEmpty()) {
                         _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
+                    }else {
+                        _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
                     }
                 }
+
                 is AppResult.Success -> {
                     _uiState.update { it.copy(isLoadingOnTheAir = false) }
                 }
@@ -165,10 +166,10 @@ class TvShowsViewModel(
             _uiState.update { it.copy(state = TvShowsUiState.State.LOADING) }
 
             // Try to load all three categories
-            val results = listOf(
-                tvShowsRepository.loadPopularTvShowsNextPage(),
-                tvShowsRepository.loadTopRatedTvShowsNextPage(),
-                tvShowsRepository.loadOnTheAirTvShowsNextPage()
+            val results = awaitAll(
+                async { tvShowsRepository.loadPopularTvShowsNextPage() },
+                async { tvShowsRepository.loadTopRatedTvShowsNextPage() },
+                async { tvShowsRepository.loadOnTheAirTvShowsNextPage() },
             )
 
             // If any succeeded, consider it a success

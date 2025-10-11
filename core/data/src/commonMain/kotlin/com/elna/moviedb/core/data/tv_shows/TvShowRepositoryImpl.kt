@@ -10,6 +10,9 @@ import com.elna.moviedb.core.network.TvShowsRemoteDataSource
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -90,18 +93,15 @@ class TvShowRepositoryImpl(
      * Automatically triggers initial load if cache is empty.
      */
     override suspend fun observePopularTvShows(): Flow<List<TvShow>> {
-        // Load initial data if empty (non-blocking)
-        repositoryScope.launch {
-            if (popularTvShows.value.isEmpty()) {
-                loadPopularTvShowsNextPage()
-            }
+        if (popularTvShows.value.isEmpty()) {
+            loadPopularTvShowsNextPage()
         }
 
         return popularTvShows
     }
 
     /**
-     * Loads the next page of popular TV shows from the remote API.
+     * Loads the next page of TV shows from the remote API.
      *
      * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
@@ -112,7 +112,8 @@ class TvShowRepositoryImpl(
 
         val nextPage = popularTvShowsCurrentPage + 1
 
-        return when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
+        return when (val result =
+            tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 popularTvShowsTotalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { it.toDomain() }
@@ -132,11 +133,8 @@ class TvShowRepositoryImpl(
      * Automatically triggers initial load if cache is empty.
      */
     override suspend fun observeOnTheAirTvShows(): Flow<List<TvShow>> {
-        // Load initial data if empty (non-blocking)
-        repositoryScope.launch {
-            if (onTheAirTvShows.value.isEmpty()) {
-                loadOnTheAirTvShowsNextPage()
-            }
+        if (onTheAirTvShows.value.isEmpty()) {
+            loadOnTheAirTvShowsNextPage()
         }
 
         return onTheAirTvShows
@@ -154,7 +152,8 @@ class TvShowRepositoryImpl(
 
         val nextPage = onTheAirTvShowsCurrentPage + 1
 
-        return when (val result = tvShowsRemoteDataSource.getOnTheAirTvShowsPage(nextPage, getLanguage())) {
+        return when (val result =
+            tvShowsRemoteDataSource.getOnTheAirTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 onTheAirTvShowsTotalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { it.toDomain() }
@@ -174,11 +173,8 @@ class TvShowRepositoryImpl(
      * Automatically triggers initial load if cache is empty.
      */
     override suspend fun observeTopRatedTvShows(): Flow<List<TvShow>> {
-        // Load initial data if empty (non-blocking)
-        repositoryScope.launch {
-            if (topRatedTvShows.value.isEmpty()) {
-                loadTopRatedTvShowsNextPage()
-            }
+        if (topRatedTvShows.value.isEmpty()) {
+            loadTopRatedTvShowsNextPage()
         }
 
         return topRatedTvShows
@@ -196,7 +192,8 @@ class TvShowRepositoryImpl(
 
         val nextPage = topRatedTvShowsCurrentPage + 1
 
-        return when (val result = tvShowsRemoteDataSource.getTopRatedTvShowsPage(nextPage, getLanguage())) {
+        return when (val result =
+            tvShowsRemoteDataSource.getTopRatedTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 topRatedTvShowsTotalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { it.toDomain() }
@@ -211,21 +208,43 @@ class TvShowRepositoryImpl(
     }
 
     /**
-     * Refreshes the TV show data by resetting pagination state and loading fresh data.
+     * Refreshes all TV show data by resetting pagination state and loading fresh data
+     * for all three categories (popular, on-the-air, top-rated) in parallel.
      *
      * @return AppResult<List<TvShow>> Either:
-     *   - AppResult.Success with the refreshed list of TV shows if successful
-     *   - AppResult.Error if the refresh operation failed
+     *   - AppResult.Success with the combined refreshed list of all TV shows if successful
+     *   - AppResult.Error if any of the refresh operations failed
      */
-    override suspend fun refresh(): AppResult<List<TvShow>> {
+    override suspend fun refresh(): AppResult<List<TvShow>> = coroutineScope {
+        // Reset all three caches
         popularTvShowsCurrentPage = 0
         popularTvShowsTotalPages = 0
         popularTvShows.value = emptyList()
 
-        return when (val result = loadPopularTvShowsNextPage()) {
-            is AppResult.Success -> AppResult.Success(popularTvShows.value)
-            is AppResult.Error -> result
+        onTheAirTvShowsCurrentPage = 0
+        onTheAirTvShowsTotalPages = 0
+        onTheAirTvShows.value = emptyList()
+
+        topRatedTvShowsCurrentPage = 0
+        topRatedTvShowsTotalPages = 0
+        topRatedTvShows.value = emptyList()
+
+        // Load all three categories in parallel
+        val results = awaitAll(
+            async { loadPopularTvShowsNextPage() },
+            async { loadOnTheAirTvShowsNextPage() },
+            async { loadTopRatedTvShowsNextPage() }
+        )
+
+        // Check if any failed
+        val error = results.firstOrNull { it is AppResult.Error } as? AppResult.Error
+        if (error != null) {
+            return@coroutineScope error
         }
+
+        // All succeeded - return combined list
+        val combinedList = popularTvShows.value + onTheAirTvShows.value + topRatedTvShows.value
+        return@coroutineScope AppResult.Success(combinedList)
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {

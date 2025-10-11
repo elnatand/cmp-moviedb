@@ -19,6 +19,6 @@ fun RemoteTvShow.toDomain(): TvShow {
     return TvShow(
         id = id,
         name = name,
-        posterPath = "$TMDB_IMAGE_URL$posterPath"
+        posterPath = posterPath?.let { "$TMDB_IMAGE_URL$it" }
     )
 }

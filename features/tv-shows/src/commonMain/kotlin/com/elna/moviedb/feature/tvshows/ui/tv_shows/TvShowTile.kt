@@ -51,7 +51,8 @@ fun TvShowTile(
             ) {
                 ImageLoader(
                     imageUrl = imageUrl,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    contentDescription = tvShow.name
                 )
             }
         }

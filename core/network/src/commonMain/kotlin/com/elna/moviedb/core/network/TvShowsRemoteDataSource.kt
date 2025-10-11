@@ -15,72 +15,15 @@ class TvShowsRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatchers: AppDispatchers
 ) {
-    suspend fun getPopularTvShowsPage(page: Int, language: String): AppResult<RemoteTvShowsPage> {
-        return try {
-            val tvShowsPage = withContext(appDispatchers.io) {
-                httpClient.get("${TMDB_BASE_URL}tv/popular") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                    }
-                }.body<RemoteTvShowsPage>()
-            }
-            AppResult.Success(tvShowsPage)
-        } catch (e: Exception) {
-            AppResult.Error(e.message ?: "Unknown error occurred")
-        }
-    }
 
-    /**
-     * Fetches a page of on-the-air TV shows from TMDB API.
-     * On-the-air shows are TV series that are currently airing new episodes.
-     *
-     * @param page Page number to fetch (1-indexed)
-     * @param language Language code for localized content (e.g., "en-US", "ar-SA")
-     * @return AppResult containing RemoteTvShowsPage on success, error message on failure
-     */
-    suspend fun getOnTheAirTvShowsPage(page: Int, language: String): AppResult<RemoteTvShowsPage> {
-        return try {
-            val tvShowsPage = withContext(appDispatchers.io) {
-                httpClient.get("${TMDB_BASE_URL}tv/on_the_air") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                    }
-                }.body<RemoteTvShowsPage>()
-            }
-            AppResult.Success(tvShowsPage)
-        } catch (e: Exception) {
-            AppResult.Error(e.message ?: "Unknown error occurred")
-        }
-    }
+    suspend fun getPopularTvShowsPage(page: Int, language: String) =
+        fetchTvShowsPage("tv/popular", page, language)
 
-    /**
-     * Fetches a page of top-rated TV shows from TMDB API.
-     * Top-rated shows are TV series with the highest average ratings.
-     *
-     * @param page Page number to fetch (1-indexed)
-     * @param language Language code for localized content (e.g., "en-US", "ar-SA")
-     * @return AppResult containing RemoteTvShowsPage on success, error message on failure
-     */
-    suspend fun getTopRatedTvShowsPage(page: Int, language: String): AppResult<RemoteTvShowsPage> {
-        return try {
-            val tvShowsPage = withContext(appDispatchers.io) {
-                httpClient.get("${TMDB_BASE_URL}tv/top_rated") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                    }
-                }.body<RemoteTvShowsPage>()
-            }
-            AppResult.Success(tvShowsPage)
-        } catch (e: Exception) {
-            AppResult.Error(e.message ?: "Unknown error occurred")
-        }
-    }
+    suspend fun getOnTheAirTvShowsPage(page: Int, language: String) =
+        fetchTvShowsPage("tv/on_the_air", page, language)
+
+    suspend fun getTopRatedTvShowsPage(page: Int, language: String) =
+        fetchTvShowsPage("tv/top_rated", page, language)
 
     suspend fun getTvShowDetails(tvShowId: Int, language: String): RemoteTvShowDetails {
         return withContext(appDispatchers.io) {
@@ -90,6 +33,27 @@ class TvShowsRemoteDataSource(
                     parameters.append("language", language)
                 }
             }.body<RemoteTvShowDetails>()
+        }
+    }
+
+    private suspend fun fetchTvShowsPage(
+        path: String,
+        page: Int,
+        language: String
+    ): AppResult<RemoteTvShowsPage> {
+        return try {
+            val tvShowsPage = withContext(appDispatchers.io) {
+                httpClient.get("${TMDB_BASE_URL}$path") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("page", page.toString())
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteTvShowsPage>()
+            }
+            AppResult.Success(tvShowsPage)
+        } catch (e: Exception) {
+            AppResult.Error(e.message ?: "Unknown error occurred")
         }
     }
 }
