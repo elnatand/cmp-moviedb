@@ -39,10 +39,10 @@ class TvShowRepositoryImpl(
     private val appDispatchers: AppDispatchers
 ) : TvShowsRepository {
 
-    private var currentPage = 0
-    private var totalPages = 0
+    private var popularTvShowsCurrentPage = 0
+    private var popularTvShowsTotalPages = 0
 
-    private val tvShows = MutableStateFlow<List<TvShow>>(emptyList())
+    private val popularTvShows = MutableStateFlow<List<TvShow>>(emptyList())
 
     /**
      * Application-scoped coroutine scope that lives for the entire app lifetime.
@@ -57,10 +57,10 @@ class TvShowRepositoryImpl(
                 .distinctUntilChanged()
                 .drop(1) // Skip initial emission to avoid clearing on screen entry
                 .collect {
-                    currentPage = 0
-                    totalPages = 0
-                    tvShows.value = emptyList()
-                    loadNextPage()
+                    popularTvShowsCurrentPage = 0
+                    popularTvShowsTotalPages = 0
+                    popularTvShows.value = emptyList()
+                    loadPopularTvShowsNextPage()
                 }
         }
     }
@@ -70,15 +70,15 @@ class TvShowRepositoryImpl(
      * Returns a flow of TV shows from the in-memory cache.
      * Automatically triggers initial load if cache is empty.
      */
-    override suspend fun observeAllTvShows(): Flow<List<TvShow>> {
+    override suspend fun observePopularTvShows(): Flow<List<TvShow>> {
         // Load initial data if empty (non-blocking)
         repositoryScope.launch {
-            if (tvShows.value.isEmpty()) {
-                loadNextPage()
+            if (popularTvShows.value.isEmpty()) {
+                loadPopularTvShowsNextPage()
             }
         }
 
-        return tvShows
+        return popularTvShows
     }
 
     /**
@@ -86,19 +86,19 @@ class TvShowRepositoryImpl(
      *
      * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
-    override suspend fun loadNextPage(): AppResult<Unit> {
-        if (totalPages > 0 && currentPage >= totalPages) {
+    override suspend fun loadPopularTvShowsNextPage(): AppResult<Unit> {
+        if (popularTvShowsTotalPages > 0 && popularTvShowsCurrentPage >= popularTvShowsTotalPages) {
             return AppResult.Success(Unit)  // All pages loaded
         }
 
-        val nextPage = currentPage + 1
+        val nextPage = popularTvShowsCurrentPage + 1
 
         return when (val result = tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
-                totalPages = result.data.totalPages
+                popularTvShowsTotalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { it.toDomain() }
-                tvShows.value = tvShows.value + newTvShows
-                currentPage = nextPage
+                popularTvShows.value = popularTvShows.value + newTvShows
+                popularTvShowsCurrentPage = nextPage
 
                 AppResult.Success(Unit)
             }
@@ -115,12 +115,12 @@ class TvShowRepositoryImpl(
      *   - AppResult.Error if the refresh operation failed
      */
     override suspend fun refresh(): AppResult<List<TvShow>> {
-        currentPage = 0
-        totalPages = 0
-        tvShows.value = emptyList()
+        popularTvShowsCurrentPage = 0
+        popularTvShowsTotalPages = 0
+        popularTvShows.value = emptyList()
 
-        return when (val result = loadNextPage()) {
-            is AppResult.Success -> AppResult.Success(tvShows.value)
+        return when (val result = loadPopularTvShowsNextPage()) {
+            is AppResult.Success -> AppResult.Success(popularTvShows.value)
             is AppResult.Error -> result
         }
     }

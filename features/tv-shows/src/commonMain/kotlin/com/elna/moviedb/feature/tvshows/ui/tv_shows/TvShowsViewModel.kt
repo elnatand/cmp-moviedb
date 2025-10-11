@@ -52,7 +52,7 @@ class TvShowsViewModel(
 
     private fun observeTvShows() {
         viewModelScope.launch {
-            tvShowsRepository.observeAllTvShows().collect { tvShows ->
+            tvShowsRepository.observePopularTvShows().collect { tvShows ->
                 _uiState.update { currentState ->
                     currentState.copy(
                         state = if (tvShows.isEmpty()) TvShowsUiState.State.LOADING else TvShowsUiState.State.SUCCESS,
@@ -65,7 +65,7 @@ class TvShowsViewModel(
 
     private fun loadNextPage() {
         viewModelScope.launch {
-            when (val result = tvShowsRepository.loadNextPage()) {
+            when (val result = tvShowsRepository.loadPopularTvShowsNextPage()) {
                 is AppResult.Error -> {
                     // If we have TV shows, show snackbar; otherwise show error screen
                     if (_uiState.value.tvShows.isNotEmpty()) {
@@ -84,7 +84,7 @@ class TvShowsViewModel(
     private fun retry() {
         viewModelScope.launch {
             _uiState.update { it.copy(state = TvShowsUiState.State.LOADING) }
-            when (val result = tvShowsRepository.loadNextPage()) {
+            when (val result = tvShowsRepository.loadPopularTvShowsNextPage()) {
                 is AppResult.Error -> {
                     _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
                 }
