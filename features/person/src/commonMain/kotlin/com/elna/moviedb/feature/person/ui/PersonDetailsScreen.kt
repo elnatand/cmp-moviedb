@@ -81,7 +81,6 @@ private fun PersonDetailsScreen(
             is PersonUiState.Loading -> AppLoader()
 
             is PersonUiState.Error -> AppErrorComponent(
-                message = uiState.message,
                 onRetry = onRetry
             )
 

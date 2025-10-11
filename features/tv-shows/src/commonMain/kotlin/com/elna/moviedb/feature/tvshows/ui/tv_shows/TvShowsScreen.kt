@@ -98,7 +98,6 @@ private fun TvShowsScreen(
                 // Show error screen (only triggered when repository emits error)
                 uiState.state == TvShowsUiState.State.ERROR -> {
                     AppErrorComponent(
-                        message = stringResource(Res.string.network_error),
                         onRetry = { onEvent(TvShowsEvent.Retry) }
                     )
                 }

@@ -88,7 +88,6 @@ private fun MovieDetailsScreen(
             is MovieDetailsViewModel.MovieDetailsUiState.Loading -> AppLoader()
 
             is MovieDetailsViewModel.MovieDetailsUiState.Error -> AppErrorComponent(
-                message = uiState.message,
                 onRetry = onRetry
             )
 

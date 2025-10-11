@@ -101,7 +101,6 @@ private fun MoviesScreen(
                 // Show error screen only when cache is empty and initial load failed
                 uiState.state == MoviesUiState.State.ERROR -> {
                     AppErrorComponent(
-                        message = stringResource(Res.string.network_error),
                         onRetry = { onEvent(MoviesEvent.Retry) }
                     )
                 }

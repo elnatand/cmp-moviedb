@@ -8,7 +8,7 @@
     <string name="profile">الملف الشخصي</string>
     <string name="notifications">إشعارات</string>
     <string name="network_error">حدث خطأ. يرجى المحاولة مرة أخرى.</string>
-    <string name="error_title">خطأ في تحميل تفاصيل الفيلم</string>
+    <string name="error_title">حدث خطأ</string>
     <string name="retry">إعادة المحاولة</string>
     <string name="back">رجوع</string>
     <string name="rating">التقييم</string>

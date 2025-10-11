@@ -24,7 +24,6 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AppErrorComponent(
-    message: String,
     onRetry: () -> Unit
 ) {
     Column(
@@ -36,12 +35,6 @@ fun AppErrorComponent(
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.error,
             textAlign = TextAlign.Center
-        )
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Button(
             onClick = onRetry,

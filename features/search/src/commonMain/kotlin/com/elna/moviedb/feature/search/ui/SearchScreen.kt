@@ -89,7 +89,6 @@ private fun SearchScreen(
 
             uiState.errorMessage != null -> {
                 AppErrorComponent(
-                    message = uiState.errorMessage,
                     onRetry = onRetry
                 )
             }

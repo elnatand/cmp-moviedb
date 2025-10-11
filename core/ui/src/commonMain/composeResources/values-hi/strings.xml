@@ -8,7 +8,7 @@
     <string name="profile">प्रोफ़ाइल</string>
     <string name="notifications">सूचनाएं</string>
     <string name="network_error">त्रुटि हुई। कृपया फिर से कोशिश करें।</string>
-    <string name="error_title">फ़िल्म का विवरण लोड करने में त्रुटि</string>
+    <string name="error_title">त्रुटि हुई</string>
     <string name="retry">फिर से कोशिश करें</string>
     <string name="back">वापस</string>
     <string name="rating">रेटिंग</string>

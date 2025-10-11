@@ -118,7 +118,6 @@ fun TvShowDetailsScreen(
         when (uiState) {
             is TvShowDetailsViewModel.TvShowDetailsUiState.Loading -> AppLoader()
             is TvShowDetailsViewModel.TvShowDetailsUiState.Error -> AppErrorComponent(
-                message = uiState.message,
                 onRetry = onRetry
             )
 
