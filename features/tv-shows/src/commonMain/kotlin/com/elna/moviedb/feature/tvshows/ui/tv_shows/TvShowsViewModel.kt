@@ -51,12 +51,46 @@ class TvShowsViewModel(
     }
 
     private fun observeTvShows() {
+        // Observe popular TV shows
         viewModelScope.launch {
             tvShowsRepository.observePopularTvShows().collect { tvShows ->
                 _uiState.update { currentState ->
+                    val allLoaded = currentState.popularTvShows.isNotEmpty() ||
+                                   currentState.topRatedTvShows.isNotEmpty() ||
+                                   currentState.onTheAirTvShows.isNotEmpty()
                     currentState.copy(
-                        state = if (tvShows.isEmpty()) TvShowsUiState.State.LOADING else TvShowsUiState.State.SUCCESS,
-                        tvShows = tvShows
+                        state = if (allLoaded) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
+                        popularTvShows = tvShows
+                    )
+                }
+            }
+        }
+
+        // Observe top-rated TV shows
+        viewModelScope.launch {
+            tvShowsRepository.observeTopRatedTvShows().collect { tvShows ->
+                _uiState.update { currentState ->
+                    val allLoaded = currentState.popularTvShows.isNotEmpty() ||
+                                   currentState.topRatedTvShows.isNotEmpty() ||
+                                   currentState.onTheAirTvShows.isNotEmpty()
+                    currentState.copy(
+                        state = if (allLoaded) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
+                        topRatedTvShows = tvShows
+                    )
+                }
+            }
+        }
+
+        // Observe on-the-air TV shows
+        viewModelScope.launch {
+            tvShowsRepository.observeOnTheAirTvShows().collect { tvShows ->
+                _uiState.update { currentState ->
+                    val allLoaded = currentState.popularTvShows.isNotEmpty() ||
+                                   currentState.topRatedTvShows.isNotEmpty() ||
+                                   currentState.onTheAirTvShows.isNotEmpty()
+                    currentState.copy(
+                        state = if (allLoaded) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
+                        onTheAirTvShows = tvShows
                     )
                 }
             }
@@ -68,7 +102,7 @@ class TvShowsViewModel(
             when (val result = tvShowsRepository.loadPopularTvShowsNextPage()) {
                 is AppResult.Error -> {
                     // If we have TV shows, show snackbar; otherwise show error screen
-                    if (_uiState.value.tvShows.isNotEmpty()) {
+                    if (_uiState.value.popularTvShows.isNotEmpty()) {
                         _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
                     } else {
                         _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }

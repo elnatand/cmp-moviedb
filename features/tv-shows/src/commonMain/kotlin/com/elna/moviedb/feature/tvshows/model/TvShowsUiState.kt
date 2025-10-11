@@ -4,7 +4,9 @@ import com.elna.moviedb.core.model.TvShow
 
 data class TvShowsUiState(
     val state: State,
-    val tvShows: List<TvShow> = emptyList()
+    val popularTvShows: List<TvShow> = emptyList(),
+    val topRatedTvShows: List<TvShow> = emptyList(),
+    val onTheAirTvShows: List<TvShow> = emptyList()
 ) {
     enum class State {
         LOADING, ERROR, SUCCESS
