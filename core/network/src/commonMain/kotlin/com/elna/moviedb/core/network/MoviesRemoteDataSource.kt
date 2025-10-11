@@ -16,25 +16,14 @@ class MoviesRemoteDataSource(
     private val appDispatchers: AppDispatchers
 ) {
 
-   suspend fun getPopularMoviesPage(page: Int, language: String): AppResult<RemoteMoviesPage> {
-        return try {
-            val moviesPages = withContext(appDispatchers.io) {
-                httpClient.get("${TMDB_BASE_URL}movie/popular") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                    }
-                }.body<RemoteMoviesPage>()
-            }
-            AppResult.Success(moviesPages)
-        } catch (e: Exception) {
-            AppResult.Error(
-                message = e.message ?: "Unknown error occurred",
-                throwable = e
-            )
-        }
-    }
+    suspend fun getPopularMoviesPage(page: Int, language: String) =
+        fetchMoviesPage("movie/popular", page, language)
+
+    suspend fun getTopRatedMoviesPage(page: Int, language: String) =
+        fetchMoviesPage("movie/top_rated", page, language)
+
+    suspend fun getNowPlayingMoviesPage(page: Int, language: String) =
+        fetchMoviesPage("movie/now_playing", page, language)
 
     suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
         return try {
@@ -47,6 +36,30 @@ class MoviesRemoteDataSource(
                 }.body<RemoteMovieDetails>()
             }
             AppResult.Success(movieDetails)
+        } catch (e: Exception) {
+            AppResult.Error(
+                message = e.message ?: "Unknown error occurred",
+                throwable = e
+            )
+        }
+    }
+
+    private suspend fun fetchMoviesPage(
+        path: String,
+        page: Int,
+        language: String
+    ): AppResult<RemoteMoviesPage> {
+        return try {
+            val moviesPage = withContext(appDispatchers.io) {
+                httpClient.get("${TMDB_BASE_URL}$path") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("page", page.toString())
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteMoviesPage>()
+            }
+            AppResult.Success(moviesPage)
         } catch (e: Exception) {
             AppResult.Error(
                 message = e.message ?: "Unknown error occurred",
