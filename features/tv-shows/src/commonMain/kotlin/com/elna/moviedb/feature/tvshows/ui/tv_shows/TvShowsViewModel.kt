@@ -60,9 +60,9 @@ class TvShowsViewModel(
         viewModelScope.launch {
             tvShowsRepository.observePopularTvShows().collect { tvShows ->
                 _uiState.update { currentState ->
-                    currentState.copy(
+                    val updated = currentState.copy(popularTvShows = tvShows)
+                    updated.copy(
                         state = if (currentState.hasAnyData) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
-                        popularTvShows = tvShows
                     )
                 }
             }
@@ -72,9 +72,9 @@ class TvShowsViewModel(
         viewModelScope.launch {
             tvShowsRepository.observeTopRatedTvShows().collect { tvShows ->
                 _uiState.update { currentState ->
-                    currentState.copy(
+                    val updated = currentState.copy(topRatedTvShows = tvShows)
+                    updated.copy(
                         state = if (currentState.hasAnyData) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
-                        topRatedTvShows = tvShows
                     )
                 }
             }
@@ -84,9 +84,9 @@ class TvShowsViewModel(
         viewModelScope.launch {
             tvShowsRepository.observeOnTheAirTvShows().collect { tvShows ->
                 _uiState.update { currentState ->
-                    currentState.copy(
+                    val updated = currentState.copy(onTheAirTvShows = tvShows)
+                    updated.copy(
                         state = if (currentState.hasAnyData) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
-                        onTheAirTvShows = tvShows
                     )
                 }
             }
@@ -149,7 +149,7 @@ class TvShowsViewModel(
                     _uiState.update { it.copy(isLoadingOnTheAir = false) }
                     if (_uiState.value.onTheAirTvShows.isNotEmpty()) {
                         _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
-                    }else {
+                    } else {
                         _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
                     }
                 }
