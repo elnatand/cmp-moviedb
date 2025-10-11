@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -99,7 +101,8 @@ private fun TvShowsScreen(
                 uiState.onTheAirTvShows.isNotEmpty() -> {
                     TvShowsContent(
                         uiState = uiState,
-                        onClick = onClick
+                        onClick = onClick,
+                        onEvent = onEvent
                     )
                 }
 
@@ -127,7 +130,8 @@ private fun TvShowsScreen(
 @Composable
 private fun TvShowsContent(
     uiState: TvShowsUiState,
-    onClick: (id: Int, title: String) -> Unit
+    onClick: (id: Int, title: String) -> Unit,
+    onEvent: (TvShowsEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -140,7 +144,9 @@ private fun TvShowsContent(
             TvShowsSection(
                 title = stringResource(Res.string.popular_tv_shows),
                 tvShows = uiState.popularTvShows,
-                onClick = onClick
+                onClick = onClick,
+                isLoading = uiState.isLoadingPopular,
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPagePopular) }
             )
         }
 
@@ -149,7 +155,9 @@ private fun TvShowsContent(
             TvShowsSection(
                 title = stringResource(Res.string.top_rated_tv_shows),
                 tvShows = uiState.topRatedTvShows,
-                onClick = onClick
+                onClick = onClick,
+                isLoading = uiState.isLoadingTopRated,
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPageTopRated) }
             )
         }
 
@@ -158,7 +166,9 @@ private fun TvShowsContent(
             TvShowsSection(
                 title = stringResource(Res.string.on_the_air_tv_shows),
                 tvShows = uiState.onTheAirTvShows,
-                onClick = onClick
+                onClick = onClick,
+                isLoading = uiState.isLoadingOnTheAir,
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPageOnTheAir) }
             )
         }
         Spacer(modifier = Modifier.height(70.dp))
@@ -169,8 +179,28 @@ private fun TvShowsContent(
 private fun TvShowsSection(
     title: String,
     tvShows: List<com.elna.moviedb.core.model.TvShow>,
-    onClick: (id: Int, title: String) -> Unit
+    onClick: (id: Int, title: String) -> Unit,
+    isLoading: Boolean,
+    onLoadMore: () -> Unit
 ) {
+    val listState = rememberLazyListState()
+
+    // Detect when user scrolls near the end to trigger pagination
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val layoutInfo = listState.layoutInfo
+            val totalItemsNumber = layoutInfo.totalItemsCount
+            val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+
+            // Trigger pagination when we're 3 items from the end
+            lastVisibleItemIndex >= totalItemsNumber - 3
+        }.collect { shouldLoadMore ->
+            if (shouldLoadMore && !isLoading) {
+                onLoadMore()
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -183,6 +213,7 @@ private fun TvShowsSection(
         )
 
         LazyRow(
+            state = listState,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {

@@ -7,9 +7,19 @@ package com.elna.moviedb.feature.tvshows.model
  */
 sealed interface TvShowsEvent {
     /**
-     * User scrolled to the bottom and wants to load more TV shows
+     * User scrolled to the end of popular TV shows list
      */
-    data object LoadNextPage : TvShowsEvent
+    data object LoadNextPagePopular : TvShowsEvent
+
+    /**
+     * User scrolled to the end of top-rated TV shows list
+     */
+    data object LoadNextPageTopRated : TvShowsEvent
+
+    /**
+     * User scrolled to the end of on-the-air TV shows list
+     */
+    data object LoadNextPageOnTheAir : TvShowsEvent
 
     /**
      * User clicked retry button after an error

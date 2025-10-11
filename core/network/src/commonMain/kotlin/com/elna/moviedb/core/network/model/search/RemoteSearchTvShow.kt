@@ -42,7 +42,7 @@ fun RemoteSearchTvShow.toDomain(): TvShow {
     return TvShow(
         id = id,
         name = name,
-        poster_path = "$TMDB_IMAGE_URL$posterPath"
+        posterPath = "$TMDB_IMAGE_URL$posterPath"
     )
 }
 
@@ -51,7 +51,7 @@ fun RemoteSearchTvShow.toSearchResult(): SearchResultItem.TvShowItem {
         tvShow = TvShow(
             id = id,
             name = name,
-            poster_path = "$TMDB_IMAGE_URL$posterPath"
+            posterPath = "$TMDB_IMAGE_URL$posterPath"
         ),
         overview = overview,
         firstAirDate = firstAirDate,

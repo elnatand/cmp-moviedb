@@ -1,5 +1,6 @@
 package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,22 +15,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TvShowTile(
     tvShow: TvShow,
     onClick: (id: Int, title: String) -> Unit
 ) {
-    val imageUrl = tvShow.poster_path ?: ""
+    val imageUrl = tvShow.posterPath ?: ""
 
     Column(
         modifier = Modifier
             .width(140.dp)
+            .height(260.dp)
             .clickable { onClick(tvShow.id, tvShow.name) }
     ) {
         // TV Show Poster
@@ -64,5 +68,26 @@ fun TvShowTile(
                 .width(140.dp)
                 .padding(top = 8.dp)
         )
+    }
+}
+
+@Preview
+@Composable
+private fun TvShowTilePreview() {
+    MaterialTheme {
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(16.dp)
+        ) {
+            TvShowTile(
+                tvShow = TvShow(
+                    id = 1,
+                    name = "Law and Order: Special Victims Unit",
+                    posterPath = "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg"
+                ),
+                onClick = { _, _ -> }
+            )
+        }
     }
 }

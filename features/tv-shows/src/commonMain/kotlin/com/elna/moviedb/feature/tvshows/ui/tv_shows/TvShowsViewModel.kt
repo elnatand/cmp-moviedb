@@ -45,7 +45,9 @@ class TvShowsViewModel(
      */
     fun onEvent(event: TvShowsEvent) {
         when (event) {
-            TvShowsEvent.LoadNextPage -> loadNextPage()
+            TvShowsEvent.LoadNextPagePopular -> loadNextPagePopular()
+            TvShowsEvent.LoadNextPageTopRated -> loadNextPageTopRated()
+            TvShowsEvent.LoadNextPageOnTheAir -> loadNextPageOnTheAir()
             TvShowsEvent.Retry -> retry()
         }
     }
@@ -97,10 +99,14 @@ class TvShowsViewModel(
         }
     }
 
-    private fun loadNextPage() {
+    private fun loadNextPagePopular() {
+        if (_uiState.value.isLoadingPopular) return
+
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoadingPopular = true) }
             when (val result = tvShowsRepository.loadPopularTvShowsNextPage()) {
                 is AppResult.Error -> {
+                    _uiState.update { it.copy(isLoadingPopular = false) }
                     // If we have TV shows, show snackbar; otherwise show error screen
                     if (_uiState.value.popularTvShows.isNotEmpty()) {
                         _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
@@ -109,7 +115,46 @@ class TvShowsViewModel(
                     }
                 }
                 is AppResult.Success -> {
+                    _uiState.update { it.copy(isLoadingPopular = false) }
                     // Success - TV shows are already updated via observeTvShows()
+                }
+            }
+        }
+    }
+
+    private fun loadNextPageTopRated() {
+        if (_uiState.value.isLoadingTopRated) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoadingTopRated = true) }
+            when (val result = tvShowsRepository.loadTopRatedTvShowsNextPage()) {
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(isLoadingTopRated = false) }
+                    if (_uiState.value.topRatedTvShows.isNotEmpty()) {
+                        _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
+                    }
+                }
+                is AppResult.Success -> {
+                    _uiState.update { it.copy(isLoadingTopRated = false) }
+                }
+            }
+        }
+    }
+
+    private fun loadNextPageOnTheAir() {
+        if (_uiState.value.isLoadingOnTheAir) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoadingOnTheAir = true) }
+            when (val result = tvShowsRepository.loadOnTheAirTvShowsNextPage()) {
+                is AppResult.Error -> {
+                    _uiState.update { it.copy(isLoadingOnTheAir = false) }
+                    if (_uiState.value.onTheAirTvShows.isNotEmpty()) {
+                        _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
+                    }
+                }
+                is AppResult.Success -> {
+                    _uiState.update { it.copy(isLoadingOnTheAir = false) }
                 }
             }
         }
@@ -118,13 +163,22 @@ class TvShowsViewModel(
     private fun retry() {
         viewModelScope.launch {
             _uiState.update { it.copy(state = TvShowsUiState.State.LOADING) }
-            when (val result = tvShowsRepository.loadPopularTvShowsNextPage()) {
-                is AppResult.Error -> {
-                    _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
-                }
-                is AppResult.Success -> {
-                    // Success - state will be updated via observeTvShows()
-                }
+
+            // Try to load all three categories
+            val results = listOf(
+                tvShowsRepository.loadPopularTvShowsNextPage(),
+                tvShowsRepository.loadTopRatedTvShowsNextPage(),
+                tvShowsRepository.loadOnTheAirTvShowsNextPage()
+            )
+
+            // If any succeeded, consider it a success
+            val hasSuccess = results.any { it is AppResult.Success }
+            val allFailed = results.all { it is AppResult.Error }
+
+            if (allFailed) {
+                _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
+            } else if (hasSuccess) {
+                // Success - state will be updated via observeTvShows()
             }
         }
     }

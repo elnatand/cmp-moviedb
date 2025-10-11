@@ -47,7 +47,7 @@ fun SearchResultItem(
             ImageLoader(
                 imageUrl = when (item) {
                     is SearchResultItem.MovieItem -> item.movie.poster_path ?: ""
-                    is SearchResultItem.TvShowItem -> item.tvShow.poster_path ?: ""
+                    is SearchResultItem.TvShowItem -> item.tvShow.posterPath ?: ""
                     is SearchResultItem.PersonItem -> item.profilePath ?: ""
                 },
                 modifier = Modifier
