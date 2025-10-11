@@ -175,6 +175,16 @@ private fun TvShowsContent(
     }
 }
 
+/**
+ * Displays a horizontal scrolling section of TV shows with automatic pagination.
+ * Monitors scroll position and triggers loading of more content when user scrolls near the end.
+ *
+ * @param title Section title to display
+ * @param tvShows List of TV shows to display
+ * @param onClick Callback when a TV show is clicked, receives (id, title)
+ * @param isLoading Whether pagination is currently loading
+ * @param onLoadMore Callback to trigger loading more TV shows
+ */
 @Composable
 private fun TvShowsSection(
     title: String,
@@ -185,14 +195,14 @@ private fun TvShowsSection(
 ) {
     val listState = rememberLazyListState()
 
-    // Detect when user scrolls near the end to trigger pagination
+    // Automatic pagination: Detect when user scrolls near the end to trigger loading more
     LaunchedEffect(listState) {
         snapshotFlow {
             val layoutInfo = listState.layoutInfo
             val totalItemsNumber = layoutInfo.totalItemsCount
             val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
 
-            // Trigger pagination when we're 3 items from the end
+            // Trigger pagination when user is 3 items away from the end
             lastVisibleItemIndex >= totalItemsNumber - 3
         }.collect { shouldLoadMore ->
             if (shouldLoadMore && !isLoading) {

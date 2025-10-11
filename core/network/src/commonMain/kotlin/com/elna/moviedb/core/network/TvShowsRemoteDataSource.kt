@@ -32,6 +32,14 @@ class TvShowsRemoteDataSource(
         }
     }
 
+    /**
+     * Fetches a page of on-the-air TV shows from TMDB API.
+     * On-the-air shows are TV series that are currently airing new episodes.
+     *
+     * @param page Page number to fetch (1-indexed)
+     * @param language Language code for localized content (e.g., "en-US", "ar-SA")
+     * @return AppResult containing RemoteTvShowsPage on success, error message on failure
+     */
     suspend fun getOnTheAirTvShowsPage(page: Int, language: String): AppResult<RemoteTvShowsPage> {
         return try {
             val tvShowsPage = withContext(appDispatchers.io) {
@@ -49,6 +57,14 @@ class TvShowsRemoteDataSource(
         }
     }
 
+    /**
+     * Fetches a page of top-rated TV shows from TMDB API.
+     * Top-rated shows are TV series with the highest average ratings.
+     *
+     * @param page Page number to fetch (1-indexed)
+     * @param language Language code for localized content (e.g., "en-US", "ar-SA")
+     * @return AppResult containing RemoteTvShowsPage on success, error message on failure
+     */
     suspend fun getTopRatedTvShowsPage(page: Int, language: String): AppResult<RemoteTvShowsPage> {
         return try {
             val tvShowsPage = withContext(appDispatchers.io) {

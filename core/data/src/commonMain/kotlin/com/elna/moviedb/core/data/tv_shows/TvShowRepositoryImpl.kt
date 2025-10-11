@@ -41,8 +41,10 @@ class TvShowRepositoryImpl(
 
     private var popularTvShowsCurrentPage = 0
     private var popularTvShowsTotalPages = 0
+
     private var onTheAirTvShowsCurrentPage = 0
     private var onTheAirTvShowsTotalPages = 0
+
     private var topRatedTvShowsCurrentPage = 0
     private var topRatedTvShowsTotalPages = 0
 
@@ -66,12 +68,15 @@ class TvShowRepositoryImpl(
                     popularTvShowsCurrentPage = 0
                     popularTvShowsTotalPages = 0
                     popularTvShows.value = emptyList()
+
                     onTheAirTvShowsCurrentPage = 0
                     onTheAirTvShowsTotalPages = 0
                     onTheAirTvShows.value = emptyList()
+
                     topRatedTvShowsCurrentPage = 0
                     topRatedTvShowsTotalPages = 0
                     topRatedTvShows.value = emptyList()
+
                     loadPopularTvShowsNextPage()
                     loadOnTheAirTvShowsNextPage()
                     loadTopRatedTvShowsNextPage()
@@ -80,7 +85,7 @@ class TvShowRepositoryImpl(
     }
 
     /**
-     * Observes all TV shows from in-memory storage.
+     * Observes popular TV shows from in-memory storage.
      * Returns a flow of TV shows from the in-memory cache.
      * Automatically triggers initial load if cache is empty.
      */
@@ -96,7 +101,7 @@ class TvShowRepositoryImpl(
     }
 
     /**
-     * Loads the next page of TV shows from the remote API.
+     * Loads the next page of popular TV shows from the remote API.
      *
      * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
