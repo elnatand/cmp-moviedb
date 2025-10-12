@@ -10,7 +10,11 @@ interface PreferencesManager {
     suspend fun setAppLanguageCode(language: AppLanguage)
     fun getAppTheme(): Flow<String>
     suspend fun setAppTheme(theme: AppTheme)
-    fun getMoviesPaginationState(): Flow<PaginationState>
-    suspend fun saveMoviesPaginationState(state: PaginationState)
+    fun getPopularMoviesPaginationState(): Flow<PaginationState>
+    suspend fun savePopularMoviesPaginationState(state: PaginationState)
+    fun getTopRatedMoviesPaginationState(): Flow<PaginationState>
+    suspend fun saveTopRatedMoviesPaginationState(state: PaginationState)
+    fun getNowPlayingMoviesPaginationState(): Flow<PaginationState>
+    suspend fun saveNowPlayingMoviesPaginationState(state: PaginationState)
     suspend fun clearAll()
 }

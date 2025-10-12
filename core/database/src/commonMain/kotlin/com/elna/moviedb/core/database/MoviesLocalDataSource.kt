@@ -8,10 +8,13 @@ class MoviesLocalDataSource(
     private val movieDao: MovieDao,
     private val movieDetailsDao: MovieDetailsDao,
 ) {
+    fun getMoviesByCategoryAsFlow(category: String): Flow<List<MovieEntity>> {
+        return movieDao.getMoviesByCategoryAsFlow(category)
+    }
+
     fun getAllMoviesAsFlow(): Flow<List<MovieEntity>> {
         return movieDao.getAllMoviesAsFlow()
     }
-
 
     suspend fun insertMoviesPage(movies: List<MovieEntity>) {
         movies.forEach {
@@ -25,6 +28,10 @@ class MoviesLocalDataSource(
 
     suspend fun insertMovieDetails(movieDetails: MovieDetailsEntity) {
         movieDetailsDao.insertMovieDetails(movieDetails)
+    }
+
+    suspend fun clearMoviesByCategory(category: String) {
+        movieDao.clearMoviesByCategory(category)
     }
 
     suspend fun clearAllMovies() {

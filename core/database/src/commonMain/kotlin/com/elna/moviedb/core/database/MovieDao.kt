@@ -12,8 +12,14 @@ interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovie(item: MovieEntity)
 
+    @Query("SELECT * FROM MovieEntity WHERE category = :category ORDER BY timestamp")
+    fun getMoviesByCategoryAsFlow(category: String): Flow<List<MovieEntity>>
+
     @Query("SELECT * FROM MovieEntity ORDER BY timestamp")
     fun getAllMoviesAsFlow(): Flow<List<MovieEntity>>
+
+    @Query("DELETE FROM MovieEntity WHERE category = :category")
+    suspend fun clearMoviesByCategory(category: String)
 
     @Query("DELETE FROM MovieEntity")
     suspend fun clearAllMovies()

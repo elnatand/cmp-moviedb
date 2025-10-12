@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,7 +31,7 @@ fun MovieTile(
 
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+            .width(140.dp)
             .clickable { onClick(movie.id, movie.title) },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(
@@ -43,13 +43,13 @@ fun MovieTile(
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.width(140.dp)
         ) {
             // Movie Poster with overlay
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(280.dp)
+                    .width(140.dp)
+                    .height(210.dp)
                     .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
             ) {
                 ImageLoader(
@@ -61,7 +61,7 @@ fun MovieTile(
             // Bottom section with additional info
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .width(140.dp)
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {

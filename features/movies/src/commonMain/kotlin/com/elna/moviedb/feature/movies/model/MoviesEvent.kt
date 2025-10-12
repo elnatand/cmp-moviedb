@@ -7,9 +7,19 @@ package com.elna.moviedb.feature.movies.model
  */
 sealed interface MoviesEvent {
     /**
-     * User scrolled to the bottom and wants to load more movies
+     * User scrolled near the end of popular movies and wants to load more
      */
-    data object LoadNextPage : MoviesEvent
+    data object LoadNextPagePopular : MoviesEvent
+
+    /**
+     * User scrolled near the end of top rated movies and wants to load more
+     */
+    data object LoadNextPageTopRated : MoviesEvent
+
+    /**
+     * User scrolled near the end of now playing movies and wants to load more
+     */
+    data object LoadNextPageNowPlaying : MoviesEvent
 
     /**
      * User clicked retry button after an error

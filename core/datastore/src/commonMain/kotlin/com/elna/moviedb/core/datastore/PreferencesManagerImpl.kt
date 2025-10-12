@@ -26,8 +26,12 @@ internal class PreferencesManagerImpl(private val dataStore: DataStore<Preferenc
     private object PreferenceKeys {
         val LANGUAGE = stringPreferencesKey("language")
         val THEME = stringPreferencesKey("theme")
-        val MOVIES_CURRENT_PAGE = intPreferencesKey("movies_current_page")
-        val MOVIES_TOTAL_PAGES = intPreferencesKey("movies_total_pages")
+        val POPULAR_MOVIES_CURRENT_PAGE = intPreferencesKey("popular_movies_current_page")
+        val POPULAR_MOVIES_TOTAL_PAGES = intPreferencesKey("popular_movies_total_pages")
+        val TOP_RATED_MOVIES_CURRENT_PAGE = intPreferencesKey("top_rated_movies_current_page")
+        val TOP_RATED_MOVIES_TOTAL_PAGES = intPreferencesKey("top_rated_movies_total_pages")
+        val NOW_PLAYING_MOVIES_CURRENT_PAGE = intPreferencesKey("now_playing_movies_current_page")
+        val NOW_PLAYING_MOVIES_TOTAL_PAGES = intPreferencesKey("now_playing_movies_total_pages")
     }
 
     /**
@@ -80,24 +84,68 @@ internal class PreferencesManagerImpl(private val dataStore: DataStore<Preferenc
     }
 
     /**
-     * Get movies pagination state
+     * Get popular movies pagination state
      */
-    override fun getMoviesPaginationState(): Flow<PaginationState> {
+    override fun getPopularMoviesPaginationState(): Flow<PaginationState> {
         return dataStore.data.map { preferences ->
             PaginationState(
-                currentPage = preferences[PreferenceKeys.MOVIES_CURRENT_PAGE] ?: 0,
-                totalPages = preferences[PreferenceKeys.MOVIES_TOTAL_PAGES] ?: 0
+                currentPage = preferences[PreferenceKeys.POPULAR_MOVIES_CURRENT_PAGE] ?: 0,
+                totalPages = preferences[PreferenceKeys.POPULAR_MOVIES_TOTAL_PAGES] ?: 0
             )
         }
     }
 
     /**
-     * Save movies pagination state
+     * Save popular movies pagination state
      */
-    override suspend fun saveMoviesPaginationState(state: PaginationState) {
+    override suspend fun savePopularMoviesPaginationState(state: PaginationState) {
         dataStore.edit { preferences ->
-            preferences[PreferenceKeys.MOVIES_CURRENT_PAGE] = state.currentPage
-            preferences[PreferenceKeys.MOVIES_TOTAL_PAGES] = state.totalPages
+            preferences[PreferenceKeys.POPULAR_MOVIES_CURRENT_PAGE] = state.currentPage
+            preferences[PreferenceKeys.POPULAR_MOVIES_TOTAL_PAGES] = state.totalPages
+        }
+    }
+
+    /**
+     * Get top rated movies pagination state
+     */
+    override fun getTopRatedMoviesPaginationState(): Flow<PaginationState> {
+        return dataStore.data.map { preferences ->
+            PaginationState(
+                currentPage = preferences[PreferenceKeys.TOP_RATED_MOVIES_CURRENT_PAGE] ?: 0,
+                totalPages = preferences[PreferenceKeys.TOP_RATED_MOVIES_TOTAL_PAGES] ?: 0
+            )
+        }
+    }
+
+    /**
+     * Save top rated movies pagination state
+     */
+    override suspend fun saveTopRatedMoviesPaginationState(state: PaginationState) {
+        dataStore.edit { preferences ->
+            preferences[PreferenceKeys.TOP_RATED_MOVIES_CURRENT_PAGE] = state.currentPage
+            preferences[PreferenceKeys.TOP_RATED_MOVIES_TOTAL_PAGES] = state.totalPages
+        }
+    }
+
+    /**
+     * Get now playing movies pagination state
+     */
+    override fun getNowPlayingMoviesPaginationState(): Flow<PaginationState> {
+        return dataStore.data.map { preferences ->
+            PaginationState(
+                currentPage = preferences[PreferenceKeys.NOW_PLAYING_MOVIES_CURRENT_PAGE] ?: 0,
+                totalPages = preferences[PreferenceKeys.NOW_PLAYING_MOVIES_TOTAL_PAGES] ?: 0
+            )
+        }
+    }
+
+    /**
+     * Save now playing movies pagination state
+     */
+    override suspend fun saveNowPlayingMoviesPaginationState(state: PaginationState) {
+        dataStore.edit { preferences ->
+            preferences[PreferenceKeys.NOW_PLAYING_MOVIES_CURRENT_PAGE] = state.currentPage
+            preferences[PreferenceKeys.NOW_PLAYING_MOVIES_TOTAL_PAGES] = state.totalPages
         }
     }
 
