@@ -230,7 +230,10 @@ private fun TvShowsSection(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(tvShows) { tvShow ->
+            items(
+                items = tvShows,
+                key = { it.id }
+            ) { tvShow ->
                 TvShowTile(
                     tvShow = tvShow,
                     onClick = onClick

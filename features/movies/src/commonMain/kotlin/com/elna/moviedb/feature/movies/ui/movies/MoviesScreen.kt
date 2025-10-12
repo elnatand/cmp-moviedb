@@ -231,7 +231,10 @@ private fun MoviesSection(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(movies) { movie ->
+            items(
+                items = movies,
+                key = { it.id }
+            ) { movie ->
                 MovieTile(
                     movie = movie,
                     onClick = onClick
