@@ -17,8 +17,10 @@ import org.koin.compose.koinInject
 fun App() {
     val appState: AppState = rememberAppState()
     val preferencesManager: PreferencesManager = koinInject()
+
     val selectedLanguage by preferencesManager.getAppLanguageCode()
         .collectAsStateWithLifecycle(AppLanguage.ENGLISH.code)
+
     val selectedTheme by preferencesManager.getAppTheme()
         .collectAsStateWithLifecycle(AppTheme.SYSTEM.value)
 

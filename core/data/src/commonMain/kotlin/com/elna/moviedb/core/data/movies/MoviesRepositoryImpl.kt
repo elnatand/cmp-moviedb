@@ -304,6 +304,8 @@ class MoviesRepositoryImpl(
             PaginationState(currentPage = 0, totalPages = 0)
         )
 
+        moviesLocalDataSource.clearAllMovies()
+
         // Load all three categories in parallel
         val results = awaitAll(
             repositoryScope.async { loadPopularMoviesNextPage() },

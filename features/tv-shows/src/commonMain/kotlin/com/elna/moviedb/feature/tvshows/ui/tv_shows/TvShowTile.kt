@@ -1,7 +1,6 @@
 package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.ui.utils.ImageLoader
@@ -33,13 +33,11 @@ fun TvShowTile(
     val imageUrl = tvShow.posterPath ?: ""
 
     Card(
-        modifier = Modifier
-            .width(140.dp)
-            .clickable { onClick(tvShow.id, tvShow.name) },
-        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.width(144.dp),
+        onClick = { onClick(tvShow.id, tvShow.name) },
+        shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp,
-            hoveredElevation = 12.dp
         ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -51,9 +49,9 @@ fun TvShowTile(
             // TV Show Poster
             Box(
                 modifier = Modifier
-                    .width(140.dp)
-                    .height(210.dp)
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                    .width(144.dp)
+                    .height(216.dp)
+                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
             ) {
                 ImageLoader(
                     imageUrl = imageUrl,
@@ -61,24 +59,21 @@ fun TvShowTile(
                 )
             }
 
-            // Bottom section with title
             Column(
                 modifier = Modifier
-                    .width(140.dp)
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .width(144.dp)
+                    .height(64.dp)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Box(
-                    modifier = Modifier.height(48.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = tvShow.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
+                Text(
+                    text = tvShow.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }

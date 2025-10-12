@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.ui.utils.ImageLoader
@@ -30,13 +31,11 @@ fun MovieTile(
     val imageUrl = movie.poster_path ?: ""
 
     Card(
-        modifier = Modifier
-            .width(140.dp)
-            .clickable { onClick(movie.id, movie.title) },
-        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.width(144.dp),
+        shape = RoundedCornerShape(8.dp),
+        onClick = { onClick(movie.id, movie.title) },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp,
-            hoveredElevation = 12.dp
         ),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -48,9 +47,9 @@ fun MovieTile(
             // Movie Poster with overlay
             Box(
                 modifier = Modifier
-                    .width(140.dp)
-                    .height(210.dp)
-                    .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                    .width(144.dp)
+                    .height(216.dp)
+                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
             ) {
                 ImageLoader(
                     imageUrl = imageUrl,
@@ -58,24 +57,21 @@ fun MovieTile(
                 )
             }
 
-            // Bottom section with additional info
             Column(
                 modifier = Modifier
-                    .width(140.dp)
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                    .width(144.dp)
+                    .height(64.dp)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Box(
-                    modifier = Modifier.height(48.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = movie.title,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
+                Text(
+                    text = movie.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
