@@ -1,5 +1,7 @@
 <resources>
     <string name="popular_movies">סרטים פופולריים</string>
+    <string name="top_rated_movies">סרטים מדורגים</string>
+    <string name="now_playing_movies">סרטים בקולנוע</string>
     <string name="popular_tv_shows">סדרות פופולריות</string>
     <string name="top_rated_tv_shows">סדרות מדורגות</string>
     <string name="on_the_air_tv_shows">סדרות בשידור</string>

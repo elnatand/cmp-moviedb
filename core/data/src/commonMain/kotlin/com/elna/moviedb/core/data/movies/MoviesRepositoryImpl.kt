@@ -4,6 +4,7 @@ package com.elna.moviedb.core.data.movies
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.database.MoviesLocalDataSource
+import com.elna.moviedb.core.database.model.MovieCategory
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppLanguage
@@ -13,6 +14,8 @@ import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -53,24 +56,25 @@ class MoviesRepositoryImpl(
                 .drop(1) // Skip initial emission to avoid clearing on screen entry
                 .collect {
                     clearMovies()
-                    loadNextPage()
+                    loadPopularMoviesNextPage()
+                    loadTopRatedMoviesNextPage()
+                    loadNowPlayingMoviesNextPage()
                 }
         }
     }
 
-
     /**
-     * Observes all movies from local storage.
+     * Observes popular movies from local storage.
      * Returns a flow of movies from the local cache.
      * Automatically triggers initial load if cache is empty.
      */
-    override suspend fun observeAllMovies(): Flow<List<Movie>> {
-        val localMoviesPageStream = moviesLocalDataSource.getAllMoviesAsFlow()
+    override suspend fun observePopularMovies(): Flow<List<Movie>> {
+        val localMoviesPageStream = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.POPULAR.name)
 
         // Load initial data if empty (non-blocking)
         repositoryScope.launch {
             if (localMoviesPageStream.first().isEmpty()) {
-                loadNextPage()
+                loadPopularMoviesNextPage()
             }
         }
 
@@ -85,6 +89,171 @@ class MoviesRepositoryImpl(
         }
     }
 
+    /**
+     * Observes top rated movies from local storage.
+     * Returns a flow of movies from the local cache.
+     * Automatically triggers initial load if cache is empty.
+     */
+    override suspend fun observeTopRatedMovies(): Flow<List<Movie>> {
+        val localMoviesPageStream = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.TOP_RATED.name)
+
+        // Load initial data if empty (non-blocking)
+        repositoryScope.launch {
+            if (localMoviesPageStream.first().isEmpty()) {
+                loadTopRatedMoviesNextPage()
+            }
+        }
+
+        return localMoviesPageStream.map { movieEntities ->
+            movieEntities.map {
+                Movie(
+                    id = it.id,
+                    title = it.title,
+                    poster_path = it.poster_path
+                )
+            }
+        }
+    }
+
+    /**
+     * Observes now playing movies from local storage.
+     * Returns a flow of movies from the local cache.
+     * Automatically triggers initial load if cache is empty.
+     */
+    override suspend fun observeNowPlayingMovies(): Flow<List<Movie>> {
+        val localMoviesPageStream = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name)
+
+        // Load initial data if empty (non-blocking)
+        repositoryScope.launch {
+            if (localMoviesPageStream.first().isEmpty()) {
+                loadNowPlayingMoviesNextPage()
+            }
+        }
+
+        return localMoviesPageStream.map { movieEntities ->
+            movieEntities.map {
+                Movie(
+                    id = it.id,
+                    title = it.title,
+                    poster_path = it.poster_path
+                )
+            }
+        }
+    }
+
+    /**
+     * Loads the next page of popular movies from the remote API.
+     *
+     * @return AppResult<Unit> Success if page loaded, Error if loading failed
+     */
+    override suspend fun loadPopularMoviesNextPage(): AppResult<Unit> {
+        val currentLanguage = getLanguage()
+        val paginationState = preferencesManager.getPopularMoviesPaginationState().first()
+
+        if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
+            return AppResult.Success(Unit)  // All pages loaded
+        }
+
+        val nextPage = paginationState.currentPage + 1
+
+        return when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, currentLanguage)) {
+            is AppResult.Success -> {
+                val newTotalPages = result.data.totalPages
+                val entities = result.data.results.map {
+                    it.asEntity().copy(category = MovieCategory.POPULAR.name)
+                }
+                moviesLocalDataSource.insertMoviesPage(entities)
+
+                // Save pagination state to DataStore
+                preferencesManager.savePopularMoviesPaginationState(
+                    PaginationState(
+                        currentPage = nextPage,
+                        totalPages = newTotalPages
+                    )
+                )
+
+                AppResult.Success(Unit)
+            }
+
+            is AppResult.Error -> result
+        }
+    }
+
+    /**
+     * Loads the next page of top rated movies from the remote API.
+     *
+     * @return AppResult<Unit> Success if page loaded, Error if loading failed
+     */
+    override suspend fun loadTopRatedMoviesNextPage(): AppResult<Unit> {
+        val currentLanguage = getLanguage()
+        val paginationState = preferencesManager.getTopRatedMoviesPaginationState().first()
+
+        if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
+            return AppResult.Success(Unit)  // All pages loaded
+        }
+
+        val nextPage = paginationState.currentPage + 1
+
+        return when (val result = moviesRemoteDataSource.getTopRatedMoviesPage(nextPage, currentLanguage)) {
+            is AppResult.Success -> {
+                val newTotalPages = result.data.totalPages
+                val entities = result.data.results.map {
+                    it.asEntity().copy(category = MovieCategory.TOP_RATED.name)
+                }
+                moviesLocalDataSource.insertMoviesPage(entities)
+
+                // Save pagination state to DataStore
+                preferencesManager.saveTopRatedMoviesPaginationState(
+                    PaginationState(
+                        currentPage = nextPage,
+                        totalPages = newTotalPages
+                    )
+                )
+
+                AppResult.Success(Unit)
+            }
+
+            is AppResult.Error -> result
+        }
+    }
+
+    /**
+     * Loads the next page of now playing movies from the remote API.
+     *
+     * @return AppResult<Unit> Success if page loaded, Error if loading failed
+     */
+    override suspend fun loadNowPlayingMoviesNextPage(): AppResult<Unit> {
+        val currentLanguage = getLanguage()
+        val paginationState = preferencesManager.getNowPlayingMoviesPaginationState().first()
+
+        if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
+            return AppResult.Success(Unit)  // All pages loaded
+        }
+
+        val nextPage = paginationState.currentPage + 1
+
+        return when (val result = moviesRemoteDataSource.getNowPlayingMoviesPage(nextPage, currentLanguage)) {
+            is AppResult.Success -> {
+                val newTotalPages = result.data.totalPages
+                val entities = result.data.results.map {
+                    it.asEntity().copy(category = MovieCategory.NOW_PLAYING.name)
+                }
+                moviesLocalDataSource.insertMoviesPage(entities)
+
+                // Save pagination state to DataStore
+                preferencesManager.saveNowPlayingMoviesPaginationState(
+                    PaginationState(
+                        currentPage = nextPage,
+                        totalPages = newTotalPages
+                    )
+                )
+
+                AppResult.Success(Unit)
+            }
+
+            is AppResult.Error -> result
+        }
+    }
 
     /**
      * Retrieves detailed information for a specific movie.
@@ -116,73 +285,50 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Loads the next page of movies from the remote API.
-     *
-     * @return AppResult<Unit> Success if page loaded, Error if loading failed
-     */
-    override suspend fun loadNextPage(): AppResult<Unit> {
-        val currentLanguage = getLanguage()
-        val paginationState = preferencesManager.getMoviesPaginationState().first()
-
-        if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
-            return AppResult.Success(Unit)  // All pages loaded
-        }
-
-        val nextPage = paginationState.currentPage + 1
-
-        return when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, currentLanguage)) {
-            is AppResult.Success -> {
-                val newTotalPages = result.data.totalPages
-                val entities = result.data.results.map { it.asEntity() }
-                moviesLocalDataSource.insertMoviesPage(entities)
-
-                // Save pagination state to DataStore
-                preferencesManager.saveMoviesPaginationState(
-                    PaginationState(
-                        currentPage = nextPage,
-                        totalPages = newTotalPages
-                    )
-                )
-
-                AppResult.Success(Unit)
-            }
-
-            is AppResult.Error -> result
-        }
-    }
-
-    /**
-     * Refreshes the movie data by resetting pagination state and loading fresh data.
+     * Refreshes all movie data by resetting pagination state and loading fresh data
+     * for all three categories (popular, top-rated, now-playing) in parallel.
      *
      * @return AppResult<List<Movie>> Either:
-     *   - AppResult.Success with the refreshed list of movies if successful
-     *   - AppResult.Error if the refresh operation failed
+     *   - AppResult.Success with the combined refreshed list of all movies if successful
+     *   - AppResult.Error if any of the refresh operations failed
      */
     override suspend fun refresh(): AppResult<List<Movie>> {
-        // Reset pagination state in DataStore
-        preferencesManager.saveMoviesPaginationState(
-            PaginationState(
-                currentPage = 0,
-                totalPages = 0
-            )
+        // Reset all pagination states in DataStore
+        preferencesManager.savePopularMoviesPaginationState(
+            PaginationState(currentPage = 0, totalPages = 0)
+        )
+        preferencesManager.saveTopRatedMoviesPaginationState(
+            PaginationState(currentPage = 0, totalPages = 0)
+        )
+        preferencesManager.saveNowPlayingMoviesPaginationState(
+            PaginationState(currentPage = 0, totalPages = 0)
         )
 
-        return when (val result = loadNextPage()) {
-            is AppResult.Success -> {
-                // Get the current data from local storage
-                val localMovies = moviesLocalDataSource.getAllMoviesAsFlow().first()
-                AppResult.Success(
-                    data = localMovies.map {
-                        Movie(
-                            id = it.id,
-                            title = it.title,
-                            poster_path = it.poster_path
-                        )
-                    }
-                )
-            }
-            is AppResult.Error -> result
+        moviesLocalDataSource.clearAllMovies()
+
+        // Load all three categories in parallel
+        val results = awaitAll(
+            repositoryScope.async { loadPopularMoviesNextPage() },
+            repositoryScope.async { loadTopRatedMoviesNextPage() },
+            repositoryScope.async { loadNowPlayingMoviesNextPage() }
+        )
+
+        // Check if any failed
+        val error = results.firstOrNull { it is AppResult.Error } as? AppResult.Error
+        if (error != null) {
+            return error
         }
+
+        // All succeeded - return combined list from local storage
+        val popularMovies = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.POPULAR.name).first()
+        val topRatedMovies = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.TOP_RATED.name).first()
+        val nowPlayingMovies = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name).first()
+
+        val combinedList = (popularMovies + topRatedMovies + nowPlayingMovies).map {
+            Movie(id = it.id, title = it.title, poster_path = it.poster_path)
+        }
+
+        return AppResult.Success(combinedList)
     }
 
     /**
@@ -192,12 +338,15 @@ class MoviesRepositoryImpl(
      * are re-fetched in the new language.
      */
     override suspend fun clearMovies() {
-        // Reset pagination state in DataStore
-        preferencesManager.saveMoviesPaginationState(
-            PaginationState(
-                currentPage = 0,
-                totalPages = 0,
-            )
+        // Reset all pagination states in DataStore
+        preferencesManager.savePopularMoviesPaginationState(
+            PaginationState(currentPage = 0, totalPages = 0)
+        )
+        preferencesManager.saveTopRatedMoviesPaginationState(
+            PaginationState(currentPage = 0, totalPages = 0)
+        )
+        preferencesManager.saveNowPlayingMoviesPaginationState(
+            PaginationState(currentPage = 0, totalPages = 0)
         )
         moviesLocalDataSource.clearAllMovies()
     }

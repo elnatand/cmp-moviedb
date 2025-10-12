@@ -1,13 +1,12 @@
 package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,45 +29,35 @@ fun TvShowTile(
 ) {
     val imageUrl = tvShow.posterPath ?: ""
 
-    Column(
-        modifier = Modifier
-            .width(140.dp)
-            .height(260.dp)
-            .clickable { onClick(tvShow.id, tvShow.name) }
-    ) {
-        // TV Show Poster
-        Card(
-            modifier = Modifier
-                .width(140.dp)
-                .height(210.dp),
-            shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 4.dp
-            )
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                ImageLoader(
-                    imageUrl = imageUrl,
-                    modifier = Modifier.fillMaxSize(),
-                    contentDescription = tvShow.name
-                )
-            }
-        }
-
-        // TV Show Title
-        Text(
-            text = tvShow.name,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .width(140.dp)
-                .padding(top = 8.dp)
+    Card(
+        modifier = Modifier.width(144.dp),
+        onClick = { onClick(tvShow.id, tvShow.name) },
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp,
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
         )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ImageLoader(
+                imageUrl = imageUrl,
+                modifier = Modifier.height(216.dp)
+            )
+
+            Text(
+                modifier = Modifier.height(64.dp).padding(8.dp),
+                text = tvShow.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
