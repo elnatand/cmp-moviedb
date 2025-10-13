@@ -45,8 +45,8 @@ class MoviesRemoteDataSource(
         page: Int,
         language: String
     ): AppResult<RemoteMoviesPage> {
-        return try {
-            val moviesPage = withContext(appDispatchers.io) {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}$path") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -55,12 +55,6 @@ class MoviesRemoteDataSource(
                     }
                 }.body<RemoteMoviesPage>()
             }
-            AppResult.Success(moviesPage)
-        } catch (e: Exception) {
-            AppResult.Error(
-                message = e.message ?: "Unknown error occurred",
-                throwable = e
-            )
         }
     }
 }

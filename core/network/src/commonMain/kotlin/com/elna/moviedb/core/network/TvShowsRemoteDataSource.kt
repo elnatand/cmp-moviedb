@@ -7,6 +7,7 @@ import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowsPage
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
+import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -26,20 +27,22 @@ class TvShowsRemoteDataSource(
     suspend fun getTopRatedTvShowsPage(page: Int, language: String) =
         fetchTvShowsPage("tv/top_rated", page, language)
 
-    suspend fun getTvShowDetails(tvShowId: Int, language: String): RemoteTvShowDetails {
+    suspend fun getTvShowDetails(tvShowId: Int, language: String): AppResult<RemoteTvShowDetails> {
         return withContext(appDispatchers.io) {
-            httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}") {
-                url {
-                    parameters.append("api_key", TMDB_API_KEY)
-                    parameters.append("language", language)
-                }
-            }.body<RemoteTvShowDetails>()
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteTvShowDetails>()
+            }
         }
     }
 
     suspend fun getTvShowVideos(tvShowId: Int, language: String): AppResult<RemoteVideoResponse> {
-        return try {
-            val videoResponse = withContext(appDispatchers.io) {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}/videos") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -47,9 +50,6 @@ class TvShowsRemoteDataSource(
                     }
                 }.body<RemoteVideoResponse>()
             }
-            AppResult.Success(videoResponse)
-        } catch (e: Exception) {
-            AppResult.Error(e.message ?: "Unknown error occurred")
         }
     }
 
@@ -58,8 +58,8 @@ class TvShowsRemoteDataSource(
         page: Int,
         language: String
     ): AppResult<RemoteTvShowsPage> {
-        return try {
-            val tvShowsPage = withContext(appDispatchers.io) {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}$path") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -68,9 +68,6 @@ class TvShowsRemoteDataSource(
                     }
                 }.body<RemoteTvShowsPage>()
             }
-            AppResult.Success(tvShowsPage)
-        } catch (e: Exception) {
-            AppResult.Error(e.message ?: "Unknown error occurred")
         }
     }
 }

@@ -256,8 +256,14 @@ class TvShowRepositoryImpl(
         val detailsDeferred = async { tvShowsRemoteDataSource.getTvShowDetails(tvShowId, language) }
         val videosDeferred = async { tvShowsRemoteDataSource.getTvShowVideos(tvShowId, language) }
 
-        val details = detailsDeferred.await()
+        val detailsResult = detailsDeferred.await()
         val videosResult = videosDeferred.await()
+
+        // Extract details or throw exception if failed
+        val details = when (detailsResult) {
+            is AppResult.Success -> detailsResult.data
+            is AppResult.Error -> throw detailsResult.throwable ?: Exception(detailsResult.message)
+        }
 
         // Map videos to domain and filter for trailers/teasers
         val trailers = when (videosResult) {
