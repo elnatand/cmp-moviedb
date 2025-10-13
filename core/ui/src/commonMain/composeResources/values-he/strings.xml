@@ -67,6 +67,7 @@
     <string name="unknown">לא ידוע</string>
     <string name="yes">כן</string>
     <string name="no">לא</string>
+    <string name="trailers">טריילרים</string>
 
     <!-- Error Messages -->
     <string name="unknown_error_occurred">אירעה שגיאה לא ידועה</string>

@@ -67,6 +67,7 @@
     <string name="unknown">غير معروف</string>
     <string name="yes">نعم</string>
     <string name="no">لا</string>
+    <string name="trailers">عرض تشويقي</string>
 
     <!-- Error Messages -->
     <string name="unknown_error_occurred">حدث خطأ غير معروف</string>

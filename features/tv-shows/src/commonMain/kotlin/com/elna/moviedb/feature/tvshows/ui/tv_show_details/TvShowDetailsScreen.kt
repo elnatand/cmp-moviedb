@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,6 +47,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.ImageLoader
@@ -84,6 +87,7 @@ import com.elna.moviedb.resources.series_status
 import com.elna.moviedb.resources.spoken_languages
 import com.elna.moviedb.resources.status
 import com.elna.moviedb.resources.total_seasons
+import com.elna.moviedb.resources.trailers
 import com.elna.moviedb.resources.type
 import com.elna.moviedb.resources.unknown
 import com.elna.moviedb.resources.votes
@@ -127,39 +131,30 @@ fun TvShowDetailsScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    // Hero Section with Backdrop and Poster
                     HeroSection(tvShow = uiState.tvShowDetails)
 
-                    // Content Section
                     Column(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
-                        // Basic Info Section
                         BasicInfoSection(tvShow = uiState.tvShowDetails)
 
-                        // Overview Section
                         OverviewSection(tvShow = uiState.tvShowDetails)
 
-                        // Ratings and Stats Section
+                        TrailersSection(tvShow = uiState.tvShowDetails)
+
                         RatingsSection(tvShow = uiState.tvShowDetails)
 
-                        // Series Information Section
                         SeriesInfoSection(tvShow = uiState.tvShowDetails)
 
-                        // Production Section
                         ProductionSection(tvShow = uiState.tvShowDetails)
 
-                        // Episodes Section
                         EpisodesSection(tvShow = uiState.tvShowDetails)
 
-                        // Genres Section
                         GenresSection(tvShow = uiState.tvShowDetails)
 
-                        // Networks Section
                         NetworksSection(tvShow = uiState.tvShowDetails)
 
-                        // Languages Section
                         LanguagesSection(tvShow = uiState.tvShowDetails)
                     }
                 }
@@ -175,7 +170,6 @@ private fun HeroSection(tvShow: TvShowDetails) {
             .fillMaxWidth()
             .height(450.dp)
     ) {
-        // Backdrop Image
         tvShow.backdropPath?.takeIf { it.isNotEmpty() }?.let { backdropPath ->
             ImageLoader(
                 imageUrl = backdropPath,
@@ -290,7 +284,9 @@ private fun BasicInfoSection(tvShow: TvShowDetails) {
             InfoRow(
                 icon = Icons.Default.CalendarToday,
                 label = stringResource(Res.string.first_air_date),
-                value = formatDate(tvShow.firstAirDate ?: "").ifEmpty { stringResource(Res.string.unknown) }
+                value = formatDate(
+                    tvShow.firstAirDate ?: ""
+                ).ifEmpty { stringResource(Res.string.unknown) }
             )
 
             tvShow.lastAirDate?.takeIf { it.isNotEmpty() }?.let { lastAirDate ->
@@ -452,13 +448,16 @@ private fun SeriesInfoSection(tvShow: TvShowDetails) {
             InfoRow(
                 icon = Icons.Default.Tv,
                 label = stringResource(Res.string.status),
-                value = tvShow.status?.ifEmpty { stringResource(Res.string.unknown) } ?: stringResource(Res.string.unknown)
+                value = tvShow.status?.ifEmpty { stringResource(Res.string.unknown) }
+                    ?: stringResource(Res.string.unknown)
             )
 
             InfoRow(
                 icon = Icons.Default.PlayArrow,
                 label = stringResource(Res.string.in_production),
-                value = if (tvShow.inProduction == true) stringResource(Res.string.yes) else stringResource(Res.string.no)
+                value = if (tvShow.inProduction == true) stringResource(Res.string.yes) else stringResource(
+                    Res.string.no
+                )
             )
 
             InfoRow(
@@ -559,7 +558,11 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
                 )
                 tvShow.lastEpisodeAirDate?.takeIf { it.isNotEmpty() }?.let { lastEpisodeAirDate ->
                     Text(
-                        text = "${stringResource(Res.string.aired_prefix)}${formatDate(lastEpisodeAirDate)}",
+                        text = "${stringResource(Res.string.aired_prefix)}${
+                            formatDate(
+                                lastEpisodeAirDate
+                            )
+                        }",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -579,7 +582,11 @@ private fun EpisodesSection(tvShow: TvShowDetails) {
                 )
                 tvShow.nextEpisodeAirDate?.takeIf { it.isNotEmpty() }?.let { nextEpisodeAirDate ->
                     Text(
-                        text = "${stringResource(Res.string.airs_prefix)}${formatDate(nextEpisodeAirDate)}",
+                        text = "${stringResource(Res.string.airs_prefix)}${
+                            formatDate(
+                                nextEpisodeAirDate
+                            )
+                        }",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -689,6 +696,94 @@ private fun LanguagesSection(tvShow: TvShowDetails) {
                         value = languages.joinToString(", ")
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrailersSection(tvShow: TvShowDetails) {
+    tvShow.trailers?.takeIf { it.isNotEmpty() }?.let { trailers ->
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = stringResource(Res.string.trailers),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(trailers) { trailer ->
+                        TrailerCard(trailer = trailer)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrailerCard(trailer: Video) {
+    val uriHandler = LocalUriHandler.current
+
+    Card(
+        modifier = Modifier.width(200.dp).padding(2.dp),
+        onClick = { uriHandler.openUri(trailer.getVideoUrl()) },
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            ) {
+                ImageLoader(
+                    imageUrl = trailer.getThumbnailUrl(),
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier.padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = trailer.name,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                AssistChip(
+                    onClick = { },
+                    label = {
+                        Text(
+                            trailer.site.displayName,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
+                )
             }
         }
     }
