@@ -5,13 +5,13 @@ import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.MovieCategory
+import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
-import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
@@ -73,13 +73,12 @@ class MoviesRepositoryImpl(
      * Automatically triggers initial load if cache is empty.
      */
     override suspend fun observePopularMovies(): Flow<List<Movie>> {
-        val localMoviesPageStream = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.POPULAR.name)
+        val localMoviesPageStream =
+            moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.POPULAR.name)
 
-        // Load initial data if empty (non-blocking)
-        repositoryScope.launch {
-            if (localMoviesPageStream.first().isEmpty()) {
-                loadPopularMoviesNextPage()
-            }
+        // Load initial data if empty
+        if (localMoviesPageStream.first().isEmpty()) {
+            loadPopularMoviesNextPage()
         }
 
         return localMoviesPageStream.map { movieEntities ->
@@ -99,13 +98,12 @@ class MoviesRepositoryImpl(
      * Automatically triggers initial load if cache is empty.
      */
     override suspend fun observeTopRatedMovies(): Flow<List<Movie>> {
-        val localMoviesPageStream = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.TOP_RATED.name)
+        val localMoviesPageStream =
+            moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.TOP_RATED.name)
 
-        // Load initial data if empty (non-blocking)
-        repositoryScope.launch {
-            if (localMoviesPageStream.first().isEmpty()) {
-                loadTopRatedMoviesNextPage()
-            }
+        // Load initial data if empty
+        if (localMoviesPageStream.first().isEmpty()) {
+            loadTopRatedMoviesNextPage()
         }
 
         return localMoviesPageStream.map { movieEntities ->
@@ -125,13 +123,12 @@ class MoviesRepositoryImpl(
      * Automatically triggers initial load if cache is empty.
      */
     override suspend fun observeNowPlayingMovies(): Flow<List<Movie>> {
-        val localMoviesPageStream = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name)
+        val localMoviesPageStream =
+            moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name)
 
-        // Load initial data if empty (non-blocking)
-        repositoryScope.launch {
-            if (localMoviesPageStream.first().isEmpty()) {
-                loadNowPlayingMoviesNextPage()
-            }
+        // Load initial data if empty
+        if (localMoviesPageStream.first().isEmpty()) {
+            loadNowPlayingMoviesNextPage()
         }
 
         return localMoviesPageStream.map { movieEntities ->
@@ -160,7 +157,8 @@ class MoviesRepositoryImpl(
 
         val nextPage = paginationState.currentPage + 1
 
-        return when (val result = moviesRemoteDataSource.getPopularMoviesPage(nextPage, currentLanguage)) {
+        return when (val result =
+            moviesRemoteDataSource.getPopularMoviesPage(nextPage, currentLanguage)) {
             is AppResult.Success -> {
                 val newTotalPages = result.data.totalPages
                 val entities = result.data.results.map {
@@ -198,7 +196,8 @@ class MoviesRepositoryImpl(
 
         val nextPage = paginationState.currentPage + 1
 
-        return when (val result = moviesRemoteDataSource.getTopRatedMoviesPage(nextPage, currentLanguage)) {
+        return when (val result =
+            moviesRemoteDataSource.getTopRatedMoviesPage(nextPage, currentLanguage)) {
             is AppResult.Success -> {
                 val newTotalPages = result.data.totalPages
                 val entities = result.data.results.map {
@@ -236,7 +235,8 @@ class MoviesRepositoryImpl(
 
         val nextPage = paginationState.currentPage + 1
 
-        return when (val result = moviesRemoteDataSource.getNowPlayingMoviesPage(nextPage, currentLanguage)) {
+        return when (val result =
+            moviesRemoteDataSource.getNowPlayingMoviesPage(nextPage, currentLanguage)) {
             is AppResult.Success -> {
                 val newTotalPages = result.data.totalPages
                 val entities = result.data.results.map {
@@ -309,6 +309,7 @@ class MoviesRepositoryImpl(
                     .take(10)
                     .map { it.toDomain() }
             }
+
             is AppResult.Error -> emptyList()  // Graceful degradation
         }
 
@@ -363,9 +364,12 @@ class MoviesRepositoryImpl(
         }
 
         // All succeeded - return combined list from local storage
-        val popularMovies = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.POPULAR.name).first()
-        val topRatedMovies = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.TOP_RATED.name).first()
-        val nowPlayingMovies = moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name).first()
+        val popularMovies =
+            moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.POPULAR.name).first()
+        val topRatedMovies =
+            moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.TOP_RATED.name).first()
+        val nowPlayingMovies =
+            moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name).first()
 
         val combinedList = (popularMovies + topRatedMovies + nowPlayingMovies).map {
             Movie(id = it.id, title = it.title, poster_path = it.poster_path)
