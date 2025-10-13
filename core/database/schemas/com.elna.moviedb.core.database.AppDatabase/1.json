@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "f3f7dc1b4dda750f2608ba224b09089f",
+    "identityHash": "d9aedf7b71db155dc833389e6719bd94",
     "entities": [
       {
         "tableName": "MovieEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `title` TEXT NOT NULL, `poster_path` TEXT, `category` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `title` TEXT NOT NULL, `posterPath` TEXT, `category` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -27,8 +27,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "poster_path",
-            "columnName": "poster_path",
+            "fieldPath": "posterPath",
+            "columnName": "posterPath",
             "affinity": "TEXT"
           },
           {
@@ -177,7 +177,7 @@
       },
       {
         "tableName": "videos",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `movie_id` INTEGER NOT NULL, `key` TEXT NOT NULL, `name` TEXT NOT NULL, `site` TEXT NOT NULL, `type` TEXT NOT NULL, `official` INTEGER NOT NULL, `published_at` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`movie_id`) REFERENCES `MovieDetailsEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `movie_id` INTEGER NOT NULL, `key` TEXT NOT NULL, `name` TEXT NOT NULL, `site` TEXT NOT NULL, `type` TEXT NOT NULL, `official` INTEGER NOT NULL, `published_at` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`movie_id`) REFERENCES `MovieDetailsEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED)",
         "fields": [
           {
             "fieldPath": "id",
@@ -261,7 +261,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f3f7dc1b4dda750f2608ba224b09089f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd9aedf7b71db155dc833389e6719bd94')"
     ]
   }
 }
