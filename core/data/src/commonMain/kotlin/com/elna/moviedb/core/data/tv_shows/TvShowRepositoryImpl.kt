@@ -249,15 +249,23 @@ class TvShowRepositoryImpl(
         return@coroutineScope AppResult.Success(combinedList)
     }
 
-    override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails = coroutineScope {
+    override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> = coroutineScope {
         val language = getLanguage()
 
         // Fetch details and videos in parallel
-        val detailsDeferred = async { tvShowsRemoteDataSource.getTvShowDetails(tvShowId, language) }
-        val videosDeferred = async { tvShowsRemoteDataSource.getTvShowVideos(tvShowId, language) }
+        val detailsDeferred =
+            async { tvShowsRemoteDataSource.getTvShowDetails(tvShowId, language) }
+        val videosDeferred =
+            async { tvShowsRemoteDataSource.getTvShowVideos(tvShowId, language) }
 
-        val details = detailsDeferred.await()
+        val detailsResult = detailsDeferred.await()
         val videosResult = videosDeferred.await()
+
+        // Extract details or return error
+        val details = when (detailsResult) {
+            is AppResult.Success -> detailsResult.data
+            is AppResult.Error -> return@coroutineScope detailsResult
+        }
 
         // Map videos to domain and filter for trailers/teasers
         val trailers = when (videosResult) {
@@ -269,11 +277,12 @@ class TvShowRepositoryImpl(
                     .take(10)
                     .map { it.toDomain() }
             }
-            is AppResult.Error -> emptyList()
+
+            is AppResult.Error -> emptyList() // Videos are optional, don't fail if they error
         }
 
         // Combine details with trailers
-        details.toDomain().copy(trailers = trailers)
+        AppResult.Success(details.toDomain().copy(trailers = trailers))
     }
 
     private suspend fun getLanguage(): String {

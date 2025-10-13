@@ -8,6 +8,7 @@ import com.elna.moviedb.core.network.model.search.RemoteMultiSearchPage
 import com.elna.moviedb.core.network.model.search.RemoteSearchMoviesPage
 import com.elna.moviedb.core.network.model.search.RemoteSearchPeoplePage
 import com.elna.moviedb.core.network.model.search.RemoteSearchTvShowsPage
+import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -23,8 +24,8 @@ class SearchRemoteDataSource(
         page: Int,
         language: String
     ): AppResult<RemoteMultiSearchPage> {
-        return try {
-            val searchResults = withContext(appDispatchers.io) {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}search/multi") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -35,12 +36,6 @@ class SearchRemoteDataSource(
                     }
                 }.body<RemoteMultiSearchPage>()
             }
-            AppResult.Success(searchResults)
-        } catch (e: Exception) {
-            AppResult.Error(
-                message = e.message ?: "Unknown error occurred",
-                throwable = e
-            )
         }
     }
 
@@ -49,8 +44,8 @@ class SearchRemoteDataSource(
         page: Int,
         language: String
     ): AppResult<RemoteSearchMoviesPage> {
-        return try {
-            val searchResults = withContext(appDispatchers.io) {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}search/movie") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -61,12 +56,6 @@ class SearchRemoteDataSource(
                     }
                 }.body<RemoteSearchMoviesPage>()
             }
-            AppResult.Success(searchResults)
-        } catch (e: Exception) {
-            AppResult.Error(
-                message = e.message ?: "Unknown error occurred",
-                throwable = e
-            )
         }
     }
 
@@ -75,8 +64,8 @@ class SearchRemoteDataSource(
         page: Int,
         language: String
     ): AppResult<RemoteSearchTvShowsPage> {
-        return try {
-            val searchResults = withContext(appDispatchers.io) {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}search/tv") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -87,12 +76,6 @@ class SearchRemoteDataSource(
                     }
                 }.body<RemoteSearchTvShowsPage>()
             }
-            AppResult.Success(searchResults)
-        } catch (e: Exception) {
-            AppResult.Error(
-                message = e.message ?: "Unknown error occurred",
-                throwable = e
-            )
         }
     }
 
@@ -101,8 +84,8 @@ class SearchRemoteDataSource(
         page: Int,
         language: String
     ): AppResult<RemoteSearchPeoplePage> {
-        return try {
-            val searchResults = withContext(appDispatchers.io) {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}search/person") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -113,12 +96,6 @@ class SearchRemoteDataSource(
                     }
                 }.body<RemoteSearchPeoplePage>()
             }
-            AppResult.Success(searchResults)
-        } catch (e: Exception) {
-            AppResult.Error(
-                message = e.message ?: "Unknown error occurred",
-                throwable = e
-            )
         }
     }
 }

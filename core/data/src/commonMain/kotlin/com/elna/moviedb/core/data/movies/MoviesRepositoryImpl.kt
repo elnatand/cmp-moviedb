@@ -256,32 +256,38 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Retrieves detailed information for a specific movie.
+     * Retrieves detailed information for a specific movie using offline-first strategy.
      *
-     * This function implements a cache-first strategy:
+     * This function implements an offline-first approach:
      * 1. First checks local storage for cached movie details
-     * 2. If not found locally, fetches from remote API
-     * 3. Caches the remote result locally for future use
-     * 4. Returns the movie details converted to domain model
+     * 2. If found, returns cached data immediately (fast response)
+     * 3. If not found locally, fetches from remote API
+     * 4. Caches the remote result locally for future use
+     * 5. Returns the movie details converted to domain model
      *
      * @param movieId The unique identifier of the movie to retrieve
-     * @return MovieDetails The complete movie details including cast, crew, and metadata
-     * @throws Exception If the remote API call fails and no local data is available
+     * @return AppResult<MovieDetails> Success with movie details or Error if fetch failed and no cache available
      */
-    override suspend fun getMovieDetails(movieId: Int): MovieDetails {
-        val localMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId)
-        if (localMovieDetails == null) {
-            when (val result = moviesRemoteDataSource.getMovieDetails(movieId, getLanguage())) {
-                is AppResult.Success -> {
-                    moviesLocalDataSource.insertMovieDetails(result.data.asEntity())
-                }
+    override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> {
+        // Check cache first (offline-first)
+        val cachedMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId)
 
-                is AppResult.Error -> {
-                    throw Exception(result.message)
-                }
-            }
+        // If cached data exists, return immediately
+        if (cachedMovieDetails != null) {
+            return AppResult.Success(cachedMovieDetails.toDomain())
         }
-        return moviesLocalDataSource.getMoviesDetails(movieId)!!.toDomain()
+
+        // No cache available, fetch from network
+        return when (val result = moviesRemoteDataSource.getMovieDetails(movieId, getLanguage())) {
+            is AppResult.Success -> {
+                // Cache the result for future offline access
+                val entity = result.data.asEntity()
+                moviesLocalDataSource.insertMovieDetails(entity)
+                AppResult.Success(entity.toDomain())
+            }
+
+            is AppResult.Error -> result
+        }
     }
 
     /**

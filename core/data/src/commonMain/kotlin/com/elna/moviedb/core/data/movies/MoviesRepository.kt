@@ -14,7 +14,7 @@ interface MoviesRepository {
     suspend fun loadPopularMoviesNextPage(): AppResult<Unit>
     suspend fun loadTopRatedMoviesNextPage(): AppResult<Unit>
     suspend fun loadNowPlayingMoviesNextPage(): AppResult<Unit>
-    suspend fun getMovieDetails(movieId: Int): MovieDetails
+    suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails>
     suspend fun refresh(): AppResult<List<Movie>>
     suspend fun clearMovies()
 }

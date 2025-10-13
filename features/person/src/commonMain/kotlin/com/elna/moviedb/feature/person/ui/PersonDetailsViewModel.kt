@@ -3,6 +3,7 @@ package com.elna.moviedb.feature.person.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.person.PersonRepository
+import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.person.model.PersonDetailsEvent
 import com.elna.moviedb.feature.person.model.PersonUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,11 +44,11 @@ class PersonDetailsViewModel(
     private fun getPersonDetails(personId: Int) {
         viewModelScope.launch {
             _uiState.value = PersonUiState.Loading
-            try {
-                val personDetails = personRepository.getPersonDetails(personId)
-                _uiState.value = PersonUiState.Success(personDetails)
-            } catch (e: Exception) {
-                _uiState.value = PersonUiState.Error(e.message ?: "Unknown error occurred")
+            when (val result = personRepository.getPersonDetails(personId)) {
+                is AppResult.Error -> _uiState.value =
+                    PersonUiState.Error(result.message)
+
+                is AppResult.Success -> _uiState.value = PersonUiState.Success(result.data)
             }
         }
     }

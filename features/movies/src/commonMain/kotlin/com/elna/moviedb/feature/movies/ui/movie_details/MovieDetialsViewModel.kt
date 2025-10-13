@@ -3,6 +3,7 @@ package com.elna.moviedb.feature.movies.ui.movie_details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.movies.MoviesRepository
+import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,11 +44,13 @@ class MovieDetailsViewModel(
     private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch {
             _uiState.value = MovieDetailsUiState.Loading
-            try {
-                val movieDetails = moviesRepository.getMovieDetails(movieId)
-                _uiState.value = MovieDetailsUiState.Success(movieDetails)
-            } catch (e: Exception) {
-                _uiState.value = MovieDetailsUiState.Error(e.message ?: "Unknown error occurred")
+            when (val result = moviesRepository.getMovieDetails(movieId)) {
+                is AppResult.Success -> {
+                    _uiState.value = MovieDetailsUiState.Success(result.data)
+                }
+                is AppResult.Error -> {
+                    _uiState.value = MovieDetailsUiState.Error(result.message)
+                }
             }
         }
     }
