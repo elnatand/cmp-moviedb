@@ -11,11 +11,15 @@ import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
+import com.elna.moviedb.core.network.model.videos.RemoteVideo
+import com.elna.moviedb.core.network.model.videos.toDomain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -259,35 +263,68 @@ class MoviesRepositoryImpl(
      * Retrieves detailed information for a specific movie using offline-first strategy.
      *
      * This function implements an offline-first approach:
-     * 1. First checks local storage for cached movie details
+     * 1. First checks local storage for cached movie details and trailers
      * 2. If found, returns cached data immediately (fast response)
-     * 3. If not found locally, fetches from remote API
-     * 4. Caches the remote result locally for future use
-     * 5. Returns the movie details converted to domain model
+     * 3. If not found locally, fetches from remote API in parallel
+     * 4. Caches the remote result (both details and trailers) locally for future use
+     * 5. Returns the movie details with trailers converted to domain model
      *
      * @param movieId The unique identifier of the movie to retrieve
-     * @return AppResult<MovieDetails> Success with movie details or Error if fetch failed and no cache available
+     * @return AppResult<MovieDetails> Success with movie details and trailers or Error if fetch failed and no cache available
      */
-    override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> {
-        // Check cache first (offline-first)
+    override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> = coroutineScope {
+        // 1. Check cache first (offline-first)
         val cachedMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId)
+        val cachedVideos = moviesLocalDataSource.getVideosForMovie(movieId)
 
-        // If cached data exists, return immediately
+        // 2. If both cached, return immediately
         if (cachedMovieDetails != null) {
-            return AppResult.Success(cachedMovieDetails.toDomain())
+            val trailers = cachedVideos.map { it.toDomain() }
+            return@coroutineScope AppResult.Success(
+                cachedMovieDetails.toDomain().copy(trailers = trailers)
+            )
         }
 
-        // No cache available, fetch from network
-        return when (val result = moviesRemoteDataSource.getMovieDetails(movieId, getLanguage())) {
+        // 3. Cache miss - fetch from network in parallel
+        val language = getLanguage()
+        val detailsDeferred = async { moviesRemoteDataSource.getMovieDetails(movieId, language) }
+        val videosDeferred = async { moviesRemoteDataSource.getMovieVideos(movieId, language) }
+
+        val detailsResult = detailsDeferred.await()
+        val videosResult = videosDeferred.await()
+
+        // 4. Extract details or return error
+        val details = when (detailsResult) {
+            is AppResult.Success -> detailsResult.data
+            is AppResult.Error -> return@coroutineScope detailsResult
+        }
+
+        // 5. Process videos (optional - don't fail if videos error)
+        val trailers = when (videosResult) {
             is AppResult.Success -> {
-                // Cache the result for future offline access
-                val entity = result.data.asEntity()
-                moviesLocalDataSource.insertMovieDetails(entity)
-                AppResult.Success(entity.toDomain())
+                videosResult.data.results
+                    .filter { it.type == "Trailer" || it.type == "Teaser" }
+                    .sortedWith(compareByDescending<RemoteVideo> { it.official }
+                        .thenByDescending { it.publishedAt })
+                    .take(10)
+                    .map { it.toDomain() }
             }
-
-            is AppResult.Error -> result
+            is AppResult.Error -> emptyList()  // Graceful degradation
         }
+
+        // 6. Cache everything for future offline access
+        val detailsEntity = details.asEntity()
+        moviesLocalDataSource.insertMovieDetails(detailsEntity)
+
+        if (trailers.isNotEmpty()) {
+            val videoEntities = trailers.map {
+                it.asEntity(movieId = movieId)
+            }
+            moviesLocalDataSource.insertVideos(videoEntities)
+        }
+
+        // 7. Return combined result
+        AppResult.Success(detailsEntity.toDomain().copy(trailers = trailers))
     }
 
     /**
