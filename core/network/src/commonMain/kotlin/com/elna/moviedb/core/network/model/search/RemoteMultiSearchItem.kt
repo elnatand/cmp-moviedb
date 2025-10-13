@@ -54,7 +54,7 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
                 movie = Movie(
                     id = id,
                     title = movieTitle,
-                    poster_path = posterPath?.let { TMDB_IMAGE_URL + it }
+                    posterPath = posterPath?.let { TMDB_IMAGE_URL + it }
                 ),
                 overview = overview,
                 releaseDate = releaseDate,

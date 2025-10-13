@@ -8,12 +8,14 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
+import com.elna.moviedb.core.database.model.VideoEntity
 
 
 @Database(
     entities = [
         MovieEntity::class,
-        MovieDetailsEntity::class
+        MovieDetailsEntity::class,
+        VideoEntity::class
     ],
     version = 1
 )

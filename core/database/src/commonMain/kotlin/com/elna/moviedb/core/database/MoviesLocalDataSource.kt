@@ -2,6 +2,7 @@ package com.elna.moviedb.core.database
 
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
+import com.elna.moviedb.core.database.model.VideoEntity
 import kotlinx.coroutines.flow.Flow
 
 class MoviesLocalDataSource(
@@ -37,5 +38,17 @@ class MoviesLocalDataSource(
     suspend fun clearAllMovies() {
         movieDao.clearAllMovies()
         movieDetailsDao.clearAllMovieDetails()
+    }
+
+    suspend fun getVideosForMovie(movieId: Int): List<VideoEntity> {
+        return movieDetailsDao.getVideosForMovie(movieId)
+    }
+
+    suspend fun insertVideos(videos: List<VideoEntity>) {
+        movieDetailsDao.insertVideos(videos)
+    }
+
+    suspend fun deleteVideosForMovie(movieId: Int) {
+        movieDetailsDao.deleteVideosForMovie(movieId)
     }
 }

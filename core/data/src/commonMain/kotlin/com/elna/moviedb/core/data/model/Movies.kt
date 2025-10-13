@@ -13,7 +13,7 @@ fun RemoteMovie.asEntity() = MovieEntity(
     id = id,
     timestamp = Clock.System.now().epochSeconds,
     title = title,
-    poster_path = "$TMDB_IMAGE_URL$posterPath"
+    posterPath = "$TMDB_IMAGE_URL$posterPath"
 )
 
 

@@ -6,6 +6,7 @@ import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.core.network.model.movies.RemoteMoviesPage
+import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -36,6 +37,20 @@ class MoviesRemoteDataSource(
                         parameters.append("language", language)
                     }
                 }.body<RemoteMovieDetails>()
+            }
+        }
+    }
+
+    suspend fun getMovieVideos(movieId: Int, language: String): AppResult<RemoteVideoResponse> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}movie/${movieId}/videos") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("language", language)
+                        parameters.append("include_video_language", "$language,null")
+                    }
+                }.body<RemoteVideoResponse>()
             }
         }
     }
