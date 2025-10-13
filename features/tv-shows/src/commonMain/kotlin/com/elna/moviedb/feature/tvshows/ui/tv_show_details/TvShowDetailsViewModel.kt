@@ -3,6 +3,7 @@ package com.elna.moviedb.feature.tvshows.ui.tv_show_details
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
+import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,11 +44,13 @@ class TvShowDetailsViewModel(
     private fun getTvShowDetails(tvShowId: Int) {
         viewModelScope.launch {
             _uiState.value = TvShowDetailsUiState.Loading
-            try {
-                val tvShowDetails = tvShowsRepository.getTvShowDetails(tvShowId)
-                _uiState.value = TvShowDetailsUiState.Success(tvShowDetails)
-            } catch (e: Exception) {
-                _uiState.value = TvShowDetailsUiState.Error(e.message ?: "Unknown error occurred")
+            val result = tvShowsRepository.getTvShowDetails(tvShowId)
+            when (result) {
+                is AppResult.Error -> _uiState.value =
+                    TvShowDetailsUiState.Error(result.message)
+
+                is AppResult.Success -> _uiState.value =
+                    TvShowDetailsUiState.Success(result.data)
             }
         }
     }

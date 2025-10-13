@@ -12,6 +12,6 @@ interface TvShowsRepository {
     suspend fun loadPopularTvShowsNextPage(): AppResult<Unit>
     suspend fun loadOnTheAirTvShowsNextPage(): AppResult<Unit>
     suspend fun loadTopRatedTvShowsNextPage(): AppResult<Unit>
-    suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails
+    suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails>
     suspend fun refresh(): AppResult<List<TvShow>>
 }
