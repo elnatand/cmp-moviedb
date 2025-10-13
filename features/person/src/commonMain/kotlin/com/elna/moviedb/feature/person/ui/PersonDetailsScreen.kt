@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,10 +30,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.PersonDetails
@@ -76,7 +77,7 @@ private fun PersonDetailsScreen(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize().systemBarsPadding(),
+        modifier = Modifier.fillMaxSize(),
     ) {
         when (uiState) {
             is PersonUiState.Loading -> AppLoader()
@@ -121,46 +122,77 @@ private fun PersonDetailsContent(person: PersonDetails) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp, start = 16.dp, end = 16.dp, bottom = 24.dp),
+                    .padding(bottom = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
-                // Profile Image
-                person.profilePath?.let { profilePath ->
-                    Box(
+                // Profile Image with Background
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    person.profilePath?.let { profilePath ->
+                        // Blurred background image (full width)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(450.dp)
+                        ) {
+                            ImageLoader(
+                                imageUrl = profilePath,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .blur(50.dp),
+                                contentDescription = null
+                            )
+                            // Overlay to dim the background
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.3f))
+                            )
+                        }
+
+                        // Main profile image (on top)
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 40.dp)
+                                .width(240.dp)
+                                .height(360.dp)
+                                .shadow(16.dp, RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            ImageLoader(
+                                contentScale = ContentScale.Fit,
+                                imageUrl = profilePath,
+                                modifier = Modifier.fillMaxSize(),
+                                contentDescription = person.name
+                            )
+                        }
+                    } ?: Box(
                         modifier = Modifier
                             .width(240.dp)
                             .height(320.dp)
-                            .shadow(16.dp, RoundedCornerShape(20.dp))
-                            .clip(RoundedCornerShape(20.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .shadow(16.dp, RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        contentAlignment = Alignment.Center
                     ) {
-                        ImageLoader(
-                            imageUrl = profilePath,
-                            modifier = Modifier.fillMaxSize(),
-                            contentDescription = person.name
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(120.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                } ?: Box(
-                    modifier = Modifier
-                        .width(240.dp)
-                        .height(320.dp)
-                        .shadow(16.dp, RoundedCornerShape(20.dp))
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(120.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
 
                 // Name and Department Card
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
