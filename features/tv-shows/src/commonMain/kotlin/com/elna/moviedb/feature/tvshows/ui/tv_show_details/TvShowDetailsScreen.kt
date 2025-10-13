@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tv
@@ -45,18 +46,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.model.CastMember
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.formatDate
+import com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.adult_content
 import com.elna.moviedb.resources.aired_prefix
 import com.elna.moviedb.resources.airs_prefix
 import com.elna.moviedb.resources.available_languages
+import com.elna.moviedb.resources.cast
 import com.elna.moviedb.resources.content_rating
 import com.elna.moviedb.resources.created_by
 import com.elna.moviedb.resources.episode_runtime
@@ -99,13 +104,15 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun TvShowDetailsScreen(
     tvShowId: Int,
+    onCastMemberClick: (Int) -> Unit = {}
 ) {
     val viewModel = koinViewModel<TvShowDetailsViewModel> { parametersOf(tvShowId) }
     val uiState by viewModel.uiState.collectAsState()
 
     TvShowDetailsScreen(
         uiState = uiState,
-        onRetry = { viewModel.onEvent(com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent.Retry) }
+        onRetry = { viewModel.onEvent(TvShowDetailsEvent.Retry) },
+        onCastMemberClick = onCastMemberClick
     )
 }
 
@@ -113,7 +120,8 @@ fun TvShowDetailsScreen(
 @Composable
 fun TvShowDetailsScreen(
     uiState: TvShowDetailsViewModel.TvShowDetailsUiState,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onCastMemberClick: (Int) -> Unit = {}
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -142,6 +150,11 @@ fun TvShowDetailsScreen(
                         OverviewSection(tvShow = uiState.tvShowDetails)
 
                         TrailersSection(tvShow = uiState.tvShowDetails)
+
+                        CastSection(
+                            tvShow = uiState.tvShowDetails,
+                            onCastMemberClick = onCastMemberClick
+                        )
 
                         RatingsSection(tvShow = uiState.tvShowDetails)
 
@@ -860,6 +873,109 @@ private fun RatingCard(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
+        }
+    }
+}
+
+@Composable
+private fun CastSection(
+    tvShow: TvShowDetails,
+    onCastMemberClick: (Int) -> Unit
+) {
+    tvShow.cast?.takeIf { it.isNotEmpty() }?.let { cast ->
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = stringResource(Res.string.cast),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(
+                        items = cast,
+                        key = { it.id }
+                    ) { castMember ->
+                        CastMemberCard(
+                            castMember = castMember,
+                            onClick = { onCastMemberClick(castMember.id) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CastMemberCard(
+    castMember: CastMember,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .width(120.dp)
+            .padding(2.dp),
+        onClick = onClick,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
+            // Profile Image
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+            ) {
+                castMember.profilePath?.let { profilePath ->
+                    ImageLoader(
+                        imageUrl = profilePath,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } ?: Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            // Cast Info
+            Column(
+                modifier = Modifier
+                    .height(72.dp)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = castMember.name,
+                    maxLines = 2,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = castMember.character,
+                    maxLines = 2,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

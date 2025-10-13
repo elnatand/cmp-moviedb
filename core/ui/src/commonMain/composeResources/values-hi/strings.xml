@@ -68,6 +68,7 @@
     <string name="yes">हाँ</string>
     <string name="no">नहीं</string>
     <string name="trailers">ट्रेलर</string>
+    <string name="cast">कलाकार</string>
 
     <!-- Error Messages -->
     <string name="unknown_error_occurred">अज्ञात त्रुटि हुई</string>

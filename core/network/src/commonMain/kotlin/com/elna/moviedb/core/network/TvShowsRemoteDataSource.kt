@@ -4,6 +4,7 @@ import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
+import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowCredits
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowsPage
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
@@ -49,6 +50,19 @@ class TvShowsRemoteDataSource(
                         parameters.append("language", language)
                     }
                 }.body<RemoteVideoResponse>()
+            }
+        }
+    }
+
+    suspend fun getTvShowCredits(tvShowId: Int, language: String): AppResult<RemoteTvShowCredits> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}/credits") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteTvShowCredits>()
             }
         }
     }
