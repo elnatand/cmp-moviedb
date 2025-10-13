@@ -6,6 +6,7 @@ import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowsPage
+import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -33,6 +34,22 @@ class TvShowsRemoteDataSource(
                     parameters.append("language", language)
                 }
             }.body<RemoteTvShowDetails>()
+        }
+    }
+
+    suspend fun getTvShowVideos(tvShowId: Int, language: String): AppResult<RemoteVideoResponse> {
+        return try {
+            val videoResponse = withContext(appDispatchers.io) {
+                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}/videos") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteVideoResponse>()
+            }
+            AppResult.Success(videoResponse)
+        } catch (e: Exception) {
+            AppResult.Error(e.message ?: "Unknown error occurred")
         }
     }
 

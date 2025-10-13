@@ -8,6 +8,8 @@ import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.network.TvShowsRemoteDataSource
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
+import com.elna.moviedb.core.network.model.videos.RemoteVideo
+import com.elna.moviedb.core.network.model.videos.toDomain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
@@ -247,8 +249,31 @@ class TvShowRepositoryImpl(
         return@coroutineScope AppResult.Success(combinedList)
     }
 
-    override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails {
-        return tvShowsRemoteDataSource.getTvShowDetails(tvShowId, getLanguage()).toDomain()
+    override suspend fun getTvShowDetails(tvShowId: Int): TvShowDetails = coroutineScope {
+        val language = getLanguage()
+
+        // Fetch details and videos in parallel
+        val detailsDeferred = async { tvShowsRemoteDataSource.getTvShowDetails(tvShowId, language) }
+        val videosDeferred = async { tvShowsRemoteDataSource.getTvShowVideos(tvShowId, language) }
+
+        val details = detailsDeferred.await()
+        val videosResult = videosDeferred.await()
+
+        // Map videos to domain and filter for trailers/teasers
+        val trailers = when (videosResult) {
+            is AppResult.Success -> {
+                videosResult.data.results
+                    .filter { it.type == "Trailer" || it.type == "Teaser" }
+                    .sortedWith(compareByDescending<RemoteVideo> { it.official }
+                        .thenByDescending { it.publishedAt })
+                    .take(10)
+                    .map { it.toDomain() }
+            }
+            is AppResult.Error -> emptyList()
+        }
+
+        // Combine details with trailers
+        details.toDomain().copy(trailers = trailers)
     }
 
     private suspend fun getLanguage(): String {

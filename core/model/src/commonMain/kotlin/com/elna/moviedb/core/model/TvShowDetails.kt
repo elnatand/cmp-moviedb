@@ -35,5 +35,6 @@ data class TvShowDetails(
     val lastEpisodeName: String?,
     val lastEpisodeAirDate: String?,
     val nextEpisodeToAir: String?,
-    val nextEpisodeAirDate: String?
+    val nextEpisodeAirDate: String?,
+    val trailers: List<Video>? = null
 )
