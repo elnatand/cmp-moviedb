@@ -26,6 +26,7 @@ data class Video(
 ) {
     fun getThumbnailUrl(): String = when (site) {
         VideoSite.YOUTUBE -> "https://img.youtube.com/vi/$key/hqdefault.jpg"
+        VideoSite.VIMEO -> "https://vumbnail.com/$key.jpg"
         else -> ""
     }
 
