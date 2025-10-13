@@ -735,7 +735,7 @@ private fun TrailerCard(trailer: Video) {
     val uriHandler = LocalUriHandler.current
 
     Card(
-        modifier = Modifier.width(200.dp),
+        modifier = Modifier.width(200.dp).padding(2.dp),
         onClick = { uriHandler.openUri(trailer.getVideoUrl()) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
