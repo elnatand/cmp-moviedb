@@ -6,10 +6,12 @@ import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.core.network.model.movies.RemoteMoviesPage
+import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.withContext
+
 
 class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
@@ -26,8 +28,8 @@ class MoviesRemoteDataSource(
         fetchMoviesPage("movie/now_playing", page, language)
 
     suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
-        return try {
-            val movieDetails = withContext(appDispatchers.io) {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}movie/${movieId}") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -35,12 +37,6 @@ class MoviesRemoteDataSource(
                     }
                 }.body<RemoteMovieDetails>()
             }
-            AppResult.Success(movieDetails)
-        } catch (e: Exception) {
-            AppResult.Error(
-                message = e.message ?: "Unknown error occurred",
-                throwable = e
-            )
         }
     }
 
