@@ -47,7 +47,6 @@ import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.also_known_as
 import com.elna.moviedb.resources.biography
 import com.elna.moviedb.resources.birthday
-import com.elna.moviedb.resources.birthplace
 import com.elna.moviedb.resources.deathday
 import com.elna.moviedb.resources.gender
 import com.elna.moviedb.resources.personal_details
@@ -102,39 +101,38 @@ private fun PersonDetailsContent(person: PersonDetails) {
     ) {
         // Hero Section with Profile Image
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             // Background with gradient
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
-                                MaterialTheme.colorScheme.primaryContainer,
+                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
                                 MaterialTheme.colorScheme.surface
                             )
                         )
                     )
             )
 
-            // Profile Picture
+            // Profile Picture and Info
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.Center)
-                    .padding(horizontal = 16.dp),
+                    .padding(top = 24.dp, start = 16.dp, end = 16.dp, bottom = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                // Profile Image
                 person.profilePath?.let { profilePath ->
                     Box(
                         modifier = Modifier
                             .width(240.dp)
                             .height(320.dp)
-                            .shadow(12.dp, RoundedCornerShape(16.dp))
-                            .clip(RoundedCornerShape(16.dp))
+                            .shadow(16.dp, RoundedCornerShape(20.dp))
+                            .clip(RoundedCornerShape(20.dp))
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         ImageLoader(
@@ -147,8 +145,8 @@ private fun PersonDetailsContent(person: PersonDetails) {
                     modifier = Modifier
                         .width(240.dp)
                         .height(320.dp)
-                        .shadow(12.dp, RoundedCornerShape(16.dp))
-                        .clip(RoundedCornerShape(16.dp))
+                        .shadow(16.dp, RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
@@ -160,22 +158,64 @@ private fun PersonDetailsContent(person: PersonDetails) {
                     )
                 }
 
-                // Name
-                Text(
-                    text = person.name,
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+                // Name and Department Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = person.name,
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
 
-                // Known For Department
-                if (person.knownForDepartment.isNotEmpty()) {
-                    Text(
-                        text = person.knownForDepartment,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                        if (person.knownForDepartment.isNotEmpty()) {
+                            Text(
+                                text = person.knownForDepartment,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        // Quick Stats Row
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            person.birthday?.let { birthday ->
+                                QuickStatItem(
+                                    icon = Icons.Default.Cake,
+                                    value = formatDate(birthday)
+                                )
+                            }
+
+                            person.placeOfBirth?.let { place ->
+                                QuickStatItem(
+                                    icon = Icons.Default.Place,
+                                    value = place.split(",").lastOrNull()?.trim() ?: place
+                                )
+                            }
+
+                            person.popularity?.let { popularity ->
+                                QuickStatItem(
+                                    icon = Icons.Default.Person,
+                                    value = "${(popularity * 10).toInt() / 10.0}"
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -185,34 +225,6 @@ private fun PersonDetailsContent(person: PersonDetails) {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Quick Info Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                person.birthday?.let { birthday ->
-                    InfoItem(
-                        icon = Icons.Default.Cake,
-                        label = stringResource(Res.string.birthday),
-                        value = formatDate(birthday)
-                    )
-                }
-
-                InfoItem(
-                    icon = Icons.Default.Person,
-                    label = stringResource(Res.string.gender),
-                    value = person.gender
-                )
-
-                person.placeOfBirth?.let { place ->
-                    InfoItem(
-                        icon = Icons.Default.Place,
-                        label = stringResource(Res.string.birthplace),
-                        value = place.split(",").firstOrNull() ?: place
-                    )
-                }
-            }
-
             // Biography Section
             if (person.biography.isNotEmpty()) {
                 SectionCard(
@@ -292,32 +304,25 @@ private fun PersonDetailsContent(person: PersonDetails) {
 }
 
 @Composable
-private fun InfoItem(
+private fun QuickStatItem(
     icon: ImageVector,
-    label: String,
     value: String
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.width(100.dp)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = label,
+            contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(18.dp)
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1
         )
     }
