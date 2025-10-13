@@ -23,7 +23,7 @@ fun MovieTile(
     movie: Movie,
     onClick: (movieId: Int, title: String) -> Unit
 ) {
-    val imageUrl = movie.poster_path ?: ""
+    val imageUrl = movie.posterPath ?: ""
 
     Card(
         modifier = Modifier.width(144.dp),

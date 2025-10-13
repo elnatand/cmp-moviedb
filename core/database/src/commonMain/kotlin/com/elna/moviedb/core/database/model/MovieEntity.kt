@@ -14,6 +14,6 @@ data class MovieEntity(
     @PrimaryKey val id: Int,
     val timestamp: Long,
     val title: String,
-    val poster_path: String?,
+    val posterPath: String?,
     val category: String = MovieCategory.POPULAR.name
 )

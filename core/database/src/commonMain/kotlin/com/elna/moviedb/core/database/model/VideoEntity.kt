@@ -15,20 +15,23 @@ import com.elna.moviedb.core.model.VideoSite
             entity = MovieDetailsEntity::class,
             parentColumns = ["id"],
             childColumns = ["movie_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
+            deferred = true
         )
     ],
     indices = [Index("movie_id")]
 )
 data class VideoEntity(
     @PrimaryKey val id: String,
-    @ColumnInfo(name = "movie_id") val movieId: Int,
+    @ColumnInfo(name = "movie_id")
+    val movieId: Int,
     val key: String,
     val name: String,
     val site: String,
     val type: String,
     val official: Boolean,
-    @ColumnInfo(name = "published_at") val publishedAt: String?
+    @ColumnInfo(name = "published_at")
+    val publishedAt: String?
 ) {
     fun toDomain(): Video = Video(
         id = id,

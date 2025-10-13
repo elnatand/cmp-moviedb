@@ -42,7 +42,7 @@ fun RemoteSearchMovie.toDomain(): Movie {
     return Movie(
         id = id,
         title = title,
-        poster_path = "$TMDB_IMAGE_URL$posterPath"
+        posterPath = "$TMDB_IMAGE_URL$posterPath"
     )
 }
 
@@ -51,7 +51,7 @@ fun RemoteSearchMovie.toSearchResult(): SearchResultItem.MovieItem {
         movie = Movie(
             id = id,
             title = title,
-            poster_path = "$TMDB_IMAGE_URL$posterPath"
+            posterPath = "$TMDB_IMAGE_URL$posterPath"
         ),
         overview = overview,
         releaseDate = releaseDate,

@@ -86,7 +86,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    poster_path = it.poster_path
+                    posterPath = it.posterPath
                 )
             }
         }
@@ -111,7 +111,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    poster_path = it.poster_path
+                    posterPath = it.posterPath
                 )
             }
         }
@@ -136,7 +136,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    poster_path = it.poster_path
+                    posterPath = it.posterPath
                 )
             }
         }
@@ -291,13 +291,13 @@ class MoviesRepositoryImpl(
         val videosDeferred = async { moviesRemoteDataSource.getMovieVideos(movieId, language) }
 
         val detailsResult = detailsDeferred.await()
-        val videosResult = videosDeferred.await()
-
-        // 4. Extract details or return error
+        // 4. Extract details or return error (cancels videosDeferred on return)
         val details = when (detailsResult) {
             is AppResult.Success -> detailsResult.data
             is AppResult.Error -> return@coroutineScope detailsResult
         }
+        // Only await videos after details succeeded
+        val videosResult = videosDeferred.await()
 
         // 5. Process videos (optional - don't fail if videos error)
         val trailers = when (videosResult) {
@@ -317,6 +317,8 @@ class MoviesRepositoryImpl(
         val detailsEntity = details.asEntity()
         moviesLocalDataSource.insertMovieDetails(detailsEntity)
 
+        // Replace existing trailers atomically
+        moviesLocalDataSource.deleteVideosForMovie(movieId)
         if (trailers.isNotEmpty()) {
             val videoEntities = trailers.map {
                 it.asEntity(movieId = movieId)
@@ -372,7 +374,7 @@ class MoviesRepositoryImpl(
             moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name).first()
 
         val combinedList = (popularMovies + topRatedMovies + nowPlayingMovies).map {
-            Movie(id = it.id, title = it.title, poster_path = it.poster_path)
+            Movie(id = it.id, title = it.title, posterPath = it.posterPath)
         }
 
         return AppResult.Success(combinedList)

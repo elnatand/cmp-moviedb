@@ -18,7 +18,7 @@ interface MovieDetailsDao {
     @Query("DELETE FROM MovieDetailsEntity")
     suspend fun clearAllMovieDetails()
 
-    @Query("SELECT * FROM videos WHERE movie_id = :movieId")
+    @Query("SELECT * FROM videos WHERE movie_id = :movieId ORDER BY official DESC, published_at DESC")
     suspend fun getVideosForMovie(movieId: Int): List<VideoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

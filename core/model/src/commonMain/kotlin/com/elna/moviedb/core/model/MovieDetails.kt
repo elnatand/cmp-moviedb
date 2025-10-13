@@ -1,6 +1,11 @@
 package com.elna.moviedb.core.model
 
-
+/**
+ * Full movie details.
+ *
+ * @property trailers List of official trailer videos (e.g., YouTube). May be null when unavailable.
+ *                    Contains only Trailer-type videos, not teasers/clips.
+ */
 data class MovieDetails(
     val id: Int,
     val title: String,

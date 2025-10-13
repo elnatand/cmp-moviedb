@@ -451,7 +451,7 @@ private fun TrailersSection(trailers: List<Video>) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(trailers) { trailer ->
+                items(trailers, key = { it.id }) { trailer ->
                     TrailerCard(trailer = trailer)
                 }
             }
