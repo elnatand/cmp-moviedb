@@ -14,12 +14,26 @@ class PersonRepositoryImpl(
     private val preferencesManager: PreferencesManager
 ) : PersonRepository {
 
+    /**
+     * Fetches details for the specified person and returns them as a domain model wrapped in an `AppResult`.
+     *
+     * @param personId The unique identifier of the person to retrieve.
+     * @return `AppResult` containing the `PersonDetails` on success, an error result otherwise.
+     */
     override suspend fun getPersonDetails(personId: Int): AppResult<PersonDetails> {
         return personRemoteDataSource.getPersonDetails(personId, getLanguage()).map {
             it.toDomain()
         }
     }
 
+    /**
+     * Constructs the language tag used for remote requests from the stored app language.
+     *
+     * Reads the saved language code and resolves its country code, then combines them into a tag
+     * in the format `languageCode-countryCode` (for example, `en-US`).
+     *
+     * @return A language tag in the format `languageCode-countryCode`.
+     */
     private suspend fun getLanguage(): String {
         val languageCode = preferencesManager.getAppLanguageCode().first()
         val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode

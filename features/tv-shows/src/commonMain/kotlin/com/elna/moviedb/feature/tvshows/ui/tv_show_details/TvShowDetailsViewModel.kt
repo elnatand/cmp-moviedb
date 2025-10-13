@@ -41,6 +41,14 @@ class TvShowDetailsViewModel(
         }
     }
 
+    /**
+     * Loads TV show details for the given ID and updates the UI state accordingly.
+     *
+     * Sets the UI state to Loading, then to Success with the fetched details on success,
+     * or to Error with the repository-provided message on failure.
+     *
+     * @param tvShowId The identifier of the TV show to load.
+     */
     private fun getTvShowDetails(tvShowId: Int) {
         viewModelScope.launch {
             _uiState.value = TvShowDetailsUiState.Loading

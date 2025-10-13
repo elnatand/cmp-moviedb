@@ -41,6 +41,11 @@ class MovieDetailsViewModel(
         }
     }
 
+    /**
+     * Fetches details for the movie identified by [movieId] and updates the ViewModel's UI state to Loading, Success, or Error.
+     *
+     * @param movieId ID of the movie to fetch.
+     */
     private fun getMovieDetails(movieId: Int) {
         viewModelScope.launch {
             _uiState.value = MovieDetailsUiState.Loading

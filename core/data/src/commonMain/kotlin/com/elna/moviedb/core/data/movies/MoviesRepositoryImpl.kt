@@ -218,9 +218,9 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Loads the next page of now playing movies from the remote API.
+     * Load the next page of now-playing movies into local storage and update the stored pagination state.
      *
-     * @return AppResult<Unit> Success if page loaded, Error if loading failed
+     * @return `AppResult.Success` if a page was loaded or no further pages remain, `AppResult.Error` if the remote fetch failed.
      */
     override suspend fun loadNowPlayingMoviesNextPage(): AppResult<Unit> {
         val currentLanguage = getLanguage()
@@ -256,17 +256,14 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Retrieves detailed information for a specific movie using offline-first strategy.
+     * Retrieves movie details using an offline-first strategy.
      *
-     * This function implements an offline-first approach:
-     * 1. First checks local storage for cached movie details
-     * 2. If found, returns cached data immediately (fast response)
-     * 3. If not found locally, fetches from remote API
-     * 4. Caches the remote result locally for future use
-     * 5. Returns the movie details converted to domain model
+     * Attempts to return cached details when available; otherwise fetches from the remote API,
+     * caches the fetched details, and returns them.
      *
-     * @param movieId The unique identifier of the movie to retrieve
-     * @return AppResult<MovieDetails> Success with movie details or Error if fetch failed and no cache available
+     * @param movieId The movie's unique identifier.
+     * @return `AppResult.Success` with `MovieDetails` when cached or fetched successfully,
+     *         `AppResult.Error` if the remote fetch failed and no cached data exists.
      */
     override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> {
         // Check cache first (offline-first)

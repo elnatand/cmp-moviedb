@@ -210,12 +210,11 @@ class TvShowRepositoryImpl(
     }
 
     /**
-     * Refreshes all TV show data by resetting pagination state and loading fresh data
-     * for all three categories (popular, on-the-air, top-rated) in parallel.
+     * Refreshes the repository data by clearing caches, resetting pagination, and loading the first page
+     * for popular, on-the-air, and top-rated TV shows in parallel.
      *
-     * @return AppResult<List<TvShow>> Either:
-     *   - AppResult.Success with the combined refreshed list of all TV shows if successful
-     *   - AppResult.Error if any of the refresh operations failed
+     * @return `AppResult.Success` with the combined refreshed list of TV shows when all loads succeed,
+     *         `AppResult.Error` with the first error encountered otherwise.
      */
     override suspend fun refresh(): AppResult<List<TvShow>> = coroutineScope {
         // Reset all three caches
@@ -249,6 +248,14 @@ class TvShowRepositoryImpl(
         return@coroutineScope AppResult.Success(combinedList)
     }
 
+    /**
+     * Retrieves detailed information for a TV show and enriches it with up to 10 trailers.
+     *
+     * Fetches show details and videos in parallel; if fetching details fails the error is returned, while video-fetch errors are treated as no trailers. Trailers include videos of type "Trailer" or "Teaser", sorted by `official` then `publishedAt`, and limited to 10.
+     *
+     * @param tvShowId The TMDB identifier of the TV show.
+     * @return `AppResult.Success` containing the `TvShowDetails` domain object with its `trailers` populated, or `AppResult.Error` if retrieving details failed.
+     */
     override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> = coroutineScope {
         val language = getLanguage()
 
@@ -285,6 +292,11 @@ class TvShowRepositoryImpl(
         AppResult.Success(details.toDomain().copy(trailers = trailers))
     }
 
+    /**
+     * Builds the app language tag by combining the stored language code with its country code.
+     *
+     * @return A language tag in the form `languageCode-countryCode` (for example, `en-US`).
+     */
     private suspend fun getLanguage(): String {
         val languageCode = preferencesManager.getAppLanguageCode().first()
         val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode

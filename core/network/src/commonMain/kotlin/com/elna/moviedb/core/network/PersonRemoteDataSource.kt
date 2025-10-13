@@ -16,6 +16,13 @@ class PersonRemoteDataSource(
     private val appDispatchers: AppDispatchers
 ) {
 
+    /**
+     * Fetches detailed information for a person from the TMDB API.
+     *
+     * @param personId The TMDB person identifier.
+     * @param language The language code for localized results (for example, "en-US").
+     * @return An AppResult containing a RemotePersonDetails on success, or an error result produced by the network call handling.
+     */
     suspend fun getPersonDetails(personId: Int, language: String): AppResult<RemotePersonDetails> {
         return withContext(appDispatchers.io) {
             safeApiCall {

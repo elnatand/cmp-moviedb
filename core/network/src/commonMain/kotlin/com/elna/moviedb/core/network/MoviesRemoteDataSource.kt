@@ -24,9 +24,23 @@ class MoviesRemoteDataSource(
     suspend fun getTopRatedMoviesPage(page: Int, language: String) =
         fetchMoviesPage("movie/top_rated", page, language)
 
-    suspend fun getNowPlayingMoviesPage(page: Int, language: String) =
+    /**
+         * Retrieve a page of now-playing movies.
+         *
+         * @param page The page number to fetch (1-based).
+         * @param language ISO 639-1 language code to localize the results.
+         * @return An AppResult containing the requested RemoteMoviesPage on success, or an error otherwise.
+         */
+        suspend fun getNowPlayingMoviesPage(page: Int, language: String) =
         fetchMoviesPage("movie/now_playing", page, language)
 
+    /**
+     * Retrieve detailed information for a specific movie from TMDB.
+     *
+     * @param movieId The TMDB movie identifier.
+     * @param language The language code (ISO 639-1) to localize the returned details.
+     * @return An AppResult containing the movie's RemoteMovieDetails on success, or an error result on failure.
+     */
     suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
         return withContext(appDispatchers.io) {
             safeApiCall {
@@ -40,6 +54,14 @@ class MoviesRemoteDataSource(
         }
     }
 
+    /**
+     * Fetches a page of movies from TMDB for the specified endpoint.
+     *
+     * @param path Relative TMDB API path segment (for example, "movie/popular" or "movie/top_rated").
+     * @param page Page number to request.
+     * @param language Language code to localize results.
+     * @return An AppResult containing the fetched RemoteMoviesPage on success, or an error AppResult on failure.
+     */
     private suspend fun fetchMoviesPage(
         path: String,
         page: Int,

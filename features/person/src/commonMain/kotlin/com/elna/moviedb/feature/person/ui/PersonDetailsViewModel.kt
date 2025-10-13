@@ -41,6 +41,15 @@ class PersonDetailsViewModel(
         }
     }
 
+    /**
+     * Loads person details for the given person ID and updates the UI state.
+     *
+     * Sets the state to `PersonUiState.Loading` then updates it to `PersonUiState.Success`
+     * with the fetched data if the repository call succeeds, or to `PersonUiState.Error`
+     * with an error message if the repository returns an error.
+     *
+     * @param personId The identifier of the person whose details should be fetched.
+     */
     private fun getPersonDetails(personId: Int) {
         viewModelScope.launch {
             _uiState.value = PersonUiState.Loading
