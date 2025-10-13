@@ -421,12 +421,16 @@ private fun BoxOfficeItem(
             fontWeight = FontWeight.Medium
         )
         Text(
-            text = "$$amount",
+            text = "$${formatNumberWithCommas(amount)}",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.primary
         )
     }
+}
+
+private fun formatNumberWithCommas(number: Long): String {
+    return number.toString().reversed().chunked(3).joinToString(",").reversed()
 }
 
 @Composable
