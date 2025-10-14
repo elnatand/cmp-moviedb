@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material3.AssistChip
+import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -29,10 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.FilmographyCredit
 import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.ui.utils.ImageLoader
-import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.movie
-import com.elna.moviedb.resources.tv
-import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun FilmographyCard(
@@ -77,17 +74,22 @@ internal fun FilmographyCard(
             // Credit Info
             Column(
                 modifier = Modifier
-                    .height(80.dp)
+                    .height(100.dp)
                     .padding(8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = credit.displayTitle,
-                    maxLines = 2,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Box(
+                    contentAlignment = Alignment.CenterStart,
+                    modifier = Modifier.height(40.dp)
+                ) {
+                    Text(
+                        text = credit.displayTitle,
+                        maxLines = 2,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 credit.character?.let { character ->
                     Text(
@@ -103,32 +105,80 @@ internal fun FilmographyCard(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Icon(
+                        imageVector = when (credit.mediaType) {
+                            MediaType.MOVIE -> Icons.Default.Movie
+                            MediaType.TV -> Icons.Default.Tv
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+
                     credit.displayYear?.let { year ->
-                        AssistChip(
-                            onClick = { },
-                            label = {
-                                Text(
-                                    year,
-                                    style = MaterialTheme.typography.labelSmall
-                                )
-                            }
+                        Text(
+                            year,
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
-
-                    AssistChip(
-                        onClick = { },
-                        label = {
-                            Text(
-                                when (credit.mediaType) {
-                                    MediaType.MOVIE -> stringResource(Res.string.movie)
-                                    MediaType.TV -> stringResource(Res.string.tv)
-                                },
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-                    )
                 }
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FilmographyCardPreview_Movie() {
+    FilmographyCard(
+        credit = FilmographyCredit(
+            id = 1,
+            title = "The Dark Knight",
+            name = null,
+            character = "Bruce Wayne / Batman",
+            posterPath = null,
+            releaseDate = "2008-07-18",
+            firstAirDate = null,
+            mediaType = MediaType.MOVIE,
+            voteAverage = 9.0
+        ),
+        onClick = { }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FilmographyCardPreview_TV() {
+    FilmographyCard(
+        credit = FilmographyCredit(
+            id = 2,
+            title = null,
+            name = "Breaking Bad",
+            character = "Walter White",
+            posterPath = null,
+            releaseDate = null,
+            firstAirDate = "2008-01-20",
+            mediaType = MediaType.TV,
+            voteAverage = 9.5
+        ),
+        onClick = { }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun FilmographyCardPreview_NoCharacter() {
+    FilmographyCard(
+        credit = FilmographyCredit(
+            id = 3,
+            title = "Inception",
+            name = null,
+            character = null,
+            posterPath = null,
+            releaseDate = "2010-07-16",
+            firstAirDate = null,
+            mediaType = MediaType.MOVIE,
+            voteAverage = 8.8
+        ),
+        onClick = { }
+    )
 }
