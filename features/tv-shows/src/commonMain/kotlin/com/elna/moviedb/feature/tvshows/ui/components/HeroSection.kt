@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.tvshows.ui.tv_show_details.components
+package com.elna.moviedb.feature.tvshows.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShowDetails
@@ -102,7 +103,7 @@ internal fun HeroSection(tvShow: TvShowDetails) {
                     text = tagline,
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White.copy(alpha = 0.8f),
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    fontStyle = FontStyle.Italic
                 )
             }
 

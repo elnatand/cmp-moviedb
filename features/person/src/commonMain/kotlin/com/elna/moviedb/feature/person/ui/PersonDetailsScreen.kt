@@ -21,8 +21,11 @@ import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.formatDate
+import com.elna.moviedb.core.model.MediaType
+import com.elna.moviedb.feature.person.model.PersonDetailsEvent
 import com.elna.moviedb.feature.person.model.PersonUiState
 import com.elna.moviedb.feature.person.ui.components.DetailItem
+import com.elna.moviedb.feature.person.ui.components.FilmographySection
 import com.elna.moviedb.feature.person.ui.components.PersonHeroSection
 import com.elna.moviedb.feature.person.ui.components.SectionCard
 import com.elna.moviedb.resources.Res
@@ -40,21 +43,24 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun PersonDetailsScreen(
-    personId: Int
+    personId: Int,
+    onCreditClick: (Int, MediaType) -> Unit
 ) {
     val viewModel = koinViewModel<PersonDetailsViewModel> { parametersOf(personId) }
     val uiState by viewModel.uiState.collectAsState()
 
     PersonDetailsScreen(
         uiState = uiState,
-        onRetry = { viewModel.onEvent(com.elna.moviedb.feature.person.model.PersonDetailsEvent.Retry) }
+        onRetry = { viewModel.onEvent(PersonDetailsEvent.Retry) },
+        onCreditClick = onCreditClick
     )
 }
 
 @Composable
 private fun PersonDetailsScreen(
     uiState: PersonUiState,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onCreditClick: (Int, MediaType) -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -68,14 +74,20 @@ private fun PersonDetailsScreen(
             )
 
             is PersonUiState.Success -> {
-                PersonDetailsContent(person = uiState.person)
+                PersonDetailsContent(
+                    person = uiState.person,
+                    onCreditClick = onCreditClick
+                )
             }
         }
     }
 }
 
 @Composable
-private fun PersonDetailsContent(person: PersonDetails) {
+private fun PersonDetailsContent(
+    person: PersonDetails,
+    onCreditClick: (Int, MediaType) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -102,6 +114,12 @@ private fun PersonDetailsContent(person: PersonDetails) {
                     }
                 )
             }
+
+            // Filmography Section
+            FilmographySection(
+                filmography = person.filmography,
+                onCreditClick = onCreditClick
+            )
 
             // Also Known As Section
             if (person.alsoKnownAs.isNotEmpty()) {
@@ -145,7 +163,7 @@ private fun PersonDetailsContent(person: PersonDetails) {
                         person.placeOfBirth?.let { place ->
                             DetailItem(
                                 label = stringResource(Res.string.place_of_birth),
-                                value = place
+                                value = place.split(",").lastOrNull()?.trim() ?: place
                             )
                         }
 

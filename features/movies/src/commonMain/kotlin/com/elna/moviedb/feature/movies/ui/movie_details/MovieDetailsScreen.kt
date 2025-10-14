@@ -1,7 +1,5 @@
 package com.elna.moviedb.feature.movies.ui.movie_details
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,26 +7,13 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
@@ -38,17 +23,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.MovieDetails
-import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
-import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.feature.movies.ui.components.BoxOfficeItem
+import com.elna.moviedb.feature.movies.ui.components.InfoItem
+import com.elna.moviedb.feature.movies.ui.components.MovieHeroSection
+import com.elna.moviedb.feature.movies.ui.components.SectionCard
+import com.elna.moviedb.feature.movies.ui.components.TrailersSection
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.box_office
 import com.elna.moviedb.resources.budget
@@ -58,12 +41,9 @@ import com.elna.moviedb.resources.minutes_suffix
 import com.elna.moviedb.resources.overview
 import com.elna.moviedb.resources.production_companies
 import com.elna.moviedb.resources.production_countries
-import com.elna.moviedb.resources.rating
 import com.elna.moviedb.resources.release
 import com.elna.moviedb.resources.revenue
 import com.elna.moviedb.resources.runtime
-import com.elna.moviedb.resources.trailers
-import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -115,105 +95,7 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             .verticalScroll(rememberScrollState())
     ) {
         // Hero Section with Backdrop and Poster
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(450.dp)
-        ) {
-            // Backdrop Image
-            movie.backdropPath?.let { backdropPath ->
-                ImageLoader(
-                    imageUrl = backdropPath,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-
-            // Gradient Overlay
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.7f)
-                            )
-                        )
-                    )
-            )
-
-
-            movie.posterPath?.let { posterPath ->
-                Card(
-                    modifier = Modifier
-                        .systemBarsPadding()
-                        .width(120.dp)
-                        .height(180.dp)
-                        .align(Alignment.TopStart)
-                        .padding(start = 16.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-                ) {
-                    ImageLoader(
-                        imageUrl = posterPath,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-
-            // Title and Basic Info
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = movie.title,
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-
-                movie.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
-                    Text(
-                        text = tagline,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White.copy(alpha = 0.8f),
-                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                    )
-                }
-
-                // Rating
-                movie.voteAverage?.let { rating ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = stringResource(Res.string.rating),
-                            tint = Color.Yellow,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Text(
-                            text = "${(rating * 10).toInt() / 10.0}",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        movie.voteCount?.let { count ->
-                            Text(
-                                text = "($count ${stringResource(Res.string.votes)})",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.White.copy(alpha = 0.7f)
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        MovieHeroSection(movie = movie)
 
         // Main Content
         Column(
@@ -343,177 +225,6 @@ private fun MovieDetailsContent(movie: MovieDetails) {
                         Text(
                             text = countries.joinToString(", "),
                             style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun InfoItem(
-    icon: ImageVector,
-    label: String,
-    value: String
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-private fun SectionCard(
-    title: String,
-    content: @Composable () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            content()
-        }
-    }
-}
-
-@Composable
-private fun BoxOfficeItem(
-    label: String,
-    amount: Long
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium
-        )
-        Text(
-            text = "$${formatNumberWithCommas(amount)}",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.primary
-        )
-    }
-}
-
-private fun formatNumberWithCommas(number: Long): String {
-    return number.toString().reversed().chunked(3).joinToString(",").reversed()
-}
-
-@Composable
-private fun TrailersSection(trailers: List<Video>) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = stringResource(Res.string.trailers),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(trailers, key = { it.id }) { trailer ->
-                    TrailerCard(trailer = trailer)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TrailerCard(trailer: Video) {
-    val uriHandler = LocalUriHandler.current
-
-    Card(
-        modifier = Modifier.width(200.dp).padding(2.dp),
-        onClick = { uriHandler.openUri(trailer.getVideoUrl()) },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-            ) {
-                ImageLoader(
-                    imageUrl = trailer.getThumbnailUrl(),
-                    modifier = Modifier.fillMaxSize()
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.3f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(48.dp)
-                    )
-                }
-            }
-
-            Column(
-                modifier = Modifier.padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = trailer.name,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                AssistChip(
-                    onClick = { },
-                    label = {
-                        Text(
-                            trailer.site.displayName,
-                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                 )

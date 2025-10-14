@@ -1,11 +1,11 @@
-package com.elna.moviedb.feature.tvshows.ui.tv_show_details.components
+package com.elna.moviedb.feature.tvshows.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AssistChip
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -16,12 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.networks
+import com.elna.moviedb.resources.trailers
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun NetworksSection(tvShow: TvShowDetails) {
-    tvShow.networks?.takeIf { it.isNotEmpty() }?.let { networks ->
+internal fun TrailersSection(tvShow: TvShowDetails) {
+    tvShow.trailers?.takeIf { it.isNotEmpty() }?.let { trailers ->
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -31,20 +31,16 @@ internal fun NetworksSection(tvShow: TvShowDetails) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    text = stringResource(Res.string.networks),
+                    text = stringResource(Res.string.trailers),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
 
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    networks.forEach { network ->
-                        AssistChip(
-                            onClick = { },
-                            label = { Text(text = network) }
-                        )
+                    items(trailers) { trailer ->
+                        TrailerCard(trailer = trailer)
                     }
                 }
             }
