@@ -33,5 +33,8 @@ internal fun BoxOfficeItem(
 }
 
 internal fun formatNumberWithCommas(number: Long): String {
-    return number.toString().reversed().chunked(3).joinToString(",").reversed()
+    val isNegative = number < 0
+    val absoluteValue = if (isNegative) -number else number
+    val formatted = absoluteValue.toString().reversed().chunked(3).joinToString(",").reversed()
+    return if (isNegative) "-$formatted" else formatted
 }
