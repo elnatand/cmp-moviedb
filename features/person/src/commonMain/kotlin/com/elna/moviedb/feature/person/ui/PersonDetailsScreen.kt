@@ -173,7 +173,7 @@ private fun PersonDetailsContent(
                         person.placeOfBirth?.let { place ->
                             DetailItem(
                                 label = stringResource(Res.string.place_of_birth),
-                                value = place
+                                value = place.split(",").lastOrNull()?.trim() ?: place
                             )
                         }
 

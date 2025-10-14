@@ -67,6 +67,7 @@ fun RemoteCombinedCredits.toDomain(): List<FilmographyCredit> {
     val crewCredits = crew?.map { it.toDomain() } ?: emptyList()
 
     return (castCredits + crewCredits)
+        .distinctBy { it.id }
         .sortedByDescending { credit ->
             credit.releaseDate ?: credit.firstAirDate ?: ""
         }
