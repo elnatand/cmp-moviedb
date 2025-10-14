@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.tvshows.ui.tv_show_details.components
+package com.elna.moviedb.feature.movies.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,24 +25,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.rating
-import com.elna.moviedb.resources.unknown
 import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun HeroSection(tvShow: TvShowDetails) {
+internal fun MovieHeroSection(movie: MovieDetails) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(450.dp)
     ) {
-        tvShow.backdropPath?.takeIf { it.isNotEmpty() }?.let { backdropPath ->
+        // Backdrop Image
+        movie.backdropPath?.let { backdropPath ->
             ImageLoader(
                 imageUrl = backdropPath,
                 modifier = Modifier.fillMaxSize()
@@ -64,7 +65,7 @@ internal fun HeroSection(tvShow: TvShowDetails) {
         )
 
         // Poster
-        tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
+        movie.posterPath?.let { posterPath ->
             Card(
                 modifier = Modifier
                     .systemBarsPadding()
@@ -91,23 +92,23 @@ internal fun HeroSection(tvShow: TvShowDetails) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = tvShow.name ?: stringResource(Res.string.unknown),
+                text = movie.title,
                 style = MaterialTheme.typography.headlineLarge,
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
 
-            tvShow.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
+            movie.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
                 Text(
                     text = tagline,
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White.copy(alpha = 0.8f),
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    fontStyle = FontStyle.Italic
                 )
             }
 
             // Rating
-            tvShow.voteAverage?.let { rating ->
+            movie.voteAverage?.let { rating ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -124,7 +125,7 @@ internal fun HeroSection(tvShow: TvShowDetails) {
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold
                     )
-                    tvShow.voteCount?.let { count ->
+                    movie.voteCount?.let { count ->
                         Text(
                             text = "($count ${stringResource(Res.string.votes)})",
                             style = MaterialTheme.typography.bodyMedium,

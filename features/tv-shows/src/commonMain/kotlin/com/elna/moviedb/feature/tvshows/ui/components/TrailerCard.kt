@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.movies.ui.movie_details.components
+package com.elna.moviedb.feature.tvshows.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AssistChip
@@ -29,42 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.ui.utils.ImageLoader
-import com.elna.moviedb.resources.Res
-import com.elna.moviedb.resources.trailers
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun TrailersSection(trailers: List<Video>) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = stringResource(Res.string.trailers),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(trailers, key = { it.id }) { trailer ->
-                    TrailerCard(trailer = trailer)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TrailerCard(trailer: Video) {
+internal fun TrailerCard(trailer: Video) {
     val uriHandler = LocalUriHandler.current
 
     Card(

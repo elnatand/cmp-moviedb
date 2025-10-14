@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.tvshows.ui.tv_show_details.components
+package com.elna.moviedb.feature.tvshows.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

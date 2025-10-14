@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
-import com.elna.moviedb.feature.movies.ui.movie_details.components.BoxOfficeItem
-import com.elna.moviedb.feature.movies.ui.movie_details.components.InfoItem
-import com.elna.moviedb.feature.movies.ui.movie_details.components.MovieHeroSection
-import com.elna.moviedb.feature.movies.ui.movie_details.components.SectionCard
-import com.elna.moviedb.feature.movies.ui.movie_details.components.TrailersSection
+import com.elna.moviedb.feature.movies.ui.components.BoxOfficeItem
+import com.elna.moviedb.feature.movies.ui.components.InfoItem
+import com.elna.moviedb.feature.movies.ui.components.MovieHeroSection
+import com.elna.moviedb.feature.movies.ui.components.SectionCard
+import com.elna.moviedb.feature.movies.ui.components.TrailersSection
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.box_office
 import com.elna.moviedb.resources.budget

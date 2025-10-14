@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.movies.ui.movie_details.components
+package com.elna.moviedb.feature.movies.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
