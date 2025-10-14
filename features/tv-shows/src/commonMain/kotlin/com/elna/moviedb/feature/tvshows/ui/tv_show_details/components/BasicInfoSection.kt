@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.PlayArrow
@@ -24,6 +25,7 @@ import com.elna.moviedb.resources.episode_runtime
 import com.elna.moviedb.resources.episodes
 import com.elna.moviedb.resources.first_air_date
 import com.elna.moviedb.resources.last_air_date
+import com.elna.moviedb.resources.minutes_suffix
 import com.elna.moviedb.resources.origin_country
 import com.elna.moviedb.resources.original_language
 import com.elna.moviedb.resources.seasons
@@ -65,7 +67,7 @@ internal fun BasicInfoSection(tvShow: TvShowDetails) {
             }
 
             InfoRow(
-                icon = Icons.Default.Tv,
+                icon = Icons.AutoMirrored.Filled.List,
                 label = stringResource(Res.string.seasons),
                 value = "${tvShow.numberOfSeasons ?: 0}"
             )
@@ -80,7 +82,7 @@ internal fun BasicInfoSection(tvShow: TvShowDetails) {
                 InfoRow(
                     icon = Icons.Default.PlayArrow,
                     label = stringResource(Res.string.episode_runtime),
-                    value = "${episodeRunTime.average().toInt()} min"
+                    value = "${episodeRunTime.average().toInt()} ${stringResource(Res.string.minutes_suffix)}"
                 )
             }
 

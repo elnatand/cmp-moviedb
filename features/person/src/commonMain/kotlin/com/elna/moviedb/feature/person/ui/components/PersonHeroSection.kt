@@ -103,7 +103,7 @@ internal fun PersonHeroSection(
                 } ?: Box(
                     modifier = Modifier
                         .width(240.dp)
-                        .height(320.dp)
+                        .height(360.dp)
                         .shadow(16.dp, RoundedCornerShape(8.dp))
                         .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant),

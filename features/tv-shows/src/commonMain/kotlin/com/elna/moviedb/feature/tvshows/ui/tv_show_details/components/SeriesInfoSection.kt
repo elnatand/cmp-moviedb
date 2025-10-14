@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Tv
@@ -64,7 +66,7 @@ internal fun SeriesInfoSection(tvShow: TvShowDetails) {
             )
 
             InfoRow(
-                icon = Icons.Default.Tv,
+                icon = Icons.AutoMirrored.Filled.List,
                 label = stringResource(Res.string.total_seasons),
                 value = "${tvShow.seasonsCount ?: 0}"
             )
