@@ -21,12 +21,14 @@ import org.jetbrains.compose.resources.stringResource
 fun ImageLoader(
     imageUrl: String,
     modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop,
     contentDescription: String? = null,
+
 ) {
     SubcomposeAsyncImage(
         model = imageUrl,
         contentDescription = contentDescription ?: stringResource(Res.string.image),
-        contentScale = ContentScale.Crop,
+        contentScale = contentScale,
         modifier = modifier,
         loading = {
             Box(

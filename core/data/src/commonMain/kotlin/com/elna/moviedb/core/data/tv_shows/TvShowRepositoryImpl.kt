@@ -252,14 +252,17 @@ class TvShowRepositoryImpl(
     override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> = coroutineScope {
         val language = getLanguage()
 
-        // Fetch details and videos in parallel
+        // Fetch details, videos, and credits in parallel
         val detailsDeferred =
             async { tvShowsRemoteDataSource.getTvShowDetails(tvShowId, language) }
         val videosDeferred =
             async { tvShowsRemoteDataSource.getTvShowVideos(tvShowId, language) }
+        val creditsDeferred =
+            async { tvShowsRemoteDataSource.getTvShowCredits(tvShowId, language) }
 
         val detailsResult = detailsDeferred.await()
         val videosResult = videosDeferred.await()
+        val creditsResult = creditsDeferred.await()
 
         // Extract details or return error
         val details = when (detailsResult) {
@@ -281,8 +284,21 @@ class TvShowRepositoryImpl(
             is AppResult.Error -> emptyList() // Videos are optional, don't fail if they error
         }
 
-        // Combine details with trailers
-        AppResult.Success(details.toDomain().copy(trailers = trailers))
+        // Map cast to domain and sort by order
+        val cast = when (creditsResult) {
+            is AppResult.Success -> {
+                creditsResult.data.cast
+                    ?.sortedBy { it.order }
+                    ?.take(15)
+                    ?.map { it.toDomain() }
+                    ?: emptyList()
+            }
+
+            is AppResult.Error -> emptyList() // Cast is optional, don't fail if they error
+        }
+
+        // Combine details with trailers and cast
+        AppResult.Success(details.toDomain().copy(trailers = trailers, cast = cast))
     }
 
     private suspend fun getLanguage(): String {

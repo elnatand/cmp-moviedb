@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsScreen
@@ -32,6 +33,9 @@ fun NavGraphBuilder.tvShowDetailsScene(navigator: NavHostController) {
         val tvShowId: Int = params.tvShowId
         TvShowDetailsScreen(
             tvShowId = tvShowId,
+            onCastMemberClick = { personId ->
+                navigator.navigate(PersonDetailsRoute(personId))
+            }
         )
     }
 }

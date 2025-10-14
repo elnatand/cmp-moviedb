@@ -68,6 +68,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="trailers">Trailers</string>
+    <string name="cast">Cast</string>
 
     <!-- Error Messages -->
     <string name="unknown_error_occurred">Unknown error occurred</string>
