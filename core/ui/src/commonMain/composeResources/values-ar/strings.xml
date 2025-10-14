@@ -91,6 +91,9 @@
     <string name="also_known_as">معروف أيضًا باسم</string>
     <string name="personal_details">التفاصيل الشخصية</string>
     <string name="place_of_birth">مكان الميلاد</string>
+    <string name="filmography">الأعمال السينمائية</string>
+    <string name="movie">فيلم</string>
+    <string name="tv">مسلسل</string>
 
     <!-- Profile Screen -->
     <string name="select_language">اختر اللغة</string>
