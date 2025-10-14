@@ -21,8 +21,12 @@ import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.formatDate
+import com.elna.moviedb.core.model.MediaType
+import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
 import com.elna.moviedb.feature.person.model.PersonUiState
 import com.elna.moviedb.feature.person.ui.components.DetailItem
+import com.elna.moviedb.feature.person.ui.components.FilmographySection
 import com.elna.moviedb.feature.person.ui.components.PersonHeroSection
 import com.elna.moviedb.feature.person.ui.components.SectionCard
 import com.elna.moviedb.resources.Res
@@ -40,21 +44,24 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun PersonDetailsScreen(
-    personId: Int
+    personId: Int,
+    navigator: androidx.navigation.NavHostController
 ) {
     val viewModel = koinViewModel<PersonDetailsViewModel> { parametersOf(personId) }
     val uiState by viewModel.uiState.collectAsState()
 
     PersonDetailsScreen(
         uiState = uiState,
-        onRetry = { viewModel.onEvent(com.elna.moviedb.feature.person.model.PersonDetailsEvent.Retry) }
+        onRetry = { viewModel.onEvent(com.elna.moviedb.feature.person.model.PersonDetailsEvent.Retry) },
+        navigator = navigator
     )
 }
 
 @Composable
 private fun PersonDetailsScreen(
     uiState: PersonUiState,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    navigator: androidx.navigation.NavHostController
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -68,14 +75,20 @@ private fun PersonDetailsScreen(
             )
 
             is PersonUiState.Success -> {
-                PersonDetailsContent(person = uiState.person)
+                PersonDetailsContent(
+                    person = uiState.person,
+                    navigator = navigator
+                )
             }
         }
     }
 }
 
 @Composable
-private fun PersonDetailsContent(person: PersonDetails) {
+private fun PersonDetailsContent(
+    person: PersonDetails,
+    navigator: androidx.navigation.NavHostController
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -102,6 +115,21 @@ private fun PersonDetailsContent(person: PersonDetails) {
                     }
                 )
             }
+
+            // Filmography Section
+            FilmographySection(
+                filmography = person.filmography,
+                onCreditClick = { id, mediaType ->
+                    when (mediaType) {
+                        MediaType.MOVIE -> {
+                            navigator.navigate(MovieDetailsRoute(id))
+                        }
+                        MediaType.TV -> {
+                            navigator.navigate(TvShowDetailsRoute(id))
+                        }
+                    }
+                }
+            )
 
             // Also Known As Section
             if (person.alsoKnownAs.isNotEmpty()) {

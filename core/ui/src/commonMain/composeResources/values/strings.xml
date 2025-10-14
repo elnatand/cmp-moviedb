@@ -91,6 +91,9 @@
     <string name="also_known_as">Also Known As</string>
     <string name="personal_details">Personal Details</string>
     <string name="place_of_birth">Place of Birth</string>
+    <string name="filmography">Filmography</string>
+    <string name="movie">Movie</string>
+    <string name="tv">TV</string>
 
     <!-- Profile Screen -->
     <string name="select_language">Select Language</string>

@@ -4,6 +4,7 @@ import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
+import com.elna.moviedb.core.network.model.person.RemoteCombinedCredits
 import com.elna.moviedb.core.network.model.person.RemotePersonDetails
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
@@ -25,6 +26,19 @@ class PersonRemoteDataSource(
                         parameters.append("language", language)
                     }
                 }.body<RemotePersonDetails>()
+            }
+        }
+    }
+
+    suspend fun getCombinedCredits(personId: Int, language: String): AppResult<RemoteCombinedCredits> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}person/$personId/combined_credits") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteCombinedCredits>()
             }
         }
     }

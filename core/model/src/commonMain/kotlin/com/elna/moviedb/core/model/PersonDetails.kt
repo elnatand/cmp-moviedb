@@ -14,5 +14,6 @@ data class PersonDetails(
     val popularity: Double?,
     val profilePath: String?,
     val adult: Boolean,
-    val alsoKnownAs: List<String>
+    val alsoKnownAs: List<String>,
+    val filmography: List<FilmographyCredit> = emptyList()
 )

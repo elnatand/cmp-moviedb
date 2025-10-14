@@ -15,8 +15,18 @@ class PersonRepositoryImpl(
 ) : PersonRepository {
 
     override suspend fun getPersonDetails(personId: Int): AppResult<PersonDetails> {
-        return personRemoteDataSource.getPersonDetails(personId, getLanguage()).map {
-            it.toDomain()
+        val language = getLanguage()
+
+        val personDetailsResult = personRemoteDataSource.getPersonDetails(personId, language)
+        val creditsResult = personRemoteDataSource.getCombinedCredits(personId, language)
+
+        return personDetailsResult.map { remotePersonDetails ->
+            val filmography = when (creditsResult) {
+                is AppResult.Success -> creditsResult.data.toDomain()
+                is AppResult.Error -> emptyList()
+            }
+
+            remotePersonDetails.toDomain().copy(filmography = filmography)
         }
     }
 

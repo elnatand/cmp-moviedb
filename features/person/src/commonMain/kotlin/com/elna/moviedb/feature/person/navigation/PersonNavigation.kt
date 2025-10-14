@@ -14,6 +14,7 @@ fun NavGraphBuilder.personDetailsScene(navigator: NavHostController) {
 
         PersonDetailsScreen(
             personId = personId,
+            navigator = navigator
         )
     }
 }
