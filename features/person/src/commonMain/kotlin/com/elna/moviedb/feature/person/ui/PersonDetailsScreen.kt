@@ -22,8 +22,6 @@ import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.formatDate
 import com.elna.moviedb.core.model.MediaType
-import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
-import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
 import com.elna.moviedb.feature.person.model.PersonUiState
 import com.elna.moviedb.feature.person.ui.components.DetailItem
 import com.elna.moviedb.feature.person.ui.components.FilmographySection
@@ -45,7 +43,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun PersonDetailsScreen(
     personId: Int,
-    navigator: androidx.navigation.NavHostController
+    onCreditClick: (Int, MediaType) -> Unit
 ) {
     val viewModel = koinViewModel<PersonDetailsViewModel> { parametersOf(personId) }
     val uiState by viewModel.uiState.collectAsState()
@@ -53,7 +51,7 @@ fun PersonDetailsScreen(
     PersonDetailsScreen(
         uiState = uiState,
         onRetry = { viewModel.onEvent(com.elna.moviedb.feature.person.model.PersonDetailsEvent.Retry) },
-        navigator = navigator
+        onCreditClick = onCreditClick
     )
 }
 
@@ -61,7 +59,7 @@ fun PersonDetailsScreen(
 private fun PersonDetailsScreen(
     uiState: PersonUiState,
     onRetry: () -> Unit,
-    navigator: androidx.navigation.NavHostController
+    onCreditClick: (Int, MediaType) -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -77,7 +75,7 @@ private fun PersonDetailsScreen(
             is PersonUiState.Success -> {
                 PersonDetailsContent(
                     person = uiState.person,
-                    navigator = navigator
+                    onCreditClick = onCreditClick
                 )
             }
         }
@@ -87,7 +85,7 @@ private fun PersonDetailsScreen(
 @Composable
 private fun PersonDetailsContent(
     person: PersonDetails,
-    navigator: androidx.navigation.NavHostController
+    onCreditClick: (Int, MediaType) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -119,16 +117,7 @@ private fun PersonDetailsContent(
             // Filmography Section
             FilmographySection(
                 filmography = person.filmography,
-                onCreditClick = { id, mediaType ->
-                    when (mediaType) {
-                        MediaType.MOVIE -> {
-                            navigator.navigate(MovieDetailsRoute(id))
-                        }
-                        MediaType.TV -> {
-                            navigator.navigate(TvShowDetailsRoute(id))
-                        }
-                    }
-                }
+                onCreditClick = onCreditClick
             )
 
             // Also Known As Section
