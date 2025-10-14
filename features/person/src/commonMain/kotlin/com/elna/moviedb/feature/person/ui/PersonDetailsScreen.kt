@@ -142,7 +142,7 @@ private fun PersonDetailsContent(person: PersonDetails) {
                                 imageUrl = profilePath,
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .blur(50.dp),
+                                    .blur(25.dp),
                                 contentDescription = null
                             )
                             // Overlay to dim the background
