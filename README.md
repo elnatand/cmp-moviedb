@@ -442,3 +442,5 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 - [ ] Implement deep linking support
 - [ ] Add CI/CD pipeline with GitHub Actions
 - [ ] Add analytics and crash reporting
+
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/elnatand/https%3A%2F%2Fgithub.com%2Felnatand%2Fcmp-moviedb%2F)
