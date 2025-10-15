@@ -397,6 +397,7 @@ All movie and TV show data is provided by [The Movie Database (TMDB)](https://ww
 This app was built with the assistance of **[Claude Code](https://claude.com/claude-code)**, Anthropic's AI-powered development tool. Having Claude Code as a development partner has been transformative - it truly feels like having a real partner throughout the entire development journey. From architecting the multi-module structure to implementing complex features like offline-first architecture and multi-language support, Claude Code has been instrumental in bringing this project to life.
 
 **[CodeRabbit](https://coderabbit.ai)** provides wonderful automated code reviews for pull requests in this project, offering intelligent insights, best practice recommendations, and thorough code analysis that helps maintain high code quality and catch potential issues early in the development process.
+
 ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/elnatand/cmp-moviedb)
 
 ## 📋 Development Roadmap
