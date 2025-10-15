@@ -1,0 +1,29 @@
+package com.elna.moviedb.core.database.model
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.elna.moviedb.core.model.CastMember
+
+@Entity(tableName = "cast_members")
+data class CastMemberEntity(
+    @PrimaryKey(autoGenerate = true)
+    val dbId: Int = 0,
+    @ColumnInfo(name = "movie_id")
+    val movieId: Int,
+    @ColumnInfo(name = "person_id")
+    val personId: Int,
+    val name: String,
+    val character: String,
+    @ColumnInfo(name = "profile_path")
+    val profilePath: String?,
+    val order: Int
+) {
+    fun toDomain() = CastMember(
+        id = personId,
+        name = name,
+        character = character,
+        profilePath = profilePath,
+        order = order
+    )
+}

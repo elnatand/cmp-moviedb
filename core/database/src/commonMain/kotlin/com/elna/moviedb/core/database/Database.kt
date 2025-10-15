@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.elna.moviedb.core.common.AppDispatchers
+import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
 import com.elna.moviedb.core.database.model.VideoEntity
@@ -15,7 +16,8 @@ import com.elna.moviedb.core.database.model.VideoEntity
     entities = [
         MovieEntity::class,
         MovieDetailsEntity::class,
-        VideoEntity::class
+        VideoEntity::class,
+        CastMemberEntity::class
     ],
     version = 1
 )

@@ -12,7 +12,10 @@ import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
+import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
+import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
 import kotlinx.coroutines.CoroutineScope
@@ -276,12 +279,14 @@ class MoviesRepositoryImpl(
         // 1. Check cache first (offline-first)
         val cachedMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId)
         val cachedVideos = moviesLocalDataSource.getVideosForMovie(movieId)
+        val cachedCast = moviesLocalDataSource.getCastForMovie(movieId)
 
-        // 2. If both cached, return immediately
+        // 2. If all cached, return immediately
         if (cachedMovieDetails != null) {
             val trailers = cachedVideos.map { it.toDomain() }
+            val cast = cachedCast.map { it.toDomain() }
             return@coroutineScope AppResult.Success(
-                cachedMovieDetails.toDomain().copy(trailers = trailers)
+                cachedMovieDetails.toDomain().copy(trailers = trailers, cast = cast)
             )
         }
 
@@ -289,15 +294,17 @@ class MoviesRepositoryImpl(
         val language = getLanguage()
         val detailsDeferred = async { moviesRemoteDataSource.getMovieDetails(movieId, language) }
         val videosDeferred = async { moviesRemoteDataSource.getMovieVideos(movieId, language) }
+        val creditsDeferred = async { moviesRemoteDataSource.getMovieCredits(movieId, language) }
 
         val detailsResult = detailsDeferred.await()
-        // 4. Extract details or return error (cancels videosDeferred on return)
+        // 4. Extract details or return error (cancels videosDeferred and creditsDeferred on return)
         val details = when (detailsResult) {
             is AppResult.Success -> detailsResult.data
             is AppResult.Error -> return@coroutineScope detailsResult
         }
-        // Only await videos after details succeeded
+        // Only await videos and credits after details succeeded
         val videosResult = videosDeferred.await()
+        val creditsResult = creditsDeferred.await()
 
         // 5. Process videos (optional - don't fail if videos error)
         val trailers = when (videosResult) {
@@ -313,7 +320,18 @@ class MoviesRepositoryImpl(
             is AppResult.Error -> emptyList()  // Graceful degradation
         }
 
-        // 6. Cache everything for future offline access
+        // 6. Process cast (optional - don't fail if cast errors)
+        val remoteCast = when (creditsResult) {
+            is AppResult.Success -> {
+                creditsResult.data.cast
+                    ?.sortedBy { it.order }
+                    ?: emptyList()
+            }
+
+            is AppResult.Error -> emptyList()  // Graceful degradation
+        }
+
+        // 7. Cache everything for future offline access
         val detailsEntity = details.asEntity()
         moviesLocalDataSource.insertMovieDetails(detailsEntity)
 
@@ -326,8 +344,27 @@ class MoviesRepositoryImpl(
             moviesLocalDataSource.insertVideos(videoEntities)
         }
 
-        // 7. Return combined result
-        AppResult.Success(detailsEntity.toDomain().copy(trailers = trailers))
+        // Replace existing cast atomically
+        moviesLocalDataSource.deleteCastForMovie(movieId)
+        if (remoteCast.isNotEmpty()) {
+            val castEntities = remoteCast.map { remoteCastMember ->
+                CastMemberEntity(
+                    movieId = movieId,
+                    personId = remoteCastMember.id,
+                    name = remoteCastMember.name,
+                    character = remoteCastMember.character,
+                    profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" },
+                    order = remoteCastMember.order
+                )
+            }
+            moviesLocalDataSource.insertCastMembers(castEntities)
+        }
+
+        // Convert cast to domain for return
+        val cast = remoteCast.map { it.toDomain() }
+
+        // 8. Return combined result
+        AppResult.Success(detailsEntity.toDomain().copy(trailers = trailers, cast = cast))
     }
 
     /**

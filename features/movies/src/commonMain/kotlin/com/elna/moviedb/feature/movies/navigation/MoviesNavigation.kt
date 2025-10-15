@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
+import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
 import com.elna.moviedb.feature.movies.ui.movies.MoviesScreen
 
@@ -35,6 +36,9 @@ fun NavGraphBuilder.movieDetailsScene(navigator: NavHostController) {
 
         MovieDetailsScreen(
             movieId = movieId,
+            onCastMemberClick = { personId ->
+                navigator.navigate(PersonDetailsRoute(personId))
+            }
         )
     }
 }
