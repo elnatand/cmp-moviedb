@@ -1,6 +1,5 @@
 package com.elna.moviedb.core.network.model.person
 
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -54,7 +53,7 @@ fun RemotePersonDetails.toDomain(): com.elna.moviedb.core.model.PersonDetails {
         knownForDepartment = knownForDepartment ?: "",
         placeOfBirth = placeOfBirth,
         popularity = popularity,
-        profilePath = profilePath?.let { "$TMDB_IMAGE_URL$it" },
+        profilePath = profilePath,
         adult = adult ?: false,
         alsoKnownAs = alsoKnownAs ?: emptyList()
     )

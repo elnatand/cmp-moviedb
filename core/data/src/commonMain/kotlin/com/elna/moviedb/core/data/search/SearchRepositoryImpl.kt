@@ -5,6 +5,7 @@ import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchResultItem
 import com.elna.moviedb.core.network.SearchRemoteDataSource
+import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import com.elna.moviedb.core.network.model.search.toSearchResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -27,7 +28,15 @@ class SearchRepositoryImpl(
         val result = searchRemoteDataSource.searchMovies(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
-                val movieItems = result.data.results.map { it.toSearchResult() }
+                val movieItems = result.data.results.map { remoteSearchMovie ->
+                    val searchResult = remoteSearchMovie.toSearchResult()
+                    searchResult.copy(
+                        movie = searchResult.movie.copy(
+                            posterPath = remoteSearchMovie.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                        ),
+                        backdropPath = remoteSearchMovie.backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+                    )
+                }
                 emit(AppResult.Success(movieItems))
             }
 
@@ -49,7 +58,15 @@ class SearchRepositoryImpl(
         val result = searchRemoteDataSource.searchTvShows(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
-                val tvShowItems = result.data.results.map { it.toSearchResult() }
+                val tvShowItems = result.data.results.map { remoteSearchTvShow ->
+                    val searchResult = remoteSearchTvShow.toSearchResult()
+                    searchResult.copy(
+                        tvShow = searchResult.tvShow.copy(
+                            posterPath = remoteSearchTvShow.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                        ),
+                        backdropPath = remoteSearchTvShow.backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+                    )
+                }
                 emit(AppResult.Success(tvShowItems))
             }
 
@@ -71,7 +88,12 @@ class SearchRepositoryImpl(
         val result = searchRemoteDataSource.searchPeople(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
-                val personItems = result.data.results.map { it.toSearchResult() }
+                val personItems = result.data.results.map { remoteSearchPerson ->
+                    val searchResult = remoteSearchPerson.toSearchResult()
+                    searchResult.copy(
+                        profilePath = remoteSearchPerson.profilePath?.let { "$TMDB_IMAGE_URL$it" }
+                    )
+                }
                 emit(AppResult.Success(personItems))
             }
 
@@ -91,7 +113,27 @@ class SearchRepositoryImpl(
             val result = searchRemoteDataSource.searchMulti(query, page, getLanguage())
             when (result) {
                 is AppResult.Success -> {
-                    val searchItems = result.data.results.mapNotNull { it.toSearchResult() }
+                    val searchItems = result.data.results.mapNotNull { multiSearchItem ->
+                        multiSearchItem.toSearchResult()?.let { searchResult ->
+                            when (searchResult) {
+                                is SearchResultItem.MovieItem -> searchResult.copy(
+                                    movie = searchResult.movie.copy(
+                                        posterPath = multiSearchItem.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                                    ),
+                                    backdropPath = multiSearchItem.backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+                                )
+                                is SearchResultItem.TvShowItem -> searchResult.copy(
+                                    tvShow = searchResult.tvShow.copy(
+                                        posterPath = multiSearchItem.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                                    ),
+                                    backdropPath = multiSearchItem.backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+                                )
+                                is SearchResultItem.PersonItem -> searchResult.copy(
+                                    profilePath = multiSearchItem.profilePath?.let { "$TMDB_IMAGE_URL$it" }
+                                )
+                            }
+                        }
+                    }
                     emit(AppResult.Success(searchItems))
                 }
 

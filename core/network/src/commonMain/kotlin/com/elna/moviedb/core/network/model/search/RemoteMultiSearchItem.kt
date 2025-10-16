@@ -3,7 +3,6 @@ package com.elna.moviedb.core.network.model.search
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.SearchResultItem
 import com.elna.moviedb.core.model.TvShow
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -54,13 +53,13 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
                 movie = Movie(
                     id = id,
                     title = movieTitle,
-                    posterPath = posterPath?.let { TMDB_IMAGE_URL + it }
+                    posterPath = posterPath
                 ),
                 overview = overview,
                 releaseDate = releaseDate,
                 voteAverage = voteAverage,
                 voteCount = voteCount,
-                backdropPath = backdropPath?.let { TMDB_IMAGE_URL + it }
+                backdropPath = backdropPath
             )
         }
         "tv" -> {
@@ -69,13 +68,13 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
                 tvShow = TvShow(
                     id = id,
                     name = tvShowName,
-                    posterPath = posterPath?.let { TMDB_IMAGE_URL + it }
+                    posterPath = posterPath
                 ),
                 overview = overview,
                 firstAirDate = firstAirDate,
                 voteAverage = voteAverage,
                 voteCount = voteCount,
-                backdropPath = backdropPath?.let { TMDB_IMAGE_URL + it }
+                backdropPath = backdropPath
             )
         }
         "person" -> {
@@ -84,7 +83,7 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
                 id = id,
                 name = personName,
                 knownForDepartment = knownForDepartment,
-                profilePath = profilePath?.let { TMDB_IMAGE_URL + it }
+                profilePath = profilePath
             )
         }
         else -> null

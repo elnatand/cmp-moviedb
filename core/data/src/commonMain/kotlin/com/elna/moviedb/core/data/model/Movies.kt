@@ -2,7 +2,6 @@ package com.elna.moviedb.core.data.model
 
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import com.elna.moviedb.core.network.model.movies.RemoteMovie
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import kotlin.time.Clock
@@ -13,7 +12,7 @@ fun RemoteMovie.asEntity() = MovieEntity(
     id = id,
     timestamp = Clock.System.now().epochSeconds,
     title = title,
-    posterPath = "$TMDB_IMAGE_URL$posterPath"
+    posterPath = posterPath
 )
 
 
@@ -21,8 +20,8 @@ fun RemoteMovieDetails.asEntity() = MovieDetailsEntity(
     id = id,
     title = title,
     overview = overview,
-    posterPath = "$TMDB_IMAGE_URL$posterPath",
-    backdropPath = "$TMDB_IMAGE_URL$backdropPath",
+    posterPath = posterPath,
+    backdropPath = backdropPath,
     releaseDate = releaseDate,
     runtime = runtime,
     voteAverage = voteAverage,

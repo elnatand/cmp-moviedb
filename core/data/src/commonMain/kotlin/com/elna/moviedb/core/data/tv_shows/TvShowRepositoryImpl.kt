@@ -7,6 +7,7 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.network.TvShowsRemoteDataSource
+import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
@@ -118,7 +119,11 @@ class TvShowRepositoryImpl(
             tvShowsRemoteDataSource.getPopularTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 popularTvShowsTotalPages = result.data.totalPages
-                val newTvShows = result.data.results.map { it.toDomain() }
+                val newTvShows = result.data.results.map { remoteTvShow ->
+                    remoteTvShow.toDomain().copy(
+                        posterPath = remoteTvShow.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                    )
+                }
                 popularTvShows.value = popularTvShows.value + newTvShows
                 popularTvShowsCurrentPage = nextPage
 
@@ -158,7 +163,11 @@ class TvShowRepositoryImpl(
             tvShowsRemoteDataSource.getOnTheAirTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 onTheAirTvShowsTotalPages = result.data.totalPages
-                val newTvShows = result.data.results.map { it.toDomain() }
+                val newTvShows = result.data.results.map { remoteTvShow ->
+                    remoteTvShow.toDomain().copy(
+                        posterPath = remoteTvShow.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                    )
+                }
                 onTheAirTvShows.value = onTheAirTvShows.value + newTvShows
                 onTheAirTvShowsCurrentPage = nextPage
 
@@ -198,7 +207,11 @@ class TvShowRepositoryImpl(
             tvShowsRemoteDataSource.getTopRatedTvShowsPage(nextPage, getLanguage())) {
             is AppResult.Success -> {
                 topRatedTvShowsTotalPages = result.data.totalPages
-                val newTvShows = result.data.results.map { it.toDomain() }
+                val newTvShows = result.data.results.map { remoteTvShow ->
+                    remoteTvShow.toDomain().copy(
+                        posterPath = remoteTvShow.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                    )
+                }
                 topRatedTvShows.value = topRatedTvShows.value + newTvShows
                 topRatedTvShowsCurrentPage = nextPage
 
@@ -288,15 +301,25 @@ class TvShowRepositoryImpl(
             is AppResult.Success -> {
                 creditsResult.data.cast
                     ?.sortedBy { it.order }
-                    ?.map { it.toDomain() }
+                    ?.map { remoteCastMember ->
+                        remoteCastMember.toDomain().copy(
+                            profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" }
+                        )
+                    }
                     ?: emptyList()
             }
 
             is AppResult.Error -> emptyList() // Cast is optional, don't fail if they error
         }
 
-        // Combine details with trailers and cast
-        AppResult.Success(details.toDomain().copy(trailers = trailers, cast = cast))
+        // Combine details with trailers and cast - add URL concatenation for poster and backdrop
+        val tvShowDetails = details.toDomain().copy(
+            posterPath = details.posterPath?.let { "$TMDB_IMAGE_URL$it" },
+            backdropPath = details.backdropPath?.let { "$TMDB_IMAGE_URL$it" },
+            trailers = trailers,
+            cast = cast
+        )
+        AppResult.Success(tvShowDetails)
     }
 
     private suspend fun getLanguage(): String {

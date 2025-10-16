@@ -89,7 +89,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath
+                    posterPath = it.posterPath?.let { path -> "$TMDB_IMAGE_URL$path" }
                 )
             }
         }
@@ -114,7 +114,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath
+                    posterPath = it.posterPath?.let { path -> "$TMDB_IMAGE_URL$path" }
                 )
             }
         }
@@ -139,7 +139,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath
+                    posterPath = it.posterPath?.let { path -> "$TMDB_IMAGE_URL$path" }
                 )
             }
         }
@@ -285,9 +285,13 @@ class MoviesRepositoryImpl(
         if (cachedMovieDetails != null) {
             val trailers = cachedVideos.map { it.toDomain() }
             val cast = cachedCast.sortedBy { it.order }.map { it.toDomain() }
-            return@coroutineScope AppResult.Success(
-                cachedMovieDetails.toDomain().copy(trailers = trailers, cast = cast)
+            val movieDetails = cachedMovieDetails.toDomain().copy(
+                posterPath = cachedMovieDetails.posterPath?.let { "$TMDB_IMAGE_URL$it" },
+                backdropPath = cachedMovieDetails.backdropPath?.let { "$TMDB_IMAGE_URL$it" },
+                trailers = trailers,
+                cast = cast
             )
+            return@coroutineScope AppResult.Success(movieDetails)
         }
 
         // 3. Cache miss - fetch from network in parallel
@@ -349,17 +353,27 @@ class MoviesRepositoryImpl(
                 personId = remoteCastMember.id,
                 name = remoteCastMember.name,
                 character = remoteCastMember.character,
-                profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" },
+                profilePath = remoteCastMember.profilePath,
                 order = remoteCastMember.order
             )
         }
         moviesLocalDataSource.replaceCastForMovie(movieId, castEntities)
 
         // Convert cast to domain for return
-        val cast = remoteCast.map { it.toDomain() }
+        val cast = remoteCast.map { remoteCastMember ->
+            remoteCastMember.toDomain().copy(
+                profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" }
+            )
+        }
 
-        // 8. Return combined result
-        AppResult.Success(detailsEntity.toDomain().copy(trailers = trailers, cast = cast))
+        // 8. Return combined result with full URLs
+        val movieDetails = detailsEntity.toDomain().copy(
+            posterPath = detailsEntity.posterPath?.let { "$TMDB_IMAGE_URL$it" },
+            backdropPath = detailsEntity.backdropPath?.let { "$TMDB_IMAGE_URL$it" },
+            trailers = trailers,
+            cast = cast
+        )
+        AppResult.Success(movieDetails)
     }
 
     /**
@@ -406,7 +420,11 @@ class MoviesRepositoryImpl(
             moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name).first()
 
         val combinedList = (popularMovies + topRatedMovies + nowPlayingMovies).map {
-            Movie(id = it.id, title = it.title, posterPath = it.posterPath)
+            Movie(
+                id = it.id,
+                title = it.title,
+                posterPath = it.posterPath?.let { path -> "$TMDB_IMAGE_URL$path" }
+            )
         }
 
         return AppResult.Success(combinedList)

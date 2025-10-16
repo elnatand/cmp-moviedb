@@ -1,7 +1,6 @@
 package com.elna.moviedb.core.network.model.search
 
 import com.elna.moviedb.core.model.SearchResultItem
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -26,6 +25,6 @@ fun RemoteSearchPerson.toSearchResult(): SearchResultItem.PersonItem {
         id = id,
         name = name,
         knownForDepartment = knownForDepartment,
-        profilePath = profilePath?.let { "$TMDB_IMAGE_URL$it" }
+        profilePath = profilePath
     )
 }

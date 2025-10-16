@@ -1,7 +1,6 @@
 package com.elna.moviedb.core.network.model.movies
 
 import com.elna.moviedb.core.model.CastMember
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -43,6 +42,6 @@ fun RemoteCastMember.toDomain() = CastMember(
     id = id,
     name = name,
     character = character,
-    profilePath = profilePath?.let { "$TMDB_IMAGE_URL$it" },
+    profilePath = profilePath,
     order = order
 )
