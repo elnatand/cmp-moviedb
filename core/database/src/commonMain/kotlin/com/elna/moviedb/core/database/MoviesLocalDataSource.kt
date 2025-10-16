@@ -1,5 +1,6 @@
 package com.elna.moviedb.core.database
 
+import androidx.room.Transaction
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
@@ -31,6 +32,7 @@ class MoviesLocalDataSource(
     suspend fun clearAllMovies() {
         movieDao.clearAllMovies()
         movieDetailsDao.clearAllMovieDetails()
+        movieDetailsDao.clearAllCast()
     }
 
     suspend fun getVideosForMovie(movieId: Int): List<VideoEntity> {
@@ -55,5 +57,11 @@ class MoviesLocalDataSource(
 
     suspend fun deleteCastForMovie(movieId: Int) {
         movieDetailsDao.deleteCastForMovie(movieId)
+    }
+
+    @Transaction
+    suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>) {
+        deleteCastForMovie(movieId)
+        if (cast.isNotEmpty()) insertCastMembers(cast)
     }
 }

@@ -284,7 +284,7 @@ class MoviesRepositoryImpl(
         // 2. If all cached, return immediately
         if (cachedMovieDetails != null) {
             val trailers = cachedVideos.map { it.toDomain() }
-            val cast = cachedCast.map { it.toDomain() }
+            val cast = cachedCast.sortedBy { it.order }.map { it.toDomain() }
             return@coroutineScope AppResult.Success(
                 cachedMovieDetails.toDomain().copy(trailers = trailers, cast = cast)
             )
@@ -313,7 +313,6 @@ class MoviesRepositoryImpl(
                     .filter { it.type == "Trailer" || it.type == "Teaser" }
                     .sortedWith(compareByDescending<RemoteVideo> { it.official }
                         .thenByDescending { it.publishedAt })
-                    .take(10)
                     .map { it.toDomain() }
             }
 
@@ -344,21 +343,17 @@ class MoviesRepositoryImpl(
             moviesLocalDataSource.insertVideos(videoEntities)
         }
 
-        // Replace existing cast atomically
-        moviesLocalDataSource.deleteCastForMovie(movieId)
-        if (remoteCast.isNotEmpty()) {
-            val castEntities = remoteCast.map { remoteCastMember ->
-                CastMemberEntity(
-                    movieId = movieId,
-                    personId = remoteCastMember.id,
-                    name = remoteCastMember.name,
-                    character = remoteCastMember.character,
-                    profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" },
-                    order = remoteCastMember.order
-                )
-            }
-            moviesLocalDataSource.insertCastMembers(castEntities)
+        val castEntities = remoteCast.map { remoteCastMember ->
+            CastMemberEntity(
+                movieId = movieId,
+                personId = remoteCastMember.id,
+                name = remoteCastMember.name,
+                character = remoteCastMember.character,
+                profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" },
+                order = remoteCastMember.order
+            )
         }
+        moviesLocalDataSource.replaceCastForMovie(movieId, castEntities)
 
         // Convert cast to domain for return
         val cast = remoteCast.map { it.toDomain() }

@@ -36,4 +36,6 @@ interface MovieDetailsDao {
 
     @Query("DELETE FROM cast_members WHERE movie_id = :movieId")
     suspend fun deleteCastForMovie(movieId: Int)
+    @Query("DELETE FROM cast_members")
+    suspend fun clearAllCast()
 }
