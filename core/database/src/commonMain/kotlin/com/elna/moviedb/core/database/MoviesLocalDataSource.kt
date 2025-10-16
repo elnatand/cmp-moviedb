@@ -31,6 +31,7 @@ class MoviesLocalDataSource(
     suspend fun clearAllMovies() {
         movieDao.clearAllMovies()
         movieDetailsDao.clearAllMovieDetails()
+        movieDetailsDao.clearAllCast()
     }
 
     suspend fun getVideosForMovie(movieId: Int): List<VideoEntity> {
@@ -55,5 +56,9 @@ class MoviesLocalDataSource(
 
     suspend fun deleteCastForMovie(movieId: Int) {
         movieDetailsDao.deleteCastForMovie(movieId)
+    }
+
+    suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>) {
+        movieDetailsDao.replaceCastForMovie(movieId, cast)
     }
 }

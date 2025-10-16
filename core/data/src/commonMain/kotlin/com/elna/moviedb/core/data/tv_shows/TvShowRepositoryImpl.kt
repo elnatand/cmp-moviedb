@@ -277,7 +277,6 @@ class TvShowRepositoryImpl(
                     .filter { it.type == "Trailer" || it.type == "Teaser" }
                     .sortedWith(compareByDescending<RemoteVideo> { it.official }
                         .thenByDescending { it.publishedAt })
-                    .take(10)
                     .map { it.toDomain() }
             }
 
@@ -289,7 +288,6 @@ class TvShowRepositoryImpl(
             is AppResult.Success -> {
                 creditsResult.data.cast
                     ?.sortedBy { it.order }
-                    ?.take(15)
                     ?.map { it.toDomain() }
                     ?: emptyList()
             }
