@@ -1,7 +1,5 @@
 package com.elna.moviedb.core.data.util
 
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
-
 /**
  * Converts a relative image path to a full TMDB image URL.
  *
@@ -14,6 +12,11 @@ import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
  * val fullUrl = relativePath.toFullImageUrl() // "https://image.tmdb.org/t/p/w500/abc123.jpg"
  * ```
  */
-fun String?.toFullImageUrl(): String? {
+
+// Using w500 for high-quality images on high-density displays
+// Optimal for 140dp wide cards (140dp × 3 density = 420px, w500 provides 500px)
+private const val TMDB_IMAGE_URL = "https://media.themoviedb.org/t/p/w500"
+
+internal fun String?.toFullImageUrl(): String? {
     return this?.let { "$TMDB_IMAGE_URL$it" }
 }

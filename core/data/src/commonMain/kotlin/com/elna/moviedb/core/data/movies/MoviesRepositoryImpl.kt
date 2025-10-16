@@ -284,7 +284,9 @@ class MoviesRepositoryImpl(
         // 2. If all cached, return immediately
         if (cachedMovieDetails != null) {
             val trailers = cachedVideos.map { it.toDomain() }
-            val cast = cachedCast.sortedBy { it.order }.map { it.toDomain() }
+            val cast = cachedCast.sortedBy { it.order }
+                .map { it.toDomain().copy(profilePath = it.profilePath.toFullImageUrl()) }
+
             val movieDetails = cachedMovieDetails.toDomain().copy(
                 posterPath = cachedMovieDetails.posterPath.toFullImageUrl(),
                 backdropPath = cachedMovieDetails.backdropPath.toFullImageUrl(),
