@@ -9,7 +9,7 @@ package com.elna.moviedb.core.data.util
  * Example:
  * ```
  * val relativePath = "/abc123.jpg"
- * val fullUrl = relativePath.toFullImageUrl() // "https://image.tmdb.org/t/p/w500/abc123.jpg"
+ * val fullUrl = relativePath.toFullImageUrl() // "https://media.themoviedb.org/t/p/w500/abc123.jpg"
  * ```
  */
 
