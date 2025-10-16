@@ -27,7 +27,9 @@ import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
 import com.elna.moviedb.feature.movies.ui.components.BoxOfficeItem
+import com.elna.moviedb.feature.movies.ui.components.CastSection
 import com.elna.moviedb.feature.movies.ui.components.InfoItem
 import com.elna.moviedb.feature.movies.ui.components.MovieHeroSection
 import com.elna.moviedb.feature.movies.ui.components.SectionCard
@@ -52,13 +54,15 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
+    onCastMemberClick: (Int) -> Unit = {}
 ) {
     val viewModel = koinViewModel<MovieDetailsViewModel> { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
 
     MovieDetailsScreen(
         uiState = uiState,
-        onRetry = { viewModel.onEvent(com.elna.moviedb.feature.movies.model.MovieDetailsEvent.Retry) }
+        onRetry = { viewModel.onEvent(MovieDetailsEvent.Retry) },
+        onCastMemberClick = onCastMemberClick
     )
 }
 
@@ -66,7 +70,8 @@ fun MovieDetailsScreen(
 @Composable
 private fun MovieDetailsScreen(
     uiState: MovieDetailsViewModel.MovieDetailsUiState,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onCastMemberClick: (Int) -> Unit = {}
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -80,7 +85,10 @@ private fun MovieDetailsScreen(
             )
 
             is MovieDetailsViewModel.MovieDetailsUiState.Success -> {
-                MovieDetailsContent(movie = uiState.movieDetails)
+                MovieDetailsContent(
+                    movie = uiState.movieDetails,
+                    onCastMemberClick = onCastMemberClick
+                )
             }
         }
     }
@@ -88,7 +96,10 @@ private fun MovieDetailsScreen(
 
 
 @Composable
-private fun MovieDetailsContent(movie: MovieDetails) {
+private fun MovieDetailsContent(
+    movie: MovieDetails,
+    onCastMemberClick: (Int) -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -150,6 +161,12 @@ private fun MovieDetailsContent(movie: MovieDetails) {
             movie.trailers?.takeIf { it.isNotEmpty() }?.let { trailers ->
                 TrailersSection(trailers = trailers)
             }
+
+            // Cast Section
+            CastSection(
+                movie = movie,
+                onCastMemberClick = onCastMemberClick
+            )
 
             // Genres Section
             movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->

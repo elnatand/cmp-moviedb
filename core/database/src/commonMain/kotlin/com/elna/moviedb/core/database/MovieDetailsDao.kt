@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
+import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.VideoEntity
 
@@ -26,4 +28,22 @@ interface MovieDetailsDao {
 
     @Query("DELETE FROM videos WHERE movie_id = :movieId")
     suspend fun deleteVideosForMovie(movieId: Int)
+
+    @Query("SELECT * FROM cast_members WHERE movie_id = :movieId ORDER BY `order` ASC")
+    suspend fun getCastForMovie(movieId: Int): List<CastMemberEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCastMembers(cast: List<CastMemberEntity>)
+
+    @Query("DELETE FROM cast_members WHERE movie_id = :movieId")
+    suspend fun deleteCastForMovie(movieId: Int)
+
+    @Query("DELETE FROM cast_members")
+    suspend fun clearAllCast()
+
+    @Transaction
+    suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>) {
+        deleteCastForMovie(movieId)
+        if (cast.isNotEmpty()) insertCastMembers(cast)
+    }
 }

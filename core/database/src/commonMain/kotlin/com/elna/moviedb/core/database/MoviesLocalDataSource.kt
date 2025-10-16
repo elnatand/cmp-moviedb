@@ -1,5 +1,6 @@
 package com.elna.moviedb.core.database
 
+import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
 import com.elna.moviedb.core.database.model.VideoEntity
@@ -11,10 +12,6 @@ class MoviesLocalDataSource(
 ) {
     fun getMoviesByCategoryAsFlow(category: String): Flow<List<MovieEntity>> {
         return movieDao.getMoviesByCategoryAsFlow(category)
-    }
-
-    fun getAllMoviesAsFlow(): Flow<List<MovieEntity>> {
-        return movieDao.getAllMoviesAsFlow()
     }
 
     suspend fun insertMoviesPage(movies: List<MovieEntity>) {
@@ -31,13 +28,10 @@ class MoviesLocalDataSource(
         movieDetailsDao.insertMovieDetails(movieDetails)
     }
 
-    suspend fun clearMoviesByCategory(category: String) {
-        movieDao.clearMoviesByCategory(category)
-    }
-
     suspend fun clearAllMovies() {
         movieDao.clearAllMovies()
         movieDetailsDao.clearAllMovieDetails()
+        movieDetailsDao.clearAllCast()
     }
 
     suspend fun getVideosForMovie(movieId: Int): List<VideoEntity> {
@@ -50,5 +44,21 @@ class MoviesLocalDataSource(
 
     suspend fun deleteVideosForMovie(movieId: Int) {
         movieDetailsDao.deleteVideosForMovie(movieId)
+    }
+
+    suspend fun getCastForMovie(movieId: Int): List<CastMemberEntity> {
+        return movieDetailsDao.getCastForMovie(movieId)
+    }
+
+    suspend fun insertCastMembers(cast: List<CastMemberEntity>) {
+        movieDetailsDao.insertCastMembers(cast)
+    }
+
+    suspend fun deleteCastForMovie(movieId: Int) {
+        movieDetailsDao.deleteCastForMovie(movieId)
+    }
+
+    suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>) {
+        movieDetailsDao.replaceCastForMovie(movieId, cast)
     }
 }
