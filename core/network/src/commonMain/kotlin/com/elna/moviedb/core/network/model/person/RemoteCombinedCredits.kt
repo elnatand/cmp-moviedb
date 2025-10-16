@@ -2,7 +2,6 @@ package com.elna.moviedb.core.network.model.person
 
 import com.elna.moviedb.core.model.FilmographyCredit
 import com.elna.moviedb.core.model.MediaType
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -79,7 +78,7 @@ fun RemoteCastCredit.toDomain(): FilmographyCredit {
         title = title,
         name = name,
         character = character,
-        posterPath = posterPath?.let { "$TMDB_IMAGE_URL$it" },
+        posterPath = posterPath,
         releaseDate = releaseDate,
         firstAirDate = firstAirDate,
         mediaType = when (mediaType) {
@@ -96,7 +95,7 @@ fun RemoteCrewCredit.toDomain(): FilmographyCredit {
         title = title,
         name = name,
         character = job, // Use job as the "character" field for crew
-        posterPath = posterPath?.let { "$TMDB_IMAGE_URL$it" },
+        posterPath = posterPath,
         releaseDate = releaseDate,
         firstAirDate = firstAirDate,
         mediaType = when (mediaType) {

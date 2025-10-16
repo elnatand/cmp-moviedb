@@ -6,7 +6,6 @@ import com.elna.moviedb.core.network.model.movies.ProductionCompany
 import com.elna.moviedb.core.network.model.movies.ProductionCountry
 import com.elna.moviedb.core.network.model.movies.SpokenLanguage
 import com.elna.moviedb.core.model.TvShowDetails
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -156,8 +155,8 @@ fun RemoteTvShowDetails.toDomain() = TvShowDetails(
     id = id,
     name = name,
     overview = overview,
-    posterPath = "$TMDB_IMAGE_URL$posterPath",
-    backdropPath = "$TMDB_IMAGE_URL$backdropPath",
+    posterPath = posterPath,
+    backdropPath = backdropPath,
     adult = adult,
     firstAirDate = firstAirDate,
     lastAirDate = lastAirDate,

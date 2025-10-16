@@ -1,9 +1,7 @@
 package com.elna.moviedb.core.network.model.movies
 
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
 
 
 @Serializable

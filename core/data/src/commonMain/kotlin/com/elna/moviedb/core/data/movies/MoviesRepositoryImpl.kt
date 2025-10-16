@@ -13,8 +13,8 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.database.model.CastMemberEntity
+import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
@@ -89,7 +89,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath
+                    posterPath = it.posterPath.toFullImageUrl()
                 )
             }
         }
@@ -114,7 +114,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath
+                    posterPath = it.posterPath.toFullImageUrl()
                 )
             }
         }
@@ -139,7 +139,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath
+                    posterPath = it.posterPath.toFullImageUrl()
                 )
             }
         }
@@ -284,10 +284,16 @@ class MoviesRepositoryImpl(
         // 2. If all cached, return immediately
         if (cachedMovieDetails != null) {
             val trailers = cachedVideos.map { it.toDomain() }
-            val cast = cachedCast.sortedBy { it.order }.map { it.toDomain() }
-            return@coroutineScope AppResult.Success(
-                cachedMovieDetails.toDomain().copy(trailers = trailers, cast = cast)
+            val cast = cachedCast.sortedBy { it.order }
+                .map { it.toDomain().copy(profilePath = it.profilePath.toFullImageUrl()) }
+
+            val movieDetails = cachedMovieDetails.toDomain().copy(
+                posterPath = cachedMovieDetails.posterPath.toFullImageUrl(),
+                backdropPath = cachedMovieDetails.backdropPath.toFullImageUrl(),
+                trailers = trailers,
+                cast = cast
             )
+            return@coroutineScope AppResult.Success(movieDetails)
         }
 
         // 3. Cache miss - fetch from network in parallel
@@ -349,17 +355,27 @@ class MoviesRepositoryImpl(
                 personId = remoteCastMember.id,
                 name = remoteCastMember.name,
                 character = remoteCastMember.character,
-                profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" },
+                profilePath = remoteCastMember.profilePath,
                 order = remoteCastMember.order
             )
         }
         moviesLocalDataSource.replaceCastForMovie(movieId, castEntities)
 
         // Convert cast to domain for return
-        val cast = remoteCast.map { it.toDomain() }
+        val cast = remoteCast.map { remoteCastMember ->
+            remoteCastMember.toDomain().copy(
+                profilePath = remoteCastMember.profilePath.toFullImageUrl()
+            )
+        }
 
-        // 8. Return combined result
-        AppResult.Success(detailsEntity.toDomain().copy(trailers = trailers, cast = cast))
+        // 8. Return combined result with full URLs
+        val movieDetails = detailsEntity.toDomain().copy(
+            posterPath = detailsEntity.posterPath.toFullImageUrl(),
+            backdropPath = detailsEntity.backdropPath.toFullImageUrl(),
+            trailers = trailers,
+            cast = cast
+        )
+        AppResult.Success(movieDetails)
     }
 
     /**
@@ -406,7 +422,11 @@ class MoviesRepositoryImpl(
             moviesLocalDataSource.getMoviesByCategoryAsFlow(MovieCategory.NOW_PLAYING.name).first()
 
         val combinedList = (popularMovies + topRatedMovies + nowPlayingMovies).map {
-            Movie(id = it.id, title = it.title, posterPath = it.posterPath)
+            Movie(
+                id = it.id,
+                title = it.title,
+                posterPath = it.posterPath.toFullImageUrl()
+            )
         }
 
         return AppResult.Success(combinedList)

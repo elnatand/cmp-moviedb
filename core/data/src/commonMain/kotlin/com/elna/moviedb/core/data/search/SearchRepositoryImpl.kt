@@ -1,5 +1,6 @@
 package com.elna.moviedb.core.data.search
 
+import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
@@ -27,7 +28,15 @@ class SearchRepositoryImpl(
         val result = searchRemoteDataSource.searchMovies(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
-                val movieItems = result.data.results.map { it.toSearchResult() }
+                val movieItems = result.data.results.map { remoteSearchMovie ->
+                    val searchResult = remoteSearchMovie.toSearchResult()
+                    searchResult.copy(
+                        movie = searchResult.movie.copy(
+                            posterPath = remoteSearchMovie.posterPath.toFullImageUrl()
+                        ),
+                        backdropPath = remoteSearchMovie.backdropPath.toFullImageUrl()
+                    )
+                }
                 emit(AppResult.Success(movieItems))
             }
 
@@ -49,7 +58,15 @@ class SearchRepositoryImpl(
         val result = searchRemoteDataSource.searchTvShows(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
-                val tvShowItems = result.data.results.map { it.toSearchResult() }
+                val tvShowItems = result.data.results.map { remoteSearchTvShow ->
+                    val searchResult = remoteSearchTvShow.toSearchResult()
+                    searchResult.copy(
+                        tvShow = searchResult.tvShow.copy(
+                            posterPath = remoteSearchTvShow.posterPath.toFullImageUrl()
+                        ),
+                        backdropPath = remoteSearchTvShow.backdropPath.toFullImageUrl()
+                    )
+                }
                 emit(AppResult.Success(tvShowItems))
             }
 
@@ -71,7 +88,12 @@ class SearchRepositoryImpl(
         val result = searchRemoteDataSource.searchPeople(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
-                val personItems = result.data.results.map { it.toSearchResult() }
+                val personItems = result.data.results.map { remoteSearchPerson ->
+                    val searchResult = remoteSearchPerson.toSearchResult()
+                    searchResult.copy(
+                        profilePath = remoteSearchPerson.profilePath.toFullImageUrl()
+                    )
+                }
                 emit(AppResult.Success(personItems))
             }
 
@@ -91,7 +113,27 @@ class SearchRepositoryImpl(
             val result = searchRemoteDataSource.searchMulti(query, page, getLanguage())
             when (result) {
                 is AppResult.Success -> {
-                    val searchItems = result.data.results.mapNotNull { it.toSearchResult() }
+                    val searchItems = result.data.results.mapNotNull { multiSearchItem ->
+                        multiSearchItem.toSearchResult()?.let { searchResult ->
+                            when (searchResult) {
+                                is SearchResultItem.MovieItem -> searchResult.copy(
+                                    movie = searchResult.movie.copy(
+                                        posterPath = multiSearchItem.posterPath.toFullImageUrl()
+                                    ),
+                                    backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
+                                )
+                                is SearchResultItem.TvShowItem -> searchResult.copy(
+                                    tvShow = searchResult.tvShow.copy(
+                                        posterPath = multiSearchItem.posterPath.toFullImageUrl()
+                                    ),
+                                    backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
+                                )
+                                is SearchResultItem.PersonItem -> searchResult.copy(
+                                    profilePath = multiSearchItem.profilePath.toFullImageUrl()
+                                )
+                            }
+                        }
+                    }
                     emit(AppResult.Success(searchItems))
                 }
 

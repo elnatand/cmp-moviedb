@@ -2,7 +2,6 @@ package com.elna.moviedb.core.network.model.search
 
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.SearchResultItem
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -42,7 +41,7 @@ fun RemoteSearchMovie.toDomain(): Movie {
     return Movie(
         id = id,
         title = title,
-        posterPath = "$TMDB_IMAGE_URL$posterPath"
+        posterPath = posterPath
     )
 }
 
@@ -51,12 +50,12 @@ fun RemoteSearchMovie.toSearchResult(): SearchResultItem.MovieItem {
         movie = Movie(
             id = id,
             title = title,
-            posterPath = "$TMDB_IMAGE_URL$posterPath"
+            posterPath = posterPath
         ),
         overview = overview,
         releaseDate = releaseDate,
         voteAverage = voteAverage,
         voteCount = voteCount,
-        backdropPath = backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+        backdropPath = backdropPath
     )
 }
