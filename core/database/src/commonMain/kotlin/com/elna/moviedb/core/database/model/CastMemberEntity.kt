@@ -2,6 +2,7 @@ package com.elna.moviedb.core.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.elna.moviedb.core.model.CastMember
@@ -11,6 +12,15 @@ import com.elna.moviedb.core.model.CastMember
         Index(value = ["movie_id"]),
         Index(value = ["person_id"]),
         Index(value = ["movie_id", "person_id"], unique = true)
+    ], foreignKeys = [
+        ForeignKey(
+            entity = MovieDetailsEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["movie_id"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.NO_ACTION,
+            deferred = true
+        )
     ]
 )
 data class CastMemberEntity(
