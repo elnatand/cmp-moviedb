@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "08a6c11d55b6624abde63d44d8930c75",
+    "identityHash": "027a7243cf947c39591d3d76a042107c",
     "entities": [
       {
         "tableName": "MovieEntity",
@@ -260,7 +260,7 @@
       },
       {
         "tableName": "cast_members",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dbId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `movie_id` INTEGER NOT NULL, `person_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `character` TEXT NOT NULL, `profile_path` TEXT, `order` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dbId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `movie_id` INTEGER NOT NULL, `person_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `character` TEXT NOT NULL, `profile_path` TEXT, `order` INTEGER NOT NULL, FOREIGN KEY(`movie_id`) REFERENCES `MovieDetailsEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED)",
         "fields": [
           {
             "fieldPath": "dbId",
@@ -339,12 +339,25 @@
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cast_members_movie_id_person_id` ON `${TABLE_NAME}` (`movie_id`, `person_id`)"
           }
+        ],
+        "foreignKeys": [
+          {
+            "table": "MovieDetailsEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "movie_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
         ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '08a6c11d55b6624abde63d44d8930c75')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '027a7243cf947c39591d3d76a042107c')"
     ]
   }
 }
