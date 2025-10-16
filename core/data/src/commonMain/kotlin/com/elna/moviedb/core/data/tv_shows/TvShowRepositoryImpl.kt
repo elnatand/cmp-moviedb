@@ -1,13 +1,13 @@
 package com.elna.moviedb.core.data.tv_shows
 
 import com.elna.moviedb.core.common.AppDispatchers
+import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.network.TvShowsRemoteDataSource
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
@@ -121,7 +121,7 @@ class TvShowRepositoryImpl(
                 popularTvShowsTotalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { remoteTvShow ->
                     remoteTvShow.toDomain().copy(
-                        posterPath = remoteTvShow.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                        posterPath = remoteTvShow.posterPath.toFullImageUrl()
                     )
                 }
                 popularTvShows.value = popularTvShows.value + newTvShows
@@ -165,7 +165,7 @@ class TvShowRepositoryImpl(
                 onTheAirTvShowsTotalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { remoteTvShow ->
                     remoteTvShow.toDomain().copy(
-                        posterPath = remoteTvShow.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                        posterPath = remoteTvShow.posterPath.toFullImageUrl()
                     )
                 }
                 onTheAirTvShows.value = onTheAirTvShows.value + newTvShows
@@ -209,7 +209,7 @@ class TvShowRepositoryImpl(
                 topRatedTvShowsTotalPages = result.data.totalPages
                 val newTvShows = result.data.results.map { remoteTvShow ->
                     remoteTvShow.toDomain().copy(
-                        posterPath = remoteTvShow.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                        posterPath = remoteTvShow.posterPath.toFullImageUrl()
                     )
                 }
                 topRatedTvShows.value = topRatedTvShows.value + newTvShows
@@ -303,7 +303,7 @@ class TvShowRepositoryImpl(
                     ?.sortedBy { it.order }
                     ?.map { remoteCastMember ->
                         remoteCastMember.toDomain().copy(
-                            profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" }
+                            profilePath = remoteCastMember.profilePath.toFullImageUrl()
                         )
                     }
                     ?: emptyList()
@@ -314,8 +314,8 @@ class TvShowRepositoryImpl(
 
         // Combine details with trailers and cast - add URL concatenation for poster and backdrop
         val tvShowDetails = details.toDomain().copy(
-            posterPath = details.posterPath?.let { "$TMDB_IMAGE_URL$it" },
-            backdropPath = details.backdropPath?.let { "$TMDB_IMAGE_URL$it" },
+            posterPath = details.posterPath.toFullImageUrl(),
+            backdropPath = details.backdropPath.toFullImageUrl(),
             trailers = trailers,
             cast = cast
         )

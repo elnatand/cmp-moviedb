@@ -1,5 +1,6 @@
 package com.elna.moviedb.core.data.person
 
+import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
@@ -27,11 +28,16 @@ class PersonRepositoryImpl(
 
         return@coroutineScope personDetailsResult.map { remotePersonDetails ->
             val filmography = when (creditsResult) {
-                is AppResult.Success -> creditsResult.data.toDomain()
+                is AppResult.Success -> creditsResult.data.toDomain().map { credit ->
+                    credit.copy(posterPath = credit.posterPath.toFullImageUrl())
+                }
                 is AppResult.Error -> emptyList()
             }
 
-            remotePersonDetails.toDomain().copy(filmography = filmography)
+            remotePersonDetails.toDomain().copy(
+                profilePath = remotePersonDetails.profilePath.toFullImageUrl(),
+                filmography = filmography
+            )
         }
     }
 

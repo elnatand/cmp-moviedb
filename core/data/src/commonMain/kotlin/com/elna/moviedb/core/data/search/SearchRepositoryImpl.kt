@@ -1,11 +1,11 @@
 package com.elna.moviedb.core.data.search
 
+import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchResultItem
 import com.elna.moviedb.core.network.SearchRemoteDataSource
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import com.elna.moviedb.core.network.model.search.toSearchResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -32,9 +32,9 @@ class SearchRepositoryImpl(
                     val searchResult = remoteSearchMovie.toSearchResult()
                     searchResult.copy(
                         movie = searchResult.movie.copy(
-                            posterPath = remoteSearchMovie.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                            posterPath = remoteSearchMovie.posterPath.toFullImageUrl()
                         ),
-                        backdropPath = remoteSearchMovie.backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+                        backdropPath = remoteSearchMovie.backdropPath.toFullImageUrl()
                     )
                 }
                 emit(AppResult.Success(movieItems))
@@ -62,9 +62,9 @@ class SearchRepositoryImpl(
                     val searchResult = remoteSearchTvShow.toSearchResult()
                     searchResult.copy(
                         tvShow = searchResult.tvShow.copy(
-                            posterPath = remoteSearchTvShow.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                            posterPath = remoteSearchTvShow.posterPath.toFullImageUrl()
                         ),
-                        backdropPath = remoteSearchTvShow.backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+                        backdropPath = remoteSearchTvShow.backdropPath.toFullImageUrl()
                     )
                 }
                 emit(AppResult.Success(tvShowItems))
@@ -91,7 +91,7 @@ class SearchRepositoryImpl(
                 val personItems = result.data.results.map { remoteSearchPerson ->
                     val searchResult = remoteSearchPerson.toSearchResult()
                     searchResult.copy(
-                        profilePath = remoteSearchPerson.profilePath?.let { "$TMDB_IMAGE_URL$it" }
+                        profilePath = remoteSearchPerson.profilePath.toFullImageUrl()
                     )
                 }
                 emit(AppResult.Success(personItems))
@@ -118,18 +118,18 @@ class SearchRepositoryImpl(
                             when (searchResult) {
                                 is SearchResultItem.MovieItem -> searchResult.copy(
                                     movie = searchResult.movie.copy(
-                                        posterPath = multiSearchItem.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                                        posterPath = multiSearchItem.posterPath.toFullImageUrl()
                                     ),
-                                    backdropPath = multiSearchItem.backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+                                    backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
                                 )
                                 is SearchResultItem.TvShowItem -> searchResult.copy(
                                     tvShow = searchResult.tvShow.copy(
-                                        posterPath = multiSearchItem.posterPath?.let { "$TMDB_IMAGE_URL$it" }
+                                        posterPath = multiSearchItem.posterPath.toFullImageUrl()
                                     ),
-                                    backdropPath = multiSearchItem.backdropPath?.let { "$TMDB_IMAGE_URL$it" }
+                                    backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
                                 )
                                 is SearchResultItem.PersonItem -> searchResult.copy(
-                                    profilePath = multiSearchItem.profilePath?.let { "$TMDB_IMAGE_URL$it" }
+                                    profilePath = multiSearchItem.profilePath.toFullImageUrl()
                                 )
                             }
                         }

@@ -13,8 +13,8 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.database.model.CastMemberEntity
+import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
-import com.elna.moviedb.core.network.model.TMDB_IMAGE_URL
 import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
@@ -89,7 +89,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath?.let { path -> "$TMDB_IMAGE_URL$path" }
+                    posterPath = it.posterPath.toFullImageUrl()
                 )
             }
         }
@@ -114,7 +114,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath?.let { path -> "$TMDB_IMAGE_URL$path" }
+                    posterPath = it.posterPath.toFullImageUrl()
                 )
             }
         }
@@ -139,7 +139,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath?.let { path -> "$TMDB_IMAGE_URL$path" }
+                    posterPath = it.posterPath.toFullImageUrl()
                 )
             }
         }
@@ -286,8 +286,8 @@ class MoviesRepositoryImpl(
             val trailers = cachedVideos.map { it.toDomain() }
             val cast = cachedCast.sortedBy { it.order }.map { it.toDomain() }
             val movieDetails = cachedMovieDetails.toDomain().copy(
-                posterPath = cachedMovieDetails.posterPath?.let { "$TMDB_IMAGE_URL$it" },
-                backdropPath = cachedMovieDetails.backdropPath?.let { "$TMDB_IMAGE_URL$it" },
+                posterPath = cachedMovieDetails.posterPath.toFullImageUrl(),
+                backdropPath = cachedMovieDetails.backdropPath.toFullImageUrl(),
                 trailers = trailers,
                 cast = cast
             )
@@ -362,14 +362,14 @@ class MoviesRepositoryImpl(
         // Convert cast to domain for return
         val cast = remoteCast.map { remoteCastMember ->
             remoteCastMember.toDomain().copy(
-                profilePath = remoteCastMember.profilePath?.let { "$TMDB_IMAGE_URL$it" }
+                profilePath = remoteCastMember.profilePath.toFullImageUrl()
             )
         }
 
         // 8. Return combined result with full URLs
         val movieDetails = detailsEntity.toDomain().copy(
-            posterPath = detailsEntity.posterPath?.let { "$TMDB_IMAGE_URL$it" },
-            backdropPath = detailsEntity.backdropPath?.let { "$TMDB_IMAGE_URL$it" },
+            posterPath = detailsEntity.posterPath.toFullImageUrl(),
+            backdropPath = detailsEntity.backdropPath.toFullImageUrl(),
             trailers = trailers,
             cast = cast
         )
@@ -423,7 +423,7 @@ class MoviesRepositoryImpl(
             Movie(
                 id = it.id,
                 title = it.title,
-                posterPath = it.posterPath?.let { path -> "$TMDB_IMAGE_URL$path" }
+                posterPath = it.posterPath.toFullImageUrl()
             )
         }
 
