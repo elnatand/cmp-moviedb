@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.model.TvShow
+import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
@@ -148,7 +149,7 @@ private fun TvShowsContent(
                 tvShows = uiState.popularTvShows,
                 onClick = onClick,
                 isLoading = uiState.isLoadingPopular,
-                onLoadMore = { onEvent(TvShowsEvent.LoadNextPagePopular) }
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(TvShowCategory.POPULAR)) }
             )
         }
 
@@ -159,7 +160,7 @@ private fun TvShowsContent(
                 tvShows = uiState.topRatedTvShows,
                 onClick = onClick,
                 isLoading = uiState.isLoadingTopRated,
-                onLoadMore = { onEvent(TvShowsEvent.LoadNextPageTopRated) }
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(TvShowCategory.TOP_RATED)) }
             )
         }
 
@@ -170,7 +171,7 @@ private fun TvShowsContent(
                 tvShows = uiState.onTheAirTvShows,
                 onClick = onClick,
                 isLoading = uiState.isLoadingOnTheAir,
-                onLoadMore = { onEvent(TvShowsEvent.LoadNextPageOnTheAir) }
+                onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(TvShowCategory.ON_THE_AIR)) }
             )
         }
         Spacer(modifier = Modifier.height(70.dp))

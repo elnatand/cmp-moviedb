@@ -26,7 +26,6 @@ val dataModule = module {
         TvShowRepositoryImpl(
             tvShowsRemoteDataSource = get(),
             preferencesManager = get(),
-            appDispatchers = get()
         )
     }
 

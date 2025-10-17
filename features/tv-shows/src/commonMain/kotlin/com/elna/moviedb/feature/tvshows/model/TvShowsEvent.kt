@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.tvshows.model
 
+import com.elna.moviedb.core.model.TvShowCategory
+
 /**
  * Represents all possible user actions/events in the TV Shows screen.
  * Following Android's unidirectional data flow pattern, these are the only ways
@@ -7,19 +9,11 @@ package com.elna.moviedb.feature.tvshows.model
  */
 sealed interface TvShowsEvent {
     /**
-     * User scrolled to the end of popular TV shows list
+     * User scrolled near the end of a TV show category and wants to load more.
+     *
+     * @property category The TV show category to load the next page for
      */
-    data object LoadNextPagePopular : TvShowsEvent
-
-    /**
-     * User scrolled to the end of top-rated TV shows list
-     */
-    data object LoadNextPageTopRated : TvShowsEvent
-
-    /**
-     * User scrolled to the end of on-the-air TV shows list
-     */
-    data object LoadNextPageOnTheAir : TvShowsEvent
+    data class LoadNextPage(val category: TvShowCategory) : TvShowsEvent
 
     /**
      * User clicked retry button after an error
