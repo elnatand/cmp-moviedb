@@ -14,4 +14,10 @@ interface TvShowsRepository {
     suspend fun loadTopRatedTvShowsNextPage(): AppResult<Unit>
     suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails>
     suspend fun refresh(): AppResult<List<TvShow>>
+
+    /**
+     * Clears all cached TV shows and reloads initial pages for all categories.
+     * Used by language coordinator when language changes.
+     */
+    suspend fun clearAndReload()
 }

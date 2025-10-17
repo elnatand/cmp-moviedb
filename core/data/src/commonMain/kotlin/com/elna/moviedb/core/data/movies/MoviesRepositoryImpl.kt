@@ -1,9 +1,10 @@
 package com.elna.moviedb.core.data.movies
 
 
-import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.data.model.asEntity
+import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.database.MoviesLocalDataSource
+import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieCategory
 import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.datastore.PreferencesManager
@@ -12,63 +13,33 @@ import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieDetails
-import com.elna.moviedb.core.database.model.CastMemberEntity
-import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
 import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 /**
  * Implementation of MoviesRepository that manages movie data from remote API and local cache.
  *
- * **Lifecycle:** This repository is an application-scoped singleton managed by Koin DI.
- * The [repositoryScope] is never cancelled and lives for the entire application lifetime.
- * This is intentional as the repository maintains app-wide state and language change observers.
+ * This repository provides data access operations only. Language change coordination
+ * is handled separately by [com.elna.moviedb.core.data.LanguageChangeCoordinator].
  *
  * @param moviesRemoteDataSource Remote data source for fetching movies from API
  * @param moviesLocalDataSource Local data source for caching movies in database
- * @param preferencesManager Manager for accessing app preferences (language, etc.)
+ * @param preferencesManager Manager for accessing app preferences (pagination state, etc.)
  * @param appDispatchers Dispatcher provider for coroutine execution
  */
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
     private val moviesLocalDataSource: MoviesLocalDataSource,
     private val preferencesManager: PreferencesManager,
-    private val appDispatchers: AppDispatchers
 ) : MoviesRepository {
-
-    /**
-     * Application-scoped coroutine scope that lives for the entire app lifetime.
-     * Never cancelled as this repository is a singleton.
-     */
-    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
-
-    init {
-        // Listen to language changes and clear movies when language changes
-        repositoryScope.launch {
-            preferencesManager.getAppLanguageCode()
-                .distinctUntilChanged()
-                .drop(1) // Skip initial emission to avoid clearing on screen entry
-                .collect {
-                    clearMovies()
-                    loadPopularMoviesNextPage()
-                    loadTopRatedMoviesNextPage()
-                    loadNowPlayingMoviesNextPage()
-                }
-        }
-    }
 
     /**
      * Observes popular movies from local storage.
@@ -401,11 +372,13 @@ class MoviesRepositoryImpl(
         moviesLocalDataSource.clearAllMovies()
 
         // Load all three categories in parallel
-        val results = awaitAll(
-            repositoryScope.async { loadPopularMoviesNextPage() },
-            repositoryScope.async { loadTopRatedMoviesNextPage() },
-            repositoryScope.async { loadNowPlayingMoviesNextPage() }
-        )
+        val results = coroutineScope {
+            awaitAll(
+                async { loadPopularMoviesNextPage() },
+                async { loadTopRatedMoviesNextPage() },
+                async { loadNowPlayingMoviesNextPage() }
+            )
+        }
 
         // Check if any failed
         val error = results.firstOrNull { it is AppResult.Error } as? AppResult.Error
@@ -450,6 +423,19 @@ class MoviesRepositoryImpl(
             PaginationState(currentPage = 0, totalPages = 0)
         )
         moviesLocalDataSource.clearAllMovies()
+    }
+
+    /**
+     * Clears all cached movies and reloads initial pages for all categories.
+     *
+     * This method is called by [com.elna.moviedb.core.data.LanguageChangeCoordinator] when the app language changes.
+     * It clears the local cache and fetches fresh data in the new language.
+     */
+    override suspend fun clearAndReload() {
+        clearMovies()
+        loadPopularMoviesNextPage()
+        loadTopRatedMoviesNextPage()
+        loadNowPlayingMoviesNextPage()
     }
 
     private suspend fun getLanguage(): String {

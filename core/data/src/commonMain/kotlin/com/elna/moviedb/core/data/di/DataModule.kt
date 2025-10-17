@@ -1,5 +1,7 @@
 package com.elna.moviedb.core.data.di
 
+import com.elna.moviedb.core.common.AppDispatchers
+import com.elna.moviedb.core.data.LanguageChangeCoordinator
 import com.elna.moviedb.core.data.movies.MoviesRepository
 import com.elna.moviedb.core.data.movies.MoviesRepositoryImpl
 import com.elna.moviedb.core.data.person.PersonRepository
@@ -8,6 +10,8 @@ import com.elna.moviedb.core.data.search.SearchRepository
 import com.elna.moviedb.core.data.search.SearchRepositoryImpl
 import com.elna.moviedb.core.data.tv_shows.TvShowRepositoryImpl
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import org.koin.dsl.module
 
 val dataModule = module {
@@ -17,7 +21,15 @@ val dataModule = module {
             moviesRemoteDataSource = get(),
             moviesLocalDataSource = get(),
             preferencesManager = get(),
-            appDispatchers = get()
+        )
+    }
+
+    // Language change coordinator for movies
+    single {
+        LanguageChangeCoordinator(
+            preferencesManager = get(),
+            scope = CoroutineScope(SupervisorJob() + get<AppDispatchers>().main),
+            onLanguageChange = { get<MoviesRepository>().clearAndReload() }
         )
     }
 
@@ -26,6 +38,15 @@ val dataModule = module {
             tvShowsRemoteDataSource = get(),
             preferencesManager = get(),
             appDispatchers = get()
+        )
+    }
+
+    // Language change coordinator for TV shows
+    single {
+        LanguageChangeCoordinator(
+            preferencesManager = get(),
+            scope = CoroutineScope(SupervisorJob() + get<com.elna.moviedb.core.common.AppDispatchers>().main),
+            onLanguageChange = { get<TvShowsRepository>().clearAndReload() }
         )
     }
 

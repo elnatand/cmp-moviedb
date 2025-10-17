@@ -17,4 +17,10 @@ interface MoviesRepository {
     suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails>
     suspend fun refresh(): AppResult<List<Movie>>
     suspend fun clearMovies()
+
+    /**
+     * Clears all cached movies and reloads initial pages for all categories.
+     * Used by language coordinator when language changes.
+     */
+    suspend fun clearAndReload()
 }

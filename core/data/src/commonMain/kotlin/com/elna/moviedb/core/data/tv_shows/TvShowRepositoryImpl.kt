@@ -11,17 +11,12 @@ import com.elna.moviedb.core.network.TvShowsRemoteDataSource
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 /**
  * Implementation of TvShowsRepository that manages TV show data from remote API.
@@ -31,9 +26,8 @@ import kotlinx.coroutines.launch
  * for the duration of the app session. For persistent offline-first storage,
  * see MoviesRepositoryImpl which uses Room database.
  *
- * **Lifecycle:** This repository is an application-scoped singleton managed by Koin DI.
- * The [repositoryScope] is never cancelled and lives for the entire application lifetime.
- * This is intentional as the repository maintains app-wide state and language change observers.
+ * This repository provides data access operations only. Language change coordination
+ * is handled separately by [com.elna.moviedb.core.data.LanguageChangeCoordinator].
  *
  * @param tvShowsRemoteDataSource Remote data source for fetching TV shows from API
  * @param preferencesManager Manager for accessing app preferences (language, etc.)
@@ -57,38 +51,6 @@ class TvShowRepositoryImpl(
     private val popularTvShows = MutableStateFlow<List<TvShow>>(emptyList())
     private val onTheAirTvShows = MutableStateFlow<List<TvShow>>(emptyList())
     private val topRatedTvShows = MutableStateFlow<List<TvShow>>(emptyList())
-
-    /**
-     * Application-scoped coroutine scope that lives for the entire app lifetime.
-     * Never cancelled as this repository is a singleton.
-     */
-    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
-
-    init {
-        // Listen to language changes and refresh TV shows when language changes
-        repositoryScope.launch {
-            preferencesManager.getAppLanguageCode()
-                .distinctUntilChanged()
-                .drop(1) // Skip initial emission to avoid clearing on screen entry
-                .collect {
-                    popularTvShowsCurrentPage = 0
-                    popularTvShowsTotalPages = 0
-                    popularTvShows.value = emptyList()
-
-                    onTheAirTvShowsCurrentPage = 0
-                    onTheAirTvShowsTotalPages = 0
-                    onTheAirTvShows.value = emptyList()
-
-                    topRatedTvShowsCurrentPage = 0
-                    topRatedTvShowsTotalPages = 0
-                    topRatedTvShows.value = emptyList()
-
-                    loadPopularTvShowsNextPage()
-                    loadOnTheAirTvShowsNextPage()
-                    loadTopRatedTvShowsNextPage()
-                }
-        }
-    }
 
     /**
      * Observes popular TV shows from in-memory storage.
@@ -260,6 +222,32 @@ class TvShowRepositoryImpl(
         // All succeeded - return combined list
         val combinedList = popularTvShows.value + onTheAirTvShows.value + topRatedTvShows.value
         return@coroutineScope AppResult.Success(combinedList)
+    }
+
+    /**
+     * Clears all cached TV shows and reloads initial pages for all categories.
+     *
+     * This method is called by [com.elna.moviedb.core.data.LanguageChangeCoordinator] when the app language changes.
+     * It clears the in-memory cache and fetches fresh data in the new language.
+     */
+    override suspend fun clearAndReload() {
+        // Reset all three caches
+        popularTvShowsCurrentPage = 0
+        popularTvShowsTotalPages = 0
+        popularTvShows.value = emptyList()
+
+        onTheAirTvShowsCurrentPage = 0
+        onTheAirTvShowsTotalPages = 0
+        onTheAirTvShows.value = emptyList()
+
+        topRatedTvShowsCurrentPage = 0
+        topRatedTvShowsTotalPages = 0
+        topRatedTvShows.value = emptyList()
+
+        // Reload all categories
+        loadPopularTvShowsNextPage()
+        loadOnTheAirTvShowsNextPage()
+        loadTopRatedTvShowsNextPage()
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> = coroutineScope {
