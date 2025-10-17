@@ -18,35 +18,35 @@ val dataModule = module {
             moviesRemoteDataSource = get(),
             moviesLocalDataSource = get(),
             paginationPreferences = get(),
-            preferencesManager = get(),
+            appSettingsPreferences = get(),
         )
     }
 
     single<TvShowsRepository> {
         TvShowRepositoryImpl(
             tvShowsRemoteDataSource = get(),
-            preferencesManager = get(),
+            appSettingsPreferences = get(),
         )
     }
 
     single<SearchRepository> {
         SearchRepositoryImpl(
             searchRemoteDataSource = get(),
-            preferencesManager = get()
+            appSettingsPreferences = get()
         )
     }
 
     single<PersonRepository> {
         PersonRepositoryImpl(
             personRemoteDataSource = get(),
-            preferencesManager = get()
+            appSettingsPreferences = get()
         )
     }
 
     // Language change coordinators initializer
     single(createdAtStart = true) {
         LanguageChangeCoordinatorsInitializer(
-            preferencesManager = get(),
+            appSettingsPreferences = get(),
             appDispatchers = get(),
             moviesRepository = get(),
             tvShowsRepository = get()

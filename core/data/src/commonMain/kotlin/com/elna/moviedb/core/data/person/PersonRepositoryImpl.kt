@@ -1,7 +1,7 @@
 package com.elna.moviedb.core.data.person
 
 import com.elna.moviedb.core.data.util.toFullImageUrl
-import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.PersonDetails
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.first
 
 class PersonRepositoryImpl(
     private val personRemoteDataSource: PersonRemoteDataSource,
-    private val preferencesManager: PreferencesManager
+    private val appSettingsPreferences: AppSettingsPreferences
 ) : PersonRepository {
 
     override suspend fun getPersonDetails(personId: Int): AppResult<PersonDetails> = coroutineScope {
@@ -42,7 +42,7 @@ class PersonRepositoryImpl(
     }
 
     private suspend fun getLanguage(): String {
-        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val languageCode = appSettingsPreferences.getAppLanguageCode().first()
         val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
         return "$languageCode-$countryCode"
     }

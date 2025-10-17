@@ -5,7 +5,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
 import com.elna.moviedb.navigation.RootNavGraph
@@ -16,7 +16,7 @@ import org.koin.compose.koinInject
 @Composable
 fun App() {
     val appState: AppState = rememberAppState()
-    val preferencesManager: PreferencesManager = koinInject()
+    val preferencesManager: AppSettingsPreferences = koinInject()
 
     val selectedLanguage by preferencesManager.getAppLanguageCode()
         .collectAsStateWithLifecycle(AppLanguage.ENGLISH.code)

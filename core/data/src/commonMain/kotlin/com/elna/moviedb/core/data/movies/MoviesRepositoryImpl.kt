@@ -6,8 +6,8 @@ import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.asEntity
+import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.datastore.PaginationPreferences
-import com.elna.moviedb.core.datastore.PreferencesManager
 import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
@@ -19,7 +19,6 @@ import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -37,13 +36,13 @@ import kotlinx.coroutines.flow.map
  * @param moviesRemoteDataSource Remote data source for fetching movies from API
  * @param moviesLocalDataSource Local data source for caching movies in database
  * @param paginationPreferences Manager for pagination state
- * @param preferencesManager Manager for app settings (language)
+ * @param appSettingsPreferences Manager for app settings (language)
  */
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
     private val moviesLocalDataSource: MoviesLocalDataSource,
     private val paginationPreferences: PaginationPreferences,
-    private val preferencesManager: PreferencesManager,
+    private val appSettingsPreferences: AppSettingsPreferences,
 ) : MoviesRepository {
 
     /**
@@ -257,7 +256,7 @@ class MoviesRepositoryImpl(
     }
 
     private suspend fun getLanguage(): String {
-        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val languageCode = appSettingsPreferences.getAppLanguageCode().first()
         val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
         return "$languageCode-$countryCode"
     }

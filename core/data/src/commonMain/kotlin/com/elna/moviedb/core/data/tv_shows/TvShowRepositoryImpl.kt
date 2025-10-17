@@ -1,7 +1,7 @@
 package com.elna.moviedb.core.data.tv_shows
 
 import com.elna.moviedb.core.data.util.toFullImageUrl
-import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
@@ -32,12 +32,11 @@ import kotlinx.coroutines.flow.first
  * is handled separately by [com.elna.moviedb.core.data.LanguageChangeCoordinator].
  *
  * @param tvShowsRemoteDataSource Remote data source for fetching TV shows from API
- * @param preferencesManager Manager for accessing app preferences (language, etc.)
- * @param appDispatchers Dispatcher provider for coroutine execution
+ * @param appSettingsPreferences Manager for accessing app settings (language)
  */
 class TvShowRepositoryImpl(
     private val tvShowsRemoteDataSource: TvShowsRemoteDataSource,
-    private val preferencesManager: PreferencesManager,
+    private val appSettingsPreferences: AppSettingsPreferences,
 ) : TvShowsRepository {
 
     // Category-based pagination state using Maps for scalability
@@ -196,7 +195,7 @@ class TvShowRepositoryImpl(
     }
 
     private suspend fun getLanguage(): String {
-        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val languageCode = appSettingsPreferences.getAppLanguageCode().first()
         val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
         return "$languageCode-$countryCode"
     }

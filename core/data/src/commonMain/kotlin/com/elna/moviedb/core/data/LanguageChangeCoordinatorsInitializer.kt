@@ -3,7 +3,7 @@ package com.elna.moviedb.core.data
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.data.movies.MoviesRepository
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
-import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
@@ -11,9 +11,11 @@ import kotlinx.coroutines.SupervisorJob
  * Initializer that creates and manages language change coordinators for all repositories.
  * This class is instantiated by Koin on app startup to ensure coordinators begin
  * observing language changes immediately.
+ *
+ * Following Interface Segregation Principle - depends only on AppSettingsPreferences.
  */
 class LanguageChangeCoordinatorsInitializer(
-    preferencesManager: PreferencesManager,
+    appSettingsPreferences: AppSettingsPreferences,
     appDispatchers: AppDispatchers,
     moviesRepository: MoviesRepository,
     tvShowsRepository: TvShowsRepository
@@ -21,13 +23,13 @@ class LanguageChangeCoordinatorsInitializer(
     private val scope = CoroutineScope(SupervisorJob() + appDispatchers.main)
 
     private val moviesCoordinator = LanguageChangeCoordinator(
-        preferencesManager = preferencesManager,
+        appSettingsPreferences = appSettingsPreferences,
         scope = scope,
         onLanguageChange = { moviesRepository.clearAndReload() }
     )
 
     private val tvShowsCoordinator = LanguageChangeCoordinator(
-        preferencesManager = preferencesManager,
+        appSettingsPreferences = appSettingsPreferences,
         scope = scope,
         onLanguageChange = { tvShowsRepository.clearAndReload() }
     )

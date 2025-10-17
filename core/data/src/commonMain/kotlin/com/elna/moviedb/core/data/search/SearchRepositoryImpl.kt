@@ -1,7 +1,7 @@
 package com.elna.moviedb.core.data.search
 
 import com.elna.moviedb.core.data.util.toFullImageUrl
-import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchResultItem
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.flow
 
 class SearchRepositoryImpl(
     private val searchRemoteDataSource: SearchRemoteDataSource,
-    private val preferencesManager: PreferencesManager
+    private val appSettingsPreferences: AppSettingsPreferences
 ) : SearchRepository {
 
     override fun searchMovies(
@@ -144,7 +144,7 @@ class SearchRepositoryImpl(
         }
 
     private suspend fun getLanguage(): String {
-        val languageCode = preferencesManager.getAppLanguageCode().first()
+        val languageCode = appSettingsPreferences.getAppLanguageCode().first()
         val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
         return "$languageCode-$countryCode"
     }
