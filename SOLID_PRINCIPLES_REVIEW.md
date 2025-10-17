@@ -1,6 +1,6 @@
 # SOLID Principles Review - CMP MovieDB Project
 
-**Review Date:** 2025-10-16
+**Review Date:** 2025-10-17
 **Project:** Kotlin Multiplatform Movie Database Application
 **Architecture:** Clean Architecture with MVVM Pattern
 
@@ -8,17 +8,27 @@
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of SOLID principles adherence across the CMP MovieDB codebase. The project demonstrates strong architectural foundations with proper dependency injection, interface-based design, and Clean Architecture layering. However, several violations exist primarily around Single Responsibility Principle (SRP) and Open/Closed Principle (OCP), particularly in repository implementations and category-based code patterns.
+This document provides a comprehensive analysis of SOLID principles adherence across the CMP MovieDB codebase. After careful analysis and discussion, the project demonstrates strong architectural foundations with proper dependency injection, interface-based design, and Clean Architecture layering.
+
+The **primary issue** is **Open/Closed Principle (OCP) violations** due to category-based code duplication. Interface Segregation violations also exist with "fat" interfaces. True Single Responsibility violations are minimal when responsibilities are correctly defined.
+
+### Key Insight: What is a "Responsibility"?
+
+SOLID violations depend on how you define responsibilities:
+- If `MoviesRepositoryImpl`'s responsibility is **"orchestrate movie data operations"**, then fetching, caching, pagination, and transformation are all part of that single responsibility.
+- If `PreferencesManager`'s responsibility is **"persist application preferences"**, then saving language, theme, and pagination state are all part of that single responsibility.
+
+The real problems are **duplication** (OCP) and **fat interfaces** (ISP), not necessarily multiple responsibilities.
 
 ### Severity Overview
 
 | Principle | Violations | Severity | Status |
 |-----------|------------|----------|--------|
-| Single Responsibility Principle (SRP) | 5 major | 🔴 High | Needs Attention |
-| Open/Closed Principle (OCP) | 3 major | 🔴 High | Needs Attention |
+| Single Responsibility Principle (SRP) | 1 legitimate | 🟡 Medium | Minor Issue |
+| Open/Closed Principle (OCP) | 3 major | 🔴 High | **PRIMARY CONCERN** |
 | Liskov Substitution Principle (LSP) | 0 | ✅ Good | Compliant |
 | Interface Segregation Principle (ISP) | 3 major | 🟡 Medium | Improvement Needed |
-| Dependency Inversion Principle (DIP) | 2 minor | 🟡 Low | Mostly Compliant |
+| Dependency Inversion Principle (DIP) | 2 minor | 🟢 Low | Mostly Compliant |
 
 ---
 
@@ -26,474 +36,150 @@ This document provides a comprehensive analysis of SOLID principles adherence ac
 
 > **Principle:** "A class should have only one reason to change"
 
-### 🔴 Critical Violation #1: MoviesRepositoryImpl
+### Understanding SRP in This Codebase
 
-**File:** `core/data/src/commonMain/kotlin/com/elna/moviedb/core/data/movies/MoviesRepositoryImpl.kt:45`
-**Lines:** ~460 lines of code
-**Severity:** 🔴 Critical
+After careful analysis, most classes previously flagged as SRP violations are actually **cohesive** when responsibilities are correctly defined:
 
-#### Problems Identified
+| Class | Perceived Violations | Actual Responsibility | SRP Status |
+|-------|---------------------|----------------------|------------|
+| `MoviesRepositoryImpl` | "Handles network, cache, pagination, transformation" | **"Orchestrate movie data operations"** | ✅ Not violated |
+| `PreferencesManager` | "Handles app settings + pagination" | **"Persist application preferences"** | ✅ Not violated |
+| `MoviesLocalDataSource` | "Handles movies, details, videos, cast" | **"Manage local movie data storage"** | ✅ Not violated |
 
-The `MoviesRepositoryImpl` class handles multiple distinct responsibilities:
+The **real SRP violation** is the language observer mixing reactive and proactive behaviors.
 
-1. **Network Data Fetching** - Making API calls for 3 different categories
-2. **Local Data Caching** - Managing database storage
-3. **Pagination State Management** - Tracking pages for 3 categories
-4. **Language Change Observation** - Listening and reacting to language changes
-5. **Data Transformation** - Converting between entities and domain models
-6. **Image URL Construction** - Building full image URLs
-7. **Coroutine Scope Management** - Creating and managing its own scope
+---
 
-#### Code Example
+### 🟡 Actual SRP Violation: Language Observer in Repository
+
+**File:** `core/data/src/commonMain/kotlin/com/elna/moviedb/core/data/movies/MoviesRepositoryImpl.kt:56`
+**Severity:** 🟡 Medium
+
+#### Problem
+
+The repository has **two distinct responsibilities**:
+
+**1. Reactive Data Provider (Pull Model)**
+```kotlin
+suspend fun observePopularMovies(): Flow<List<Movie>>  // Called by ViewModel
+suspend fun loadPopularMoviesNextPage(): AppResult<Unit>  // Called by ViewModel
+```
+*"When asked, provide movie data"*
+
+**2. Proactive State Monitor (Push Model)**
+```kotlin
+private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
+
+init {
+    // Autonomous behavior - not visible in interface!
+    repositoryScope.launch {
+        preferencesManager.getAppLanguageCode()
+            .distinctUntilChanged()
+            .drop(1)
+            .collect {
+                clearMovies()
+                loadPopularMoviesNextPage()
+                loadTopRatedMoviesNextPage()
+                loadNowPlayingMoviesNextPage()
+            }
+    }
+}
+```
+*"Autonomously watch for changes and take action"*
+
+#### Why This Matters
+
+**1. Hidden Behavior**
+Nothing in the `MoviesRepository` interface indicates this autonomous observer exists. It's a surprise side effect.
+
+**2. Testing Nightmare**
+```kotlin
+@Test
+fun `test observe movies`() {
+    val repo = MoviesRepositoryImpl(...)
+    // Language observer triggers immediately in init!
+    // How do I test just the observe method in isolation?
+}
+```
+
+**3. Violates "Screaming Architecture"**
+The interface says: "I provide movies when you ask"
+The implementation says: "I also autonomously react to language changes"
+That's a contract mismatch.
+
+**4. Lifecycle Coupling**
+The repository creates and manages its own coroutine scope, which is typically the application's responsibility.
+
+#### Impact
+
+- **Mixed concerns:** Data access + Event observation
+- **Hard to test:** Observer triggers automatically on instantiation
+- **Hidden dependencies:** Language changes trigger behavior not visible in interface
+- **Lifecycle management:** Repository shouldn't own its own scope
+
+#### Recommended Solution
+
+**Separate the concerns:**
 
 ```kotlin
+// Repository: Only provides data when asked (Reactive)
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
     private val moviesLocalDataSource: MoviesLocalDataSource,
-    private val preferencesManager: PreferencesManager,
+    private val paginationPreferences: PaginationPreferences,
     private val appDispatchers: AppDispatchers
 ) : MoviesRepository {
+    // No init block, no observers
 
-    // Responsibility #7: Scope management
-    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
+    override suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>> {
+        // Returns data when asked
+    }
 
+    override suspend fun clearAndReload() {
+        clearMovies()
+        loadPopularMoviesNextPage()
+        loadTopRatedMoviesNextPage()
+        loadNowPlayingMoviesNextPage()
+    }
+}
+
+// Coordinator: Watches language changes and tells repository what to do (Proactive)
+class MoviesLanguageCoordinator(
+    private val preferencesManager: PreferencesManager,
+    private val moviesRepository: MoviesRepository,
+    scope: CoroutineScope  // Injected, not created
+) {
     init {
-        // Responsibility #4: Language change observation
-        repositoryScope.launch {
+        scope.launch {
             preferencesManager.getAppLanguageCode()
                 .distinctUntilChanged()
                 .drop(1)
                 .collect {
-                    clearMovies()
-                    loadPopularMoviesNextPage()
-                    loadTopRatedMoviesNextPage()
-                    loadNowPlayingMoviesNextPage()
+                    moviesRepository.clearAndReload()
                 }
-        }
-    }
-
-    // Responsibility #1 & #2 & #3: Network, Cache, Pagination
-    override suspend fun loadPopularMoviesNextPage(): AppResult<Unit> {
-        // 33 lines handling network + cache + pagination
-    }
-
-    // Similar methods for TopRated and NowPlaying...
-}
-```
-
-#### Impact
-
-- **High Coupling:** Changes to any concern affect the entire repository
-- **Testing Complexity:** Difficult to test individual concerns in isolation
-- **Maintenance Burden:** 460 lines make it hard to understand and modify
-- **Code Duplication:** Similar logic repeated for each category
-
-#### Recommended Solution
-
-Extract separate classes for each responsibility:
-
-```kotlin
-// Responsibility #1: Network Operations
-class MoviesNetworkManager(
-    private val remoteDataSource: MoviesRemoteDataSource
-) {
-    suspend fun fetchMoviesPage(
-        category: MovieCategory,
-        page: Int,
-        language: String
-    ): AppResult<RemoteMoviesPage>
-}
-
-// Responsibility #2: Local Caching
-class MoviesCacheManager(
-    private val localDataSource: MoviesLocalDataSource
-) {
-    suspend fun cacheMovies(movies: List<MovieEntity>)
-    fun observeMovies(category: MovieCategory): Flow<List<MovieEntity>>
-}
-
-// Responsibility #3: Pagination Management
-class MoviesPaginationManager(
-    private val preferencesManager: PreferencesManager
-) {
-    suspend fun getCurrentPage(category: MovieCategory): Int
-    suspend fun updatePagination(category: MovieCategory, state: PaginationState)
-}
-
-// Responsibility #4: Language Observer
-class MoviesLanguageObserver(
-    private val preferencesManager: PreferencesManager,
-    private val repository: MoviesRepository
-) {
-    fun observeLanguageChanges(scope: CoroutineScope)
-}
-
-// Responsibility #5: Data Transformation
-object MoviesDataMapper {
-    fun toEntity(remote: RemoteMovie, category: MovieCategory): MovieEntity
-    fun toDomain(entity: MovieEntity): Movie
-}
-
-// Simplified Repository (Coordinator)
-class MoviesRepositoryImpl(
-    private val networkManager: MoviesNetworkManager,
-    private val cacheManager: MoviesCacheManager,
-    private val paginationManager: MoviesPaginationManager,
-    private val dataMapper: MoviesDataMapper
-) : MoviesRepository {
-
-    override suspend fun loadMoviesNextPage(
-        category: MovieCategory
-    ): AppResult<Unit> {
-        val currentPage = paginationManager.getCurrentPage(category)
-        val language = getCurrentLanguage()
-
-        return when (val result = networkManager.fetchMoviesPage(category, currentPage + 1, language)) {
-            is AppResult.Success -> {
-                val entities = result.data.results.map { dataMapper.toEntity(it, category) }
-                cacheManager.cacheMovies(entities)
-                paginationManager.updatePagination(category, PaginationState(...))
-                AppResult.Success(Unit)
-            }
-            is AppResult.Error -> result
-        }
-    }
-}
-```
-
----
-
-### 🔴 Critical Violation #2: PreferencesManagerImpl
-
-**File:** `core/datastore/src/commonMain/kotlin/com/elna/moviedb/core/datastore/PreferencesManagerImpl.kt:20`
-**Lines:** ~160 lines
-**Severity:** 🔴 High
-
-#### Problems Identified
-
-The class mixes two unrelated concerns:
-
-1. **Application Settings** - Language and theme preferences
-2. **Feature-Specific State** - Pagination state for 3 movie categories
-
-#### Code Structure
-
-```kotlin
-internal class PreferencesManagerImpl(
-    private val dataStore: DataStore<Preferences>
-) : PreferencesManager {
-
-    private object PreferenceKeys {
-        // Application settings
-        val LANGUAGE = stringPreferencesKey("language")
-        val THEME = stringPreferencesKey("theme")
-
-        // Movie pagination state
-        val POPULAR_MOVIES_CURRENT_PAGE = intPreferencesKey("popular_movies_current_page")
-        val POPULAR_MOVIES_TOTAL_PAGES = intPreferencesKey("popular_movies_total_pages")
-        val TOP_RATED_MOVIES_CURRENT_PAGE = intPreferencesKey("top_rated_movies_current_page")
-        val TOP_RATED_MOVIES_TOTAL_PAGES = intPreferencesKey("top_rated_movies_total_pages")
-        val NOW_PLAYING_MOVIES_CURRENT_PAGE = intPreferencesKey("now_playing_movies_current_page")
-        val NOW_PLAYING_MOVIES_TOTAL_PAGES = intPreferencesKey("now_playing_movies_total_pages")
-    }
-
-    // Methods for app settings
-    override fun getAppLanguageCode(): Flow<String>
-    override suspend fun setAppLanguageCode(language: AppLanguage)
-    override fun getAppTheme(): Flow<String>
-    override suspend fun setAppTheme(theme: AppTheme)
-
-    // Methods for movie pagination
-    override fun getPopularMoviesPaginationState(): Flow<PaginationState>
-    override suspend fun savePopularMoviesPaginationState(state: PaginationState)
-    // ... 4 more pagination methods
-}
-```
-
-#### Impact
-
-- Profile screen depends on pagination methods it never uses
-- Movie feature depends on theme/language methods it doesn't need
-- Adding TV show pagination would further bloat this class
-- Violates cohesion principles
-
-#### Recommended Solution
-
-```kotlin
-// Separate interface for app settings
-interface AppSettingsPreferences {
-    fun getAppLanguageCode(): Flow<String>
-    suspend fun setAppLanguageCode(language: AppLanguage)
-    fun getAppTheme(): Flow<String>
-    suspend fun setAppTheme(theme: AppTheme)
-}
-
-class AppSettingsPreferencesImpl(
-    private val dataStore: DataStore<Preferences>
-) : AppSettingsPreferences {
-    // Implementation focused only on app settings
-}
-
-// Separate interface for pagination
-interface PaginationPreferences {
-    fun getPaginationState(category: String): Flow<PaginationState>
-    suspend fun savePaginationState(category: String, state: PaginationState)
-}
-
-class PaginationPreferencesImpl(
-    private val dataStore: DataStore<Preferences>
-) : PaginationPreferences {
-    // Generic implementation for any category
-    override fun getPaginationState(category: String): Flow<PaginationState> {
-        return dataStore.data.map { preferences ->
-            PaginationState(
-                currentPage = preferences[intPreferencesKey("${category}_current_page")] ?: 0,
-                totalPages = preferences[intPreferencesKey("${category}_total_pages")] ?: 0
-            )
         }
     }
 }
 
 // DI Module
-val dataStoreModule = module {
-    single<AppSettingsPreferences> { AppSettingsPreferencesImpl(get()) }
-    single<PaginationPreferences> { PaginationPreferencesImpl(get()) }
-}
-```
-
----
-
-### 🔴 Major Violation #3: MoviesViewModel
-
-**File:** `features/movies/src/commonMain/kotlin/com/elna/moviedb/feature/movies/ui/movies/MoviesViewModel.kt:31`
-**Lines:** ~186 lines
-**Severity:** 🔴 High
-
-#### Problems Identified
-
-The ViewModel manages 3 different movie categories with nearly identical logic:
-
-1. **Popular Movies** - Observation + Loading + State
-2. **Top Rated Movies** - Observation + Loading + State
-3. **Now Playing Movies** - Observation + Loading + State
-
-#### Code Pattern
-
-```kotlin
-class MoviesViewModel(
-    private val moviesRepository: MoviesRepository
-) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.LOADING))
-    val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
-
-    init {
-        observeMovies()
-    }
-
-    private fun observeMovies() {
-        // Duplicated pattern #1: Observe popular
-        viewModelScope.launch {
-            moviesRepository.observePopularMovies().collect { movies ->
-                _uiState.update { currentState ->
-                    val updated = currentState.copy(popularMovies = movies)
-                    updated.copy(
-                        state = if (updated.hasAnyData) MoviesUiState.State.SUCCESS
-                                else MoviesUiState.State.LOADING
-                    )
-                }
-            }
-        }
-
-        // Duplicated pattern #2: Observe top rated (24 lines, almost identical)
-        viewModelScope.launch {
-            moviesRepository.observeTopRatedMovies().collect { movies ->
-                // Same logic as above
-            }
-        }
-
-        // Duplicated pattern #3: Observe now playing (24 lines, almost identical)
-        viewModelScope.launch {
-            moviesRepository.observeNowPlayingMovies().collect { movies ->
-                // Same logic as above
-            }
-        }
-    }
-
-    // Duplicated loading methods (22 lines each, nearly identical)
-    private fun loadNextPagePopular() { /* ... */ }
-    private fun loadNextPageTopRated() { /* ... */ }
-    private fun loadNextPageNowPlaying() { /* ... */ }
-}
-```
-
-#### Impact
-
-- Code duplication across 3 methods (72 lines just for observation)
-- Adding a 4th category requires copying and pasting entire blocks
-- Bug fixes must be applied to all 3 methods
-- Testing requires covering same logic 3 times
-
-#### Recommended Solution
-
-**Option 1: Generic Category Handler**
-
-```kotlin
-class MoviesViewModel(
-    private val moviesRepository: MoviesRepository
-) : ViewModel() {
-
-    private val _uiState = MutableStateFlow(MoviesUiState())
-    val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
-
-    init {
-        observeCategory(
-            MovieCategory.POPULAR,
-            moviesRepository::observePopularMovies
-        ) { state, movies -> state.copy(popularMovies = movies) }
-
-        observeCategory(
-            MovieCategory.TOP_RATED,
-            moviesRepository::observeTopRatedMovies
-        ) { state, movies -> state.copy(topRatedMovies = movies) }
-
-        observeCategory(
-            MovieCategory.NOW_PLAYING,
-            moviesRepository::observeNowPlayingMovies
-        ) { state, movies -> state.copy(nowPlayingMovies = movies) }
-    }
-
-    private fun observeCategory(
-        category: MovieCategory,
-        observeFlow: suspend () -> Flow<List<Movie>>,
-        updateState: (MoviesUiState, List<Movie>) -> MoviesUiState
-    ) {
-        viewModelScope.launch {
-            observeFlow().collect { movies ->
-                _uiState.update { currentState ->
-                    val updated = updateState(currentState, movies)
-                    updated.copy(
-                        state = if (updated.hasAnyData) State.SUCCESS else State.LOADING
-                    )
-                }
-            }
-        }
-    }
-
-    private fun loadNextPage(category: MovieCategory) {
-        val loadingState = when(category) {
-            POPULAR -> uiState.value.isLoadingPopular
-            TOP_RATED -> uiState.value.isLoadingTopRated
-            NOW_PLAYING -> uiState.value.isLoadingNowPlaying
-        }
-
-        if (loadingState) return
-
-        viewModelScope.launch {
-            updateLoadingState(category, true)
-
-            val result = when(category) {
-                POPULAR -> moviesRepository.loadPopularMoviesNextPage()
-                TOP_RATED -> moviesRepository.loadTopRatedMoviesNextPage()
-                NOW_PLAYING -> moviesRepository.loadNowPlayingMoviesNextPage()
-            }
-
-            handleLoadResult(category, result)
-        }
+val dataModule = module {
+    single<MoviesRepository> { MoviesRepositoryImpl(...) }
+    single {
+        MoviesLanguageCoordinator(
+            preferencesManager = get(),
+            moviesRepository = get(),
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+        )
     }
 }
 ```
 
-**Option 2: Category-Specific ViewModels (Better)**
-
-```kotlin
-// Base class with common logic
-abstract class CategoryMoviesViewModel(
-    protected val category: MovieCategory,
-    protected val moviesRepository: MoviesRepository
-) : ViewModel() {
-
-    protected val _uiState = MutableStateFlow(CategoryMoviesUiState())
-    val uiState: StateFlow<CategoryMoviesUiState> = _uiState.asStateFlow()
-
-    init {
-        observeMovies()
-    }
-
-    private fun observeMovies() {
-        viewModelScope.launch {
-            moviesRepository.observeMovies(category).collect { movies ->
-                _uiState.update {
-                    it.copy(
-                        movies = movies,
-                        state = if (movies.isNotEmpty()) State.SUCCESS else State.LOADING
-                    )
-                }
-            }
-        }
-    }
-
-    fun loadNextPage() {
-        if (_uiState.value.isLoading) return
-
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-
-            when (val result = moviesRepository.loadMoviesNextPage(category)) {
-                is AppResult.Success -> {
-                    _uiState.update { it.copy(isLoading = false) }
-                }
-                is AppResult.Error -> {
-                    handleError(result)
-                }
-            }
-        }
-    }
-}
-
-// Specific implementations (if needed for custom behavior)
-class PopularMoviesViewModel(
-    moviesRepository: MoviesRepository
-) : CategoryMoviesViewModel(MovieCategory.POPULAR, moviesRepository)
-
-class TopRatedMoviesViewModel(
-    moviesRepository: MoviesRepository
-) : CategoryMoviesViewModel(MovieCategory.TOP_RATED, moviesRepository)
-```
-
----
-
-### 🔴 Similar Violation: TvShowsViewModel
-
-**File:** `features/tv-shows/src/commonMain/kotlin/com/elna/moviedb/feature/tvshows/ui/tv_shows/TvShowsViewModel.kt:31`
-**Severity:** 🔴 High
-
-Same issues as `MoviesViewModel` - manages 3 categories (Popular, TopRated, OnTheAir) with duplicated logic. Apply the same refactoring solutions.
-
----
-
-### 🟡 Minor Violation #4: MoviesLocalDataSource
-
-**File:** `core/database/src/commonMain/kotlin/com/elna/moviedb/core/database/MoviesLocalDataSource.kt:9`
-**Severity:** 🟡 Medium
-
-#### Problem
-
-This class handles multiple types of data:
-- Movies (basic list)
-- Movie Details (detailed info)
-- Videos/Trailers
-- Cast Members
-
-#### Recommended Solution
-
-```kotlin
-// Separate data sources
-class MoviesListDataSource(private val movieDao: MovieDao)
-class MovieDetailsDataSource(private val movieDetailsDao: MovieDetailsDao)
-class MovieVideosDataSource(private val movieDetailsDao: MovieDetailsDao)
-class MovieCastDataSource(private val movieDetailsDao: MovieDetailsDao)
-```
+**Benefits:**
+- ✅ Repository has single responsibility: "provide data access"
+- ✅ Coordinator has single responsibility: "react to language changes"
+- ✅ Each can be tested independently
+- ✅ Lifecycle is explicit (scope injected)
+- ✅ Interface matches implementation
 
 ---
 
@@ -501,20 +187,28 @@ class MovieCastDataSource(private val movieDetailsDao: MovieDetailsDao)
 
 > **Principle:** "Software entities should be open for extension, closed for modification"
 
+### 🔴 **PRIMARY ISSUE:** This is the main problem in the codebase
+
+The project has significant OCP violations due to category-based code duplication. Adding new categories requires modifying multiple classes.
+
+---
+
 ### 🔴 Critical Violation #1: Category-Based Method Duplication
 
 **Files:**
 - `core/data/src/commonMain/kotlin/com/elna/moviedb/core/data/movies/MoviesRepositoryImpl.kt`
 - `core/data/src/commonMain/kotlin/com/elna/moviedb/core/data/tv_shows/TvShowRepositoryImpl.kt`
+- `features/movies/src/commonMain/kotlin/com/elna/moviedb/feature/movies/ui/movies/MoviesViewModel.kt`
+- `features/tv-shows/src/commonMain/kotlin/com/elna/moviedb/feature/tvshows/ui/tv_shows/TvShowsViewModel.kt`
 
 **Severity:** 🔴 Critical
 
 #### Problem
 
-Nearly identical methods exist for each category, making the code closed for extension:
+Nearly identical methods exist for each category, making the code **closed for extension**:
 
 ```kotlin
-// MoviesRepositoryImpl.kt
+// MoviesRepositoryImpl.kt - Lines 153-263
 override suspend fun loadPopularMoviesNextPage(): AppResult<Unit> {
     val paginationState = preferencesManager.getPopularMoviesPaginationState().first()
     // ... 33 lines of logic
@@ -531,60 +225,93 @@ override suspend fun loadNowPlayingMoviesNextPage(): AppResult<Unit> {
 }
 ```
 
+**Same pattern in ViewModels:**
+```kotlin
+// MoviesViewModel.kt - Lines 58-94
+private fun observeMovies() {
+    // 24 lines for popular movies
+    viewModelScope.launch {
+        moviesRepository.observePopularMovies().collect { /* update state */ }
+    }
+
+    // 24 lines for top rated movies (identical logic)
+    viewModelScope.launch {
+        moviesRepository.observeTopRatedMovies().collect { /* update state */ }
+    }
+
+    // 24 lines for now playing movies (identical logic)
+    viewModelScope.launch {
+        moviesRepository.observeNowPlayingMovies().collect { /* update state */ }
+    }
+}
+
+// 22 lines per category for loading methods
+private fun loadNextPagePopular() { /* ... */ }
+private fun loadNextPageTopRated() { /* ... */ }
+private fun loadNextPageNowPlaying() { /* ... */ }
+```
+
 #### Impact
 
-**To add a new category (e.g., "Upcoming Movies"), you must:**
+**To add a new category (e.g., "Upcoming Movies"), you must modify:**
 
-1. ✏️ Modify `MoviesRepository` interface (add new method)
-2. ✏️ Modify `MoviesRepositoryImpl` class (implement new method)
-3. ✏️ Modify `PreferencesManager` interface (add pagination methods)
-4. ✏️ Modify `PreferencesManagerImpl` class (implement pagination)
-5. ✏️ Modify `MoviesRemoteDataSource` (add new API call)
-6. ✏️ Modify `MoviesViewModel` (add observation + loading)
-7. ✏️ Modify `MoviesUiState` (add new list property)
-8. ✏️ Modify `MoviesEvent` (add new load event)
+1. ✏️ `MoviesRepository` interface → Add new method
+2. ✏️ `MoviesRepositoryImpl` class → Implement new method (33 lines of duplicated code)
+3. ✏️ `PreferencesManager` interface → Add new pagination methods
+4. ✏️ `PreferencesManagerImpl` class → Implement pagination (10 lines)
+5. ✏️ `MoviesRemoteDataSource` → Add new API wrapper method
+6. ✏️ `MoviesViewModel` → Add observation + loading (46 lines of duplicated code)
+7. ✏️ `MoviesUiState` → Add new list property + loading flag
+8. ✏️ `MoviesEvent` → Add new load event
 
-**Total: 8 classes modified** - Massive OCP violation!
+**Total: 8 classes modified, ~100 lines of duplicated code**
+
+This is a **massive OCP violation**! The system is completely closed for extension.
 
 #### Recommended Solution
 
-**Use category abstraction:**
+**Use category abstraction to eliminate duplication:**
 
 ```kotlin
-// Domain Model
+// Domain Model - Just add enum value to extend!
 enum class MovieCategory(val apiPath: String) {
     POPULAR("movie/popular"),
     TOP_RATED("movie/top_rated"),
     NOW_PLAYING("movie/now_playing"),
-    UPCOMING("movie/upcoming") // New category - no code changes needed!
+    UPCOMING("movie/upcoming")  // ← New category: ZERO code changes needed!
 }
 
-// Repository Interface
+// Repository Interface - Single parameterized method
 interface MoviesRepository {
     suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>>
     suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit>
     suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails>
-    suspend fun refresh()
-    suspend fun clearMovies()
+    suspend fun clearAndReload()
 }
 
-// Repository Implementation
+// Repository Implementation - Single implementation for ALL categories
 class MoviesRepositoryImpl(
-    private val moviesRemoteDataSource: MoviesRemoteDataSource,
-    private val moviesLocalDataSource: MoviesLocalDataSource,
+    private val remoteDataSource: MoviesRemoteDataSource,
+    private val localDataSource: MoviesLocalDataSource,
     private val paginationPreferences: PaginationPreferences,
     private val appDispatchers: AppDispatchers
 ) : MoviesRepository {
 
     override suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>> {
-        val localMoviesStream = moviesLocalDataSource.getMoviesByCategoryAsFlow(category.name)
+        val localStream = localDataSource.getMoviesByCategoryAsFlow(category.name)
 
-        if (localMoviesStream.first().isEmpty()) {
+        if (localStream.first().isEmpty()) {
             loadMoviesNextPage(category)
         }
 
-        return localMoviesStream.map { entities ->
-            entities.map { it.toDomain() }
+        return localStream.map { entities ->
+            entities.map { entity ->
+                Movie(
+                    id = entity.id,
+                    title = entity.title,
+                    posterPath = entity.posterPath.toFullImageUrl()
+                )
+            }
         }
     }
 
@@ -598,7 +325,7 @@ class MoviesRepositoryImpl(
         val nextPage = paginationState.currentPage + 1
         val language = getCurrentLanguage()
 
-        return when (val result = moviesRemoteDataSource.fetchMoviesPage(
+        return when (val result = remoteDataSource.fetchMoviesPage(
             category.apiPath,
             nextPage,
             language
@@ -607,7 +334,7 @@ class MoviesRepositoryImpl(
                 val entities = result.data.results.map {
                     it.asEntity().copy(category = category.name)
                 }
-                moviesLocalDataSource.insertMoviesPage(entities)
+                localDataSource.insertMoviesPage(entities)
 
                 paginationPreferences.savePaginationState(
                     category.name,
@@ -621,13 +348,13 @@ class MoviesRepositoryImpl(
     }
 }
 
-// Remote Data Source (simplified)
+// Remote Data Source - Single generic method
 class MoviesRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatchers: AppDispatchers
 ) {
     suspend fun fetchMoviesPage(
-        apiPath: String,
+        apiPath: String,  // Uses category.apiPath
         page: Int,
         language: String
     ): AppResult<RemoteMoviesPage> {
@@ -644,13 +371,20 @@ class MoviesRemoteDataSource(
         }
     }
 }
+
+// Preferences - Generic category-based methods
+interface PaginationPreferences {
+    fun getPaginationState(category: String): Flow<PaginationState>
+    suspend fun savePaginationState(category: String, state: PaginationState)
+}
 ```
 
 **Benefits:**
-- ✅ Adding new category requires **zero code changes** (just add enum value)
+- ✅ Adding new category requires **ZERO code changes** (just add enum value)
 - ✅ Single implementation for all categories
-- ✅ Easy to test
 - ✅ Reduced code duplication by ~70%
+- ✅ Easy to test (test once for all categories)
+- ✅ Follows OCP perfectly
 
 ---
 
@@ -662,15 +396,8 @@ class MoviesRemoteDataSource(
 #### Problem
 
 ```kotlin
-private fun performSearch(
-    query: String,
-    filter: SearchFilter,
-    page: Int,
-    isLoadingMore: Boolean = false
-) {
+private fun performSearch(query: String, filter: SearchFilter, page: Int) {
     viewModelScope.launch {
-        // ... setup code
-
         val result = when (filter) {
             SearchFilter.ALL -> searchRepository.searchAll(query, page).first()
 
@@ -695,15 +422,13 @@ private fun performSearch(
                 }
             }
         }
-
-        // ... handle result
     }
 }
 ```
 
 #### Impact
 
-Adding a new search filter (e.g., `COLLECTIONS`) requires modifying this `when` expression - violates OCP.
+Adding a new search filter (e.g., `COLLECTIONS`) requires modifying the `when` expression - violates OCP.
 
 #### Recommended Solution
 
@@ -712,51 +437,7 @@ Adding a new search filter (e.g., `COLLECTIONS`) requires modifying this `when` 
 ```kotlin
 // Strategy interface
 interface SearchStrategy {
-    suspend fun search(
-        query: String,
-        page: Int
-    ): Flow<AppResult<List<SearchResultItem>>>
-}
-
-// Concrete strategies
-class MovieSearchStrategy(
-    private val repository: SearchRepository
-) : SearchStrategy {
-    override suspend fun search(query: String, page: Int) = flow {
-        repository.searchMovies(query, page).collect { result ->
-            when (result) {
-                is AppResult.Success -> emit(AppResult.Success(result.data.map { it as SearchResultItem }))
-                is AppResult.Error -> emit(result)
-            }
-        }
-    }
-}
-
-class TvShowSearchStrategy(private val repository: SearchRepository) : SearchStrategy {
-    override suspend fun search(query: String, page: Int) = flow {
-        repository.searchTvShows(query, page).collect { result ->
-            when (result) {
-                is AppResult.Success -> emit(AppResult.Success(result.data.map { it as SearchResultItem }))
-                is AppResult.Error -> emit(result)
-            }
-        }
-    }
-}
-
-class PeopleSearchStrategy(private val repository: SearchRepository) : SearchStrategy {
-    override suspend fun search(query: String, page: Int) = flow {
-        repository.searchPeople(query, page).collect { result ->
-            when (result) {
-                is AppResult.Success -> emit(AppResult.Success(result.data.map { it as SearchResultItem }))
-                is AppResult.Error -> emit(result)
-            }
-        }
-    }
-}
-
-class AllSearchStrategy(private val repository: SearchRepository) : SearchStrategy {
-    override suspend fun search(query: String, page: Int) =
-        repository.searchAll(query, page)
+    suspend fun search(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>>
 }
 
 // Sealed class with strategy
@@ -767,39 +448,18 @@ sealed class SearchFilter(val strategy: SearchStrategy) {
     class People(repository: SearchRepository) : SearchFilter(PeopleSearchStrategy(repository))
 }
 
-// Simplified ViewModel
-class SearchViewModel(
-    private val searchRepository: SearchRepository
-) : ViewModel() {
-
-    private fun performSearch(
-        query: String,
-        filter: SearchFilter,
-        page: Int,
-        isLoadingMore: Boolean = false
-    ) {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(
-                    isLoading = !isLoadingMore,
-                    isLoadingMore = isLoadingMore,
-                    hasSearched = true,
-                    errorMessage = null
-                )
-            }
-
-            // No when expression needed - just use the strategy!
-            val result = filter.strategy.search(query, page).first()
-
-            handleSearchResult(result, isLoadingMore)
-        }
+// Simplified ViewModel - no when expression needed!
+private fun performSearch(query: String, filter: SearchFilter, page: Int) {
+    viewModelScope.launch {
+        val result = filter.strategy.search(query, page).first()
+        handleSearchResult(result)
     }
 }
 ```
 
 ---
 
-### 🔴 Major Violation #3: Remote Data Sources
+### 🔴 Major Violation #3: Remote Data Source Wrapper Methods
 
 **File:** `core/network/src/commonMain/kotlin/com/elna/moviedb/core/network/MoviesRemoteDataSource.kt:18`
 **Severity:** 🟡 Medium
@@ -820,14 +480,15 @@ class MoviesRemoteDataSource(
     suspend fun getNowPlayingMoviesPage(page: Int, language: String) =
         fetchMoviesPage("movie/now_playing", page, language)
 
-    // Private helper doing the actual work
-    private suspend fun fetchMoviesPage(...)
+    private suspend fun fetchMoviesPage(path: String, page: Int, language: String): AppResult<RemoteMoviesPage>
 }
 ```
 
+These wrapper methods don't add value - just pass parameters to the private method.
+
 #### Recommended Solution
 
-Eliminate wrapper methods entirely:
+Make `fetchMoviesPage` public and eliminate wrappers:
 
 ```kotlin
 class MoviesRemoteDataSource(
@@ -855,7 +516,6 @@ class MoviesRemoteDataSource(
     // Keep specific methods only if they have unique logic
     suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails>
     suspend fun getMovieVideos(movieId: Int, language: String): AppResult<RemoteVideoResponse>
-    suspend fun getMovieCredits(movieId: Int, language: String): AppResult<RemoteMovieCredits>
 }
 ```
 
@@ -925,7 +585,7 @@ interface SearchRepository {
 
 #### Recommended Solution
 
-**Option 1: Segregate by Entity Type**
+**Segregate by entity type:**
 
 ```kotlin
 // Focused interfaces
@@ -945,24 +605,13 @@ interface MultiSearchRepository {
     fun searchAll(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>>
 }
 
-// Implementation can implement all if needed
-class SearchRepositoryImpl(
-    private val searchRemoteDataSource: SearchRemoteDataSource,
-    private val preferencesManager: PreferencesManager
-) : MovieSearchRepository,
+// Implementation can implement all
+class SearchRepositoryImpl(...) :
+    MovieSearchRepository,
     TvShowSearchRepository,
     PeopleSearchRepository,
     MultiSearchRepository {
     // Implementation...
-}
-
-// DI
-val dataModule = module {
-    single<SearchRepositoryImpl> { SearchRepositoryImpl(get(), get()) }
-    single<MovieSearchRepository> { get<SearchRepositoryImpl>() }
-    single<TvShowSearchRepository> { get<SearchRepositoryImpl>() }
-    single<PeopleSearchRepository> { get<SearchRepositoryImpl>() }
-    single<MultiSearchRepository> { get<SearchRepositoryImpl>() }
 }
 
 // Client usage
@@ -973,35 +622,19 @@ class MovieSearchViewModel(
 }
 ```
 
-**Option 2: Generic Search Repository**
-
-```kotlin
-interface SearchRepository {
-    fun <T : SearchResultItem> search(
-        type: SearchType<T>,
-        query: String,
-        page: Int
-    ): Flow<AppResult<List<T>>>
-}
-
-sealed class SearchType<out T : SearchResultItem> {
-    object Movies : SearchType<SearchResultItem.MovieItem>()
-    object TvShows : SearchType<SearchResultItem.TvShowItem>()
-    object People : SearchType<SearchResultItem.PersonItem>()
-    object All : SearchType<SearchResultItem>()
-}
-```
-
 ---
 
 ### 🔴 Major Violation #2: PreferencesManager
 
-**File:** `core/datastore/src/commonMain/kotlin/com/elna/moviedb/core/datastore/PreferencesManager.kt`
+**Files:**
+- `core/datastore/src/commonMain/kotlin/com/elna/moviedb/core/datastore/PreferencesManager.kt`
+- `core/datastore/src/commonMain/kotlin/com/elna/moviedb/core/datastore/PreferencesManagerImpl.kt`
+
 **Severity:** 🟡 Medium
 
 #### Problem
 
-Interface combines unrelated concerns (already discussed in SRP section):
+Fat interface with unrelated methods:
 
 ```kotlin
 interface PreferencesManager {
@@ -1028,22 +661,42 @@ interface PreferencesManager {
 ```kotlin
 // ProfileViewModel only needs app settings
 class ProfileViewModel(
-    private val preferencesManager: PreferencesManager // Depends on 9 unused methods!
+    private val preferencesManager: PreferencesManager // Depends on 6 pagination methods it never uses!
 ) : ViewModel() {
     // Only uses getAppLanguageCode() and getAppTheme()
 }
 
 // MoviesRepository only needs pagination
 class MoviesRepositoryImpl(
-    private val preferencesManager: PreferencesManager // Depends on theme/language methods
+    private val preferencesManager: PreferencesManager // Depends on theme/language methods it doesn't use
 ) : MoviesRepository {
     // Only uses pagination methods
 }
 ```
 
-#### Solution
+#### Recommended Solution
 
-See SRP section for the recommended split.
+```kotlin
+// Separate interface for app settings
+interface AppSettingsPreferences {
+    fun getAppLanguageCode(): Flow<String>
+    suspend fun setAppLanguageCode(language: AppLanguage)
+    fun getAppTheme(): Flow<String>
+    suspend fun setAppTheme(theme: AppTheme)
+}
+
+// Generic interface for pagination (supports any category!)
+interface PaginationPreferences {
+    fun getPaginationState(category: String): Flow<PaginationState>
+    suspend fun savePaginationState(category: String, state: PaginationState)
+}
+
+// DI Module
+val dataStoreModule = module {
+    single<AppSettingsPreferences> { AppSettingsPreferencesImpl(get()) }
+    single<PaginationPreferences> { PaginationPreferencesImpl(get()) }
+}
+```
 
 ---
 
@@ -1054,7 +707,7 @@ See SRP section for the recommended split.
 
 #### Problem
 
-Interface has too many responsibilities:
+Interface has too many methods for different purposes:
 
 ```kotlin
 interface MoviesRepository {
@@ -1090,8 +743,7 @@ interface MoviesRepository {
 interface MoviesListRepository {
     suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>>
     suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit>
-    suspend fun refresh(): AppResult<List<Movie>>
-    suspend fun clearMovies()
+    suspend fun clearAndReload()
 }
 
 interface MovieDetailsRepository {
@@ -1099,18 +751,18 @@ interface MovieDetailsRepository {
 }
 ```
 
-**Option 2: Keep combined but use delegation**
+**Option 2: Keep combined but with category abstraction** (This also solves OCP!)
 
 ```kotlin
-interface MoviesRepository : MoviesListRepository, MovieDetailsRepository
-
-class MoviesRepositoryImpl(
-    private val listRepository: MoviesListRepository,
-    private val detailsRepository: MovieDetailsRepository
-) : MoviesRepository,
-    MoviesListRepository by listRepository,
-    MovieDetailsRepository by detailsRepository
+interface MoviesRepository {
+    suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>>
+    suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit>
+    suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails>
+    suspend fun clearAndReload()
+}
 ```
+
+This reduces from 11 methods to 4 methods!
 
 ---
 
@@ -1145,128 +797,17 @@ val moviesModule = module {
         )
     }
 }
-
-val dataModule = module {
-    single<MoviesRepository> {  // Interface
-        MoviesRepositoryImpl(  // Concrete implementation
-            moviesRemoteDataSource = get(),
-            moviesLocalDataSource = get(),
-            preferencesManager = get(),
-            appDispatchers = get()
-        )
-    }
-}
 ```
 
 ---
 
-### 🟡 Minor Issue #1: Repository Creates Own Scope
-
-**File:** `core/data/src/commonMain/kotlin/com/elna/moviedb/core/data/movies/MoviesRepositoryImpl.kt:56`
-**Severity:** 🟡 Low
-
-#### Problem
-
-```kotlin
-class MoviesRepositoryImpl(
-    private val moviesRemoteDataSource: MoviesRemoteDataSource,
-    private val moviesLocalDataSource: MoviesLocalDataSource,
-    private val preferencesManager: PreferencesManager,
-    private val appDispatchers: AppDispatchers
-) : MoviesRepository {
-
-    // Creates concrete CoroutineScope - hard to test
-    private val repositoryScope = CoroutineScope(SupervisorJob() + appDispatchers.main)
-
-    init {
-        repositoryScope.launch {
-            preferencesManager.getAppLanguageCode()
-                .distinctUntilChanged()
-                .drop(1)
-                .collect {
-                    clearMovies()
-                    loadPopularMoviesNextPage()
-                    loadTopRatedMoviesNextPage()
-                    loadNowPlayingMoviesNextPage()
-                }
-        }
-    }
-}
-```
-
-#### Impact
-
-- Difficult to test language change observer behavior
-- Scope lifecycle tied to repository implementation
-- Cannot inject different scope for testing
-
-#### Recommended Solution
-
-**Inject the scope as a dependency:**
-
-```kotlin
-class MoviesRepositoryImpl(
-    private val moviesRemoteDataSource: MoviesRemoteDataSource,
-    private val moviesLocalDataSource: MoviesLocalDataSource,
-    private val preferencesManager: PreferencesManager,
-    private val appDispatchers: AppDispatchers,
-    private val repositoryScope: CoroutineScope  // Injected dependency
-) : MoviesRepository {
-
-    init {
-        repositoryScope.launch {
-            preferencesManager.getAppLanguageCode()
-                .distinctUntilChanged()
-                .drop(1)
-                .collect {
-                    clearMovies()
-                    loadPopularMoviesNextPage()
-                    loadTopRatedMoviesNextPage()
-                    loadNowPlayingMoviesNextPage()
-                }
-        }
-    }
-}
-
-// DI Module
-val dataModule = module {
-    single<MoviesRepository> {
-        MoviesRepositoryImpl(
-            moviesRemoteDataSource = get(),
-            moviesLocalDataSource = get(),
-            preferencesManager = get(),
-            appDispatchers = get(),
-            repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-        )
-    }
-}
-
-// Test
-@Test
-fun `test language change clears movies`() = runTest {
-    val testScope = TestScope(UnconfinedTestDispatcher())
-
-    val repository = MoviesRepositoryImpl(
-        moviesRemoteDataSource = mockRemoteDataSource,
-        moviesLocalDataSource = mockLocalDataSource,
-        preferencesManager = mockPreferences,
-        appDispatchers = testDispatchers,
-        repositoryScope = testScope  // Test scope injection
-    )
-
-    // Test behavior...
-}
-```
-
----
-
-### 🟡 Minor Issue #2: Data Sources are Concrete Classes
+### 🟡 Minor Issue #1: Data Sources are Concrete Classes
 
 **Files:**
 - `core/database/src/commonMain/kotlin/com/elna/moviedb/core/database/MoviesLocalDataSource.kt:9`
 - `core/network/src/commonMain/kotlin/com/elna/moviedb/core/network/MoviesRemoteDataSource.kt:18`
 
-**Severity:** 🟡 Low
+**Severity:** 🟢 Low
 
 #### Problem
 
@@ -1277,88 +818,44 @@ Data sources are concrete classes, not interfaces:
 class MoviesLocalDataSource(
     private val movieDao: MovieDao,
     private val movieDetailsDao: MovieDetailsDao,
-) {
-    fun getMoviesByCategoryAsFlow(category: String): Flow<List<MovieEntity>>
-    suspend fun insertMoviesPage(movies: List<MovieEntity>)
-    // ...
-}
+)
 
 // Repository depends on concrete class
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,  // Concrete
     private val moviesLocalDataSource: MoviesLocalDataSource,    // Concrete
-    // ...
-) : MoviesRepository
+)
 ```
 
 #### Impact
 
 - Harder to mock in unit tests
 - Cannot easily swap implementations
-- Couples repository to specific data source implementations
 
-#### Recommended Solution
+#### Recommended Solution (Optional)
+
+If you need better testability:
 
 ```kotlin
-// Create interface
 interface MoviesLocalDataSource {
     fun getMoviesByCategoryAsFlow(category: String): Flow<List<MovieEntity>>
     suspend fun insertMoviesPage(movies: List<MovieEntity>)
-    suspend fun getMoviesDetails(movieId: Int): MovieDetailsEntity?
-    suspend fun insertMovieDetails(movieDetails: MovieDetailsEntity)
-    suspend fun clearAllMovies()
-    suspend fun getVideosForMovie(movieId: Int): List<VideoEntity>
-    suspend fun insertVideos(videos: List<VideoEntity>)
-    suspend fun deleteVideosForMovie(movieId: Int)
-    suspend fun getCastForMovie(movieId: Int): List<CastMemberEntity>
-    suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>)
+    // ...
 }
 
-// Implementation
-class MoviesLocalDataSourceImpl(
-    private val movieDao: MovieDao,
-    private val movieDetailsDao: MovieDetailsDao,
-) : MoviesLocalDataSource {
-    override fun getMoviesByCategoryAsFlow(category: String) =
-        movieDao.getMoviesByCategoryAsFlow(category)
-
-    override suspend fun insertMoviesPage(movies: List<MovieEntity>) {
-        movies.forEach { movieDao.insertMovie(it) }
-    }
-
-    // ... other implementations
-}
-
-// DI Module
-val databaseModule = module {
-    single<MoviesLocalDataSource> {
-        MoviesLocalDataSourceImpl(
-            movieDao = get(),
-            movieDetailsDao = get()
-        )
-    }
-}
-
-// Testing becomes easier
-@Test
-fun `test load movies`() = runTest {
-    val mockLocalDataSource = mockk<MoviesLocalDataSource>()
-
-    val repository = MoviesRepositoryImpl(
-        moviesLocalDataSource = mockLocalDataSource,
-        // ...
-    )
-
-    coEvery { mockLocalDataSource.insertMoviesPage(any()) } just Runs
-    // Test...
-}
+class MoviesLocalDataSourceImpl(...) : MoviesLocalDataSource
 ```
 
-**Apply the same pattern to:**
-- `MoviesRemoteDataSource`
-- `TvShowsRemoteDataSource`
-- `SearchRemoteDataSource`
-- `PersonRemoteDataSource`
+**Note:** This is optional - data sources are already thin wrappers around DAOs, so interface extraction may be overkill.
+
+---
+
+### 🟡 Minor Issue #2: Repository Creates Own Scope
+
+**File:** `core/data/src/commonMain/kotlin/com/elna/moviedb/core/data/movies/MoviesRepositoryImpl.kt:56`
+**Severity:** 🟢 Low
+
+This is tied to the SRP violation discussed earlier. Extracting the language coordinator resolves this issue automatically.
 
 ---
 
@@ -1366,315 +863,181 @@ fun `test load movies`() = runTest {
 
 ### 🔴 Phase 1: High Priority (Weeks 1-2)
 
-These violations have the highest impact on maintainability and should be addressed first.
+**Focus: Fix OCP violations (the main issue)**
 
-#### 1.1 Extract Pagination Management
-**Estimated Effort:** 4-6 hours
-**Files Affected:**
-- `core/datastore/src/commonMain/kotlin/com/elna/moviedb/core/datastore/PreferencesManager.kt`
-- `core/datastore/src/commonMain/kotlin/com/elna/moviedb/core/datastore/PreferencesManagerImpl.kt`
+#### 1.1 Introduce Category Abstraction
+**Estimated Effort:** 8-12 hours
+**Impact:** 🔴 Critical - Eliminates 70% of code duplication
 
 **Steps:**
-1. Create `PaginationPreferences` interface
-2. Create `PaginationPreferencesImpl` implementation
-3. Update DI modules
-4. Update repositories to use new interface
-5. Create tests for pagination preferences
+1. Create `MovieCategory` enum with `apiPath` property
+2. Update `MoviesRepository` interface:
+   - Replace 3 observe methods with `observeMovies(category)`
+   - Replace 3 load methods with `loadMoviesNextPage(category)`
+3. Update `MoviesRepositoryImpl` to use category parameter
+4. Update `MoviesRemoteDataSource.fetchMoviesPage()` to accept `apiPath`
+5. Update `MoviesViewModel` to use category-based approach
+6. Update tests
+7. Apply same pattern to `TvShowsRepository` and `TvShowsViewModel`
 
-**Before:**
+**Before (11 methods):**
 ```kotlin
-interface PreferencesManager {
-    fun getAppLanguageCode(): Flow<String>
-    fun getAppTheme(): Flow<String>
-    fun getPopularMoviesPaginationState(): Flow<PaginationState>
-    fun getTopRatedMoviesPaginationState(): Flow<PaginationState>
-    fun getNowPlayingMoviesPaginationState(): Flow<PaginationState>
+interface MoviesRepository {
+    suspend fun observePopularMovies(): Flow<List<Movie>>
+    suspend fun observeTopRatedMovies(): Flow<List<Movie>>
+    suspend fun observeNowPlayingMovies(): Flow<List<Movie>>
+    suspend fun loadPopularMoviesNextPage(): AppResult<Unit>
+    suspend fun loadTopRatedMoviesNextPage(): AppResult<Unit>
+    suspend fun loadNowPlayingMoviesNextPage(): AppResult<Unit>
     // ...
 }
 ```
 
-**After:**
+**After (4 methods):**
 ```kotlin
-interface AppSettingsPreferences {
-    fun getAppLanguageCode(): Flow<String>
-    fun getAppTheme(): Flow<String>
-    suspend fun setAppLanguageCode(language: AppLanguage)
-    suspend fun setAppTheme(theme: AppTheme)
+enum class MovieCategory(val apiPath: String) {
+    POPULAR("movie/popular"),
+    TOP_RATED("movie/top_rated"),
+    NOW_PLAYING("movie/now_playing")
 }
 
-interface PaginationPreferences {
-    fun getPaginationState(category: String): Flow<PaginationState>
-    suspend fun savePaginationState(category: String, state: PaginationState)
-    suspend fun clearPaginationState(category: String)
+interface MoviesRepository {
+    suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>>
+    suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit>
+    suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails>
+    suspend fun clearAndReload()
 }
 ```
 
-#### 1.2 Introduce Category Abstraction
-**Estimated Effort:** 8-12 hours
-**Files Affected:**
-- All repository interfaces and implementations
-- All ViewModels
-- All UI state classes
+---
+
+#### 1.2 Split PreferencesManager (ISP Violation)
+**Estimated Effort:** 4-6 hours
+**Impact:** 🟡 Medium - Improves interface segregation
 
 **Steps:**
-1. Create `MovieCategory` enum
-2. Update repository interfaces to use category parameter
-3. Refactor repository implementations
-4. Update ViewModels to use category-based approach
+1. Create `AppSettingsPreferences` interface (language, theme)
+2. Create `PaginationPreferences` interface (generic category support)
+3. Implement `AppSettingsPreferencesImpl`
+4. Implement `PaginationPreferencesImpl` with category parameter
+5. Update DI modules
+6. Update `ProfileViewModel` to use `AppSettingsPreferences`
+7. Update repositories to use `PaginationPreferences`
+8. Update tests
+
+**Result:**
+- ProfileViewModel only depends on settings (2 methods instead of 11)
+- Repositories only depend on pagination (2 methods instead of 11)
+
+---
+
+#### 1.3 Extract Language Observer (SRP Violation)
+**Estimated Effort:** 2-3 hours
+**Impact:** 🟡 Medium - Fixes the one legitimate SRP violation
+
+**Steps:**
+1. Create `MoviesLanguageCoordinator` class
+2. Extract language observation logic from `MoviesRepositoryImpl.init{}`
+3. Add `clearAndReload()` method to repository
+4. Register coordinator in DI module with injected scope
 5. Update tests
-
-**Benefits:**
-- Reduces code duplication by ~70%
-- Makes adding new categories trivial
-- Improves testability
-
-#### 1.3 Split MoviesRepositoryImpl Responsibilities
-**Estimated Effort:** 12-16 hours
-**Files Affected:**
-- `core/data/src/commonMain/kotlin/com/elna/moviedb/core/data/movies/MoviesRepositoryImpl.kt`
-- New files for extracted managers
-
-**Steps:**
-1. Extract `MoviesLanguageObserver` class
-2. Extract data mapping functions to object/utility
-3. Update repository to use composition
-4. Create tests for each component
-5. Apply same pattern to `TvShowsRepositoryImpl`
 
 ---
 
 ### 🟡 Phase 2: Medium Priority (Weeks 3-4)
 
-#### 2.1 Segregate Repository Interfaces
-**Estimated Effort:** 6-8 hours
-**Files Affected:**
-- Repository interfaces
-- ViewModels
-- DI modules
-
-**Steps:**
-1. Split `SearchRepository` by entity type
-2. Consider splitting `MoviesRepository` by feature area
-3. Update DI modules
-4. Update client code
-5. Update tests
-
-#### 2.2 Refactor ViewModel Category Logic
-**Estimated Effort:** 8-10 hours
-**Files Affected:**
-- `MoviesViewModel.kt`
-- `TvShowsViewModel.kt`
-
-**Options:**
-- Create base `CategoryViewModel` class
-- Use generic category handler
-- Split into multiple category-specific ViewModels
-
-#### 2.3 Implement Strategy Pattern for Search
+#### 2.1 Implement Strategy Pattern for Search
 **Estimated Effort:** 4-6 hours
-**Files Affected:**
-- `SearchViewModel.kt`
-- New strategy classes
 
-**Steps:**
-1. Create `SearchStrategy` interface
-2. Implement concrete strategies
-3. Update `SearchFilter` sealed class
-4. Refactor `SearchViewModel`
-5. Update tests
+Create `SearchStrategy` interface and eliminate `when` expression in `SearchViewModel`.
+
+#### 2.2 Segregate SearchRepository Interface
+**Estimated Effort:** 3-4 hours
+
+Split into `MovieSearchRepository`, `TvShowSearchRepository`, `PeopleSearchRepository`, `MultiSearchRepository`.
 
 ---
 
-### 🟢 Phase 3: Low Priority (Future Enhancement)
+### 🟢 Phase 3: Low Priority (Optional)
 
 #### 3.1 Create Data Source Interfaces
 **Estimated Effort:** 4-6 hours
-**Files Affected:**
-- All data source classes
-- Repository implementations
-- DI modules
 
-**Benefits:**
-- Improved testability
-- Better mocking support
-- More flexible architecture
-
-#### 3.2 Inject Repository Scope
-**Estimated Effort:** 2-3 hours
-**Files Affected:**
-- Repository implementations
-- DI modules
-- Tests
-
----
-
-## Testing Strategy
-
-### Unit Test Coverage Improvements
-
-After implementing SOLID refactorings, update tests to cover:
-
-1. **Category-Based Logic**
-```kotlin
-@Test
-fun `load movies for all categories`() = runTest {
-    MovieCategory.values().forEach { category ->
-        val result = repository.loadMoviesNextPage(category)
-        assertTrue(result is AppResult.Success)
-    }
-}
-```
-
-2. **Pagination Manager**
-```kotlin
-@Test
-fun `pagination manager handles multiple categories`() = runTest {
-    paginationManager.savePaginationState("POPULAR", PaginationState(1, 10))
-    paginationManager.savePaginationState("TOP_RATED", PaginationState(2, 15))
-
-    val popularState = paginationManager.getPaginationState("POPULAR").first()
-    assertEquals(1, popularState.currentPage)
-
-    val topRatedState = paginationManager.getPaginationState("TOP_RATED").first()
-    assertEquals(2, topRatedState.currentPage)
-}
-```
-
-3. **Search Strategies**
-```kotlin
-@Test
-fun `movie search strategy returns movies only`() = runTest {
-    val strategy = MovieSearchStrategy(searchRepository)
-    val results = strategy.search("test", 1).first()
-
-    assertTrue(results is AppResult.Success)
-    assertTrue(results.data.all { it is SearchResultItem.MovieItem })
-}
-```
+Only if you need better mocking support in tests.
 
 ---
 
 ## Metrics & Goals
 
 ### Current State
+- **Code Duplication:** ~40% (category-based)
+- **Repository Interface Methods:** 11 methods
+- **PreferencesManager Interface Methods:** 11 methods
 - **Average Class Lines:** 200-460 lines
-- **Code Duplication:** ~40% across categories
-- **Interface Methods:** 8-11 methods per interface
-- **Test Coverage:** Unknown (needs measurement)
 
-### Target State
-- **Average Class Lines:** 100-200 lines
+### Target State (After Phase 1)
 - **Code Duplication:** <10%
-- **Interface Methods:** 3-5 methods per interface
-- **Test Coverage:** >80% for business logic
+- **Repository Interface Methods:** 4 methods
+- **Preference Interfaces:** 2 methods each (segregated)
+- **Average Class Lines:** 100-250 lines
 
 ### Success Metrics
-- ✅ New category can be added without modifying existing code
-- ✅ Repository classes under 300 lines
-- ✅ No interface has more than 5 methods
-- ✅ Pagination logic centralized in single class
-- ✅ ViewModels can be tested without database or network
-
----
-
-## Additional Recommendations
-
-### 1. Consider Use Cases / Interactors Layer
-
-For complex operations, consider adding a use cases layer between ViewModels and Repositories:
-
-```kotlin
-// Domain layer use case
-class LoadMoviesByCategory(
-    private val repository: MoviesRepository
-) {
-    suspend operator fun invoke(category: MovieCategory): AppResult<Unit> {
-        return repository.loadMoviesNextPage(category)
-    }
-}
-
-// ViewModel uses use case instead of repository directly
-class MoviesViewModel(
-    private val loadMoviesByCategory: LoadMoviesByCategory
-) : ViewModel() {
-    fun loadMovies(category: MovieCategory) {
-        viewModelScope.launch {
-            loadMoviesByCategory(category)
-        }
-    }
-}
-```
-
-**Benefits:**
-- Keeps ViewModels thin
-- Reusable business logic
-- Easier to test
-- Better separation of concerns
-
-### 2. Consider Repository Composition
-
-Instead of god repositories, use composition:
-
-```kotlin
-interface MoviesRepository {
-    val list: MoviesListOperations
-    val details: MovieDetailsOperations
-    val pagination: MoviesPaginationOperations
-}
-
-class MoviesRepositoryImpl(
-    override val list: MoviesListOperations,
-    override val details: MovieDetailsOperations,
-    override val pagination: MoviesPaginationOperations
-) : MoviesRepository
-```
-
-### 3. Document Architectural Decisions
-
-Create ADR (Architecture Decision Records) for:
-- Why category-based approach was chosen
-- Pagination strategy decisions
-- Cache-first vs Network-first strategies
-- State management patterns
-
-### 4. Set Up Architecture Tests
-
-Use tools like ArchUnit or custom linting to enforce:
-- Maximum class size
-- Maximum method count per interface
-- Dependency direction rules
-- Package structure rules
-
-```kotlin
-// Example with Konsist or similar
-@Test
-fun `repositories should not depend on ViewModels`() {
-    Konsist
-        .scopeFromProject()
-        .classes()
-        .withNameEndingWith("Repository")
-        .assertNot { it.dependsOn("ViewModel") }
-}
-```
+- ✅ New category can be added by just adding enum value (zero code changes)
+- ✅ Repository interfaces have ≤5 methods
+- ✅ No client depends on unused interface methods
+- ✅ Language observer is separate, testable component
+- ✅ All tests pass after refactoring
 
 ---
 
 ## Conclusion
 
-The CMP MovieDB project demonstrates solid architectural foundations with proper layering, dependency injection, and interface-based design. The main areas for improvement are:
+### Key Findings
 
-1. **Breaking down large classes** (SRP violations)
-2. **Eliminating category-based duplication** (OCP violations)
-3. **Segregating fat interfaces** (ISP violations)
+After thorough analysis and discussion, the CMP MovieDB project has:
 
-Implementing the recommended refactorings will result in:
-- ✅ **More maintainable code** - Easier to understand and modify
-- ✅ **Better testability** - Smaller, focused units
-- ✅ **Reduced duplication** - DRY principle adherence
-- ✅ **Easier feature addition** - Open for extension
-- ✅ **Clearer responsibilities** - Single purpose classes
+**Strengths:**
+- ✅ Strong architectural foundations (Clean Architecture, MVVM)
+- ✅ Proper dependency injection with Koin
+- ✅ Interface-based design (DIP compliance)
+- ✅ Good Liskov Substitution adherence
+- ✅ Cohesive class responsibilities (when properly defined)
 
-The priority action plan provides a structured approach to addressing these issues over 4-6 weeks, starting with the highest-impact changes.
+**Primary Issue: OCP Violations** 🔴
+- Category-based code duplication is the **main problem**
+- Adding new categories requires modifying 8+ classes
+- ~40% code duplication across category methods
+- **This should be the focus of refactoring efforts**
+
+**Secondary Issues:**
+- 🟡 ISP Violations: Fat interfaces force unnecessary dependencies
+- 🟡 One SRP Violation: Language observer mixing concerns
+
+**Not Issues (After Clarification):**
+- ✅ `MoviesRepositoryImpl` is NOT an SRP violation (responsibility = "orchestrate movie data")
+- ✅ `PreferencesManager` is NOT an SRP violation (responsibility = "persist preferences")
+- ✅ Large classes are a complexity issue, not necessarily SOLID violations
+
+### Recommended Approach
+
+**Priority 1:** Fix OCP violations with category abstraction (Phase 1.1)
+- Biggest impact: reduces duplication by 70%
+- Makes system truly extensible
+
+**Priority 2:** Fix ISP violations by splitting interfaces (Phase 1.2)
+- Improves client dependencies
+- Works well with category abstraction
+
+**Priority 3:** Extract language observer (Phase 1.3)
+- Fixes the one true SRP violation
+- Improves testability
+
+Implementing Phase 1 will result in:
+- ✅ **Open for extension** - New categories require zero code changes
+- ✅ **Reduced duplication** - Single implementation for all categories
+- ✅ **Better interfaces** - Smaller, focused contracts
+- ✅ **Clearer separation** - Observer logic extracted
+- ✅ **Easier testing** - Smaller, focused units
 
 ---
 
@@ -1688,7 +1051,11 @@ The priority action plan provides a structured approach to addressing these issu
 
 ---
 
-**Document Version:** 1.0
-**Last Updated:** 2025-10-16
+**Document Version:** 2.0
+**Last Updated:** 2025-10-17
 **Author:** SOLID Principles Review Analysis
 **Next Review:** After Phase 1 completion
+
+**Changelog:**
+- v2.0: Corrected SRP analysis, emphasized OCP as primary issue, removed unnecessary abstractions
+- v1.0: Initial review
