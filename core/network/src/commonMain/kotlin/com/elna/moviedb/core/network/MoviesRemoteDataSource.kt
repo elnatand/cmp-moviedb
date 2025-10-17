@@ -20,14 +20,34 @@ class MoviesRemoteDataSource(
     private val appDispatchers: AppDispatchers
 ) {
 
-    suspend fun getPopularMoviesPage(page: Int, language: String) =
-        fetchMoviesPage("movie/popular", page, language)
-
-    suspend fun getTopRatedMoviesPage(page: Int, language: String) =
-        fetchMoviesPage("movie/top_rated", page, language)
-
-    suspend fun getNowPlayingMoviesPage(page: Int, language: String) =
-        fetchMoviesPage("movie/now_playing", page, language)
+    /**
+     * Fetches a page of movies for any category from TMDB API.
+     *
+     * This generic method supports all movie categories, following the Open/Closed Principle.
+     * New categories can be added without modifying this method.
+     *
+     * @param apiPath The TMDB API path (e.g., "movie/popular", "movie/top_rated")
+     * @param page The page number to fetch
+     * @param language The language code for the results
+     * @return AppResult containing the movies page or an error
+     */
+    suspend fun fetchMoviesPage(
+        apiPath: String,
+        page: Int,
+        language: String
+    ): AppResult<RemoteMoviesPage> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}$apiPath") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("page", page.toString())
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteMoviesPage>()
+            }
+        }
+    }
 
     suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
         return withContext(appDispatchers.io) {
@@ -65,24 +85,6 @@ class MoviesRemoteDataSource(
                         parameters.append("language", language)
                     }
                 }.body<RemoteMovieCredits>()
-            }
-        }
-    }
-
-    private suspend fun fetchMoviesPage(
-        path: String,
-        page: Int,
-        language: String
-    ): AppResult<RemoteMoviesPage> {
-        return withContext(appDispatchers.io) {
-            safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}$path") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                    }
-                }.body<RemoteMoviesPage>()
             }
         }
     }
