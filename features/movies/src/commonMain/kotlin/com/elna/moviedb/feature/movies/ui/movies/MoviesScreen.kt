@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.model.Movie
+import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MoviesEvent
@@ -149,7 +150,7 @@ private fun MoviesContent(
                 movies = uiState.popularMovies,
                 onClick = onClick,
                 isLoading = uiState.isLoadingPopular,
-                onLoadMore = { onEvent(MoviesEvent.LoadNextPagePopular) }
+                onLoadMore = { onEvent(MoviesEvent.LoadNextPage(MovieCategory.POPULAR)) }
             )
         }
 
@@ -160,7 +161,7 @@ private fun MoviesContent(
                 movies = uiState.topRatedMovies,
                 onClick = onClick,
                 isLoading = uiState.isLoadingTopRated,
-                onLoadMore = { onEvent(MoviesEvent.LoadNextPageTopRated) }
+                onLoadMore = { onEvent(MoviesEvent.LoadNextPage(MovieCategory.TOP_RATED)) }
             )
         }
 
@@ -171,7 +172,7 @@ private fun MoviesContent(
                 movies = uiState.nowPlayingMovies,
                 onClick = onClick,
                 isLoading = uiState.isLoadingNowPlaying,
-                onLoadMore = { onEvent(MoviesEvent.LoadNextPageNowPlaying) }
+                onLoadMore = { onEvent(MoviesEvent.LoadNextPage(MovieCategory.NOW_PLAYING)) }
             )
         }
         Spacer(modifier = Modifier.height(70.dp))

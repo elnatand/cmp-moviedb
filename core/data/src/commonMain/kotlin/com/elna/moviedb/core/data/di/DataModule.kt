@@ -17,6 +17,7 @@ val dataModule = module {
         MoviesRepositoryImpl(
             moviesRemoteDataSource = get(),
             moviesLocalDataSource = get(),
+            paginationPreferences = get(),
             preferencesManager = get(),
         )
     }
