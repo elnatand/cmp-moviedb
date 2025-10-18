@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.FilmographyCredit
 import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toPosterUrl
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -53,7 +54,7 @@ internal fun FilmographyCard(
             ) {
                 credit.posterPath?.let { posterPath ->
                     ImageLoader(
-                        imageUrl = posterPath,
+                        imageUrl = posterPath.toPosterUrl(),
                         modifier = Modifier.fillMaxSize()
                     )
                 } ?: Box(

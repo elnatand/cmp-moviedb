@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toImageUrl
 import com.elna.moviedb.core.model.SearchResultItem
 
 @Composable
@@ -45,9 +46,9 @@ fun SearchResultItem(
         ) {
             ImageLoader(
                 imageUrl = when (item) {
-                    is SearchResultItem.MovieItem -> item.movie.posterPath ?: ""
-                    is SearchResultItem.TvShowItem -> item.tvShow.posterPath ?: ""
-                    is SearchResultItem.PersonItem -> item.profilePath ?: ""
+                    is SearchResultItem.MovieItem -> item.movie.posterPath.toImageUrl()
+                    is SearchResultItem.TvShowItem -> item.tvShow.posterPath.toImageUrl()
+                    is SearchResultItem.PersonItem -> item.profilePath.toImageUrl()
                 },
                 modifier = Modifier
                     .size(80.dp, 120.dp)

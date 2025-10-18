@@ -30,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toBackdropUrl
+import com.elna.moviedb.core.ui.utils.toPosterUrl
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.rating
 import com.elna.moviedb.resources.unknown
@@ -45,7 +47,7 @@ internal fun HeroSection(tvShow: TvShowDetails) {
     ) {
         tvShow.backdropPath?.takeIf { it.isNotEmpty() }?.let { backdropPath ->
             ImageLoader(
-                imageUrl = backdropPath,
+                imageUrl = backdropPath.toBackdropUrl(),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -77,7 +79,7 @@ internal fun HeroSection(tvShow: TvShowDetails) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
                 ImageLoader(
-                    imageUrl = posterPath,
+                    imageUrl = posterPath.toPosterUrl(),
                     modifier = Modifier.fillMaxSize()
                 )
             }

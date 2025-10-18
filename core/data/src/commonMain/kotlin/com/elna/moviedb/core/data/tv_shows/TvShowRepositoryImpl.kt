@@ -1,7 +1,6 @@
 package com.elna.moviedb.core.data.tv_shows
 
 import com.elna.moviedb.core.data.util.LanguageProvider
-import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
@@ -96,9 +95,7 @@ class TvShowRepositoryImpl(
             is AppResult.Success -> {
                 totalPages[category] = result.data.totalPages
                 val newTvShows = result.data.results.map { remoteTvShow ->
-                    remoteTvShow.toDomain().copy(
-                        posterPath = remoteTvShow.posterPath.toFullImageUrl()
-                    )
+                    remoteTvShow.toDomain()
                 }
 
                 val flow = getFlowForCategory(category)
@@ -172,9 +169,7 @@ class TvShowRepositoryImpl(
                 creditsResult.data.cast
                     ?.sortedBy { it.order }
                     ?.map { remoteCastMember ->
-                        remoteCastMember.toDomain().copy(
-                            profilePath = remoteCastMember.profilePath.toFullImageUrl()
-                        )
+                        remoteCastMember.toDomain()
                     }
                     ?: emptyList()
             }
@@ -182,10 +177,8 @@ class TvShowRepositoryImpl(
             is AppResult.Error -> emptyList() // Cast is optional, don't fail if they error
         }
 
-        // Combine details with trailers and cast - add URL concatenation for poster and backdrop
+        // Combine details with trailers and cast
         val tvShowDetails = details.toDomain().copy(
-            posterPath = details.posterPath.toFullImageUrl(),
-            backdropPath = details.backdropPath.toFullImageUrl(),
             trailers = trailers,
             cast = cast
         )

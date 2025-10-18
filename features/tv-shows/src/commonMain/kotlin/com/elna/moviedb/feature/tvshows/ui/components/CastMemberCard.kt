@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.CastMember
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toProfileUrl
 
 @Composable
 internal fun CastMemberCard(
@@ -47,7 +48,7 @@ internal fun CastMemberCard(
             ) {
                 castMember.profilePath?.let { profilePath ->
                     ImageLoader(
-                        imageUrl = profilePath,
+                        imageUrl = profilePath.toProfileUrl(),
                         modifier = Modifier.fillMaxSize()
                     )
                 } ?: Box(

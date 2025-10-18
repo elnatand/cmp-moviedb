@@ -1,7 +1,6 @@
 package com.elna.moviedb.core.data.search
 
 import com.elna.moviedb.core.data.util.LanguageProvider
-import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.model.SearchResultItem
@@ -46,25 +45,7 @@ class SearchRepositoryImpl(
                 when (remoteResult) {
                     is AppResult.Success -> {
                         val searchItems = remoteResult.data.results.mapNotNull { multiSearchItem ->
-                            multiSearchItem.toSearchResult()?.let { searchResult ->
-                                when (searchResult) {
-                                    is SearchResultItem.MovieItem -> searchResult.copy(
-                                        movie = searchResult.movie.copy(
-                                            posterPath = multiSearchItem.posterPath.toFullImageUrl()
-                                        ),
-                                        backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
-                                    )
-                                    is SearchResultItem.TvShowItem -> searchResult.copy(
-                                        tvShow = searchResult.tvShow.copy(
-                                            posterPath = multiSearchItem.posterPath.toFullImageUrl()
-                                        ),
-                                        backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
-                                    )
-                                    is SearchResultItem.PersonItem -> searchResult.copy(
-                                        profilePath = multiSearchItem.profilePath.toFullImageUrl()
-                                    )
-                                }
-                            }
+                            multiSearchItem.toSearchResult()
                         }
                         AppResult.Success(searchItems)
                     }
@@ -77,13 +58,7 @@ class SearchRepositoryImpl(
                 when (remoteResult) {
                     is AppResult.Success -> {
                         val movieItems = remoteResult.data.results.map { remoteSearchMovie ->
-                            val searchResult = remoteSearchMovie.toSearchResult()
-                            searchResult.copy(
-                                movie = searchResult.movie.copy(
-                                    posterPath = remoteSearchMovie.posterPath.toFullImageUrl()
-                                ),
-                                backdropPath = remoteSearchMovie.backdropPath.toFullImageUrl()
-                            )
+                            remoteSearchMovie.toSearchResult()
                         }
                         AppResult.Success(movieItems)
                     }
@@ -96,13 +71,7 @@ class SearchRepositoryImpl(
                 when (remoteResult) {
                     is AppResult.Success -> {
                         val tvShowItems = remoteResult.data.results.map { remoteSearchTvShow ->
-                            val searchResult = remoteSearchTvShow.toSearchResult()
-                            searchResult.copy(
-                                tvShow = searchResult.tvShow.copy(
-                                    posterPath = remoteSearchTvShow.posterPath.toFullImageUrl()
-                                ),
-                                backdropPath = remoteSearchTvShow.backdropPath.toFullImageUrl()
-                            )
+                            remoteSearchTvShow.toSearchResult()
                         }
                         AppResult.Success(tvShowItems)
                     }
@@ -115,10 +84,7 @@ class SearchRepositoryImpl(
                 when (remoteResult) {
                     is AppResult.Success -> {
                         val personItems = remoteResult.data.results.map { remoteSearchPerson ->
-                            val searchResult = remoteSearchPerson.toSearchResult()
-                            searchResult.copy(
-                                profilePath = remoteSearchPerson.profilePath.toFullImageUrl()
-                            )
+                            remoteSearchPerson.toSearchResult()
                         }
                         AppResult.Success(personItems)
                     }

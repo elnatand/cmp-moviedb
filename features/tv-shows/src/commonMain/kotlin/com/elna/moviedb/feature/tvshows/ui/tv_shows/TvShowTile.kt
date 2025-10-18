@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toPosterUrl
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -27,7 +28,7 @@ fun TvShowTile(
     tvShow: TvShow,
     onClick: (id: Int, title: String) -> Unit
 ) {
-    val imageUrl = tvShow.posterPath ?: ""
+    val imageUrl = tvShow.posterPath.toPosterUrl()
 
     Card(
         modifier = Modifier.width(144.dp),

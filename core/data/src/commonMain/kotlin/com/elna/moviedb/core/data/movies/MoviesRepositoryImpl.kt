@@ -3,7 +3,6 @@ package com.elna.moviedb.core.data.movies
 
 import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.data.util.LanguageProvider
-import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.asEntity
@@ -67,7 +66,7 @@ class MoviesRepositoryImpl(
                 Movie(
                     id = it.id,
                     title = it.title,
-                    posterPath = it.posterPath.toFullImageUrl()
+                    posterPath = it.posterPath
                 )
             }
         }
@@ -140,11 +139,9 @@ class MoviesRepositoryImpl(
         if (cachedMovieDetails != null) {
             val trailers = cachedVideos.map { it.toDomain() }
             val cast = cachedCast.sortedBy { it.order }
-                .map { it.toDomain().copy(profilePath = it.profilePath.toFullImageUrl()) }
+                .map { it.toDomain() }
 
             val movieDetails = cachedMovieDetails.toDomain().copy(
-                posterPath = cachedMovieDetails.posterPath.toFullImageUrl(),
-                backdropPath = cachedMovieDetails.backdropPath.toFullImageUrl(),
                 trailers = trailers,
                 cast = cast
             )
@@ -218,15 +215,11 @@ class MoviesRepositoryImpl(
 
         // Convert cast to domain for return
         val cast = remoteCast.map { remoteCastMember ->
-            remoteCastMember.toDomain().copy(
-                profilePath = remoteCastMember.profilePath.toFullImageUrl()
-            )
+            remoteCastMember.toDomain()
         }
 
-        // 8. Return combined result with full URLs
+        // 8. Return combined result
         val movieDetails = detailsEntity.toDomain().copy(
-            posterPath = detailsEntity.posterPath.toFullImageUrl(),
-            backdropPath = detailsEntity.backdropPath.toFullImageUrl(),
             trailers = trailers,
             cast = cast
         )
