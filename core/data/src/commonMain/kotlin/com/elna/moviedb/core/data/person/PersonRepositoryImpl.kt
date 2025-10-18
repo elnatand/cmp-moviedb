@@ -1,8 +1,7 @@
 package com.elna.moviedb.core.data.person
 
+import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.data.util.toFullImageUrl
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
-import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.model.map
@@ -10,15 +9,14 @@ import com.elna.moviedb.core.network.PersonRemoteDataSource
 import com.elna.moviedb.core.network.model.person.toDomain
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.first
 
 class PersonRepositoryImpl(
     private val personRemoteDataSource: PersonRemoteDataSource,
-    private val appSettingsPreferences: AppSettingsPreferences
+    private val languageProvider: LanguageProvider
 ) : PersonRepository {
 
     override suspend fun getPersonDetails(personId: Int): AppResult<PersonDetails> = coroutineScope {
-        val language = getLanguage()
+        val language = languageProvider.getCurrentLanguage()
 
         val personDetailsDeferred = async { personRemoteDataSource.getPersonDetails(personId, language) }
         val creditsDeferred = async { personRemoteDataSource.getCombinedCredits(personId, language) }
@@ -39,11 +37,5 @@ class PersonRepositoryImpl(
                 filmography = filmography
             )
         }
-    }
-
-    private suspend fun getLanguage(): String {
-        val languageCode = appSettingsPreferences.getAppLanguageCode().first()
-        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
-        return "$languageCode-$countryCode"
     }
 }

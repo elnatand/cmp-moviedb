@@ -55,19 +55,23 @@ class TvShowsViewModel(
 
     /**
      * Observes TV shows for all categories defined in [TvShowCategory] enum.
+     *
+     * This implementation is truly open for extension:
+     * - Adding a new category to TvShowCategory enum requires ZERO changes here
+     * - The map-based state automatically accommodates any number of categories
      */
     private fun observeTvShows() {
         TvShowCategory.entries.forEach { category ->
             viewModelScope.launch {
                 tvShowsRepository.observeTvShows(category).collect { tvShows ->
                     _uiState.update { currentState ->
-                        val updated = when (category) {
-                            TvShowCategory.POPULAR -> currentState.copy(popularTvShows = tvShows)
-                            TvShowCategory.ON_THE_AIR -> currentState.copy(onTheAirTvShows = tvShows)
-                            TvShowCategory.TOP_RATED -> currentState.copy(topRatedTvShows = tvShows)
-                        }
-                        updated.copy(
-                            state = if (updated.hasAnyData) TvShowsUiState.State.SUCCESS else TvShowsUiState.State.LOADING,
+                        val updatedTvShowsMap = currentState.tvShowsByCategory + (category to tvShows)
+                        currentState.copy(
+                            tvShowsByCategory = updatedTvShowsMap,
+                            state = if (updatedTvShowsMap.values.any { it.isNotEmpty() })
+                                TvShowsUiState.State.SUCCESS
+                            else
+                                TvShowsUiState.State.LOADING
                         )
                     }
                 }
@@ -78,44 +82,39 @@ class TvShowsViewModel(
     /**
      * Loads the next page of TV shows for a specific category.
      *
+     * Truly follows OCP - handles any category without code changes.
+     * Implements proper error handling with different behaviors for initial vs pagination errors.
+     *
+     * This implementation is fully extensible:
+     * - No when statements on category
+     * - No hardcoded category checks
+     * - Adding new categories requires ZERO changes to this method
+     *
      * @param category The TV show category to load the next page for
      */
     private fun loadNextPage(category: TvShowCategory) {
-        // Check if already loading for this category
-        val isLoading = when (category) {
-            TvShowCategory.POPULAR -> _uiState.value.isLoadingPopular
-            TvShowCategory.ON_THE_AIR -> _uiState.value.isLoadingOnTheAir
-            TvShowCategory.TOP_RATED -> _uiState.value.isLoadingTopRated
-        }
-        if (isLoading) return
+        // Check if already loading for this category using map-based state
+        if (_uiState.value.isLoading(category)) return
 
         viewModelScope.launch {
             // Set loading state for this category
-            _uiState.update {
-                when (category) {
-                    TvShowCategory.POPULAR -> it.copy(isLoadingPopular = true)
-                    TvShowCategory.ON_THE_AIR -> it.copy(isLoadingOnTheAir = true)
-                    TvShowCategory.TOP_RATED -> it.copy(isLoadingTopRated = true)
-                }
+            _uiState.update { currentState ->
+                currentState.copy(
+                    loadingByCategory = currentState.loadingByCategory + (category to true)
+                )
             }
 
             when (val result = tvShowsRepository.loadTvShowsNextPage(category)) {
                 is AppResult.Error -> {
                     // Clear loading state
-                    _uiState.update {
-                        when (category) {
-                            TvShowCategory.POPULAR -> it.copy(isLoadingPopular = false)
-                            TvShowCategory.ON_THE_AIR -> it.copy(isLoadingOnTheAir = false)
-                            TvShowCategory.TOP_RATED -> it.copy(isLoadingTopRated = false)
-                        }
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            loadingByCategory = currentState.loadingByCategory + (category to false)
+                        )
                     }
 
                     // Get current TV shows for this category
-                    val currentTvShows = when (category) {
-                        TvShowCategory.POPULAR -> _uiState.value.popularTvShows
-                        TvShowCategory.ON_THE_AIR -> _uiState.value.onTheAirTvShows
-                        TvShowCategory.TOP_RATED -> _uiState.value.topRatedTvShows
-                    }
+                    val currentTvShows = _uiState.value.getTvShows(category)
 
                     // If we have TV shows, show snackbar; otherwise show error screen
                     if (currentTvShows.isNotEmpty()) {
@@ -127,12 +126,10 @@ class TvShowsViewModel(
 
                 is AppResult.Success -> {
                     // Clear loading state
-                    _uiState.update {
-                        when (category) {
-                            TvShowCategory.POPULAR -> it.copy(isLoadingPopular = false)
-                            TvShowCategory.ON_THE_AIR -> it.copy(isLoadingOnTheAir = false)
-                            TvShowCategory.TOP_RATED -> it.copy(isLoadingTopRated = false)
-                        }
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            loadingByCategory = currentState.loadingByCategory + (category to false)
+                        )
                     }
                     // Success - TV shows are already updated via observeTvShows()
                 }

@@ -2,14 +2,13 @@ package com.elna.moviedb.core.data.movies
 
 
 import com.elna.moviedb.core.data.model.asEntity
+import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.asEntity
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.datastore.PaginationPreferences
 import com.elna.moviedb.core.datastore.model.PaginationState
-import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
@@ -36,13 +35,13 @@ import kotlinx.coroutines.flow.map
  * @param moviesRemoteDataSource Remote data source for fetching movies from API
  * @param moviesLocalDataSource Local data source for caching movies in database
  * @param paginationPreferences Manager for pagination state
- * @param appSettingsPreferences Manager for app settings (language)
+ * @param languageProvider Provider for formatted language strings
  */
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
     private val moviesLocalDataSource: MoviesLocalDataSource,
     private val paginationPreferences: PaginationPreferences,
-    private val appSettingsPreferences: AppSettingsPreferences,
+    private val languageProvider: LanguageProvider,
 ) : MoviesRepository {
 
     /**
@@ -84,7 +83,7 @@ class MoviesRepositoryImpl(
      * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
     override suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit> {
-        val currentLanguage = getLanguage()
+        val currentLanguage = languageProvider.getCurrentLanguage()
         val paginationState = paginationPreferences.getPaginationState(category.name).first()
 
         if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
@@ -153,7 +152,7 @@ class MoviesRepositoryImpl(
         }
 
         // 3. Cache miss - fetch from network in parallel
-        val language = getLanguage()
+        val language = languageProvider.getCurrentLanguage()
         val detailsDeferred = async { moviesRemoteDataSource.getMovieDetails(movieId, language) }
         val videosDeferred = async { moviesRemoteDataSource.getMovieVideos(movieId, language) }
         val creditsDeferred = async { moviesRemoteDataSource.getMovieCredits(movieId, language) }
@@ -253,11 +252,5 @@ class MoviesRepositoryImpl(
                 async { loadMoviesNextPage(category) }
             }
         }
-    }
-
-    private suspend fun getLanguage(): String {
-        val languageCode = appSettingsPreferences.getAppLanguageCode().first()
-        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
-        return "$languageCode-$countryCode"
     }
 }

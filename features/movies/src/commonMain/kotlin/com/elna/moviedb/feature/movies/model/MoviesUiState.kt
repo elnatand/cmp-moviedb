@@ -1,31 +1,49 @@
 package com.elna.moviedb.feature.movies.model
 
 import com.elna.moviedb.core.model.Movie
+import com.elna.moviedb.core.model.MovieCategory
 
 /**
  * Represents the UI state for the Movies screen.
- * Contains three separate lists of movies and their individual pagination states.
+ * Uses map-based state management following the Open/Closed Principle.
+ *
+ * This design allows adding new movie categories without modifying this class.
+ * Simply add the new category to the MovieCategory enum, and it will automatically
+ * be supported by this state structure.
  *
  * @property state Overall screen state (LOADING, ERROR, SUCCESS)
- * @property popularMovies List of popular movies
- * @property topRatedMovies List of top-rated movies
- * @property nowPlayingMovies List of now playing movies
- * @property isLoadingPopular True when loading more popular movies (pagination)
- * @property isLoadingTopRated True when loading more top-rated movies (pagination)
- * @property isLoadingNowPlaying True when loading more now playing movies (pagination)
+ * @property moviesByCategory Map of movie categories to their respective movie lists
+ * @property loadingByCategory Map of movie categories to their pagination loading states
  */
 data class MoviesUiState(
     val state: State,
-    val popularMovies: List<Movie> = emptyList(),
-    val topRatedMovies: List<Movie> = emptyList(),
-    val nowPlayingMovies: List<Movie> = emptyList(),
-    val isLoadingPopular: Boolean = false,
-    val isLoadingTopRated: Boolean = false,
-    val isLoadingNowPlaying: Boolean = false
+    val moviesByCategory: Map<MovieCategory, List<Movie>> = emptyMap(),
+    val loadingByCategory: Map<MovieCategory, Boolean> = emptyMap()
 ) {
 
+    /**
+     * Returns true if any category has data.
+     */
     val hasAnyData: Boolean
-        get() = popularMovies.isNotEmpty() || topRatedMovies.isNotEmpty() || nowPlayingMovies.isNotEmpty()
+        get() = moviesByCategory.values.any { it.isNotEmpty() }
+
+    /**
+     * Gets movies for a specific category.
+     *
+     * @param category The movie category to retrieve
+     * @return List of movies for the category, or empty list if category not found
+     */
+    fun getMovies(category: MovieCategory): List<Movie> =
+        moviesByCategory[category] ?: emptyList()
+
+    /**
+     * Checks if a specific category is currently loading more movies (pagination).
+     *
+     * @param category The movie category to check
+     * @return True if the category is loading, false otherwise
+     */
+    fun isLoading(category: MovieCategory): Boolean =
+        loadingByCategory[category] ?: false
 
     enum class State {
         LOADING, ERROR, SUCCESS

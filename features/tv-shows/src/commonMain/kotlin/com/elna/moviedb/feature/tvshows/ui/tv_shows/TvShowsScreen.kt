@@ -99,9 +99,7 @@ private fun TvShowsScreen(
         ) {
             when {
                 // Show in-memory data if available
-                uiState.popularTvShows.isNotEmpty() ||
-                uiState.topRatedTvShows.isNotEmpty() ||
-                uiState.onTheAirTvShows.isNotEmpty() -> {
+                uiState.hasAnyData -> {
                     TvShowsContent(
                         uiState = uiState,
                         onClick = onClick,
@@ -142,40 +140,33 @@ private fun TvShowsContent(
             .verticalScroll(rememberScrollState())
             .padding(vertical = 8.dp)
     ) {
-        // Popular TV Shows Section
-        if (uiState.popularTvShows.isNotEmpty()) {
-            TvShowsSection(
-                title = stringResource(Res.string.popular_tv_shows),
-                tvShows = uiState.popularTvShows,
-                onClick = onClick,
-                isLoading = uiState.isLoadingPopular,
-                onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(TvShowCategory.POPULAR)) }
-            )
-        }
-
-        // Top Rated TV Shows Section
-        if (uiState.topRatedTvShows.isNotEmpty()) {
-            TvShowsSection(
-                title = stringResource(Res.string.top_rated_tv_shows),
-                tvShows = uiState.topRatedTvShows,
-                onClick = onClick,
-                isLoading = uiState.isLoadingTopRated,
-                onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(TvShowCategory.TOP_RATED)) }
-            )
-        }
-
-        // On The Air TV Shows Section
-        if (uiState.onTheAirTvShows.isNotEmpty()) {
-            TvShowsSection(
-                title = stringResource(Res.string.on_the_air_tv_shows),
-                tvShows = uiState.onTheAirTvShows,
-                onClick = onClick,
-                isLoading = uiState.isLoadingOnTheAir,
-                onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(TvShowCategory.ON_THE_AIR)) }
-            )
+        // Dynamically render all TV show categories
+        // Following OCP - adding new categories requires ZERO changes here
+        TvShowCategory.entries.forEach { category ->
+            val tvShows = uiState.getTvShows(category)
+            if (tvShows.isNotEmpty()) {
+                TvShowsSection(
+                    title = stringResource(getCategoryStringResource(category)),
+                    tvShows = tvShows,
+                    onClick = onClick,
+                    isLoading = uiState.isLoading(category),
+                    onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(category)) }
+                )
+            }
         }
         Spacer(modifier = Modifier.height(70.dp))
     }
+}
+
+/**
+ * Maps TvShowCategory to its corresponding string resource.
+ * This is the only place that needs updating when adding a new category.
+ */
+@Composable
+private fun getCategoryStringResource(category: TvShowCategory) = when (category) {
+    TvShowCategory.POPULAR -> Res.string.popular_tv_shows
+    TvShowCategory.TOP_RATED -> Res.string.top_rated_tv_shows
+    TvShowCategory.ON_THE_AIR -> Res.string.on_the_air_tv_shows
 }
 
 /**

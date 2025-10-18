@@ -64,19 +64,23 @@ class MoviesViewModel(
      *
      * Follows OCP - automatically handles all categories without code changes.
      * Each category is observed in a separate coroutine for independent updates.
+     *
+     * This implementation is truly open for extension:
+     * - Adding a new category to MovieCategory enum requires ZERO changes here
+     * - The map-based state automatically accommodates any number of categories
      */
     private fun observeMovies() {
         MovieCategory.entries.forEach { category ->
             viewModelScope.launch {
                 moviesRepository.observeMovies(category).collect { movies ->
                     _uiState.update { currentState ->
-                        val updated = when (category) {
-                            MovieCategory.POPULAR -> currentState.copy(popularMovies = movies)
-                            MovieCategory.TOP_RATED -> currentState.copy(topRatedMovies = movies)
-                            MovieCategory.NOW_PLAYING -> currentState.copy(nowPlayingMovies = movies)
-                        }
-                        updated.copy(
-                            state = if (updated.hasAnyData) MoviesUiState.State.SUCCESS else MoviesUiState.State.LOADING,
+                        val updatedMoviesMap = currentState.moviesByCategory + (category to movies)
+                        currentState.copy(
+                            moviesByCategory = updatedMoviesMap,
+                            state = if (updatedMoviesMap.values.any { it.isNotEmpty() })
+                                MoviesUiState.State.SUCCESS
+                            else
+                                MoviesUiState.State.LOADING
                         )
                     }
                 }
@@ -87,47 +91,39 @@ class MoviesViewModel(
     /**
      * Loads the next page of movies for a specific category.
      *
-     * Follows OCP - handles any category without code changes.
+     * Truly follows OCP - handles any category without code changes.
      * Implements proper error handling with different behaviors for initial vs pagination errors.
+     *
+     * This implementation is fully extensible:
+     * - No when statements on category
+     * - No hardcoded category checks
+     * - Adding new categories requires ZERO changes to this method
      *
      * @param category The movie category to load the next page for
      */
     private fun loadNextPage(category: MovieCategory) {
-        // Check if already loading for this category
-        val isLoading = when (category) {
-            MovieCategory.POPULAR -> _uiState.value.isLoadingPopular
-            MovieCategory.TOP_RATED -> _uiState.value.isLoadingTopRated
-            MovieCategory.NOW_PLAYING -> _uiState.value.isLoadingNowPlaying
-        }
-        if (isLoading) return
+        // Check if already loading for this category using map-based state
+        if (_uiState.value.isLoading(category)) return
 
         viewModelScope.launch {
             // Set loading state for this category
-            _uiState.update {
-                when (category) {
-                    MovieCategory.POPULAR -> it.copy(isLoadingPopular = true)
-                    MovieCategory.TOP_RATED -> it.copy(isLoadingTopRated = true)
-                    MovieCategory.NOW_PLAYING -> it.copy(isLoadingNowPlaying = true)
-                }
+            _uiState.update { currentState ->
+                currentState.copy(
+                    loadingByCategory = currentState.loadingByCategory + (category to true)
+                )
             }
 
             when (val result = moviesRepository.loadMoviesNextPage(category)) {
                 is AppResult.Error -> {
                     // Clear loading state
-                    _uiState.update {
-                        when (category) {
-                            MovieCategory.POPULAR -> it.copy(isLoadingPopular = false)
-                            MovieCategory.TOP_RATED -> it.copy(isLoadingTopRated = false)
-                            MovieCategory.NOW_PLAYING -> it.copy(isLoadingNowPlaying = false)
-                        }
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            loadingByCategory = currentState.loadingByCategory + (category to false)
+                        )
                     }
 
                     // Get current movies for this category
-                    val currentMovies = when (category) {
-                        MovieCategory.POPULAR -> _uiState.value.popularMovies
-                        MovieCategory.TOP_RATED -> _uiState.value.topRatedMovies
-                        MovieCategory.NOW_PLAYING -> _uiState.value.nowPlayingMovies
-                    }
+                    val currentMovies = _uiState.value.getMovies(category)
 
                     // If we have movies, show snackbar; otherwise show error screen
                     if (currentMovies.isNotEmpty()) {
@@ -139,12 +135,10 @@ class MoviesViewModel(
 
                 is AppResult.Success -> {
                     // Clear loading state
-                    _uiState.update {
-                        when (category) {
-                            MovieCategory.POPULAR -> it.copy(isLoadingPopular = false)
-                            MovieCategory.TOP_RATED -> it.copy(isLoadingTopRated = false)
-                            MovieCategory.NOW_PLAYING -> it.copy(isLoadingNowPlaying = false)
-                        }
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            loadingByCategory = currentState.loadingByCategory + (category to false)
+                        )
                     }
                     // Success - movies are already updated via observeMovies()
                 }

@@ -1,8 +1,7 @@
 package com.elna.moviedb.core.data.tv_shows
 
+import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.data.util.toFullImageUrl
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
-import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
@@ -15,7 +14,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 
 /**
  * Implementation of TvShowsRepository that manages TV show data from remote API.
@@ -32,11 +30,11 @@ import kotlinx.coroutines.flow.first
  * is handled separately by [com.elna.moviedb.core.data.LanguageChangeCoordinator].
  *
  * @param tvShowsRemoteDataSource Remote data source for fetching TV shows from API
- * @param appSettingsPreferences Manager for accessing app settings (language)
+ * @param languageProvider Provider for formatted language strings
  */
 class TvShowRepositoryImpl(
     private val tvShowsRemoteDataSource: TvShowsRemoteDataSource,
-    private val appSettingsPreferences: AppSettingsPreferences,
+    private val languageProvider: LanguageProvider,
 ) : TvShowsRepository {
 
     // Category-based pagination state using Maps for scalability
@@ -94,7 +92,7 @@ class TvShowRepositoryImpl(
         val nextPage = currentPage + 1
 
         return when (val result =
-            tvShowsRemoteDataSource.fetchTvShowsPage(category.apiPath, nextPage, getLanguage())) {
+            tvShowsRemoteDataSource.fetchTvShowsPage(category.apiPath, nextPage, languageProvider.getCurrentLanguage())) {
             is AppResult.Success -> {
                 totalPages[category] = result.data.totalPages
                 val newTvShows = result.data.results.map { remoteTvShow ->
@@ -135,7 +133,7 @@ class TvShowRepositoryImpl(
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> = coroutineScope {
-        val language = getLanguage()
+        val language = languageProvider.getCurrentLanguage()
 
         // Fetch details, videos, and credits in parallel
         val detailsDeferred =
@@ -192,11 +190,5 @@ class TvShowRepositoryImpl(
             cast = cast
         )
         AppResult.Success(tvShowDetails)
-    }
-
-    private suspend fun getLanguage(): String {
-        val languageCode = appSettingsPreferences.getAppLanguageCode().first()
-        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
-        return "$languageCode-$countryCode"
     }
 }

@@ -1,15 +1,13 @@
 package com.elna.moviedb.core.data.search
 
+import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.data.util.toFullImageUrl
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
-import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.model.SearchResultItem
 import com.elna.moviedb.core.network.SearchRemoteDataSource
 import com.elna.moviedb.core.network.model.search.toSearchResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
 /**
@@ -21,7 +19,7 @@ import kotlinx.coroutines.flow.flow
  */
 class SearchRepositoryImpl(
     private val searchRemoteDataSource: SearchRemoteDataSource,
-    private val appSettingsPreferences: AppSettingsPreferences
+    private val languageProvider: LanguageProvider
 ) : SearchRepository {
 
     override fun search(
@@ -34,19 +32,21 @@ class SearchRepositoryImpl(
             return@flow
         }
 
-        when (filter) {
-            SearchFilter.ALL -> searchAll(query, page).first().let { emit(it) }
-            SearchFilter.MOVIES -> searchMovies(query, page).first().let { emit(it) }
-            SearchFilter.TV_SHOWS -> searchTvShows(query, page).first().let { emit(it) }
-            SearchFilter.PEOPLE -> searchPeople(query, page).first().let { emit(it) }
+        val result = when (filter) {
+            SearchFilter.ALL -> searchAll(query, page)
+            SearchFilter.MOVIES -> searchMovies(query, page)
+            SearchFilter.TV_SHOWS -> searchTvShows(query, page)
+            SearchFilter.PEOPLE -> searchPeople(query, page)
         }
+
+        result.collect { emit(it) }
     }
 
     private fun searchMovies(
         query: String,
         page: Int
     ): Flow<AppResult<List<SearchResultItem>>> = flow {
-        val result = searchRemoteDataSource.searchMovies(query, page, getLanguage())
+        val result = searchRemoteDataSource.searchMovies(query, page, languageProvider.getCurrentLanguage())
         when (result) {
             is AppResult.Success -> {
                 val movieItems = result.data.results.map { remoteSearchMovie ->
@@ -71,7 +71,7 @@ class SearchRepositoryImpl(
         query: String,
         page: Int
     ): Flow<AppResult<List<SearchResultItem>>> = flow {
-        val result = searchRemoteDataSource.searchTvShows(query, page, getLanguage())
+        val result = searchRemoteDataSource.searchTvShows(query, page, languageProvider.getCurrentLanguage())
         when (result) {
             is AppResult.Success -> {
                 val tvShowItems = result.data.results.map { remoteSearchTvShow ->
@@ -96,7 +96,7 @@ class SearchRepositoryImpl(
         query: String,
         page: Int
     ): Flow<AppResult<List<SearchResultItem>>> = flow {
-        val result = searchRemoteDataSource.searchPeople(query, page, getLanguage())
+        val result = searchRemoteDataSource.searchPeople(query, page, languageProvider.getCurrentLanguage())
         when (result) {
             is AppResult.Success -> {
                 val personItems = result.data.results.map { remoteSearchPerson ->
@@ -116,7 +116,7 @@ class SearchRepositoryImpl(
 
     private fun searchAll(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>> =
         flow {
-            val result = searchRemoteDataSource.searchMulti(query, page, getLanguage())
+            val result = searchRemoteDataSource.searchMulti(query, page, languageProvider.getCurrentLanguage())
             when (result) {
                 is AppResult.Success -> {
                     val searchItems = result.data.results.mapNotNull { multiSearchItem ->
@@ -148,10 +148,4 @@ class SearchRepositoryImpl(
                 }
             }
         }
-
-    private suspend fun getLanguage(): String {
-        val languageCode = appSettingsPreferences.getAppLanguageCode().first()
-        val countryCode = AppLanguage.getAppLanguageByCode(languageCode).countryCode
-        return "$languageCode-$countryCode"
-    }
 }

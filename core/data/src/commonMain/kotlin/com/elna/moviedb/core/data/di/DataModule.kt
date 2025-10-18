@@ -9,38 +9,40 @@ import com.elna.moviedb.core.data.search.SearchRepository
 import com.elna.moviedb.core.data.search.SearchRepositoryImpl
 import com.elna.moviedb.core.data.tv_shows.TvShowRepositoryImpl
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
+import com.elna.moviedb.core.data.util.LanguageProvider
 import org.koin.dsl.module
 
 val dataModule = module {
+
+    single { LanguageProvider(get()) }
 
     single<MoviesRepository> {
         MoviesRepositoryImpl(
             moviesRemoteDataSource = get(),
             moviesLocalDataSource = get(),
             paginationPreferences = get(),
-            appSettingsPreferences = get(),
+            languageProvider = get(),
         )
     }
 
     single<TvShowsRepository> {
         TvShowRepositoryImpl(
             tvShowsRemoteDataSource = get(),
-            appSettingsPreferences = get(),
+            languageProvider = get(),
         )
     }
 
-    // Search repository - category-based (OCP compliant)
     single<SearchRepository> {
         SearchRepositoryImpl(
             searchRemoteDataSource = get(),
-            appSettingsPreferences = get()
+            languageProvider = get()
         )
     }
 
     single<PersonRepository> {
         PersonRepositoryImpl(
             personRemoteDataSource = get(),
-            appSettingsPreferences = get()
+            languageProvider = get()
         )
     }
 

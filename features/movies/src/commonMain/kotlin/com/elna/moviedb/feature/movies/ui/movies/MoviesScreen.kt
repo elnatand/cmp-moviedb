@@ -143,40 +143,33 @@ private fun MoviesContent(
             .verticalScroll(rememberScrollState())
             .padding(vertical = 8.dp)
     ) {
-        // Popular Movies Section
-        if (uiState.popularMovies.isNotEmpty()) {
-            MoviesSection(
-                title = stringResource(Res.string.popular_movies),
-                movies = uiState.popularMovies,
-                onClick = onClick,
-                isLoading = uiState.isLoadingPopular,
-                onLoadMore = { onEvent(MoviesEvent.LoadNextPage(MovieCategory.POPULAR)) }
-            )
-        }
-
-        // Top Rated Movies Section
-        if (uiState.topRatedMovies.isNotEmpty()) {
-            MoviesSection(
-                title = stringResource(Res.string.top_rated_movies),
-                movies = uiState.topRatedMovies,
-                onClick = onClick,
-                isLoading = uiState.isLoadingTopRated,
-                onLoadMore = { onEvent(MoviesEvent.LoadNextPage(MovieCategory.TOP_RATED)) }
-            )
-        }
-
-        // Now Playing Movies Section
-        if (uiState.nowPlayingMovies.isNotEmpty()) {
-            MoviesSection(
-                title = stringResource(Res.string.now_playing_movies),
-                movies = uiState.nowPlayingMovies,
-                onClick = onClick,
-                isLoading = uiState.isLoadingNowPlaying,
-                onLoadMore = { onEvent(MoviesEvent.LoadNextPage(MovieCategory.NOW_PLAYING)) }
-            )
+        // Dynamically render all movie categories
+        // Following OCP - adding new categories requires ZERO changes here
+        MovieCategory.entries.forEach { category ->
+            val movies = uiState.getMovies(category)
+            if (movies.isNotEmpty()) {
+                MoviesSection(
+                    title = stringResource(getCategoryStringResource(category)),
+                    movies = movies,
+                    onClick = onClick,
+                    isLoading = uiState.isLoading(category),
+                    onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) }
+                )
+            }
         }
         Spacer(modifier = Modifier.height(70.dp))
     }
+}
+
+/**
+ * Maps MovieCategory to its corresponding string resource.
+ * This is the only place that needs updating when adding a new category.
+ */
+@Composable
+private fun getCategoryStringResource(category: MovieCategory) = when (category) {
+    MovieCategory.POPULAR -> Res.string.popular_movies
+    MovieCategory.TOP_RATED -> Res.string.top_rated_movies
+    MovieCategory.NOW_PLAYING -> Res.string.now_playing_movies
 }
 
 /**
