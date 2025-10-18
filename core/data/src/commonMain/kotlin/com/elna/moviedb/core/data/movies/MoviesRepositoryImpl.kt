@@ -158,7 +158,7 @@ class MoviesRepositoryImpl(
      * Returns null if not cached or incomplete data.
      */
     private suspend fun fetchMovieDetailsFromCache(movieId: Int): MovieDetails? {
-        val cachedMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId) ?: return null
+        val cachedMovieDetails = moviesLocalDataSource.getMovieDetails(movieId) ?: return null
         val cachedVideos = moviesLocalDataSource.getVideosForMovie(movieId)
         val cachedCast = moviesLocalDataSource.getCastForMovie(movieId)
 
