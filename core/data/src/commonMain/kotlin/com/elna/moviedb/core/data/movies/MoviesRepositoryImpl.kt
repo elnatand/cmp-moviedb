@@ -2,19 +2,25 @@ package com.elna.moviedb.core.data.movies
 
 
 import com.elna.moviedb.core.data.model.asEntity
+import com.elna.moviedb.core.data.strategy.CachingStrategy
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
+import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.datastore.PaginationPreferences
 import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.core.model.CastMember
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
+import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
 import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
+import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import com.elna.moviedb.core.network.model.videos.toDomain
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -28,6 +34,9 @@ import kotlinx.coroutines.flow.map
  * This repository follows the Open/Closed Principle by using category abstraction.
  * New movie categories can be added to [MovieCategory] enum without modifying this class.
  *
+ * This repository uses the Strategy Pattern for caching, allowing different caching
+ * behaviors to be injected without modifying repository code.
+ *
  * This repository provides data access operations only. Language change coordination
  * is handled separately by [com.elna.moviedb.core.data.LanguageChangeCoordinator].
  *
@@ -35,12 +44,14 @@ import kotlinx.coroutines.flow.map
  * @param moviesLocalDataSource Local data source for caching movies in database
  * @param paginationPreferences Manager for pagination state
  * @param languageProvider Provider for formatted language strings
+ * @param cachingStrategy Strategy for cache/network coordination (default: offline-first)
  */
 class MoviesRepositoryImpl(
     private val moviesRemoteDataSource: MoviesRemoteDataSource,
     private val moviesLocalDataSource: MoviesLocalDataSource,
     private val paginationPreferences: PaginationPreferences,
     private val languageProvider: LanguageProvider,
+    private val cachingStrategy: CachingStrategy,
 ) : MoviesRepository {
 
     /**
@@ -117,113 +128,178 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Retrieves detailed information for a specific movie using offline-first strategy.
+     * Retrieves detailed information for a specific movie using caching strategy.
      *
-     * This function implements an offline-first approach:
-     * 1. First checks local storage for cached movie details and trailers
-     * 2. If found, returns cached data immediately (fast response)
-     * 3. If not found locally, fetches from remote API in parallel
-     * 4. Caches the remote result (both details and trailers) locally for future use
-     * 5. Returns the movie details with trailers converted to domain model
+     * This function uses the injected CachingStrategy (typically offline-first) to:
+     * 1. Check local cache for movie details
+     * 2. On cache miss, fetch from remote API in parallel (details + videos + cast)
+     * 3. Save fetched data to cache
+     * 4. Return movie details with trailers and cast
      *
      * @param movieId The unique identifier of the movie to retrieve
-     * @return AppResult<MovieDetails> Success with movie details and trailers or Error if fetch failed and no cache available
+     * @return AppResult<MovieDetails> Success with movie details or Error if fetch failed
      */
-    override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> = coroutineScope {
-        // 1. Check cache first (offline-first)
-        val cachedMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId)
+    override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> {
+        return cachingStrategy.execute(
+            fetchFromCache = {
+                fetchMovieDetailsFromCache(movieId)
+            },
+            fetchFromNetwork = {
+                fetchMovieDetailsFromNetwork(movieId)
+            },
+            saveToCache = { movieDetails ->
+                saveMovieDetailsToCache(movieId, movieDetails)
+            }
+        )
+    }
+
+    /**
+     * Fetches movie details from local cache.
+     * Returns null if not cached or incomplete data.
+     */
+    private suspend fun fetchMovieDetailsFromCache(movieId: Int): MovieDetails? {
+        val cachedMovieDetails = moviesLocalDataSource.getMoviesDetails(movieId) ?: return null
         val cachedVideos = moviesLocalDataSource.getVideosForMovie(movieId)
         val cachedCast = moviesLocalDataSource.getCastForMovie(movieId)
 
-        // 2. If all cached, return immediately
-        if (cachedMovieDetails != null) {
-            val trailers = cachedVideos.map { it.toDomain() }
-            val cast = cachedCast.sortedBy { it.order }
-                .map { it.toDomain() }
+        return cachedMovieDetails.toDomain().copy(
+            trailers = cachedVideos.map { it.toDomain() },
+            cast = cachedCast.sortedBy { it.order }.map { it.toDomain() }
+        )
+    }
 
-            val movieDetails = cachedMovieDetails.toDomain().copy(
-                trailers = trailers,
-                cast = cast
-            )
-            return@coroutineScope AppResult.Success(movieDetails)
-        }
-
-        // 3. Cache miss - fetch from network in parallel
+    /**
+     * Fetches movie details from network, making parallel API calls.
+     * Implements graceful degradation for optional data (videos, cast).
+     */
+    private suspend fun fetchMovieDetailsFromNetwork(movieId: Int): AppResult<MovieDetails> = coroutineScope {
         val language = languageProvider.getCurrentLanguage()
+
+        // Fetch all data in parallel for performance
         val detailsDeferred = async { moviesRemoteDataSource.getMovieDetails(movieId, language) }
         val videosDeferred = async { moviesRemoteDataSource.getMovieVideos(movieId, language) }
         val creditsDeferred = async { moviesRemoteDataSource.getMovieCredits(movieId, language) }
 
+        // Details are required - fail if they don't load
         val detailsResult = detailsDeferred.await()
-        // 4. Extract details or return error (cancels videosDeferred and creditsDeferred on return)
         val details = when (detailsResult) {
             is AppResult.Success -> detailsResult.data
             is AppResult.Error -> return@coroutineScope detailsResult
         }
-        // Only await videos and credits after details succeeded
+
+        // Videos and cast are optional - graceful degradation
         val videosResult = videosDeferred.await()
         val creditsResult = creditsDeferred.await()
 
-        // 5. Process videos (optional - don't fail if videos error)
-        val trailers = when (videosResult) {
+        val trailers = processVideosResult(videosResult)
+        val cast = processCreditsResult(creditsResult)
+
+        // Convert to entity then to domain (to apply mapping logic)
+        val detailsEntity = details.asEntity()
+        val detailsDomain = detailsEntity.toDomain()
+
+        // Return domain model with trailers and cast
+        AppResult.Success(
+            detailsDomain.copy(
+                trailers = trailers,
+                cast = cast
+            )
+        )
+    }
+
+    /**
+     * Processes video results, filtering for trailers and teasers.
+     * Returns empty list on error (graceful degradation).
+     */
+    private fun processVideosResult(videosResult: AppResult<RemoteVideoResponse>)
+        : List<Video> {
+        return when (videosResult) {
             is AppResult.Success -> {
                 videosResult.data.results
                     .filter { it.type == "Trailer" || it.type == "Teaser" }
-                    .sortedWith(compareByDescending<RemoteVideo> { it.official }
-                        .thenByDescending { it.publishedAt })
+                    .sortedWith(
+                        compareByDescending<RemoteVideo> { it.official }
+                            .thenByDescending { it.publishedAt }
+                    )
                     .map { it.toDomain() }
             }
-
-            is AppResult.Error -> emptyList()  // Graceful degradation
+            is AppResult.Error -> emptyList()
         }
+    }
 
-        // 6. Process cast (optional - don't fail if cast errors)
-        val remoteCast = when (creditsResult) {
+    /**
+     * Processes cast credits results, sorting by order.
+     * Returns empty list on error (graceful degradation).
+     */
+    private fun processCreditsResult(creditsResult: AppResult<RemoteMovieCredits>)
+        : List<CastMember> {
+        return when (creditsResult) {
             is AppResult.Success -> {
                 creditsResult.data.cast
                     ?.sortedBy { it.order }
+                    ?.map { it.toDomain() }
                     ?: emptyList()
             }
-
-            is AppResult.Error -> emptyList()  // Graceful degradation
+            is AppResult.Error -> emptyList()
         }
+    }
 
-        // 7. Cache everything for future offline access
-        val detailsEntity = details.asEntity()
+    /**
+     * Saves movie details to local cache.
+     * Saves details, videos, and cast in separate operations.
+     */
+    private suspend fun saveMovieDetailsToCache(movieId: Int, movieDetails: MovieDetails) {
+        // Save main details
+        val detailsEntity = movieDetails.run {
+            MovieDetailsEntity(
+                id = id,
+                title = title,
+                overview = overview,
+                posterPath = posterPath,
+                backdropPath = backdropPath,
+                releaseDate = releaseDate,
+                runtime = runtime,
+                voteAverage = voteAverage,
+                voteCount = voteCount,
+                adult = adult,
+                budget = budget,
+                revenue = revenue,
+                homepage = homepage,
+                imdbId = imdbId,
+                originalLanguage = originalLanguage,
+                originalTitle = originalTitle,
+                popularity = popularity,
+                status = status,
+                tagline = tagline,
+                genres = genres?.joinToString(","),
+                productionCompanies = productionCompanies?.joinToString(","),
+                productionCountries = productionCountries?.joinToString(","),
+                spokenLanguages = spokenLanguages?.joinToString(",")
+            )
+        }
         moviesLocalDataSource.insertMovieDetails(detailsEntity)
 
-        // Replace existing trailers atomically
+        // Save videos
         moviesLocalDataSource.deleteVideosForMovie(movieId)
-        if (trailers.isNotEmpty()) {
-            val videoEntities = trailers.map {
-                it.asEntity(movieId = movieId)
-            }
+        val trailersList = movieDetails.trailers ?: emptyList()
+        if (trailersList.isNotEmpty()) {
+            val videoEntities = trailersList.map { it.asEntity(movieId) }
             moviesLocalDataSource.insertVideos(videoEntities)
         }
 
-        val castEntities = remoteCast.map { remoteCastMember ->
+        // Save cast
+        val castList = movieDetails.cast ?: emptyList()
+        val castEntities = castList.map { castMember ->
             CastMemberEntity(
                 movieId = movieId,
-                personId = remoteCastMember.id,
-                name = remoteCastMember.name,
-                character = remoteCastMember.character,
-                profilePath = remoteCastMember.profilePath,
-                order = remoteCastMember.order
+                personId = castMember.id,
+                name = castMember.name,
+                character = castMember.character,
+                profilePath = castMember.profilePath,
+                order = castMember.order
             )
         }
         moviesLocalDataSource.replaceCastForMovie(movieId, castEntities)
-
-        // Convert cast to domain for return
-        val cast = remoteCast.map { remoteCastMember ->
-            remoteCastMember.toDomain()
-        }
-
-        // 8. Return combined result
-        val movieDetails = detailsEntity.toDomain().copy(
-            trailers = trailers,
-            cast = cast
-        )
-        AppResult.Success(movieDetails)
     }
 
     /**

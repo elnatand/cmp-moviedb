@@ -7,12 +7,17 @@ import com.elna.moviedb.core.data.person.PersonRepository
 import com.elna.moviedb.core.data.person.PersonRepositoryImpl
 import com.elna.moviedb.core.data.search.SearchRepository
 import com.elna.moviedb.core.data.search.SearchRepositoryImpl
+import com.elna.moviedb.core.data.strategy.CachingStrategy
+import com.elna.moviedb.core.data.strategy.OfflineFirstCachingStrategy
 import com.elna.moviedb.core.data.tv_shows.TvShowRepositoryImpl
 import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
 import com.elna.moviedb.core.data.util.LanguageProvider
 import org.koin.dsl.module
 
 val dataModule = module {
+
+    // Caching strategy - used by repositories to handle cache/network coordination
+    single<CachingStrategy> { OfflineFirstCachingStrategy() }
 
     single { LanguageProvider(get()) }
 
@@ -22,6 +27,7 @@ val dataModule = module {
             moviesLocalDataSource = get(),
             paginationPreferences = get(),
             languageProvider = get(),
+            cachingStrategy = get(),
         )
     }
 
