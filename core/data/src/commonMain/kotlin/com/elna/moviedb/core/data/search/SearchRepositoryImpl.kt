@@ -4,6 +4,7 @@ import com.elna.moviedb.core.data.util.toFullImageUrl
 import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.model.SearchResultItem
 import com.elna.moviedb.core.network.SearchRemoteDataSource
 import com.elna.moviedb.core.network.model.search.toSearchResult
@@ -11,20 +12,40 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
+/**
+ * Implementation of search repository following Open/Closed Principle.
+ *
+ * This class uses a category-based approach to eliminate method duplication.
+ * Adding new search categories only requires adding to the when expression,
+ * not creating new methods or interfaces.
+ */
 class SearchRepositoryImpl(
     private val searchRemoteDataSource: SearchRemoteDataSource,
     private val appSettingsPreferences: AppSettingsPreferences
 ) : SearchRepository {
 
-    override fun searchMovies(
+    override fun search(
+        filter: SearchFilter,
         query: String,
         page: Int
-    ): Flow<AppResult<List<SearchResultItem.MovieItem>>> = flow {
+    ): Flow<AppResult<List<SearchResultItem>>> = flow {
         if (query.isBlank()) {
             emit(AppResult.Success(emptyList()))
             return@flow
         }
 
+        when (filter) {
+            SearchFilter.ALL -> searchAll(query, page).first().let { emit(it) }
+            SearchFilter.MOVIES -> searchMovies(query, page).first().let { emit(it) }
+            SearchFilter.TV_SHOWS -> searchTvShows(query, page).first().let { emit(it) }
+            SearchFilter.PEOPLE -> searchPeople(query, page).first().let { emit(it) }
+        }
+    }
+
+    private fun searchMovies(
+        query: String,
+        page: Int
+    ): Flow<AppResult<List<SearchResultItem>>> = flow {
         val result = searchRemoteDataSource.searchMovies(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
@@ -46,15 +67,10 @@ class SearchRepositoryImpl(
         }
     }
 
-    override fun searchTvShows(
+    private fun searchTvShows(
         query: String,
         page: Int
-    ): Flow<AppResult<List<SearchResultItem.TvShowItem>>> = flow {
-        if (query.isBlank()) {
-            emit(AppResult.Success(emptyList()))
-            return@flow
-        }
-
+    ): Flow<AppResult<List<SearchResultItem>>> = flow {
         val result = searchRemoteDataSource.searchTvShows(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
@@ -76,15 +92,10 @@ class SearchRepositoryImpl(
         }
     }
 
-    override fun searchPeople(
+    private fun searchPeople(
         query: String,
         page: Int
-    ): Flow<AppResult<List<SearchResultItem.PersonItem>>> = flow {
-        if (query.isBlank()) {
-            emit(AppResult.Success(emptyList()))
-            return@flow
-        }
-
+    ): Flow<AppResult<List<SearchResultItem>>> = flow {
         val result = searchRemoteDataSource.searchPeople(query, page, getLanguage())
         when (result) {
             is AppResult.Success -> {
@@ -103,13 +114,8 @@ class SearchRepositoryImpl(
         }
     }
 
-    override fun searchAll(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>> =
+    private fun searchAll(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>> =
         flow {
-            if (query.isBlank()) {
-                emit(AppResult.Success(emptyList()))
-                return@flow
-            }
-
             val result = searchRemoteDataSource.searchMulti(query, page, getLanguage())
             when (result) {
                 is AppResult.Success -> {

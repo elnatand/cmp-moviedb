@@ -40,6 +40,7 @@ class SearchViewModel(
 
     /**
      * Maps SearchFilter to its corresponding SearchStrategy.
+     * Following OCP - strategies use category-based repository for extensibility.
      */
     private fun getStrategyForFilter(filter: SearchFilter): SearchStrategy {
         return when (filter) {

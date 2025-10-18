@@ -29,6 +29,7 @@ val dataModule = module {
         )
     }
 
+    // Search repository - category-based (OCP compliant)
     single<SearchRepository> {
         SearchRepositoryImpl(
             searchRemoteDataSource = get(),
