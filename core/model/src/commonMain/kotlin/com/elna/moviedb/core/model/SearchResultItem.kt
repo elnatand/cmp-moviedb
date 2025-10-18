@@ -36,4 +36,17 @@ sealed class SearchResultItem {
     ) : SearchResultItem()
 }
 
-enum class SearchFilter { ALL, MOVIES, TV_SHOWS, PEOPLE }
+/**
+ * Search filter enum following Open/Closed Principle.
+ *
+ * Each filter has an associated API endpoint path. Adding new filters
+ * requires only adding a new enum value with its path - no code changes needed elsewhere.
+ *
+ * @property apiPath The TMDB API search endpoint path
+ */
+enum class SearchFilter(val apiPath: String) {
+    ALL("search/multi"),
+    MOVIES("search/movie"),
+    TV_SHOWS("search/tv"),
+    PEOPLE("search/person")
+}

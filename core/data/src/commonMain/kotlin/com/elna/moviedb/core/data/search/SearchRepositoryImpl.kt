@@ -13,9 +13,13 @@ import kotlinx.coroutines.flow.flow
 /**
  * Implementation of search repository following Open/Closed Principle.
  *
- * This class uses a category-based approach to eliminate method duplication.
- * Adding new search categories only requires adding to the when expression,
- * not creating new methods or interfaces.
+ * Uses a category-based approach with SearchFilter enum. Each filter type is handled
+ * inline within the main search method, eliminating duplicate private methods.
+ *
+ * Adding new search filters requires:
+ * 1. Add filter to SearchFilter enum with apiPath
+ * 2. Add corresponding method to SearchRemoteDataSource
+ * 3. Add a when branch here to handle the new type
  */
 class SearchRepositoryImpl(
     private val searchRemoteDataSource: SearchRemoteDataSource,
@@ -32,120 +36,97 @@ class SearchRepositoryImpl(
             return@flow
         }
 
+        val language = languageProvider.getCurrentLanguage()
+
+        // Category-based search following OCP
+        // Each filter delegates to the appropriate SearchRemoteDataSource method
         val result = when (filter) {
-            SearchFilter.ALL -> searchAll(query, page)
-            SearchFilter.MOVIES -> searchMovies(query, page)
-            SearchFilter.TV_SHOWS -> searchTvShows(query, page)
-            SearchFilter.PEOPLE -> searchPeople(query, page)
-        }
-
-        result.collect { emit(it) }
-    }
-
-    private fun searchMovies(
-        query: String,
-        page: Int
-    ): Flow<AppResult<List<SearchResultItem>>> = flow {
-        val result = searchRemoteDataSource.searchMovies(query, page, languageProvider.getCurrentLanguage())
-        when (result) {
-            is AppResult.Success -> {
-                val movieItems = result.data.results.map { remoteSearchMovie ->
-                    val searchResult = remoteSearchMovie.toSearchResult()
-                    searchResult.copy(
-                        movie = searchResult.movie.copy(
-                            posterPath = remoteSearchMovie.posterPath.toFullImageUrl()
-                        ),
-                        backdropPath = remoteSearchMovie.backdropPath.toFullImageUrl()
-                    )
-                }
-                emit(AppResult.Success(movieItems))
-            }
-
-            is AppResult.Error -> {
-                emit(AppResult.Error(message = result.message, throwable = result.throwable))
-            }
-        }
-    }
-
-    private fun searchTvShows(
-        query: String,
-        page: Int
-    ): Flow<AppResult<List<SearchResultItem>>> = flow {
-        val result = searchRemoteDataSource.searchTvShows(query, page, languageProvider.getCurrentLanguage())
-        when (result) {
-            is AppResult.Success -> {
-                val tvShowItems = result.data.results.map { remoteSearchTvShow ->
-                    val searchResult = remoteSearchTvShow.toSearchResult()
-                    searchResult.copy(
-                        tvShow = searchResult.tvShow.copy(
-                            posterPath = remoteSearchTvShow.posterPath.toFullImageUrl()
-                        ),
-                        backdropPath = remoteSearchTvShow.backdropPath.toFullImageUrl()
-                    )
-                }
-                emit(AppResult.Success(tvShowItems))
-            }
-
-            is AppResult.Error -> {
-                emit(AppResult.Error(message = result.message, throwable = result.throwable))
-            }
-        }
-    }
-
-    private fun searchPeople(
-        query: String,
-        page: Int
-    ): Flow<AppResult<List<SearchResultItem>>> = flow {
-        val result = searchRemoteDataSource.searchPeople(query, page, languageProvider.getCurrentLanguage())
-        when (result) {
-            is AppResult.Success -> {
-                val personItems = result.data.results.map { remoteSearchPerson ->
-                    val searchResult = remoteSearchPerson.toSearchResult()
-                    searchResult.copy(
-                        profilePath = remoteSearchPerson.profilePath.toFullImageUrl()
-                    )
-                }
-                emit(AppResult.Success(personItems))
-            }
-
-            is AppResult.Error -> {
-                emit(AppResult.Error(message = result.message, throwable = result.throwable))
-            }
-        }
-    }
-
-    private fun searchAll(query: String, page: Int): Flow<AppResult<List<SearchResultItem>>> =
-        flow {
-            val result = searchRemoteDataSource.searchMulti(query, page, languageProvider.getCurrentLanguage())
-            when (result) {
-                is AppResult.Success -> {
-                    val searchItems = result.data.results.mapNotNull { multiSearchItem ->
-                        multiSearchItem.toSearchResult()?.let { searchResult ->
-                            when (searchResult) {
-                                is SearchResultItem.MovieItem -> searchResult.copy(
-                                    movie = searchResult.movie.copy(
-                                        posterPath = multiSearchItem.posterPath.toFullImageUrl()
-                                    ),
-                                    backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
-                                )
-                                is SearchResultItem.TvShowItem -> searchResult.copy(
-                                    tvShow = searchResult.tvShow.copy(
-                                        posterPath = multiSearchItem.posterPath.toFullImageUrl()
-                                    ),
-                                    backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
-                                )
-                                is SearchResultItem.PersonItem -> searchResult.copy(
-                                    profilePath = multiSearchItem.profilePath.toFullImageUrl()
-                                )
+            SearchFilter.ALL -> {
+                val remoteResult = searchRemoteDataSource.searchMulti(query, page, language)
+                when (remoteResult) {
+                    is AppResult.Success -> {
+                        val searchItems = remoteResult.data.results.mapNotNull { multiSearchItem ->
+                            multiSearchItem.toSearchResult()?.let { searchResult ->
+                                when (searchResult) {
+                                    is SearchResultItem.MovieItem -> searchResult.copy(
+                                        movie = searchResult.movie.copy(
+                                            posterPath = multiSearchItem.posterPath.toFullImageUrl()
+                                        ),
+                                        backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
+                                    )
+                                    is SearchResultItem.TvShowItem -> searchResult.copy(
+                                        tvShow = searchResult.tvShow.copy(
+                                            posterPath = multiSearchItem.posterPath.toFullImageUrl()
+                                        ),
+                                        backdropPath = multiSearchItem.backdropPath.toFullImageUrl()
+                                    )
+                                    is SearchResultItem.PersonItem -> searchResult.copy(
+                                        profilePath = multiSearchItem.profilePath.toFullImageUrl()
+                                    )
+                                }
                             }
                         }
+                        AppResult.Success(searchItems)
                     }
-                    emit(AppResult.Success(searchItems))
+                    is AppResult.Error -> AppResult.Error(remoteResult.message, throwable = remoteResult.throwable)
                 }
+            }
 
-                is AppResult.Error -> {
-                    emit(AppResult.Error(message = result.message, throwable = result.throwable))
+            SearchFilter.MOVIES -> {
+                val remoteResult = searchRemoteDataSource.searchMovies(query, page, language)
+                when (remoteResult) {
+                    is AppResult.Success -> {
+                        val movieItems = remoteResult.data.results.map { remoteSearchMovie ->
+                            val searchResult = remoteSearchMovie.toSearchResult()
+                            searchResult.copy(
+                                movie = searchResult.movie.copy(
+                                    posterPath = remoteSearchMovie.posterPath.toFullImageUrl()
+                                ),
+                                backdropPath = remoteSearchMovie.backdropPath.toFullImageUrl()
+                            )
+                        }
+                        AppResult.Success(movieItems)
+                    }
+                    is AppResult.Error -> AppResult.Error(remoteResult.message, throwable = remoteResult.throwable)
+                }
+            }
+
+            SearchFilter.TV_SHOWS -> {
+                val remoteResult = searchRemoteDataSource.searchTvShows(query, page, language)
+                when (remoteResult) {
+                    is AppResult.Success -> {
+                        val tvShowItems = remoteResult.data.results.map { remoteSearchTvShow ->
+                            val searchResult = remoteSearchTvShow.toSearchResult()
+                            searchResult.copy(
+                                tvShow = searchResult.tvShow.copy(
+                                    posterPath = remoteSearchTvShow.posterPath.toFullImageUrl()
+                                ),
+                                backdropPath = remoteSearchTvShow.backdropPath.toFullImageUrl()
+                            )
+                        }
+                        AppResult.Success(tvShowItems)
+                    }
+                    is AppResult.Error -> AppResult.Error(remoteResult.message, throwable = remoteResult.throwable)
+                }
+            }
+
+            SearchFilter.PEOPLE -> {
+                val remoteResult = searchRemoteDataSource.searchPeople(query, page, language)
+                when (remoteResult) {
+                    is AppResult.Success -> {
+                        val personItems = remoteResult.data.results.map { remoteSearchPerson ->
+                            val searchResult = remoteSearchPerson.toSearchResult()
+                            searchResult.copy(
+                                profilePath = remoteSearchPerson.profilePath.toFullImageUrl()
+                            )
+                        }
+                        AppResult.Success(personItems)
+                    }
+                    is AppResult.Error -> AppResult.Error(remoteResult.message, throwable = remoteResult.throwable)
                 }
             }
         }
+
+        emit(result)
+    }
 }

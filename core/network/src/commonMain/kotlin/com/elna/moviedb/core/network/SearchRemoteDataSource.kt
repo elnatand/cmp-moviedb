@@ -14,19 +14,36 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.withContext
 
+/**
+ * Remote data source for TMDB search API endpoints.
+ *
+ * This class follows the Open/Closed Principle by using a generic search method.
+ * All search methods delegate to the private generic method, eliminating code duplication.
+ */
 class SearchRemoteDataSource(
     private val httpClient: HttpClient,
     private val appDispatchers: AppDispatchers
 ) {
 
-    suspend fun searchMulti(
+    /**
+     * Generic search method following DRY principle.
+     * All public search methods delegate to this private method.
+     *
+     * @param endpoint The API endpoint path (e.g., "search/multi")
+     * @param query The search query string
+     * @param page The page number for pagination
+     * @param language The language code for results
+     * @return AppResult containing the typed search results page
+     */
+    private suspend inline fun <reified T> search(
+        endpoint: String,
         query: String,
         page: Int,
         language: String
-    ): AppResult<RemoteMultiSearchPage> {
+    ): AppResult<T> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}search/multi") {
+                httpClient.get("$TMDB_BASE_URL$endpoint") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("query", query)
@@ -34,68 +51,36 @@ class SearchRemoteDataSource(
                         parameters.append("language", language)
                         parameters.append("include_adult", "false")
                     }
-                }.body<RemoteMultiSearchPage>()
+                }.body<T>()
             }
         }
     }
+
+    suspend fun searchMulti(
+        query: String,
+        page: Int,
+        language: String
+    ): AppResult<RemoteMultiSearchPage> =
+        search("search/multi", query, page, language)
 
     suspend fun searchMovies(
         query: String,
         page: Int,
         language: String
-    ): AppResult<RemoteSearchMoviesPage> {
-        return withContext(appDispatchers.io) {
-            safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}search/movie") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("query", query)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                        parameters.append("include_adult", "false")
-                    }
-                }.body<RemoteSearchMoviesPage>()
-            }
-        }
-    }
+    ): AppResult<RemoteSearchMoviesPage> =
+        search("search/movie", query, page, language)
 
     suspend fun searchTvShows(
         query: String,
         page: Int,
         language: String
-    ): AppResult<RemoteSearchTvShowsPage> {
-        return withContext(appDispatchers.io) {
-            safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}search/tv") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("query", query)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                        parameters.append("include_adult", "false")
-                    }
-                }.body<RemoteSearchTvShowsPage>()
-            }
-        }
-    }
+    ): AppResult<RemoteSearchTvShowsPage> =
+        search("search/tv", query, page, language)
 
     suspend fun searchPeople(
         query: String,
         page: Int,
         language: String
-    ): AppResult<RemoteSearchPeoplePage> {
-        return withContext(appDispatchers.io) {
-            safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}search/person") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("query", query)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                        parameters.append("include_adult", "false")
-                    }
-                }.body<RemoteSearchPeoplePage>()
-            }
-        }
-    }
+    ): AppResult<RemoteSearchPeoplePage> =
+        search("search/person", query, page, language)
 }
