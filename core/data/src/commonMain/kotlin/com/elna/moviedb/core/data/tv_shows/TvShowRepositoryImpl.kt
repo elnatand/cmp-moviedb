@@ -8,6 +8,7 @@ import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.network.TvShowsRemoteDataSource
+import com.elna.moviedb.core.network.mapper.toTmdbPath
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
@@ -101,7 +102,7 @@ class TvShowRepositoryImpl(
         val nextPage = currentPage + 1
 
         return when (val result =
-            remoteDataSource.fetchTvShowsPage(category.apiPath, nextPage, languageProvider.getCurrentLanguage())) {
+            remoteDataSource.fetchTvShowsPage(category.toTmdbPath(), nextPage, languageProvider.getCurrentLanguage())) {
             is AppResult.Success -> {
                 totalPages[category] = result.data.totalPages
                 val newTvShows = result.data.results.map { remoteTvShow ->

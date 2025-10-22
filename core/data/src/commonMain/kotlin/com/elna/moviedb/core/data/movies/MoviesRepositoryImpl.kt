@@ -19,6 +19,7 @@ import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
+import com.elna.moviedb.core.network.mapper.toTmdbPath
 import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
 import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
@@ -113,7 +114,7 @@ class MoviesRepositoryImpl(
         val nextPage = paginationState.currentPage + 1
 
         return when (val result =
-            remoteDataSource.fetchMoviesPage(category.apiPath, nextPage, currentLanguage)) {
+            remoteDataSource.fetchMoviesPage(category.toTmdbPath(), nextPage, currentLanguage)) {
             is AppResult.Success -> {
                 val newTotalPages = result.data.totalPages
                 val entities = result.data.results.map {
