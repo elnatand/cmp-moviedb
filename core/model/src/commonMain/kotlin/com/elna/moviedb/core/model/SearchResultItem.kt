@@ -37,16 +37,16 @@ sealed class SearchResultItem {
 }
 
 /**
- * Search filter enum following Open/Closed Principle.
+ * Search filter enum representing domain-level search categories.
  *
- * Each filter has an associated API endpoint path. Adding new filters
- * requires only adding a new enum value with its path - no code changes needed elsewhere.
+ * This is a pure domain model with no infrastructure dependencies.
+ * Following Clean Architecture - keeps domain independent of API details.
  *
- * @property apiPath The TMDB API search endpoint path
+ * Mapping to infrastructure (e.g., TMDB API paths) is handled in the network layer.
  */
-enum class SearchFilter(val apiPath: String) {
-    ALL("search/multi"),
-    MOVIES("search/movie"),
-    TV_SHOWS("search/tv"),
-    PEOPLE("search/person")
+enum class SearchFilter {
+    ALL,
+    MOVIES,
+    TV_SHOWS,
+    PEOPLE
 }

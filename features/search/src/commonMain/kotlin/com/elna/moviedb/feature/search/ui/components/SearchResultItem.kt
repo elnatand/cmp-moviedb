@@ -109,7 +109,7 @@ fun SearchResultItem(
                                 Icon(
                                     imageVector = Icons.Default.Star,
                                     contentDescription = null,
-                                    tint = Color(0xFFFFD700),
+                                    tint = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(

@@ -16,9 +16,10 @@ import kotlinx.coroutines.flow.flow
  * inline within the main search method, eliminating duplicate private methods.
  *
  * Adding new search filters requires:
- * 1. Add filter to SearchFilter enum with apiPath
+ * 1. Add filter to SearchFilter enum (pure domain model)
  * 2. Add corresponding method to SearchRemoteDataSource
- * 3. Add a when branch here to handle the new type
+ * 3. Add mapping in SearchFilterMapper (network layer)
+ * 4. Add a when branch here to handle the new type
  */
 class SearchRepositoryImpl(
     private val searchRemoteDataSource: SearchRemoteDataSource,
