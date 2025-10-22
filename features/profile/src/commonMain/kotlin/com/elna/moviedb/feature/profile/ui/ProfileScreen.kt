@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
@@ -157,7 +158,7 @@ private fun ProfileScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = languageExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(type = androidx.compose.material3.MenuAnchorType.PrimaryNotEditable)
+                        .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 )
 
                 ExposedDropdownMenu(
@@ -206,7 +207,7 @@ private fun ProfileScreen(
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = themeExpanded) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(type = androidx.compose.material3.MenuAnchorType.PrimaryNotEditable)
+                        .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 )
 
                 ExposedDropdownMenu(
