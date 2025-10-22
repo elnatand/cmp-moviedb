@@ -1,36 +1,80 @@
 package com.elna.moviedb.core.data
 
+import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
 /**
- * Generic coordinator that reacts to language changes and executes a provided action.
+ * Interface for components that need to respond to language changes.
+ *
+ * Following the Observer Pattern - repositories implement this interface
+ * to be notified when app language changes without tight coupling.
+ *
+ * Benefits:
+ * - Open/Closed Principle: New features can register without modifying coordinator
+ * - Dependency Inversion: Coordinator depends on abstraction, not concrete repositories
+ * - Loose Coupling: No hardcoded repository dependencies
+ */
+interface LanguageChangeListener {
+    /**
+     * Called when the app language changes.
+     * Implementations typically clear cached data and reload in the new language.
+     */
+    suspend fun onLanguageChanged()
+}
+
+/**
+ * Coordinator that manages language change listeners using the Observer Pattern.
+ *
+ * Following Open/Closed Principle - new features can register as listeners
+ * without modifying this class.
  *
  * Following Interface Segregation Principle - depends only on AppSettingsPreferences
- * for language monitoring, not the full PreferencesManager with pagination methods.
+ * for language monitoring.
+ *
+ * Automatically starts observing language changes upon creation and notifies
+ * all registered listeners when the language changes.
+ *
+ * Usage:
+ * ```kotlin
+ * val coordinator = LanguageChangeCoordinator(appSettingsPreferences, appDispatchers)
+ * // Repositories self-register during their initialization
+ * ```
  *
  * @param appSettingsPreferences Source of language change events
- * @param scope Coroutine scope for language observation (typically application-scoped)
- * @param onLanguageChange Action to execute when language changes (typically clearing cache and reloading data)
+ * @param appDispatchers Dispatchers for coroutine scope creation
  */
 class LanguageChangeCoordinator(
-    appSettingsPreferences: AppSettingsPreferences,
-    scope: CoroutineScope,
-    onLanguageChange: suspend () -> Unit
+    private val appSettingsPreferences: AppSettingsPreferences,
+    appDispatchers: AppDispatchers,
 ) {
+    private val listeners = mutableListOf<LanguageChangeListener>()
+    private val scope = CoroutineScope(SupervisorJob() + appDispatchers.main)
+
     init {
-        // Observe language changes and trigger the provided action
+        // Auto-start observing language changes
         scope.launch {
             appSettingsPreferences.getAppLanguageCode()
                 .distinctUntilChanged()
                 .drop(1) // Skip initial emission to avoid clearing on app start
                 .collect {
-                    // When language changes, execute the provided action
-                    onLanguageChange()
+                    // Notify all registered listeners
+                    listeners.forEach { listener ->
+                        listener.onLanguageChanged()
+                    }
                 }
         }
+    }
+
+    /**
+     * Registers a listener to be notified of language changes.
+     * Listeners are typically repositories that need to clear/reload data.
+     */
+    fun registerListener(listener: LanguageChangeListener) {
+        listeners.add(listener)
     }
 }

@@ -1,5 +1,7 @@
 package com.elna.moviedb.core.data.tv_shows
 
+import com.elna.moviedb.core.data.LanguageChangeCoordinator
+import com.elna.moviedb.core.data.LanguageChangeListener
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
@@ -25,16 +27,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * for the duration of the app session. For persistent offline-first storage,
  * see MoviesRepositoryImpl which uses Room database.
  *
- * This repository provides data access operations only. Language change coordination
- * is handled separately by [com.elna.moviedb.core.data.LanguageChangeCoordinator].
+ * This repository implements LanguageChangeListener and self-registers with the coordinator
+ * during initialization, ensuring it's always properly set up to respond to language changes.
  *
- * @param tvShowsRemoteDataSource Remote data source for fetching TV shows from API
+ * @param remoteDataSource Remote data source for fetching TV shows from API
  * @param languageProvider Provider for formatted language strings
+ * @param languageChangeCoordinator Coordinator for language change notifications
  */
 class TvShowRepositoryImpl(
-    private val tvShowsRemoteDataSource: TvShowsRemoteDataSource,
+    private val remoteDataSource: TvShowsRemoteDataSource,
     private val languageProvider: LanguageProvider,
-) : TvShowsRepository {
+    languageChangeCoordinator: LanguageChangeCoordinator,
+) : TvShowsRepository, LanguageChangeListener {
+
+    init {
+        // Self-register with coordinator during initialization
+        // Ensures repository is always properly set up to receive language change notifications
+        languageChangeCoordinator.registerListener(this)
+    }
 
     // Category-based pagination state using Maps for scalability
     private val currentPages = mutableMapOf<TvShowCategory, Int>()
@@ -91,7 +101,7 @@ class TvShowRepositoryImpl(
         val nextPage = currentPage + 1
 
         return when (val result =
-            tvShowsRemoteDataSource.fetchTvShowsPage(category.apiPath, nextPage, languageProvider.getCurrentLanguage())) {
+            remoteDataSource.fetchTvShowsPage(category.apiPath, nextPage, languageProvider.getCurrentLanguage())) {
             is AppResult.Success -> {
                 totalPages[category] = result.data.totalPages
                 val newTvShows = result.data.results.map { remoteTvShow ->
@@ -110,9 +120,19 @@ class TvShowRepositoryImpl(
     }
 
     /**
+     * Responds to language changes via the Observer Pattern.
+     * Automatically called by LanguageChangeCoordinator when language changes.
+     *
+     * Implementation of LanguageChangeListener interface - delegates to clearAndReload().
+     */
+    override suspend fun onLanguageChanged() {
+        clearAndReload()
+    }
+
+    /**
      * Clears all cached TV shows and reloads initial pages for all categories.
      *
-     * This method is called by [com.elna.moviedb.core.data.LanguageChangeCoordinator] when the app language changes.
+     * This method is called when the app language changes via onLanguageChanged().
      * It clears the in-memory cache and fetches fresh data in the new language.
      */
     override suspend fun clearAndReload() {
@@ -134,11 +154,11 @@ class TvShowRepositoryImpl(
 
         // Fetch details, videos, and credits in parallel
         val detailsDeferred =
-            async { tvShowsRemoteDataSource.getTvShowDetails(tvShowId, language) }
+            async { remoteDataSource.getTvShowDetails(tvShowId, language) }
         val videosDeferred =
-            async { tvShowsRemoteDataSource.getTvShowVideos(tvShowId, language) }
+            async { remoteDataSource.getTvShowVideos(tvShowId, language) }
         val creditsDeferred =
-            async { tvShowsRemoteDataSource.getTvShowCredits(tvShowId, language) }
+            async { remoteDataSource.getTvShowCredits(tvShowId, language) }
 
         val detailsResult = detailsDeferred.await()
         val videosResult = videosDeferred.await()

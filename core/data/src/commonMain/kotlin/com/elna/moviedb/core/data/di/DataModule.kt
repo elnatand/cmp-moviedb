@@ -1,6 +1,6 @@
 package com.elna.moviedb.core.data.di
 
-import com.elna.moviedb.core.data.LanguageChangeCoordinatorsInitializer
+import com.elna.moviedb.core.data.LanguageChangeCoordinator
 import com.elna.moviedb.core.data.movies.MoviesRepository
 import com.elna.moviedb.core.data.movies.MoviesRepositoryImpl
 import com.elna.moviedb.core.data.person.PersonRepository
@@ -21,20 +21,32 @@ val dataModule = module {
 
     single { LanguageProvider(get()) }
 
+    // Language change coordinator - uses Observer Pattern for loose coupling
+    // Created at start to begin observing language changes immediately
+    // Repositories self-register during their initialization
+    single(createdAtStart = true) {
+        LanguageChangeCoordinator(
+            appSettingsPreferences = get(),
+            appDispatchers = get(),
+        )
+    }
+
     single<MoviesRepository> {
         MoviesRepositoryImpl(
-            moviesRemoteDataSource = get(),
-            moviesLocalDataSource = get(),
+            remoteDataSource = get(),
+            localDataSource = get(),
             paginationPreferences = get(),
             languageProvider = get(),
             cachingStrategy = get(),
+            languageChangeCoordinator = get(),
         )
     }
 
     single<TvShowsRepository> {
         TvShowRepositoryImpl(
-            tvShowsRemoteDataSource = get(),
+            remoteDataSource = get(),
             languageProvider = get(),
+            languageChangeCoordinator = get(),
         )
     }
 
@@ -49,16 +61,6 @@ val dataModule = module {
         PersonRepositoryImpl(
             personRemoteDataSource = get(),
             languageProvider = get()
-        )
-    }
-
-    // Language change coordinators initializer
-    single(createdAtStart = true) {
-        LanguageChangeCoordinatorsInitializer(
-            appSettingsPreferences = get(),
-            appDispatchers = get(),
-            moviesRepository = get(),
-            tvShowsRepository = get()
         )
     }
 }

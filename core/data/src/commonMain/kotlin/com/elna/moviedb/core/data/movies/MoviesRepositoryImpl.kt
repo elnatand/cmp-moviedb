@@ -1,6 +1,8 @@
 package com.elna.moviedb.core.data.movies
 
 
+import com.elna.moviedb.core.data.LanguageChangeCoordinator
+import com.elna.moviedb.core.data.LanguageChangeListener
 import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.data.strategy.CachingStrategy
 import com.elna.moviedb.core.data.util.LanguageProvider
@@ -37,22 +39,30 @@ import kotlinx.coroutines.flow.map
  * This repository uses the Strategy Pattern for caching, allowing different caching
  * behaviors to be injected without modifying repository code.
  *
- * This repository provides data access operations only. Language change coordination
- * is handled separately by [com.elna.moviedb.core.data.LanguageChangeCoordinator].
+ * This repository implements LanguageChangeListener and self-registers with the coordinator
+ * during initialization, ensuring it's always properly set up to respond to language changes.
  *
- * @param moviesRemoteDataSource Remote data source for fetching movies from API
- * @param moviesLocalDataSource Local data source for caching movies in database
+ * @param remoteDataSource Remote data source for fetching movies from API
+ * @param localDataSource Local data source for caching movies in database
  * @param paginationPreferences Manager for pagination state
  * @param languageProvider Provider for formatted language strings
  * @param cachingStrategy Strategy for cache/network coordination (default: offline-first)
+ * @param languageChangeCoordinator Coordinator for language change notifications
  */
 class MoviesRepositoryImpl(
-    private val moviesRemoteDataSource: MoviesRemoteDataSource,
-    private val moviesLocalDataSource: MoviesLocalDataSource,
+    private val remoteDataSource: MoviesRemoteDataSource,
+    private val localDataSource: MoviesLocalDataSource,
     private val paginationPreferences: PaginationPreferences,
     private val languageProvider: LanguageProvider,
     private val cachingStrategy: CachingStrategy,
-) : MoviesRepository {
+    languageChangeCoordinator: LanguageChangeCoordinator,
+) : MoviesRepository, LanguageChangeListener {
+
+    init {
+        // Self-register with coordinator during initialization
+        // Ensures repository is always properly set up to receive language change notifications
+        languageChangeCoordinator.registerListener(this)
+    }
 
     /**
      * Observes movies for a specific category from local storage.
@@ -65,7 +75,7 @@ class MoviesRepositoryImpl(
      */
     override suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>> {
         val localMoviesPageStream =
-            moviesLocalDataSource.getMoviesByCategoryAsFlow(category.name)
+            localDataSource.getMoviesByCategoryAsFlow(category.name)
 
         // Load initial data if empty
         if (localMoviesPageStream.first().isEmpty()) {
@@ -103,13 +113,13 @@ class MoviesRepositoryImpl(
         val nextPage = paginationState.currentPage + 1
 
         return when (val result =
-            moviesRemoteDataSource.fetchMoviesPage(category.apiPath, nextPage, currentLanguage)) {
+            remoteDataSource.fetchMoviesPage(category.apiPath, nextPage, currentLanguage)) {
             is AppResult.Success -> {
                 val newTotalPages = result.data.totalPages
                 val entities = result.data.results.map {
                     it.asEntity().copy(category = category.name)
                 }
-                moviesLocalDataSource.insertMoviesPage(entities)
+                localDataSource.insertMoviesPage(entities)
 
                 // Save pagination state
                 paginationPreferences.savePaginationState(
@@ -158,9 +168,9 @@ class MoviesRepositoryImpl(
      * Returns null if not cached or incomplete data.
      */
     private suspend fun fetchMovieDetailsFromCache(movieId: Int): MovieDetails? {
-        val cachedMovieDetails = moviesLocalDataSource.getMovieDetails(movieId) ?: return null
-        val cachedVideos = moviesLocalDataSource.getVideosForMovie(movieId)
-        val cachedCast = moviesLocalDataSource.getCastForMovie(movieId)
+        val cachedMovieDetails = localDataSource.getMovieDetails(movieId) ?: return null
+        val cachedVideos = localDataSource.getVideosForMovie(movieId)
+        val cachedCast = localDataSource.getCastForMovie(movieId)
 
         return cachedMovieDetails.toDomain().copy(
             trailers = cachedVideos.map { it.toDomain() },
@@ -176,9 +186,9 @@ class MoviesRepositoryImpl(
         val language = languageProvider.getCurrentLanguage()
 
         // Fetch all data in parallel for performance
-        val detailsDeferred = async { moviesRemoteDataSource.getMovieDetails(movieId, language) }
-        val videosDeferred = async { moviesRemoteDataSource.getMovieVideos(movieId, language) }
-        val creditsDeferred = async { moviesRemoteDataSource.getMovieCredits(movieId, language) }
+        val detailsDeferred = async { remoteDataSource.getMovieDetails(movieId, language) }
+        val videosDeferred = async { remoteDataSource.getMovieVideos(movieId, language) }
+        val creditsDeferred = async { remoteDataSource.getMovieCredits(movieId, language) }
 
         // Details are required - fail if they don't load
         val detailsResult = detailsDeferred.await()
@@ -277,14 +287,14 @@ class MoviesRepositoryImpl(
                 spokenLanguages = spokenLanguages?.joinToString(",")
             )
         }
-        moviesLocalDataSource.insertMovieDetails(detailsEntity)
+        localDataSource.insertMovieDetails(detailsEntity)
 
         // Save videos
-        moviesLocalDataSource.deleteVideosForMovie(movieId)
+        localDataSource.deleteVideosForMovie(movieId)
         val trailersList = movieDetails.trailers ?: emptyList()
         if (trailersList.isNotEmpty()) {
             val videoEntities = trailersList.map { it.asEntity(movieId) }
-            moviesLocalDataSource.insertVideos(videoEntities)
+            localDataSource.insertVideos(videoEntities)
         }
 
         // Save cast
@@ -299,13 +309,23 @@ class MoviesRepositoryImpl(
                 order = castMember.order
             )
         }
-        moviesLocalDataSource.replaceCastForMovie(movieId, castEntities)
+        localDataSource.replaceCastForMovie(movieId, castEntities)
+    }
+
+    /**
+     * Responds to language changes via the Observer Pattern.
+     * Automatically called by LanguageChangeCoordinator when language changes.
+     *
+     * Implementation of LanguageChangeListener interface - delegates to clearAndReload().
+     */
+    override suspend fun onLanguageChanged() {
+        clearAndReload()
     }
 
     /**
      * Clears all cached movies and reloads initial pages for all categories.
      *
-     * This method is called by [com.elna.moviedb.core.data.LanguageChangeCoordinator] when the app language changes.
+     * This method is called when the app language changes via onLanguageChanged().
      * It clears the local cache and fetches fresh data in the new language.
      *
      * This method automatically handles all categories defined in [MovieCategory] enum.
@@ -313,7 +333,7 @@ class MoviesRepositoryImpl(
     override suspend fun clearAndReload() {
         // Clear all pagination state and local data
         paginationPreferences.clearAllPaginationState()
-        moviesLocalDataSource.clearAllMovies()
+        localDataSource.clearAllMovies()
 
         // Load all categories in parallel
         coroutineScope {
