@@ -4,6 +4,7 @@ import com.elna.moviedb.core.model.AppResult
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
 
+@PublishedApi
 internal suspend fun <T> safeApiCall(apiCall: suspend () -> T): AppResult<T> {
     return try {
         AppResult.Success(apiCall())

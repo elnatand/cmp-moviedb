@@ -5,6 +5,10 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.model.SearchResultItem
 import com.elna.moviedb.core.network.SearchRemoteDataSource
+import com.elna.moviedb.core.network.model.search.RemoteMultiSearchPage
+import com.elna.moviedb.core.network.model.search.RemoteSearchMoviesPage
+import com.elna.moviedb.core.network.model.search.RemoteSearchPeoplePage
+import com.elna.moviedb.core.network.model.search.RemoteSearchTvShowsPage
 import com.elna.moviedb.core.network.model.search.toSearchResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -13,13 +17,14 @@ import kotlinx.coroutines.flow.flow
  * Implementation of search repository following Open/Closed Principle.
  *
  * Uses a category-based approach with SearchFilter enum. Each filter type is handled
- * inline within the main search method, eliminating duplicate private methods.
+ * inline within the main search method using a unified search API.
  *
  * Adding new search filters requires:
  * 1. Add filter to SearchFilter enum (pure domain model)
- * 2. Add corresponding method to SearchRemoteDataSource
- * 3. Add mapping in SearchFilterMapper (network layer)
- * 4. Add a when branch here to handle the new type
+ * 2. Add mapping in SearchFilterMapper (network layer)
+ * 3. Add a when branch here to handle the new response type
+ *
+ * The SearchRemoteDataSource no longer needs changes - it uses a generic unified method!
  */
 class SearchRepositoryImpl(
     private val searchRemoteDataSource: SearchRemoteDataSource,
@@ -38,11 +43,16 @@ class SearchRepositoryImpl(
 
         val language = languageProvider.getCurrentLanguage()
 
-        // Category-based search following OCP
-        // Each filter delegates to the appropriate SearchRemoteDataSource method
+        // Category-based search following OCP using unified search method
+        // Each filter specifies the response type via reified generics
         val result = when (filter) {
             SearchFilter.ALL -> {
-                val remoteResult = searchRemoteDataSource.searchMulti(query, page, language)
+                val remoteResult = searchRemoteDataSource.search<RemoteMultiSearchPage>(
+                    filter = filter,
+                    query = query,
+                    page = page,
+                    language = language
+                )
                 when (remoteResult) {
                     is AppResult.Success -> {
                         val searchItems = remoteResult.data.results.mapNotNull { multiSearchItem ->
@@ -55,7 +65,12 @@ class SearchRepositoryImpl(
             }
 
             SearchFilter.MOVIES -> {
-                val remoteResult = searchRemoteDataSource.searchMovies(query, page, language)
+                val remoteResult = searchRemoteDataSource.search<RemoteSearchMoviesPage>(
+                    filter = filter,
+                    query = query,
+                    page = page,
+                    language = language
+                )
                 when (remoteResult) {
                     is AppResult.Success -> {
                         val movieItems = remoteResult.data.results.map { remoteSearchMovie ->
@@ -68,7 +83,12 @@ class SearchRepositoryImpl(
             }
 
             SearchFilter.TV_SHOWS -> {
-                val remoteResult = searchRemoteDataSource.searchTvShows(query, page, language)
+                val remoteResult = searchRemoteDataSource.search<RemoteSearchTvShowsPage>(
+                    filter = filter,
+                    query = query,
+                    page = page,
+                    language = language
+                )
                 when (remoteResult) {
                     is AppResult.Success -> {
                         val tvShowItems = remoteResult.data.results.map { remoteSearchTvShow ->
@@ -81,7 +101,12 @@ class SearchRepositoryImpl(
             }
 
             SearchFilter.PEOPLE -> {
-                val remoteResult = searchRemoteDataSource.searchPeople(query, page, language)
+                val remoteResult = searchRemoteDataSource.search<RemoteSearchPeoplePage>(
+                    filter = filter,
+                    query = query,
+                    page = page,
+                    language = language
+                )
                 when (remoteResult) {
                     is AppResult.Success -> {
                         val personItems = remoteResult.data.results.map { remoteSearchPerson ->

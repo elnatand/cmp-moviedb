@@ -2,12 +2,10 @@ package com.elna.moviedb.core.network
 
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.core.model.SearchFilter
+import com.elna.moviedb.core.network.mapper.toTmdbPath
 import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
-import com.elna.moviedb.core.network.model.search.RemoteMultiSearchPage
-import com.elna.moviedb.core.network.model.search.RemoteSearchMoviesPage
-import com.elna.moviedb.core.network.model.search.RemoteSearchPeoplePage
-import com.elna.moviedb.core.network.model.search.RemoteSearchTvShowsPage
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -17,32 +15,51 @@ import kotlinx.coroutines.withContext
 /**
  * Remote data source for TMDB search API endpoints.
  *
- * This class follows the Open/Closed Principle by using a generic search method.
- * All search methods delegate to the private generic method, eliminating code duplication.
+ * Following Open/Closed Principle - uses SearchFilter enum and mapper pattern.
+ * Adding new search filters requires only:
+ * 1. Adding to SearchFilter enum (domain)
+ * 2. Adding mapping in SearchFilterMapper (network)
+ * 3. No changes needed in this class!
+ *
+ * Uses reified generics to maintain type safety while eliminating method duplication.
  */
 class SearchRemoteDataSource(
-    private val httpClient: HttpClient,
-    private val appDispatchers: AppDispatchers
+    @PublishedApi
+    internal val httpClient: HttpClient,
+    @PublishedApi
+    internal val appDispatchers: AppDispatchers
 ) {
 
     /**
-     * Generic search method following DRY principle.
-     * All public search methods delegate to this private method.
+     * Unified search method using SearchFilter enum.
+     * Following Open/Closed Principle - new filters don't require code changes here.
      *
-     * @param endpoint The API endpoint path (e.g., "search/multi")
+     * @param filter Type-safe search filter (ALL, MOVIES, TV_SHOWS, PEOPLE)
      * @param query The search query string
      * @param page The page number for pagination
      * @param language The language code for results
      * @return AppResult containing the typed search results page
+     *
+     * Example usage:
+     * ```kotlin
+     * val result = search<RemoteSearchMoviesPage>(
+     *     filter = SearchFilter.MOVIES,
+     *     query = "Inception",
+     *     page = 1,
+     *     language = "en-US"
+     * )
+     * ```
      */
-    private suspend inline fun <reified T> search(
-        endpoint: String,
+    suspend inline fun <reified T> search(
+        filter: SearchFilter,
         query: String,
         page: Int,
         language: String
     ): AppResult<T> {
         return withContext(appDispatchers.io) {
             safeApiCall {
+                // Use mapper to convert domain enum to TMDB API path
+                val endpoint = filter.toTmdbPath()
                 httpClient.get("$TMDB_BASE_URL$endpoint") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
@@ -55,32 +72,4 @@ class SearchRemoteDataSource(
             }
         }
     }
-
-    suspend fun searchMulti(
-        query: String,
-        page: Int,
-        language: String
-    ): AppResult<RemoteMultiSearchPage> =
-        search("search/multi", query, page, language)
-
-    suspend fun searchMovies(
-        query: String,
-        page: Int,
-        language: String
-    ): AppResult<RemoteSearchMoviesPage> =
-        search("search/movie", query, page, language)
-
-    suspend fun searchTvShows(
-        query: String,
-        page: Int,
-        language: String
-    ): AppResult<RemoteSearchTvShowsPage> =
-        search("search/tv", query, page, language)
-
-    suspend fun searchPeople(
-        query: String,
-        page: Int,
-        language: String
-    ): AppResult<RemoteSearchPeoplePage> =
-        search("search/person", query, page, language)
 }
