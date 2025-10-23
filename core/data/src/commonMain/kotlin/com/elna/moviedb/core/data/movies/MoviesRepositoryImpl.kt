@@ -75,8 +75,9 @@ class MoviesRepositoryImpl(
      * added to MovieCategory enum without modifying this method.
      */
     override suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>> {
+        // Use type-safe category enum directly
         val localMoviesPageStream =
-            localDataSource.getMoviesByCategoryAsFlow(category.name)
+            localDataSource.getMoviesByCategoryAsFlow(category)
 
         // Load initial data if empty
         if (localMoviesPageStream.first().isEmpty()) {
@@ -330,11 +331,20 @@ class MoviesRepositoryImpl(
      * It clears the local cache and fetches fresh data in the new language.
      *
      * This method automatically handles all categories defined in [MovieCategory] enum.
+     *
+     * Uses segregated clear methods following Interface Segregation Principle.
+     * Each data source interface has its own clear method for its specific concern.
      */
     override suspend fun clearAndReload() {
         // Clear all pagination state and local data
         paginationPreferences.clearAllPaginationState()
-        localDataSource.clearAllMovies()
+
+        // Clear all movie-related caches using segregated methods
+        // Each interface is responsible for clearing only its own data
+        localDataSource.clearMoviesList()
+        localDataSource.clearMovieDetails()
+        localDataSource.clearAllVideos()
+        localDataSource.clearAllCast()
 
         // Load all categories in parallel
         coroutineScope {

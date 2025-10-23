@@ -4,6 +4,7 @@ import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
 import com.elna.moviedb.core.database.model.VideoEntity
+import com.elna.moviedb.core.model.MovieCategory
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -13,15 +14,16 @@ import kotlinx.coroutines.flow.Flow
  * Use this interface for:
  * - Fetching paginated movie lists by category
  * - Inserting new movie pages
- * - Clearing all cached movies
+ * - Clearing movie list cache
  */
 interface MoviesListDataSource {
     /**
      * Observes movies for a specific category as a reactive flow.
-     * @param category The category name (e.g., "POPULAR", "TOP_RATED")
+     * Uses type-safe MovieCategory enum instead of raw strings.
+     * @param category The movie category (POPULAR, TOP_RATED, NOW_PLAYING)
      * @return Flow emitting list of movies for the category
      */
-    fun getMoviesByCategoryAsFlow(category: String): Flow<List<MovieEntity>>
+    fun getMoviesByCategoryAsFlow(category: MovieCategory): Flow<List<MovieEntity>>
 
     /**
      * Inserts a page of movies into the local database.
@@ -30,10 +32,9 @@ interface MoviesListDataSource {
     suspend fun insertMoviesPage(movies: List<MovieEntity>)
 
     /**
-     * Clears all cached movie data (list, details, videos, cast).
-     * Used when refreshing or changing language.
+     * Clears only the movie list cache.
      */
-    suspend fun clearAllMovies()
+    suspend fun clearMoviesList()
 }
 
 /**
@@ -43,6 +44,7 @@ interface MoviesListDataSource {
  * Use this interface for:
  * - Fetching detailed movie information
  * - Caching movie details
+ * - Clearing movie details cache
  */
 interface MovieDetailsDataSource {
     /**
@@ -57,6 +59,11 @@ interface MovieDetailsDataSource {
      * @param movieDetails The movie details entity to save
      */
     suspend fun insertMovieDetails(movieDetails: MovieDetailsEntity)
+
+    /**
+     * Clears only the movie details cache.
+     */
+    suspend fun clearMovieDetails()
 }
 
 /**
@@ -87,6 +94,11 @@ interface MovieVideosDataSource {
      * @param movieId The movie's unique identifier
      */
     suspend fun deleteVideosForMovie(movieId: Int)
+
+    /**
+     * Clears only the videos cache for all movies.
+     */
+    suspend fun clearAllVideos()
 }
 
 /**
@@ -112,6 +124,11 @@ interface MovieCastDataSource {
      * @param cast New list of cast members
      */
     suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>)
+
+    /**
+     * Clears only the cast cache for all movies.
+     */
+    suspend fun clearAllCast()
 }
 
 /**
@@ -140,8 +157,10 @@ class MoviesLocalDataSourceImpl(
     private val movieDetailsDao: MovieDetailsDao,
 ) : MoviesLocalDataSource {
 
-    override fun getMoviesByCategoryAsFlow(category: String): Flow<List<MovieEntity>> {
-        return movieDao.getMoviesByCategoryAsFlow(category)
+    // MoviesListDataSource implementation
+    override fun getMoviesByCategoryAsFlow(category: MovieCategory): Flow<List<MovieEntity>> {
+        // Convert type-safe enum to string for database query
+        return movieDao.getMoviesByCategoryAsFlow(category.name)
     }
 
     override suspend fun insertMoviesPage(movies: List<MovieEntity>) {
@@ -150,6 +169,11 @@ class MoviesLocalDataSourceImpl(
         }
     }
 
+    override suspend fun clearMoviesList() {
+        movieDao.clearAllMovies()
+    }
+
+    // MovieDetailsDataSource implementation
     override suspend fun getMovieDetails(movieId: Int): MovieDetailsEntity? {
         return movieDetailsDao.getMovieDetails(movieId)
     }
@@ -158,12 +182,11 @@ class MoviesLocalDataSourceImpl(
         movieDetailsDao.insertMovieDetails(movieDetails)
     }
 
-    override suspend fun clearAllMovies() {
-        movieDao.clearAllMovies()
+    override suspend fun clearMovieDetails() {
         movieDetailsDao.clearAllMovieDetails()
-        movieDetailsDao.clearAllCast()
     }
 
+    // MovieVideosDataSource implementation
     override suspend fun getVideosForMovie(movieId: Int): List<VideoEntity> {
         return movieDetailsDao.getVideosForMovie(movieId)
     }
@@ -176,11 +199,20 @@ class MoviesLocalDataSourceImpl(
         movieDetailsDao.deleteVideosForMovie(movieId)
     }
 
+    override suspend fun clearAllVideos() {
+        movieDetailsDao.clearAllVideos()
+    }
+
+    // MovieCastDataSource implementation
     override suspend fun getCastForMovie(movieId: Int): List<CastMemberEntity> {
         return movieDetailsDao.getCastForMovie(movieId)
     }
 
     override suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>) {
         movieDetailsDao.replaceCastForMovie(movieId, cast)
+    }
+
+    override suspend fun clearAllCast() {
+        movieDetailsDao.clearAllCast()
     }
 }
