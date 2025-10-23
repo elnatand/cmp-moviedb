@@ -6,6 +6,8 @@ package com.elna.moviedb.core.ui.utils
  *
  * Reference: https://developer.themoviedb.org/docs/image-basics
  */
+private const val TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p"
+
 enum class ImageSize(val path: String) {
     /**
      * Small thumbnail (92px width) - for list items on small screens
@@ -67,7 +69,7 @@ enum class ImageSize(val path: String) {
  */
 fun String?.toImageUrl(size: ImageSize = ImageSize.W500): String {
     if (this.isNullOrBlank()) return ""
-    return "https://media.themoviedb.org/t/p/${size.path}$this"
+    return "$TMDB_IMAGE_BASE_URL/${size.path}$this"
 }
 
 /**

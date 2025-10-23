@@ -164,9 +164,7 @@ class MoviesLocalDataSourceImpl(
     }
 
     override suspend fun insertMoviesPage(movies: List<MovieEntity>) {
-        movies.forEach {
-            movieDao.insertMovie(it)
-        }
+        movieDao.insertMovies(movies)
     }
 
     override suspend fun clearMoviesList() {
