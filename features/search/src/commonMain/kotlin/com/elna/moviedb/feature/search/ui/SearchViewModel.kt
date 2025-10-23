@@ -13,6 +13,7 @@ import com.elna.moviedb.feature.search.strategy.PeopleSearchStrategy
 import com.elna.moviedb.feature.search.strategy.SearchStrategy
 import com.elna.moviedb.feature.search.strategy.TvShowSearchStrategy
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
@@ -38,18 +39,19 @@ class SearchViewModel(
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState
 
-    /**
-     * Maps SearchFilter to its corresponding SearchStrategy.
-     * Following OCP - strategies use category-based repository for extensibility.
-     */
-    private fun getStrategyForFilter(filter: SearchFilter): SearchStrategy {
-        return when (filter) {
-            SearchFilter.ALL -> AllSearchStrategy(searchRepository)
-            SearchFilter.MOVIES -> MovieSearchStrategy(searchRepository)
-            SearchFilter.TV_SHOWS -> TvShowSearchStrategy(searchRepository)
-            SearchFilter.PEOPLE -> PeopleSearchStrategy(searchRepository)
-        }
+    private var currentSearchJob: Job? = null
+
+    private val strategies by lazy {
+        mapOf(
+            SearchFilter.ALL to AllSearchStrategy(searchRepository),
+            SearchFilter.MOVIES to MovieSearchStrategy(searchRepository),
+            SearchFilter.TV_SHOWS to TvShowSearchStrategy(searchRepository),
+            SearchFilter.PEOPLE to PeopleSearchStrategy(searchRepository),
+        )
     }
+
+    private fun getStrategyForFilter(filter: SearchFilter): SearchStrategy =
+        strategies.getValue(filter)
 
     init {
         viewModelScope.launch {
@@ -110,7 +112,12 @@ class SearchViewModel(
         }
 
         val nextPage = currentState.currentPage + 1
-        performSearch(currentState.searchQuery, currentState.selectedFilter, nextPage, isLoadingMore = true)
+        performSearch(
+            currentState.searchQuery,
+            currentState.selectedFilter,
+            nextPage,
+            isLoadingMore = true
+        )
     }
 
     private fun onRetry() {
@@ -134,7 +141,8 @@ class SearchViewModel(
         page: Int,
         isLoadingMore: Boolean = false
     ) {
-        viewModelScope.launch {
+        currentSearchJob?.cancel()
+        currentSearchJob = viewModelScope.launch {
             _uiState.update {
                 it.copy(
                     isLoading = !isLoadingMore,
@@ -166,6 +174,7 @@ class SearchViewModel(
                             errorMessage = null
                         )
                     }
+
                     is AppResult.Error -> {
                         currentState.copy(
                             isLoading = false,
