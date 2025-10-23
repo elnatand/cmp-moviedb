@@ -52,7 +52,7 @@ class LanguageChangeCoordinator(
     private val appSettingsPreferences: AppSettingsPreferences,
     appDispatchers: AppDispatchers,
 ) {
-    private val listeners = mutableListOf<LanguageChangeListener>()
+    private val listeners = mutableSetOf<LanguageChangeListener>()
     private val scope = CoroutineScope(SupervisorJob() + appDispatchers.main)
 
     init {

@@ -105,7 +105,7 @@ internal class OfflineFirstCachingStrategy : CachingStrategy {
  * - Real-time data where staleness is not acceptable
  * - When you want fresh data but with offline fallback
  */
-class NetworkFirstCachingStrategy : CachingStrategy {
+internal class NetworkFirstCachingStrategy : CachingStrategy {
     override suspend fun <T> execute(
         fetchFromCache: suspend () -> T?,
         fetchFromNetwork: suspend () -> AppResult<T>,
@@ -141,7 +141,7 @@ class NetworkFirstCachingStrategy : CachingStrategy {
  * - Testing with mock data
  * - When network is explicitly disabled
  */
-class CacheOnlyStrategy : CachingStrategy {
+internal class CacheOnlyStrategy : CachingStrategy {
     override suspend fun <T> execute(
         fetchFromCache: suspend () -> T?,
         fetchFromNetwork: suspend () -> AppResult<T>,
@@ -166,7 +166,7 @@ class CacheOnlyStrategy : CachingStrategy {
  * - One-time fetch operations
  * - When cache should not be used
  */
-class NetworkOnlyStrategy : CachingStrategy {
+internal class NetworkOnlyStrategy : CachingStrategy {
     override suspend fun <T> execute(
         fetchFromCache: suspend () -> T?,
         fetchFromNetwork: suspend () -> AppResult<T>,
