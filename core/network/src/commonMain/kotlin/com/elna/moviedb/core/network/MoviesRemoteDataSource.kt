@@ -52,7 +52,7 @@ class MoviesRemoteDataSource(
     suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}movie/${movieId}") {
+                httpClient.get("${TMDB_BASE_URL}/movie/${movieId}") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
@@ -65,7 +65,7 @@ class MoviesRemoteDataSource(
     suspend fun getMovieVideos(movieId: Int, language: String): AppResult<RemoteVideoResponse> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}movie/${movieId}/videos") {
+                httpClient.get("${TMDB_BASE_URL}/movie/${movieId}/videos") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
@@ -79,7 +79,7 @@ class MoviesRemoteDataSource(
     suspend fun getMovieCredits(movieId: Int, language: String): AppResult<RemoteMovieCredits> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}movie/${movieId}/credits") {
+                httpClient.get("${TMDB_BASE_URL}/movie/${movieId}/credits") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)

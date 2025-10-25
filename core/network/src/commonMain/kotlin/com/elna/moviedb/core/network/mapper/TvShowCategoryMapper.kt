@@ -13,7 +13,7 @@ import com.elna.moviedb.core.model.TvShowCategory
  * @return TMDB API TV show category endpoint path (e.g., "tv/popular", "tv/on_the_air")
  */
 fun TvShowCategory.toTmdbPath(): String = when (this) {
-    TvShowCategory.POPULAR -> "tv/popular"
-    TvShowCategory.ON_THE_AIR -> "tv/on_the_air"
-    TvShowCategory.TOP_RATED -> "tv/top_rated"
+    TvShowCategory.POPULAR -> "/tv/popular"
+    TvShowCategory.ON_THE_AIR -> "/tv/on_the_air"
+    TvShowCategory.TOP_RATED -> "/tv/top_rated"
 }

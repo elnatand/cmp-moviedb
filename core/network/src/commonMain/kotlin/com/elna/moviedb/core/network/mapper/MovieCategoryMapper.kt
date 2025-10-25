@@ -13,7 +13,7 @@ import com.elna.moviedb.core.model.MovieCategory
  * @return TMDB API movie category endpoint path (e.g., "movie/popular", "movie/top_rated")
  */
 fun MovieCategory.toTmdbPath(): String = when (this) {
-    MovieCategory.POPULAR -> "movie/popular"
-    MovieCategory.TOP_RATED -> "movie/top_rated"
-    MovieCategory.NOW_PLAYING -> "movie/now_playing"
+    MovieCategory.POPULAR -> "/movie/popular"
+    MovieCategory.TOP_RATED -> "/movie/top_rated"
+    MovieCategory.NOW_PLAYING -> "/movie/now_playing"
 }

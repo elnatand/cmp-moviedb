@@ -51,7 +51,7 @@ class TvShowsRemoteDataSource(
     suspend fun getTvShowDetails(tvShowId: Int, language: String): AppResult<RemoteTvShowDetails> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}") {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
@@ -64,7 +64,7 @@ class TvShowsRemoteDataSource(
     suspend fun getTvShowVideos(tvShowId: Int, language: String): AppResult<RemoteVideoResponse> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}/videos") {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/videos") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
@@ -78,7 +78,7 @@ class TvShowsRemoteDataSource(
     suspend fun getTvShowCredits(tvShowId: Int, language: String): AppResult<RemoteTvShowCredits> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}/credits") {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/credits") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)

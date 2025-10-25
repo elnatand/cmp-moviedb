@@ -13,8 +13,8 @@ import com.elna.moviedb.core.model.SearchFilter
  * @return TMDB API search endpoint path (e.g., "search/multi", "search/movie")
  */
 fun SearchFilter.toTmdbPath(): String = when (this) {
-    SearchFilter.ALL -> "search/multi"
-    SearchFilter.MOVIES -> "search/movie"
-    SearchFilter.TV_SHOWS -> "search/tv"
-    SearchFilter.PEOPLE -> "search/person"
+    SearchFilter.ALL -> "/search/multi"
+    SearchFilter.MOVIES -> "/search/movie"
+    SearchFilter.TV_SHOWS -> "/search/tv"
+    SearchFilter.PEOPLE -> "/search/person"
 }
