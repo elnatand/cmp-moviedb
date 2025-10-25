@@ -24,10 +24,8 @@ import kotlinx.coroutines.withContext
  * Uses reified generics to maintain type safety while eliminating method duplication.
  */
 class SearchRemoteDataSource(
-    @PublishedApi
-    internal val httpClient: HttpClient,
-    @PublishedApi
-    internal val appDispatchers: AppDispatchers
+     val httpClient: HttpClient,
+     val appDispatchers: AppDispatchers
 ) {
 
     /**
@@ -58,7 +56,6 @@ class SearchRemoteDataSource(
     ): AppResult<T> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                // Use mapper to convert domain enum to TMDB API path
                 val endpoint = filter.toTmdbPath()
                 httpClient.get("$TMDB_BASE_URL$endpoint") {
                     url {
