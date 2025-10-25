@@ -8,8 +8,6 @@ import com.elna.moviedb.core.model.MovieCategory
  * Following Clean Architecture - keeps domain layer independent of infrastructure.
  * This mapper lives in the network layer where TMDB-specific details belong.
  *
- * Following Open/Closed Principle - adding new categories requires only adding a new case here.
- *
  * @return TMDB API movie category endpoint path (e.g., "movie/popular", "movie/top_rated")
  */
 fun MovieCategory.toTmdbPath(): String = when (this) {

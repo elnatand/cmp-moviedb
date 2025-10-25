@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
  * - View: ProfileScreen - Renders the state and dispatches intents
  * - Intent: [ProfileEvent] - User actions/intentions
  *
- * Following Interface Segregation Principle - depends only on AppSettingsPreferences,
+ * Depends only on AppSettingsPreferences,
  * not the full PreferencesManager with pagination methods it doesn't need.
  */
 class ProfileViewModel(

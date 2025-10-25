@@ -6,9 +6,8 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Generic interface for managing pagination state for any category.
  *
- * This interface follows the Interface Segregation Principle by separating
- * pagination concerns from app settings, and uses generic category keys
- * to support any content category without code changes.
+ * This interface separates pagination concerns from app settings,
+ * and uses generic category keys to support any content category without code changes.
  *
  * @see PreferencesManager for app settings (language, theme, etc.)
  */

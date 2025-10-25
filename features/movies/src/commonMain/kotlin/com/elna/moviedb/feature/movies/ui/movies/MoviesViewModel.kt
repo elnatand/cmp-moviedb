@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
  * ViewModel following MVI (Model-View-Intent) pattern for Movies screen.
  * Implements Android's unidirectional data flow (UDF) pattern.
  *
- * This ViewModel follows the Open/Closed Principle by using category abstraction.
+ * This ViewModel uses category abstraction.
  * New movie categories can be added to [MovieCategory] enum without modifying this class.
  *
  * UDF Components:

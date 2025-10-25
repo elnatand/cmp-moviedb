@@ -15,11 +15,11 @@ import kotlinx.coroutines.withContext
 /**
  * Remote data source for TMDB search API endpoints.
  *
- * Following Open/Closed Principle - uses SearchFilter enum and mapper pattern.
+ * Uses SearchFilter enum and mapper pattern.
  * Adding new search filters requires only:
  * 1. Adding to SearchFilter enum (domain)
  * 2. Adding mapping in SearchFilterMapper (network)
- * 3. No changes needed in this class!
+ * 3. No changes needed in this class
  *
  * Uses reified generics to maintain type safety while eliminating method duplication.
  */
@@ -30,7 +30,7 @@ class SearchRemoteDataSource(
 
     /**
      * Unified search method using SearchFilter enum.
-     * Following Open/Closed Principle - new filters don't require code changes here.
+     * New filters don't require code changes here.
      *
      * @param filter Type-safe search filter (ALL, MOVIES, TV_SHOWS, PEOPLE)
      * @param query The search query string

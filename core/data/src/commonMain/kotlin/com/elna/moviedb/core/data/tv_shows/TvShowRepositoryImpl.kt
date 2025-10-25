@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 /**
  * Implementation of TvShowsRepository that manages TV show data from remote API.
  *
- * This repository follows the Open/Closed Principle by using category abstraction.
+ * This repository uses category abstraction.
  * New TV show categories can be added to [TvShowCategory] enum without modifying this class.
  *
  * **Note:** This repository uses in-memory storage (MutableStateFlow) rather than
@@ -66,9 +66,6 @@ class TvShowRepositoryImpl(
      * Returns a flow of TV shows from the in-memory cache. Automatically triggers
      * initial load if cache is empty for the given category.
      *
-     * This method follows the Open/Closed Principle - new categories can be
-     * added to TvShowCategory enum without modifying this method.
-     *
      * @param category The TV show category to observe
      * @return Flow emitting list of TV shows for the category
      */
@@ -84,9 +81,6 @@ class TvShowRepositoryImpl(
 
     /**
      * Loads the next page of TV shows for a specific category from the remote API.
-     *
-     * This method follows the Open/Closed Principle - new categories can be
-     * added to TvShowCategory enum without modifying this method.
      *
      * @param category The TV show category to load
      * @return AppResult<Unit> Success if page loaded, Error if loading failed

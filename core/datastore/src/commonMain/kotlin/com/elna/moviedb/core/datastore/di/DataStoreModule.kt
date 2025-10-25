@@ -15,7 +15,7 @@ import org.koin.dsl.module
 expect val platformDataStoreModule: Module
 
 /**
- * Common DataStore module following Interface Segregation Principle.
+ * Common DataStore module.
  *
  * Provides segregated preference interfaces:
  * - AppSettingsPreferences: For app-level settings (language, theme)
@@ -25,7 +25,7 @@ expect val platformDataStoreModule: Module
 val dataStoreModule = module {
     includes(platformDataStoreModule)
 
-    // Segregated interfaces (ISP compliant)
+    // Segregated interfaces
     single { AppSettingsPreferencesImpl(get()) } bind AppSettingsPreferences::class
     single { PaginationPreferencesImpl(get()) } bind PaginationPreferences::class
 }

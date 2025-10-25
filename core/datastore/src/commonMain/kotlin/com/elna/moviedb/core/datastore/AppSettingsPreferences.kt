@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Interface for managing app-level settings preferences.
- * Following Interface Segregation Principle - contains only app settings methods.
+ * Contains only app settings methods.
  *
  * Clients that only need app settings (like ProfileViewModel) depend on this
  * interface instead of the full PreferencesManager, reducing unnecessary dependencies.

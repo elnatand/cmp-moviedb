@@ -7,8 +7,7 @@ import com.elna.moviedb.core.model.MovieCategory
  * Following Android's unidirectional data flow pattern, these are the only ways
  * users can interact with the ViewModel.
  *
- * This follows the Open/Closed Principle - new movie categories can be added
- * to [MovieCategory] enum without modifying this sealed interface.
+ * New movie categories can be added to [MovieCategory] enum without modifying this sealed interface.
  */
 sealed interface MoviesEvent {
     /**

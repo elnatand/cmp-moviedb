@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
  * to be notified when app language changes without tight coupling.
  *
  * Benefits:
- * - Open/Closed Principle: New features can register without modifying coordinator
- * - Dependency Inversion: Coordinator depends on abstraction, not concrete repositories
+ * - New features can register without modifying coordinator
+ * - Coordinator depends on abstraction, not concrete repositories
  * - Loose Coupling: No hardcoded repository dependencies
  */
 interface LanguageChangeListener {
@@ -30,11 +30,8 @@ interface LanguageChangeListener {
 /**
  * Coordinator that manages language change listeners using the Observer Pattern.
  *
- * Following Open/Closed Principle - new features can register as listeners
- * without modifying this class.
- *
- * Following Interface Segregation Principle - depends only on AppSettingsPreferences
- * for language monitoring.
+ * New features can register as listeners without modifying this class.
+ * Depends only on AppSettingsPreferences for language monitoring.
  *
  * Automatically starts observing language changes upon creation and notifies
  * all registered listeners when the language changes.

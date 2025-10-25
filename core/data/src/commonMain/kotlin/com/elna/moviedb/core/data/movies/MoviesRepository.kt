@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Repository interface for movie data operations.
  *
- * This interface follows the Open/Closed Principle by using category abstraction.
+ * This interface uses category abstraction.
  * New movie categories can be added to [MovieCategory] enum without modifying this interface.
  */
 interface MoviesRepository {

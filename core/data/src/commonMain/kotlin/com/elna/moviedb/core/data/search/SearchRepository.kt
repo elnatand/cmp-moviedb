@@ -7,12 +7,12 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository interface for search operations.
- * Following Open/Closed Principle - uses category parameter to avoid duplication.
+ * Uses category parameter to avoid duplication.
  *
  * To add a new search category:
  * 1. Add new value to [SearchFilter] enum
  * 2. Update [SearchRepositoryImpl] to handle the new category
- * 3. No changes needed to this interface - open for extension!
+ * 3. No changes needed to this interface
  */
 interface SearchRepository {
     /**

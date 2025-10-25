@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.map
 /**
  * Implementation of MoviesRepository that manages movie data from remote API and local cache.
  *
- * This repository follows the Open/Closed Principle by using category abstraction.
+ * This repository uses category abstraction.
  * New movie categories can be added to [MovieCategory] enum without modifying this class.
  *
  * This repository uses the Strategy Pattern for caching, allowing different caching
@@ -70,9 +70,6 @@ class MoviesRepositoryImpl(
      *
      * Returns a flow of movies from the local cache. Automatically triggers
      * initial load if cache is empty for the given category.
-     *
-     * This method follows the Open/Closed Principle - new categories can be
-     * added to MovieCategory enum without modifying this method.
      */
     override suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>> {
         // Use type-safe category enum directly
@@ -97,9 +94,6 @@ class MoviesRepositoryImpl(
 
     /**
      * Loads the next page of movies for a specific category from the remote API.
-     *
-     * This method follows the Open/Closed Principle - new categories can be
-     * added to MovieCategory enum without modifying this method.
      *
      * @param category The movie category to load
      * @return AppResult<Unit> Success if page loaded, Error if loading failed
@@ -331,9 +325,6 @@ class MoviesRepositoryImpl(
      * It clears the local cache and fetches fresh data in the new language.
      *
      * This method automatically handles all categories defined in [MovieCategory] enum.
-     *
-     * Uses segregated clear methods following Interface Segregation Principle.
-     * Each data source interface has its own clear method for its specific concern.
      */
     override suspend fun clearAndReload() {
         // Clear all pagination state and local data

@@ -5,8 +5,8 @@ import com.elna.moviedb.core.model.AppResult
 /**
  * Strategy interface for implementing different caching patterns.
  *
- * This interface follows the Strategy Pattern and Single Responsibility Principle
- * by separating caching logic from repository business logic.
+ * This interface follows the Strategy Pattern by separating caching logic
+ * from repository business logic.
  *
  *
  * Usage example:

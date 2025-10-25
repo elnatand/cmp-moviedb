@@ -23,7 +23,7 @@ class MoviesRemoteDataSource(
     /**
      * Fetches a page of movies for any category from TMDB API.
      *
-     * This generic method supports all movie categories, following the Open/Closed Principle.
+     * This generic method supports all movie categories.
      * New categories can be added without modifying this method.
      *
      * @param apiPath The TMDB API path (e.g., "movie/popular", "movie/top_rated")

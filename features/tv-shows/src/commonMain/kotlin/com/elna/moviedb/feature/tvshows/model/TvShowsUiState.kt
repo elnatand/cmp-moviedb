@@ -5,7 +5,7 @@ import com.elna.moviedb.core.model.TvShowCategory
 
 /**
  * Represents the UI state for the TV Shows screen.
- * Uses map-based state management following the Open/Closed Principle.
+ * Uses map-based state management.
  *
  * This design allows adding new TV show categories without modifying this class.
  * Simply add the new category to the TvShowCategory enum, and it will automatically

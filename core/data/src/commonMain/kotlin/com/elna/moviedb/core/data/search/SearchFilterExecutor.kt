@@ -30,8 +30,8 @@ private fun interface SearchStrategy {
 /**
  * Registry mapping SearchFilter to its execution strategy.
  *
- * Following Open/Closed Principle - adding new filters requires only adding to this registry.
- * The repository code remains unchanged!
+ * Adding new filters requires only adding to this registry.
+ * The repository code remains unchanged.
  *
  * Benefits:
  * - Centralized filter-to-strategy mapping

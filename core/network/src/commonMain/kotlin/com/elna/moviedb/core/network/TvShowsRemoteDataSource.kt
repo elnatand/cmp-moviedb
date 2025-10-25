@@ -22,7 +22,7 @@ class TvShowsRemoteDataSource(
     /**
      * Fetches a page of TV shows for any category from TMDB API.
      *
-     * This generic method supports all TV show categories, following the Open/Closed Principle.
+     * This generic method supports all TV show categories.
      * New categories can be added without modifying this method.
      *
      * @param apiPath The TMDB API path (e.g., "tv/popular", "tv/on_the_air")

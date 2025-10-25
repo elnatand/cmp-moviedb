@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Interface for movies list operations (categories, pagination).
- * Following Interface Segregation Principle - clients only depend on what they need.
+ * Clients only depend on what they need.
  *
  * Use this interface for:
  * - Fetching paginated movie lists by category
@@ -39,7 +39,7 @@ interface MoviesListDataSource {
 
 /**
  * Interface for movie details operations.
- * Following Interface Segregation Principle - focused on movie detail entity only.
+ * Focused on movie detail entity only.
  *
  * Use this interface for:
  * - Fetching detailed movie information
@@ -68,7 +68,7 @@ interface MovieDetailsDataSource {
 
 /**
  * Interface for movie videos/trailers operations.
- * Following Interface Segregation Principle - focused on video entities only.
+ * Focused on video entities only.
  *
  * Use this interface for:
  * - Managing movie trailers and video clips
@@ -103,7 +103,7 @@ interface MovieVideosDataSource {
 
 /**
  * Interface for movie cast operations.
- * Following Interface Segregation Principle - focused on cast entities only.
+ * Focused on cast entities only.
  *
  * Use this interface for:
  * - Managing movie cast information
@@ -133,8 +133,7 @@ interface MovieCastDataSource {
 
 /**
  * Composite interface combining all movie data source interfaces.
- * Following Interface Segregation Principle - clients can depend on focused interfaces
- * or this composite if they need multiple data sources.
+ * Clients can depend on focused interfaces or this composite if they need multiple data sources.
  *
  * Use this interface when:
  * - You need access to multiple movie data operations
