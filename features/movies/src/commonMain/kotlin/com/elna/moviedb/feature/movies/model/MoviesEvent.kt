@@ -1,25 +1,21 @@
 package com.elna.moviedb.feature.movies.model
 
+import com.elna.moviedb.core.model.MovieCategory
+
 /**
  * Represents all possible user actions/events in the Movies screen.
  * Following Android's unidirectional data flow pattern, these are the only ways
  * users can interact with the ViewModel.
+ *
+ * New movie categories can be added to [MovieCategory] enum without modifying this sealed interface.
  */
 sealed interface MoviesEvent {
     /**
-     * User scrolled near the end of popular movies and wants to load more
+     * User scrolled near the end of a movie category and wants to load more.
+     *
+     * @property category The movie category to load the next page for
      */
-    data object LoadNextPagePopular : MoviesEvent
-
-    /**
-     * User scrolled near the end of top rated movies and wants to load more
-     */
-    data object LoadNextPageTopRated : MoviesEvent
-
-    /**
-     * User scrolled near the end of now playing movies and wants to load more
-     */
-    data object LoadNextPageNowPlaying : MoviesEvent
+    data class LoadNextPage(val category: MovieCategory) : MoviesEvent
 
     /**
      * User clicked retry button after an error

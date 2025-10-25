@@ -20,7 +20,7 @@ class PersonRemoteDataSource(
     suspend fun getPersonDetails(personId: Int, language: String): AppResult<RemotePersonDetails> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}person/$personId") {
+                httpClient.get("${TMDB_BASE_URL}/person/$personId") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
@@ -33,7 +33,7 @@ class PersonRemoteDataSource(
     suspend fun getCombinedCredits(personId: Int, language: String): AppResult<RemoteCombinedCredits> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}person/$personId/combined_credits") {
+                httpClient.get("${TMDB_BASE_URL}/person/$personId/combined_credits") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)

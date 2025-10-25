@@ -36,4 +36,17 @@ sealed class SearchResultItem {
     ) : SearchResultItem()
 }
 
-enum class SearchFilter { ALL, MOVIES, TV_SHOWS, PEOPLE }
+/**
+ * Search filter enum representing domain-level search categories.
+ *
+ * This is a pure domain model with no infrastructure dependencies.
+ * Following Clean Architecture - keeps domain independent of API details.
+ *
+ * Mapping to infrastructure (e.g., TMDB API paths) is handled in the network layer.
+ */
+enum class SearchFilter {
+    ALL,
+    MOVIES,
+    TV_SHOWS,
+    PEOPLE
+}

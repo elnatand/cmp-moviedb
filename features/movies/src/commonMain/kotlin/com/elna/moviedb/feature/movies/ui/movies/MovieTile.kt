@@ -17,13 +17,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toPosterUrl
 
 @Composable
 fun MovieTile(
     movie: Movie,
     onClick: (movieId: Int, title: String) -> Unit
 ) {
-    val imageUrl = movie.posterPath ?: ""
+    val imageUrl = movie.posterPath.toPosterUrl()
 
     Card(
         modifier = Modifier.width(144.dp),

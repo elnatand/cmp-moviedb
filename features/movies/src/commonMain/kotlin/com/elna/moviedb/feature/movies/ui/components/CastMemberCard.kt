@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.CastMember
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toProfileUrl
 
 @Composable
 internal fun CastMemberCard(
@@ -45,23 +46,26 @@ internal fun CastMemberCard(
                     .fillMaxWidth()
                     .height(160.dp)
             ) {
-                castMember.profilePath?.let { profilePath ->
+                val profileUrl = castMember.profilePath.toProfileUrl()
+                if (profileUrl.isNotEmpty()) {
                     ImageLoader(
-                        imageUrl = profilePath,
+                        imageUrl = profileUrl,
                         modifier = Modifier.fillMaxSize()
                     )
-                } ?: Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 

@@ -5,10 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.search.SearchRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchFilter
-import com.elna.moviedb.core.model.SearchResultItem
 import com.elna.moviedb.feature.search.model.SearchEvent
 import com.elna.moviedb.feature.search.model.SearchUiState
+import com.elna.moviedb.feature.search.strategy.AllSearchStrategy
+import com.elna.moviedb.feature.search.strategy.MovieSearchStrategy
+import com.elna.moviedb.feature.search.strategy.PeopleSearchStrategy
+import com.elna.moviedb.feature.search.strategy.SearchStrategy
+import com.elna.moviedb.feature.search.strategy.TvShowSearchStrategy
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
@@ -24,6 +29,7 @@ import kotlinx.coroutines.launch
  * - Model: [SearchUiState] - Immutable state representing the UI
  * - View: SearchScreen - Renders the state and dispatches intents
  * - Intent: [SearchEvent] - User actions/intentions
+ *
  */
 @OptIn(FlowPreview::class)
 class SearchViewModel(
@@ -32,6 +38,20 @@ class SearchViewModel(
 
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState
+
+    private var currentSearchJob: Job? = null
+
+    private val strategies by lazy {
+        mapOf(
+            SearchFilter.ALL to AllSearchStrategy(searchRepository),
+            SearchFilter.MOVIES to MovieSearchStrategy(searchRepository),
+            SearchFilter.TV_SHOWS to TvShowSearchStrategy(searchRepository),
+            SearchFilter.PEOPLE to PeopleSearchStrategy(searchRepository),
+        )
+    }
+
+    private fun getStrategyForFilter(filter: SearchFilter): SearchStrategy =
+        strategies.getValue(filter)
 
     init {
         viewModelScope.launch {
@@ -92,7 +112,12 @@ class SearchViewModel(
         }
 
         val nextPage = currentState.currentPage + 1
-        performSearch(currentState.searchQuery, currentState.selectedFilter, nextPage, isLoadingMore = true)
+        performSearch(
+            currentState.searchQuery,
+            currentState.selectedFilter,
+            nextPage,
+            isLoadingMore = true
+        )
     }
 
     private fun onRetry() {
@@ -102,13 +127,22 @@ class SearchViewModel(
         }
     }
 
+    /**
+     * Performs a search using the Strategy Pattern.
+     * This method is now closed for modification - new filters can be added by:
+     * 1. Creating a new SearchStrategy implementation
+     * 2. Adding a case to getStrategyForFilter()
+     *
+     * No changes to this method are needed when adding new filter types.
+     */
     private fun performSearch(
         query: String,
         filter: SearchFilter,
         page: Int,
         isLoadingMore: Boolean = false
     ) {
-        viewModelScope.launch {
+        currentSearchJob?.cancel()
+        currentSearchJob = viewModelScope.launch {
             _uiState.update {
                 it.copy(
                     isLoading = !isLoadingMore,
@@ -118,30 +152,9 @@ class SearchViewModel(
                 )
             }
 
-            val result = when (filter) {
-                SearchFilter.ALL -> searchRepository.searchAll(query, page).first()
-
-                SearchFilter.MOVIES -> {
-                    when (val movieResult = searchRepository.searchMovies(query, page).first()) {
-                        is AppResult.Success -> AppResult.Success(movieResult.data.map { it as SearchResultItem })
-                        is AppResult.Error -> movieResult
-                    }
-                }
-
-                SearchFilter.TV_SHOWS -> {
-                    when (val tvShowResult = searchRepository.searchTvShows(query, page).first()) {
-                        is AppResult.Success -> AppResult.Success(tvShowResult.data.map { it as SearchResultItem })
-                        is AppResult.Error -> tvShowResult
-                    }
-                }
-
-                SearchFilter.PEOPLE -> {
-                    when (val peopleResult = searchRepository.searchPeople(query, page).first()) {
-                        is AppResult.Success -> AppResult.Success(peopleResult.data.map { it as SearchResultItem })
-                        is AppResult.Error -> peopleResult
-                    }
-                }
-            }
+            // Strategy Pattern - delegate search to the appropriate strategy
+            val strategy = getStrategyForFilter(filter)
+            val result = strategy.search(query, page).first()
 
             _uiState.update { currentState ->
                 when (result) {
@@ -161,6 +174,7 @@ class SearchViewModel(
                             errorMessage = null
                         )
                     }
+
                     is AppResult.Error -> {
                         currentState.copy(
                             isLoading = false,

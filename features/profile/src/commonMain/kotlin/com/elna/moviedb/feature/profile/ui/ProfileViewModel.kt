@@ -2,7 +2,7 @@ package com.elna.moviedb.feature.profile.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.elna.moviedb.core.datastore.PreferencesManager
+import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
 import com.elna.moviedb.feature.profile.model.ProfileEvent
@@ -20,14 +20,17 @@ import kotlinx.coroutines.launch
  * - Model: [ProfileUiState] - Immutable state representing the UI
  * - View: ProfileScreen - Renders the state and dispatches intents
  * - Intent: [ProfileEvent] - User actions/intentions
+ *
+ * Depends only on AppSettingsPreferences,
+ * not the full PreferencesManager with pagination methods it doesn't need.
  */
 class ProfileViewModel(
-    private val preferencesManager: PreferencesManager
+    private val appSettingsPreferences: AppSettingsPreferences
 ) : ViewModel() {
 
     val uiState: StateFlow<ProfileUiState> = combine(
-        preferencesManager.getAppLanguageCode(),
-        preferencesManager.getAppTheme()
+        appSettingsPreferences.getAppLanguageCode(),
+        appSettingsPreferences.getAppTheme()
     ) { languageCode, theme ->
         ProfileUiState(
             selectedLanguageCode = languageCode,
@@ -55,13 +58,13 @@ class ProfileViewModel(
 
     private fun setLanguage(language: AppLanguage) {
         viewModelScope.launch {
-            preferencesManager.setAppLanguageCode(language)
+            appSettingsPreferences.setAppLanguageCode(language)
         }
     }
 
     private fun setTheme(theme: AppTheme) {
         viewModelScope.launch {
-            preferencesManager.setAppTheme(theme)
+            appSettingsPreferences.setAppTheme(theme)
         }
     }
 }

@@ -30,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toBackdropUrl
+import com.elna.moviedb.core.ui.utils.toPosterUrl
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.rating
 import com.elna.moviedb.resources.votes
@@ -43,12 +45,10 @@ internal fun MovieHeroSection(movie: MovieDetails) {
             .height(450.dp)
     ) {
         // Backdrop Image
-        movie.backdropPath?.let { backdropPath ->
-            ImageLoader(
-                imageUrl = backdropPath,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        ImageLoader(
+            imageUrl = movie.backdropPath.toBackdropUrl(),
+            modifier = Modifier.fillMaxSize()
+        )
 
         // Gradient Overlay
         Box(
@@ -65,22 +65,20 @@ internal fun MovieHeroSection(movie: MovieDetails) {
         )
 
         // Poster
-        movie.posterPath?.let { posterPath ->
-            Card(
-                modifier = Modifier
-                    .systemBarsPadding()
-                    .width(120.dp)
-                    .height(180.dp)
-                    .align(Alignment.TopStart)
-                    .padding(start = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                ImageLoader(
-                    imageUrl = posterPath,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+        Card(
+            modifier = Modifier
+                .systemBarsPadding()
+                .width(120.dp)
+                .height(180.dp)
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp),
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            ImageLoader(
+                imageUrl = movie.posterPath.toPosterUrl(),
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         // Title and Basic Info

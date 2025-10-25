@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.toProfileUrl
 
 @Composable
 internal fun PersonHeroSection(
@@ -69,7 +70,7 @@ internal fun PersonHeroSection(
                             .height(450.dp)
                     ) {
                         ImageLoader(
-                            imageUrl = profilePath,
+                            imageUrl = profilePath.toProfileUrl(),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .blur(25.dp),
@@ -95,7 +96,7 @@ internal fun PersonHeroSection(
                     ) {
                         ImageLoader(
                             contentScale = ContentScale.Fit,
-                            imageUrl = profilePath,
+                            imageUrl = profilePath.toProfileUrl(),
                             modifier = Modifier.fillMaxSize(),
                             contentDescription = person.name
                         )

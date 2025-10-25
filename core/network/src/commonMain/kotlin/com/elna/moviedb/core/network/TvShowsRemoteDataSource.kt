@@ -19,19 +19,39 @@ class TvShowsRemoteDataSource(
     private val appDispatchers: AppDispatchers
 ) {
 
-    suspend fun getPopularTvShowsPage(page: Int, language: String) =
-        fetchTvShowsPage("tv/popular", page, language)
-
-    suspend fun getOnTheAirTvShowsPage(page: Int, language: String) =
-        fetchTvShowsPage("tv/on_the_air", page, language)
-
-    suspend fun getTopRatedTvShowsPage(page: Int, language: String) =
-        fetchTvShowsPage("tv/top_rated", page, language)
+    /**
+     * Fetches a page of TV shows for any category from TMDB API.
+     *
+     * This generic method supports all TV show categories.
+     * New categories can be added without modifying this method.
+     *
+     * @param apiPath The TMDB API path (e.g., "tv/popular", "tv/on_the_air")
+     * @param page The page number to fetch
+     * @param language The language code for the results
+     * @return AppResult containing the TV shows page or an error
+     */
+    suspend fun fetchTvShowsPage(
+        apiPath: String,
+        page: Int,
+        language: String
+    ): AppResult<RemoteTvShowsPage> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}$apiPath") {
+                    url {
+                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("page", page.toString())
+                        parameters.append("language", language)
+                    }
+                }.body<RemoteTvShowsPage>()
+            }
+        }
+    }
 
     suspend fun getTvShowDetails(tvShowId: Int, language: String): AppResult<RemoteTvShowDetails> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}") {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
@@ -44,10 +64,11 @@ class TvShowsRemoteDataSource(
     suspend fun getTvShowVideos(tvShowId: Int, language: String): AppResult<RemoteVideoResponse> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}/videos") {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/videos") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
+                        parameters.append("include_video_language", "$language,null")
                     }
                 }.body<RemoteVideoResponse>()
             }
@@ -57,30 +78,12 @@ class TvShowsRemoteDataSource(
     suspend fun getTvShowCredits(tvShowId: Int, language: String): AppResult<RemoteTvShowCredits> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}tv/${tvShowId}/credits") {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/credits") {
                     url {
                         parameters.append("api_key", TMDB_API_KEY)
                         parameters.append("language", language)
                     }
                 }.body<RemoteTvShowCredits>()
-            }
-        }
-    }
-
-    private suspend fun fetchTvShowsPage(
-        path: String,
-        page: Int,
-        language: String
-    ): AppResult<RemoteTvShowsPage> {
-        return withContext(appDispatchers.io) {
-            safeApiCall {
-                httpClient.get("${TMDB_BASE_URL}$path") {
-                    url {
-                        parameters.append("api_key", TMDB_API_KEY)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                    }
-                }.body<RemoteTvShowsPage>()
             }
         }
     }

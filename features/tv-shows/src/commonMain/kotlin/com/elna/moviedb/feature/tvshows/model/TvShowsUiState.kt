@@ -1,31 +1,50 @@
 package com.elna.moviedb.feature.tvshows.model
 
 import com.elna.moviedb.core.model.TvShow
+import com.elna.moviedb.core.model.TvShowCategory
 
 /**
  * Represents the UI state for the TV Shows screen.
- * Contains three separate lists of TV shows and their individual pagination states.
+ * Uses map-based state management.
+ *
+ * This design allows adding new TV show categories without modifying this class.
+ * Simply add the new category to the TvShowCategory enum, and it will automatically
+ * be supported by this state structure.
  *
  * @property state Overall screen state (LOADING, ERROR, SUCCESS)
- * @property popularTvShows List of popular TV shows
- * @property topRatedTvShows List of top-rated TV shows
- * @property onTheAirTvShows List of currently airing TV shows
- * @property isLoadingPopular True when loading more popular TV shows (pagination)
- * @property isLoadingTopRated True when loading more top-rated TV shows (pagination)
- * @property isLoadingOnTheAir True when loading more on-the-air TV shows (pagination)
+ * @property tvShowsByCategory Map of TV show categories to their respective TV show lists
+ * @property loadingByCategory Map of TV show categories to their pagination loading states
  */
 data class TvShowsUiState(
     val state: State,
-    val popularTvShows: List<TvShow> = emptyList(),
-    val topRatedTvShows: List<TvShow> = emptyList(),
-    val onTheAirTvShows: List<TvShow> = emptyList(),
-    val isLoadingPopular: Boolean = false,
-    val isLoadingTopRated: Boolean = false,
-    val isLoadingOnTheAir: Boolean = false
+    val tvShowsByCategory: Map<TvShowCategory, List<TvShow>> = emptyMap(),
+    val loadingByCategory: Map<TvShowCategory, Boolean> = emptyMap()
 ) {
 
+    /**
+     * Returns true if any category has data.
+     */
     val hasAnyData: Boolean
-        get() = popularTvShows.isNotEmpty() || topRatedTvShows.isNotEmpty() || onTheAirTvShows.isNotEmpty()
+        get() = tvShowsByCategory.values.any { it.isNotEmpty() }
+
+    /**
+     * Gets TV shows for a specific category.
+     *
+     * @param category The TV show category to retrieve
+     * @return List of TV shows for the category, or empty list if category not found
+     */
+    fun getTvShows(category: TvShowCategory): List<TvShow> =
+        tvShowsByCategory[category] ?: emptyList()
+
+    /**
+     * Checks if a specific category is currently loading more TV shows (pagination).
+     *
+     * @param category The TV show category to check
+     * @return True if the category is loading, false otherwise
+     */
+    fun isLoading(category: TvShowCategory): Boolean =
+        loadingByCategory[category] ?: false
+
     enum class State {
         LOADING, ERROR, SUCCESS
     }
