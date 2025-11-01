@@ -83,6 +83,8 @@ class TvShowRepositoryImpl(
     /**
      * Loads the next page of TV shows for a specific category from the remote API.
      *
+     * Ensures distinct TV shows by ID when adding new pages to prevent duplicates.
+     *
      * @param category The TV show category to load
      * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
@@ -105,7 +107,7 @@ class TvShowRepositoryImpl(
                 }
 
                 val flow = getFlowForCategory(category)
-                flow.value += newTvShows
+                flow.value = (flow.value + newTvShows).distinctBy { it.id }
                 currentPages[category] = nextPage
 
                 AppResult.Success(Unit)
