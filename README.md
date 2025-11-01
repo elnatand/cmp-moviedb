@@ -1,17 +1,17 @@
 # CMP MovieDB
 
-A Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform that displays movies and TV shows information. The app targets both Android and iOS platforms with shared business logic and UI components using a modular architecture approach.
+A Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform (CMP) that displays movies, TV shows and Actors information. The app targets both Android and iOS platforms with shared business logic and UI components using a modular architecture approach.
 
 ## 🏗️ Architecture
 
 The project follows Clean Architecture principles with a **feature-based multi-module architecture**:
 
 - **Multi-Module Design**: Separated into core modules and feature modules for scalability
-- **MVI Pattern**: Model-View-Intent with unidirectional data flow
+- **MVI Pattern**: Model-View-Intent with unidirectional data flow (UDF)
 - **Repository Pattern**: Data layer abstraction across modules
 - **Dependency Injection**: Koin for DI coordination across all modules
 - **Compose Multiplatform**: Shared UI components in dedicated modules
-- **Room Database**: Local database management with dedicated database module
+- **Room Database**: Local database management
 - **DataStore**: Typed data storage for preferences and pagination state persistence
 
 ## 📱 Features
@@ -38,10 +38,8 @@ The project follows Clean Architecture principles with a **feature-based multi-m
 - **Search**: Multi-type search functionality across movies, TV shows, and people with filter options
 - **Profile**: User profile management with language and theme selection
 - **Cross-platform**: Shared multi-module codebase for Android and iOS
-- **Offline Support**: Local database caching with Room for movies, movie details, cast members, and trailers
+- **Offline Support (Currently for movies section only)**: Local database caching with Room for movies, movie details, cast members, and trailers
 - **Persistent Pagination**: Pagination state persists across app restarts via DataStore
-- **Auto-pagination**: Automatic loading of next pages when scrolling to bottom
-- **Error Handling**: Distinct initial load and pagination error states with proper UI feedback
 - **Internationalization**: Support for 4 languages (English, Hebrew, Hindi, Arabic) with dynamic switching and automatic content refresh
 - **Dark Mode Support**: System-based dark/light theme with Material 3
 - **Modern UI**: Material 3 design system with tile-based layouts and responsive components
@@ -96,7 +94,7 @@ cmp-moviedb/
 ## 🛠️ Technology Stack
 
 ### Shared
-- **Kotlin Multiplatform** - Cross-platform development
+- **Kotlin Multiplatform** - Multi-platform development
 - **Compose Multiplatform** - UI framework
 - **Koin** - Dependency injection with Compose and ViewModel support
 - **Room** - Local database with SQLite bundled driver
@@ -234,93 +232,6 @@ TMDB_API_KEY=abcd1234567890efgh
 ./gradlew :composeApp:build
 ```
 
-## 📦 Modules Overview
-
-### Core Modules
-- **core:common** - AppDispatchers, shared utilities, and common DI module
-  - Platform-agnostic coroutine dispatchers (IO, Main, Default)
-  - Common utilities for cross-platform functionality
-- **core:data** - Repository implementations with simplified architecture
-  - **MoviesRepository**: Offline-first with Room database caching for movies and details
-  - **TvShowsRepository**: In-memory storage with reactive StateFlow updates
-  - **SearchRepository**: Multi-type search with strategy pattern for filtering
-  - **PersonRepository**: Person/cast details management
-  - **LanguageChangeCoordinator**: Observer pattern for language-aware cache invalidation
-  - **OfflineFirstCachingStrategy**: Consistent caching pattern across repositories
-  - Clean separation: Repository provides data, ViewModel coordinates state
-- **core:database** - Room database with platform-specific drivers
-  - AppDatabase with 4 entity tables: MovieEntity, MovieDetailsEntity, VideoEntity, CastMemberEntity
-  - MovieDao and MovieDetailsDao for database operations
-  - SQLite bundled driver for cross-platform support
-  - MoviesLocalDataSource, MovieDetailsDataSource, and MovieVideosDataSource interfaces
-  - Foreign key relationships between entities (e.g., CastMemberEntity → MovieDetailsEntity)
-  - Platform-specific database construction via expect/actual pattern
-- **core:datastore** - Preferences and app state management
-  - **AppSettingsPreferences**: Language and theme preferences
-  - **PaginationPreferences**: Pagination state persistence across app restarts
-  - Platform-specific DataStore factory implementation
-- **core:model** - Clean architecture domain models
-  - Core models: Movie, MovieDetails, TvShow, TvShowDetails, PersonDetails, CastMember, Video
-  - Category enums: MovieCategory, TvShowCategory
-  - Support models: AppLanguage, AppTheme, SearchResultItem, SearchFilter, FilmographyCredit
-  - AppResult<T> generic wrapper for success/error handling with utility extensions
-- **core:network** - Network layer with Ktor client
-  - **Remote data sources**: MoviesRemoteDataSource, TvShowsRemoteDataSource, SearchRemoteDataSource, PersonRemoteDataSource
-  - TMDB API integration with complete DTOs and domain model mappers
-  - Platform-specific HTTP client configurations (OkHttp for Android, Darwin for iOS)
-  - Platform-specific API key loading via expect/actual pattern
-- **core:ui** - Shared UI components and design system
-  - Material 3 design system components (AppLoader, AppErrorComponent)
-  - ImageLoader utility with Coil integration
-  - Navigation routes and UI extensions
-  - DateFormatter for localized date display
-  - Shared string resources with 121+ strings per language (English, Arabic, Hebrew, Hindi)
-  - Platform-specific theme and locale handling
-
-### Feature Modules
-- **features:movies** - Complete movies feature with MVI architecture
-  - **MoviesScreen**: Browse movies by category (Popular, Top Rated, Now Playing) with infinite scroll
-  - **MovieDetailsScreen**: Comprehensive movie details with cast, trailers, and production info
-  - **Components**: MovieTile, MovieHeroSection, TrailersSection, CastSection, BoxOfficeItem
-  - **MoviesViewModel**: Handles category-based state management with map pattern
-  - **MovieDetailsViewModel**: Manages details loading, cast, and video data
-  - Offline-first with Room database caching for movies, details, cast, and trailers
-- **features:tv-shows** - TV shows feature with complete details
-  - **TvShowsScreen**: Browse TV shows by category with pagination
-  - **TvShowDetailsScreen**: Series info, episodes, networks, cast, and trailers
-  - **Components**: TvShowTile, HeroSection, TrailersSection, CastSection, NetworksSection, SeriesInfoSection
-  - **TvShowsViewModel** and **TvShowDetailsViewModel**: Similar MVI pattern to movies
-  - In-memory caching with reactive StateFlow updates
-- **features:person** - Person/cast details feature
-  - **PersonDetailsScreen**: Biography, filmography, and personal information
-  - **Components**: PersonHeroSection, PersonInfoCard, FilmographySection, FilmographyCard
-  - **PersonDetailsViewModel**: Manages person data and filmography
-  - Displays cast member profiles with work history
-- **features:search** - Multi-type search with filters
-  - **SearchScreen**: Search across movies, TV shows, and people
-  - **SearchViewModel**: Strategy pattern for filter-based searches
-  - **Components**: SearchBar, SearchFilters, SearchResultItem, SearchEmptyState
-  - Filter options: ALL, MOVIES, TV_SHOWS, PEOPLE
-  - Real-time search with pagination support
-- **features:profile** - User profile and settings
-  - **ProfileScreen**: Language selection, theme toggle, app info
-  - **ProfileViewModel**: Manages user preferences with DataStore
-  - Language options: English, Arabic, Hebrew, Hindi
-  - Theme options: Light, Dark, System Default
-  - Triggers automatic content refresh on language change
-
-### App Module
-- **composeApp** - Main application orchestration
-  - Cross-platform App composable
-  - Root navigation setup with bottom navigation
-  - DI module coordination across features
-  - Platform-specific MainActivity (Android) and MainViewController (iOS)
-
-### Build Logic
-- **build-logic:convention** - Gradle convention plugins for consistent builds
-  - `moviedb.kotlin.multiplatform` - KMP configuration with iOS ARM64/Simulator
-  - `moviedb.kotlin.composeMultiplatform` - Compose dependencies and resources
-  - `moviedb.android.library` - Standardized Android library setup
 
 ## 🏛️ Architecture Overview
 
@@ -335,11 +246,6 @@ The project uses a simplified repository pattern where:
 - **TV Shows**: In-memory storage with reactive StateFlow updates
 - **Preferences**: DataStore for app settings and pagination state persistence
 - **Cache Invalidation**: Automatic clearing of stale data on language changes
-
-### Error Handling
-- **Initial Load Errors**: Block UI with error screen when no cached data available
-- **Pagination Errors**: Non-blocking snackbar notifications while keeping cached data visible
-- **Explicit Error States**: ViewModel explicitly handles `AppResult<Unit>` from repository operations
 
 ### Architecture Layers
 
@@ -383,36 +289,6 @@ The project uses a simplified repository pattern where:
 - **Compose Resources** for shared string resources with 4-language support (English, Hebrew, Hindi, Arabic)
 - **Platform-specific** configurations using expect/actual pattern
 - **Room Database** with SQLite bundled driver for offline support
-
-### Development Commands
-```bash
-# Build all modules
-./gradlew build
-
-# Clean build
-./gradlew clean build
-
-# Android builds
-./gradlew :composeApp:assembleDebug        # Debug APK
-./gradlew :composeApp:assembleRelease      # Release APK
-./gradlew :composeApp:installDebug         # Install debug APK
-
-# Build specific modules
-./gradlew :core:data:build                 # Build data module
-./gradlew :features:movies:build           # Build movies feature
-./gradlew :core:database:build             # Build database module
-
-# Run tests
-./gradlew test                             # Run all unit tests
-./gradlew :core:data:test                  # Test specific module
-
-# Code quality (configure ktlint if needed)
-./gradlew ktlintCheck                      # Check code style
-./gradlew ktlintFormat                     # Auto-format code
-
-# iOS development (requires Xcode)
-# Open iosApp/iosApp.xcodeproj in Xcode or use Android Studio
-```
 
 ### Troubleshooting
 - **Java Version Issues**: Use JDK 17-21. Java 25 has compatibility issues
