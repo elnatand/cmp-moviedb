@@ -16,6 +16,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 /**
  * Implementation of TvShowsRepository that manages TV show data from remote API.
@@ -89,7 +90,7 @@ class TvShowRepositoryImpl(
         val currentPage = currentPages[category] ?: 0
         val totalPage = totalPages[category] ?: 0
 
-        if (totalPage > 0 && currentPage >= totalPage) {
+        if (totalPage in 1..currentPage) {
             return AppResult.Success(Unit)  // All pages loaded
         }
 
@@ -104,7 +105,7 @@ class TvShowRepositoryImpl(
                 }
 
                 val flow = getFlowForCategory(category)
-                flow.value = flow.value + newTvShows
+                flow.value += newTvShows
                 currentPages[category] = nextPage
 
                 AppResult.Success(Unit)
