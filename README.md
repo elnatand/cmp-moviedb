@@ -17,21 +17,34 @@ The project follows Clean Architecture principles with a **feature-based multi-m
 ## 📱 Features
 
 ### Currently Implemented
-- **Movies**: Browse popular movies with infinite scroll pagination
-- **Movie Details**: View detailed information about individual movies
-- **TV Shows**: Explore popular TV shows with pagination support
-- **TV Show Details**: View detailed information about individual TV shows
-- **Person Details**: View cast and crew member information
-- **Search**: Search functionality across movies and TV shows
-- **Profile**: User profile management with language selection
+- **Movies**: Browse popular, top-rated, and now-playing movies with infinite scroll pagination
+- **Movie Details**: View comprehensive movie information including:
+  - Overview, genres, runtime, release date, ratings
+  - Budget and revenue with formatted numbers
+  - Production companies and countries
+  - **Cast & Crew**: Browse cast members with profile images and character names
+  - **Trailers**: Watch official trailers and videos
+- **TV Shows**: Explore popular, top-rated, and on-the-air TV shows with pagination support
+- **TV Show Details**: View detailed information including:
+  - Series information (seasons, episodes, status)
+  - Networks, languages, and production details
+  - **Cast Section**: Browse TV show cast with character information
+  - **Trailers**: Watch official trailers and promotional videos
+  - Episode runtime and air dates
+- **Person Details**: View cast and crew member information with:
+  - Biography and personal information (birthdate, birthplace)
+  - Filmography with work credits
+  - Profile images and known roles
+- **Search**: Multi-type search functionality across movies, TV shows, and people with filter options
+- **Profile**: User profile management with language and theme selection
 - **Cross-platform**: Shared multi-module codebase for Android and iOS
-- **Offline Support**: Local database caching with Room for movies and movie details
+- **Offline Support**: Local database caching with Room for movies, movie details, cast members, and trailers
 - **Persistent Pagination**: Pagination state persists across app restarts via DataStore
 - **Auto-pagination**: Automatic loading of next pages when scrolling to bottom
 - **Error Handling**: Distinct initial load and pagination error states with proper UI feedback
 - **Internationalization**: Support for 4 languages (English, Hebrew, Hindi, Arabic) with dynamic switching and automatic content refresh
 - **Dark Mode Support**: System-based dark/light theme with Material 3
-- **Modern UI**: Material 3 design system with tile-based layouts
+- **Modern UI**: Material 3 design system with tile-based layouts and responsive components
 
 ## 🌍 Language Support
 
@@ -85,22 +98,24 @@ cmp-moviedb/
 ### Shared
 - **Kotlin Multiplatform** - Cross-platform development
 - **Compose Multiplatform** - UI framework
-- **Koin** - Dependency injection
+- **Koin** - Dependency injection with Compose and ViewModel support
 - **Room** - Local database with SQLite bundled driver
 - **DataStore** - Typed data storage for preferences and pagination state
-- **Ktor** - HTTP client for API calls
+- **Ktor** - HTTP client for API calls with OkHttp (Android) and Darwin (iOS) engines
 - **Kotlin Coroutines & Flow** - Asynchronous programming and reactive streams
-- **Coil** - Image loading with Compose integration
+- **Coil** - Image loading with Compose integration, Ktor network driver, and SVG support
 - **Kotlinx Serialization** - JSON serialization for API responses
-- **Navigation Compose** - Navigation framework
+- **Navigation Compose** - Navigation framework with Koin integration
 - **Material 3** - Design system components
 - **KSP** - Kotlin Symbol Processing for Room code generation
 
 ### Android
 - **Jetpack Compose** - UI toolkit
+- **OkHttp** - Network engine for Ktor
 
 ### iOS
 - **SwiftUI Integration** - iOS native integration
+- **Darwin Engine** - Native networking for Ktor
 
 ## 🚀 Getting Started
 
@@ -223,52 +238,76 @@ TMDB_API_KEY=abcd1234567890efgh
 
 ### Core Modules
 - **core:common** - AppDispatchers, shared utilities, and common DI module
+  - Platform-agnostic coroutine dispatchers (IO, Main, Default)
+  - Common utilities for cross-platform functionality
 - **core:data** - Repository implementations with simplified architecture
-  - MoviesRepository: Offline-first with Room database caching
-  - TvShowsRepository: In-memory storage with reactive updates
+  - **MoviesRepository**: Offline-first with Room database caching for movies and details
+  - **TvShowsRepository**: In-memory storage with reactive StateFlow updates
+  - **SearchRepository**: Multi-type search with strategy pattern for filtering
+  - **PersonRepository**: Person/cast details management
+  - **LanguageChangeCoordinator**: Observer pattern for language-aware cache invalidation
+  - **OfflineFirstCachingStrategy**: Consistent caching pattern across repositories
   - Clean separation: Repository provides data, ViewModel coordinates state
-  - Language-aware cache invalidation
 - **core:database** - Room database with platform-specific drivers
-  - AppDatabase with MovieDao and MovieDetailsDao
+  - AppDatabase with 4 entity tables: MovieEntity, MovieDetailsEntity, VideoEntity, CastMemberEntity
+  - MovieDao and MovieDetailsDao for database operations
   - SQLite bundled driver for cross-platform support
-  - MoviesLocalDataSource for offline-first movies
+  - MoviesLocalDataSource, MovieDetailsDataSource, and MovieVideosDataSource interfaces
+  - Foreign key relationships between entities (e.g., CastMemberEntity → MovieDetailsEntity)
+  - Platform-specific database construction via expect/actual pattern
 - **core:datastore** - Preferences and app state management
-  - PreferencesManager for app settings (language, theme)
-  - PaginationState persistence across app restarts
-  - Platform-specific DataStore implementation
+  - **AppSettingsPreferences**: Language and theme preferences
+  - **PaginationPreferences**: Pagination state persistence across app restarts
+  - Platform-specific DataStore factory implementation
 - **core:model** - Clean architecture domain models
-  - Movie, MovieDetails, TvShow, TvShowDetails, Person
-  - AppResult generic wrapper for success/error handling
-  - AppLanguage enum for multi-language support
+  - Core models: Movie, MovieDetails, TvShow, TvShowDetails, PersonDetails, CastMember, Video
+  - Category enums: MovieCategory, TvShowCategory
+  - Support models: AppLanguage, AppTheme, SearchResultItem, SearchFilter, FilmographyCredit
+  - AppResult<T> generic wrapper for success/error handling with utility extensions
 - **core:network** - Network layer with Ktor client
-  - MoviesRemoteDataSource and TvShowsRemoteDataSource
-  - TMDB API integration with DTOs and mappers
-  - Platform-specific HTTP client configurations
+  - **Remote data sources**: MoviesRemoteDataSource, TvShowsRemoteDataSource, SearchRemoteDataSource, PersonRemoteDataSource
+  - TMDB API integration with complete DTOs and domain model mappers
+  - Platform-specific HTTP client configurations (OkHttp for Android, Darwin for iOS)
+  - Platform-specific API key loading via expect/actual pattern
 - **core:ui** - Shared UI components and design system
   - Material 3 design system components (AppLoader, AppErrorComponent)
   - ImageLoader utility with Coil integration
   - Navigation routes and UI extensions
-  - Shared string resources with multi-language support (English, Hebrew, Hindi, Arabic)
+  - DateFormatter for localized date display
+  - Shared string resources with 121+ strings per language (English, Arabic, Hebrew, Hindi)
+  - Platform-specific theme and locale handling
 
 ### Feature Modules
-- **features:movies** - Complete movies feature
-  - Movies list with infinite scroll pagination
-  - Movie details screen with cast and crew information
-  - ViewModels handle loading/error states explicitly
-  - Offline-first with Room database caching
-- **features:tv-shows** - TV shows feature
-  - TV shows list and details screens
-  - In-memory caching with reactive StateFlow
-  - Similar architecture to movies feature
-- **features:person** - Person details feature
-  - Cast and crew member information
-  - Biography and filmography display
-- **features:search** - Search functionality
-  - Cross-content search (movies and TV shows)
-  - Real-time search results
+- **features:movies** - Complete movies feature with MVI architecture
+  - **MoviesScreen**: Browse movies by category (Popular, Top Rated, Now Playing) with infinite scroll
+  - **MovieDetailsScreen**: Comprehensive movie details with cast, trailers, and production info
+  - **Components**: MovieTile, MovieHeroSection, TrailersSection, CastSection, BoxOfficeItem
+  - **MoviesViewModel**: Handles category-based state management with map pattern
+  - **MovieDetailsViewModel**: Manages details loading, cast, and video data
+  - Offline-first with Room database caching for movies, details, cast, and trailers
+- **features:tv-shows** - TV shows feature with complete details
+  - **TvShowsScreen**: Browse TV shows by category with pagination
+  - **TvShowDetailsScreen**: Series info, episodes, networks, cast, and trailers
+  - **Components**: TvShowTile, HeroSection, TrailersSection, CastSection, NetworksSection, SeriesInfoSection
+  - **TvShowsViewModel** and **TvShowDetailsViewModel**: Similar MVI pattern to movies
+  - In-memory caching with reactive StateFlow updates
+- **features:person** - Person/cast details feature
+  - **PersonDetailsScreen**: Biography, filmography, and personal information
+  - **Components**: PersonHeroSection, PersonInfoCard, FilmographySection, FilmographyCard
+  - **PersonDetailsViewModel**: Manages person data and filmography
+  - Displays cast member profiles with work history
+- **features:search** - Multi-type search with filters
+  - **SearchScreen**: Search across movies, TV shows, and people
+  - **SearchViewModel**: Strategy pattern for filter-based searches
+  - **Components**: SearchBar, SearchFilters, SearchResultItem, SearchEmptyState
+  - Filter options: ALL, MOVIES, TV_SHOWS, PEOPLE
+  - Real-time search with pagination support
 - **features:profile** - User profile and settings
-  - Language selection with automatic content refresh
-  - Profile screen and ViewModel
+  - **ProfileScreen**: Language selection, theme toggle, app info
+  - **ProfileViewModel**: Manages user preferences with DataStore
+  - Language options: English, Arabic, Hebrew, Hindi
+  - Theme options: Light, Dark, System Default
+  - Triggers automatic content refresh on language change
 
 ### App Module
 - **composeApp** - Main application orchestration
@@ -381,10 +420,6 @@ The project uses a simplified repository pattern where:
 - **iOS Simulator**: Use ARM64 simulator on Apple Silicon Macs
 - **API Key Issues**: Verify both `secrets.properties` and `Secrets.plist` contain valid TMDB API key
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## 🎬 TMDB Attribution
 
 This application uses the TMDB API but is not endorsed, certified, or otherwise approved by TMDB.
@@ -405,36 +440,45 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 ### Recently Completed ✨
 - [x] Simplified repository architecture (Repository = data provider, ViewModel = state coordinator)
 - [x] DataStore integration for persistent pagination state
-- [x] Language-aware cache invalidation
+- [x] Language-aware cache invalidation with LanguageChangeCoordinator
 - [x] Distinct error handling for initial load vs pagination
-- [x] Person details feature with cast/crew information
-- [x] Search functionality implementation
-- [x] Profile screen with language selection
-- [x] Dark/light theme toggle
+- [x] Person details feature with cast/crew information and filmography
+- [x] Search functionality with multi-type filtering (ALL, MOVIES, TV_SHOWS, PEOPLE)
+- [x] Profile screen with language selection and theme toggle
+- [x] Dark/light theme toggle with system default option
+- [x] Movie cast and crew display with detailed information
+- [x] Trailers/videos for movies and TV shows
+- [x] Budget and revenue formatting with comma separators
+- [x] Foreign key relationships in database entities
+- [x] Platform-specific API key loading via expect/actual pattern
 
 ### Current Status ✅
 - [x] Multi-module Clean Architecture with KMP
-- [x] Movies feature with pagination, details, and offline support
-- [x] TV Shows feature with pagination and details (in-memory)
-- [x] Room database for offline movie storage
-- [x] DataStore for preferences and pagination state persistence
+- [x] Movies feature with pagination, details, cast, trailers, and offline support
+- [x] TV Shows feature with pagination, details, cast, and trailers (in-memory)
+- [x] Room database for offline movie storage with 4 entity tables
+- [x] DataStore for app settings and pagination state persistence
 - [x] Material 3 design system implementation
-- [x] Multi-language support (English, Hebrew, Hindi, Arabic) with RTL layouts
-- [x] Cross-platform image loading with Coil
+- [x] Multi-language support (English, Arabic, Hebrew, Hindi) with RTL layouts
+- [x] Cross-platform image loading with Coil (including SVG support)
 - [x] Reactive UI with StateFlow and Compose
 - [x] Clean error handling with proper UI feedback
+- [x] Person/cast details with biography and work history
+- [x] Multi-type search with strategy pattern
+- [x] Category abstraction for extensible movie/TV show browsing
 
 ### High Priority 🚀
 - [ ] Add TV Show database entities and local caching (currently only Movies cached)
 - [ ] Add pull-to-refresh functionality
 - [ ] Create unit tests for ViewModels and repositories
 - [ ] Add ktlint code formatting configuration
-- [ ] Enhance search with filters and advanced options
+- [ ] Improve search UX with debouncing and better empty states
 
 ### Medium Priority 📋
 - [ ] Add favorites/watchlist feature with local storage
 - [ ] Enhance loading states with skeleton screens
-- [ ] Add more comprehensive movie/TV show details (reviews, videos, similar content)
+- [ ] Add movie/TV show reviews display
+- [ ] Add similar movies/shows recommendations
 - [ ] Implement network connectivity detection
 - [ ] Add proguard/R8 configuration for release builds
 - [ ] Performance optimizations for pagination
@@ -442,7 +486,8 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 ### Low Priority 💡
 - [ ] Add user authentication and personalized recommendations
 - [ ] Performance optimizations for large datasets
-- [ ] Add accessibility improvements
+- [ ] Add comprehensive accessibility improvements
 - [ ] Implement deep linking support
 - [ ] Add CI/CD pipeline with GitHub Actions
 - [ ] Add analytics and crash reporting
+- [ ] Implement video player for trailers (currently external links)
