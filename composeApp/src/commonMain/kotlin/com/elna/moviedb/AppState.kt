@@ -6,16 +6,39 @@ import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.savedstate.serialization.SavedStateConfiguration
+import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
+import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.ProfileRoute
 import com.elna.moviedb.core.ui.navigation.SearchRoute
+import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.navigation.TopLevelDestination
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
+private val navSavedStateConfiguration = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(MoviesRoute::class)
+            subclass(MovieDetailsRoute::class)
+            subclass(TvShowsRoute::class)
+            subclass(TvShowDetailsRoute::class)
+            subclass(SearchRoute::class)
+            subclass(ProfileRoute::class)
+            subclass(PersonDetailsRoute::class)
+        }
+    }
+}
 
 @Composable
 fun rememberAppState(
-    navBackStack: NavBackStack<NavKey> = rememberNavBackStack(MoviesRoute)
+    navBackStack: NavBackStack<NavKey> = rememberNavBackStack(
+        configuration = navSavedStateConfiguration,
+        MoviesRoute
+    )
 ): AppState {
     return remember(navBackStack) {
         AppState(navBackStack = navBackStack)
