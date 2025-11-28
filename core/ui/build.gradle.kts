@@ -8,23 +8,16 @@ android {
     namespace = "com.elna.moviedb.core.ui"
 }
 
-dependencies{
-    debugImplementation("org.jetbrains.compose.ui:ui-tooling:1.10.0-beta02")
-}
-
 kotlin {
     sourceSets {
         androidMain.dependencies {
-            implementation(compose.uiTooling)
+            implementation("org.jetbrains.compose.ui:ui-tooling:1.10.0-beta02")
         }
         commonMain.dependencies {
-            api("org.jetbrains.compose.runtime:runtime:1.10.0-beta02")
-            api("org.jetbrains.compose.foundation:foundation:1.10.0-beta02")
             api("org.jetbrains.compose.material3:material3:1.9.0-beta03")
-            api("org.jetbrains.compose.ui:ui:1.10.0-beta02")
             api("org.jetbrains.compose.components:components-resources:1.10.0-beta02")
             api("org.jetbrains.compose.material:material-icons-extended:1.7.3")
-            api(compose.preview)
+            api("org.jetbrains.compose.ui:ui-tooling-preview:1.10.0-beta02")
             api(libs.koin.compose.navigation)
 
             implementation(libs.coil.compose)
