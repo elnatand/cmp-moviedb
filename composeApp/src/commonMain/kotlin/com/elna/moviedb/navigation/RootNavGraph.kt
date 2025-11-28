@@ -1,12 +1,9 @@
 package com.elna.moviedb.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.navigation.NavHostController
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
@@ -28,23 +25,7 @@ import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowsScreen
 @Composable
 fun RootNavGraph(
     backStack: NavBackStack<NavKey>,
-    startDestination: Any = MoviesRoute,
 ) {
-
-//    NavHost(
-//        navController = navController,
-//        startDestination = startDestination,
-//    ) {
-//        moviesScene(navController)
-//        movieDetailsScene(navController)
-//        tvShowsScene(navController)
-//        tvShowDetailsScene(navController)
-//        searchScene(navController)
-//        profileScene()
-//        personDetailsScene(navController)
-//    }
-
-
     NavDisplay(
         backStack = backStack,
         entryProvider = { key ->
