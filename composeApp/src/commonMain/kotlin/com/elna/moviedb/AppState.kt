@@ -17,12 +17,8 @@ import com.elna.moviedb.navigation.TopLevelDestination
 fun rememberAppState(
     navBackStack: NavBackStack<NavKey> = rememberNavBackStack(MoviesRoute)
 ): AppState {
-    return remember(
-        navBackStack,
-    ) {
-        AppState(
-            navBackStack = navBackStack,
-        )
+    return remember(navBackStack) {
+        AppState(navBackStack = navBackStack)
     }
 }
 
