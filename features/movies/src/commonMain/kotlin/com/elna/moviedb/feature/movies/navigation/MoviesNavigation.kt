@@ -1,45 +1,33 @@
 package com.elna.moviedb.feature.movies.navigation
 
-
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
 import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
-import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
 import com.elna.moviedb.feature.movies.ui.movies.MoviesScreen
 
-
-fun NavHostController.navigateToMovies(navOptions: NavOptions) {
-    navigate(MoviesRoute, navOptions)
-}
-
-
-fun NavGraphBuilder.moviesScene(
-    navigator: NavHostController,
-) {
-    composable<MoviesRoute> { entry ->
-        MoviesScreen { movieId, title ->
-            navigator.navigate(MovieDetailsRoute(movieId))
-        }
+fun moviesEntry(
+    key: NavKey,
+    backStack: NavBackStack<NavKey>
+): NavEntry<NavKey> {
+    return NavEntry(key = key) {
+        MoviesScreen(onClick = { movieId, _ ->
+            backStack.add(MovieDetailsRoute(movieId))
+        })
     }
 }
 
-fun NavGraphBuilder.movieDetailsScene(navigator: NavHostController) {
-    composable<MovieDetailsRoute> { entry ->
-        val params = entry.toRoute<MovieDetailsRoute>()
-
-        val movieId: Int = params.movieId
-
+fun movieDetailsEntry(
+    key: MovieDetailsRoute,
+    backStack: NavBackStack<NavKey>
+): NavEntry<NavKey> {
+    return NavEntry(key = key) {
         MovieDetailsScreen(
-            movieId = movieId,
+            movieId = key.movieId,
             onCastMemberClick = { personId ->
-                navigator.navigate(PersonDetailsRoute(personId))
+                backStack.add(PersonDetailsRoute(personId))
             }
         )
     }
