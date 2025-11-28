@@ -19,6 +19,7 @@ kotlin {
             api(libs.compose.material.icons.extended)
             api(libs.compose.resources)
             api(libs.compose.ui.tooling.preview)
+            api(libs.navigation.ui)
 
             api(libs.koin.compose.navigation)
 

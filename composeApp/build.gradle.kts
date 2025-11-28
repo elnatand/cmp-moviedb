@@ -47,6 +47,8 @@ kotlin {
             implementation(projects.features.person)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+
+            implementation(libs.navigation.ui)
         }
     }
 
