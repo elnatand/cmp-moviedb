@@ -9,7 +9,7 @@ android {
 }
 
 dependencies{
-    debugImplementation(compose.uiTooling)
+    debugImplementation("org.jetbrains.compose.ui:ui-tooling:1.10.0-beta02")
 }
 
 kotlin {
@@ -18,13 +18,13 @@ kotlin {
             implementation(compose.preview)
         }
         commonMain.dependencies {
-            api(compose.runtime)
-            api(compose.foundation)
-            api(compose.material3)
-            api(compose.ui)
-            api(compose.components.resources)
-            api(compose.materialIconsExtended)
-            api(compose.components.uiToolingPreview)
+            api("org.jetbrains.compose.runtime:runtime:1.10.0-beta02")
+            api("org.jetbrains.compose.foundation:foundation:1.10.0-beta02")
+            api("org.jetbrains.compose.material3:material3:1.9.0-beta03")
+            api("org.jetbrains.compose.ui:ui:1.10.0-beta02")
+            api("org.jetbrains.compose.components:components-resources:1.10.0-beta02")
+            api("org.jetbrains.compose.material:material-icons-extended:1.7.3")
+            api("org.jetbrains.compose.ui:ui-tooling-preview:1.10.0-beta02")
             api(libs.koin.compose.navigation)
 
             implementation(libs.coil.compose)

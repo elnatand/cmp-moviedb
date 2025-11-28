@@ -33,6 +33,7 @@ moviedb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform" }
 
 [libraries]
 navigation-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation" }
+navigation-runtime = { module = "org.jetbrains.androidx.navigation3:navigation3-runtime", version.ref = "navigation" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
