@@ -15,7 +15,7 @@ dependencies{
 kotlin {
     sourceSets {
         androidMain.dependencies {
-            implementation(compose.preview)
+            implementation(compose.uiTooling)
         }
         commonMain.dependencies {
             api("org.jetbrains.compose.runtime:runtime:1.10.0-beta02")
@@ -24,7 +24,7 @@ kotlin {
             api("org.jetbrains.compose.ui:ui:1.10.0-beta02")
             api("org.jetbrains.compose.components:components-resources:1.10.0-beta02")
             api("org.jetbrains.compose.material:material-icons-extended:1.7.3")
-            api("org.jetbrains.compose.ui:ui-tooling-preview:1.10.0-beta02")
+            api(compose.preview)
             api(libs.koin.compose.navigation)
 
             implementation(libs.coil.compose)
