@@ -8,13 +8,17 @@ android {
     namespace = "com.elna.moviedb.core.ui"
 }
 
+dependencies{
+    debugImplementation(libs.compose.ui.tooling)
+}
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
             api(libs.compose.material3)
             api(libs.compose.material.icons.extended)
             api(libs.compose.resources)
-            api(libs.compose.tooling.preview)
+            api(libs.compose.ui.tooling.preview)
 
             api(libs.koin.compose.navigation)
 
