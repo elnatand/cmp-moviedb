@@ -16,7 +16,7 @@ kotlin {
 
             implementation(libs.koin.core)
 
-            implementation(libs.navigation.compose)
+            implementation(libs.navigation.ui)
         }
     }
 }
