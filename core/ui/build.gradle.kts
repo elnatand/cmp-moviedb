@@ -11,10 +11,11 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api("org.jetbrains.compose.material3:material3:1.9.0-beta03")
-            api("org.jetbrains.compose.material:material-icons-extended:1.7.3")
-            api("org.jetbrains.compose.components:components-resources:1.10.0-beta02")
-            api("org.jetbrains.compose.ui:ui-tooling-preview:1.10.0-beta02")
+            api(libs.compose.material3)
+            api(libs.compose.material.icons.extended)
+            api(libs.compose.resources)
+            api(libs.compose.tooling.preview)
+
             api(libs.koin.compose.navigation)
 
             implementation(libs.coil.compose)
