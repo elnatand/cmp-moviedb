@@ -44,7 +44,6 @@ compose-material3 = { module = "org.jetbrains.compose.material3:material3", vers
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose-material-icons" }
 
 navigation-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation" }
-navigation-runtime = { module = "org.jetbrains.androidx.navigation3:navigation3-runtime", version.ref = "navigation" }
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 
