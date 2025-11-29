@@ -42,9 +42,7 @@ fun RootNavGraph(
 
                 is PersonDetailsRoute -> personDetailsEntry(key, backStack)
 
-                else -> {
-                    throw IllegalArgumentException("Invalid key: $key")
-                }
+                else -> throw IllegalArgumentException("Invalid key: $key")
             }
         }
     )
