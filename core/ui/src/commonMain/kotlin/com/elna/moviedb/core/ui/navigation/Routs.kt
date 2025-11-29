@@ -26,7 +26,7 @@ data class TvShowDetailsRoute(
 
 @Serializable
 @SerialName("search")
-object SearchRoute : NavKey
+data object SearchRoute : NavKey
 
 @Serializable
 @SerialName("profile")

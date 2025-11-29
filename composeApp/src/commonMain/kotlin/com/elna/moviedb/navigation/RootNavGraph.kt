@@ -36,7 +36,7 @@ fun RootNavGraph(
 
                 is TvShowDetailsRoute -> tvShowDetailsEntry(key, backStack)
 
-                is SearchRoute -> searchEntry(key, backStack)
+                SearchRoute -> searchEntry(key, backStack)
 
                 ProfileRoute -> profileEntry(key)
 

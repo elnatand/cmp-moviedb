@@ -10,7 +10,7 @@ import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
 import com.elna.moviedb.feature.search.ui.SearchScreen
 
 fun searchEntry(
-    key: SearchRoute,
+    key: NavKey,
     backStack: NavBackStack<NavKey>
 ): NavEntry<NavKey> {
     return NavEntry(key = key) {
