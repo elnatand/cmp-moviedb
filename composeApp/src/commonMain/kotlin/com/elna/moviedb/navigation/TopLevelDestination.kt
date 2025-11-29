@@ -6,30 +6,30 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation3.runtime.NavKey
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.ProfileRoute
 import com.elna.moviedb.core.ui.navigation.SearchRoute
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute
-import kotlin.reflect.KClass
 
 enum class TopLevelDestination(
     val icon: ImageVector,
-    val route: KClass<*>,
+    val route: NavKey,
 ) {
     MOVIES(
         icon = Icons.Filled.Theaters,
-        route = MoviesRoute::class
+        route = MoviesRoute
     ),
     TV_SHOWS(
         icon = Icons.Filled.Tv,
-        route = TvShowsRoute::class
+        route = TvShowsRoute
     ),
     SEARCH(
         icon = Icons.Filled.Search,
-        route = SearchRoute::class
+        route = SearchRoute
     ),
     PROFILE(
         icon = Icons.Filled.Person,
-        route = ProfileRoute::class
+        route = ProfileRoute
     ),
 }

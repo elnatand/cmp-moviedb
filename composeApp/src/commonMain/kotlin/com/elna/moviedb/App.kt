@@ -31,7 +31,7 @@ fun App() {
                     NavigationBar(appState = appState)
                 }
             ) {
-                RootNavGraph(appState.navController)
+                RootNavGraph(appState.navBackStack)
             }
         }
     }

@@ -9,22 +9,18 @@ android {
 }
 
 dependencies{
-    debugImplementation(compose.uiTooling)
+    debugImplementation(libs.compose.ui.tooling)
 }
 
 kotlin {
     sourceSets {
-        androidMain.dependencies {
-            implementation(compose.preview)
-        }
         commonMain.dependencies {
-            api(compose.runtime)
-            api(compose.foundation)
-            api(compose.material3)
-            api(compose.ui)
-            api(compose.components.resources)
-            api(compose.materialIconsExtended)
-            api(compose.components.uiToolingPreview)
+            api(libs.compose.material3)
+            api(libs.compose.material.icons.extended)
+            api(libs.compose.resources)
+            api(libs.compose.ui.tooling.preview)
+            api(libs.navigation.ui)
+
             api(libs.koin.compose.navigation)
 
             implementation(libs.coil.compose)

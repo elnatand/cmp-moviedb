@@ -1,40 +1,33 @@
 package com.elna.moviedb.feature.tvshows.navigation
 
-
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.NavKey
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
-import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsScreen
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowsScreen
 
-
-fun NavHostController.navigateToTvShows(
-    navOptions: NavOptions? = null
-) {
-    navigate(TvShowsRoute, navOptions)
-}
-
-fun NavGraphBuilder.tvShowsScene(navigator: NavHostController) {
-    composable<TvShowsRoute> {
-        TvShowsScreen { tvShowId, tvShowTitle ->
-            navigator.navigate(TvShowDetailsRoute(tvShowId))
-        }
+fun tvShowsEntry(
+    key: NavKey,
+    backStack: NavBackStack<NavKey>
+): NavEntry<NavKey> {
+    return NavEntry(key = key) {
+        TvShowsScreen(onClick = { tvShowId, _ ->
+            backStack.add(TvShowDetailsRoute(tvShowId))
+        })
     }
 }
 
-fun NavGraphBuilder.tvShowDetailsScene(navigator: NavHostController) {
-    composable<TvShowDetailsRoute> { entry ->
-        val params = entry.toRoute<TvShowDetailsRoute>()
-        val tvShowId: Int = params.tvShowId
+fun tvShowDetailsEntry(
+    key: TvShowDetailsRoute,
+    backStack: NavBackStack<NavKey>
+): NavEntry<NavKey> {
+    return NavEntry(key = key) {
         TvShowDetailsScreen(
-            tvShowId = tvShowId,
+            tvShowId = key.tvShowId,
             onCastMemberClick = { personId ->
-                navigator.navigate(PersonDetailsRoute(personId))
+                backStack.add(PersonDetailsRoute(personId))
             }
         )
     }

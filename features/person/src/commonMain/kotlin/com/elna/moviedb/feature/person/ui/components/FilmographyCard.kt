@@ -30,7 +30,7 @@ import com.elna.moviedb.core.model.FilmographyCredit
 import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun FilmographyCard(
