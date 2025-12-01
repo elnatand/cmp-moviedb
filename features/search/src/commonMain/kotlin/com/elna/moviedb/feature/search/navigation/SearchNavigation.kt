@@ -4,13 +4,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavEntry
 import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
+import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
 import com.elna.moviedb.feature.search.ui.SearchScreen
 
 fun searchEntry(
-    key: Any,
-    backStack: SnapshotStateList<Any>
-): NavEntry<Any> {
+    key: Route,
+    backStack: SnapshotStateList<Route>
+): NavEntry<Route> {
     return NavEntry(key = key) {
         SearchScreen(
             onMovieClicked = { movieId ->

@@ -5,13 +5,14 @@ import androidx.navigation3.runtime.NavEntry
 import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
+import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
 import com.elna.moviedb.feature.person.ui.PersonDetailsScreen
 
 fun personDetailsEntry(
     key: PersonDetailsRoute,
-    backStack: SnapshotStateList<Any>
-): NavEntry<Any> {
+    backStack: SnapshotStateList<Route>
+): NavEntry<Route> {
     return NavEntry(key = key) {
         PersonDetailsScreen(
             personId = key.personId,

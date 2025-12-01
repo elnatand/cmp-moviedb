@@ -7,13 +7,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.ProfileRoute
+import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.SearchRoute
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.navigation.TopLevelDestination
 
 @Composable
 fun rememberAppState(
-    navBackStack: SnapshotStateList<Any> = remember { mutableStateListOf(MoviesRoute) }
+    navBackStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesRoute) }
 ): AppState {
     return remember(navBackStack) {
         AppState(navBackStack = navBackStack)
@@ -22,7 +23,7 @@ fun rememberAppState(
 
 @Stable
 class AppState(
-    val navBackStack: SnapshotStateList<Any>,
+    val navBackStack: SnapshotStateList<Route>,
 ) {
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.entries
     private val bottomBarRoutes = TopLevelDestination.entries.map { it.route }

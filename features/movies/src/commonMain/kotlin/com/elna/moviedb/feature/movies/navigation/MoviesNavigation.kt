@@ -4,13 +4,14 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavEntry
 import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
+import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
 import com.elna.moviedb.feature.movies.ui.movies.MoviesScreen
 
 fun moviesEntry(
-    key: Any,
-    backStack: SnapshotStateList<Any>
-): NavEntry<Any> {
+    key: Route,
+    backStack: SnapshotStateList<Route>
+): NavEntry<Route> {
     return NavEntry(key = key) {
         MoviesScreen(onClick = { movieId, _ ->
             backStack.add(MovieDetailsRoute(movieId))
@@ -20,8 +21,8 @@ fun moviesEntry(
 
 fun movieDetailsEntry(
     key: MovieDetailsRoute,
-    backStack: SnapshotStateList<Any>
-): NavEntry<Any> {
+    backStack: SnapshotStateList<Route>
+): NavEntry<Route> {
     return NavEntry(key = key) {
         MovieDetailsScreen(
             movieId = key.movieId,
