@@ -1,18 +1,17 @@
 package com.elna.moviedb.feature.search.navigation
 
-import androidx.navigation3.runtime.NavBackStack
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavEntry
-import androidx.navigation3.runtime.NavKey
 import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
-import com.elna.moviedb.core.ui.navigation.SearchRoute
+import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
 import com.elna.moviedb.feature.search.ui.SearchScreen
 
 fun searchEntry(
-    key: NavKey,
-    backStack: NavBackStack<NavKey>
-): NavEntry<NavKey> {
+    key: Route,
+    backStack: SnapshotStateList<Route>
+): NavEntry<Route> {
     return NavEntry(key = key) {
         SearchScreen(
             onMovieClicked = { movieId ->
