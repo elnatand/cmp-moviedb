@@ -1,9 +1,8 @@
 package com.elna.moviedb.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
@@ -24,7 +23,7 @@ import com.elna.moviedb.feature.tvshows.navigation.tvShowsEntry
 
 @Composable
 fun RootNavGraph(
-    backStack: NavBackStack<NavKey>,
+    backStack: SnapshotStateList<Any>,
 ) {
     NavDisplay(
         backStack = backStack,

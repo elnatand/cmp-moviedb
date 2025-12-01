@@ -14,7 +14,7 @@ import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 
 enum class TopLevelDestination(
     val icon: ImageVector,
-    val route: NavKey,
+    val route: Any,
 ) {
     MOVIES(
         icon = Icons.Filled.Theaters,
