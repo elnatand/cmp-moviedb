@@ -103,7 +103,7 @@ cmp-moviedb/
 - **Kotlin Coroutines & Flow** - Asynchronous programming and reactive streams
 - **Coil** - Image loading with Compose integration, Ktor network driver, and SVG support
 - **Kotlinx Serialization** - JSON serialization for API responses
-- **Navigation Compose** - Navigation framework with Koin integration
+- **Navigation 3** - Navigation 3 framework with Koin integration
 - **Material 3** - Design system components
 - **KSP** - Kotlin Symbol Processing for Room code generation
 
