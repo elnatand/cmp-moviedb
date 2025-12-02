@@ -5,7 +5,7 @@ android-compileSdk = "36"
 android-targetSdk = "36"
 
 kotlin = "2.2.21"
-ksp = "2.2.20-2.0.3"
+ksp = "2.3.3"
 composeMultiplatform = "1.10.0-beta02"
 compose-material3 = "1.10.0-alpha05"
 compose-material-icons = "1.7.3"
