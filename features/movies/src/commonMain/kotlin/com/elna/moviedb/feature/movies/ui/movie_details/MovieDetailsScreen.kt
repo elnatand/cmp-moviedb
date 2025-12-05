@@ -1,5 +1,9 @@
 package com.elna.moviedb.feature.movies.ui.movie_details
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,11 +27,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
+import com.elna.moviedb.feature.movies.model.MovieDetailsUiState
 import com.elna.moviedb.feature.movies.ui.components.BoxOfficeItem
 import com.elna.moviedb.feature.movies.ui.components.CastSection
 import com.elna.moviedb.feature.movies.ui.components.InfoItem
@@ -47,14 +53,15 @@ import com.elna.moviedb.resources.release
 import com.elna.moviedb.resources.revenue
 import com.elna.moviedb.resources.runtime
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val viewModel = koinViewModel<MovieDetailsViewModel> { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
@@ -62,32 +69,38 @@ fun MovieDetailsScreen(
     MovieDetailsScreen(
         uiState = uiState,
         onRetry = { viewModel.onEvent(MovieDetailsEvent.Retry) },
-        onCastMemberClick = onCastMemberClick
+        onCastMemberClick = onCastMemberClick,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
 
 @Composable
 private fun MovieDetailsScreen(
-    uiState: MovieDetailsViewModel.MovieDetailsUiState,
+    uiState: MovieDetailsUiState,
     onRetry: () -> Unit,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize(),
     ) {
         when (uiState) {
-            is MovieDetailsViewModel.MovieDetailsUiState.Loading -> AppLoader()
+            is MovieDetailsUiState.Loading -> AppLoader()
 
-            is MovieDetailsViewModel.MovieDetailsUiState.Error -> AppErrorComponent(
+            is MovieDetailsUiState.Error -> AppErrorComponent(
                 onRetry = onRetry
             )
 
-            is MovieDetailsViewModel.MovieDetailsUiState.Success -> {
+            is MovieDetailsUiState.Success -> {
                 MovieDetailsContent(
                     movie = uiState.movieDetails,
-                    onCastMemberClick = onCastMemberClick
+                    onCastMemberClick = onCastMemberClick,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }
@@ -98,15 +111,20 @@ private fun MovieDetailsScreen(
 @Composable
 private fun MovieDetailsContent(
     movie: MovieDetails,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        // Hero Section with Backdrop and Poster
-        MovieHeroSection(movie = movie)
+        MovieHeroSection(
+            movie = movie,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope
+        )
 
         // Main Content
         Column(
@@ -279,26 +297,44 @@ private fun MovieDetailsScreenSuccessPreview() {
         spokenLanguages = listOf("English", "Spanish")
     )
 
-    MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.MovieDetailsUiState.Success(sampleMovie),
-        onRetry = {}
-    )
+    SharedTransitionLayout {
+        AnimatedVisibility(visible = true) {
+            MovieDetailsScreen(
+                uiState = MovieDetailsUiState.Success(sampleMovie),
+                onRetry = {},
+                sharedTransitionScope = this@SharedTransitionLayout,
+                animatedVisibilityScope = this@AnimatedVisibility
+            )
+        }
+    }
 }
 
 @Preview
 @Composable
 private fun MovieDetailsScreenLoadingPreview() {
-    MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.MovieDetailsUiState.Loading,
-        onRetry = {}
-    )
+    SharedTransitionLayout {
+        AnimatedVisibility(visible = true) {
+            MovieDetailsScreen(
+                uiState = MovieDetailsUiState.Loading,
+                onRetry = {},
+                sharedTransitionScope = this@SharedTransitionLayout,
+                animatedVisibilityScope = this@AnimatedVisibility
+            )
+        }
+    }
 }
 
 @Preview
 @Composable
 private fun MovieDetailsScreenErrorPreview() {
-    MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.MovieDetailsUiState.Error("Failed to load movie details. Please check your internet connection."),
-        onRetry = {}
-    )
+    SharedTransitionLayout {
+        AnimatedVisibility(visible = true) {
+            MovieDetailsScreen(
+                uiState = MovieDetailsUiState.Error("Failed to load movie details. Please check your internet connection."),
+                onRetry = {},
+                sharedTransitionScope = this@SharedTransitionLayout,
+                animatedVisibilityScope = this@AnimatedVisibility
+            )
+        }
+    }
 }

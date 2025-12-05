@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.data.movies.MoviesRepository
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
+import com.elna.moviedb.feature.movies.model.MovieDetailsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,11 +57,5 @@ class MovieDetailsViewModel(
 
     private fun retry() {
         getMovieDetails(movieId)
-    }
-
-    sealed interface MovieDetailsUiState {
-        data object Loading : MovieDetailsUiState
-        data class Success(val movieDetails: MovieDetails) : MovieDetailsUiState
-        data class Error(val message: String) : MovieDetailsUiState
     }
 }

@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.movies.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,13 +34,18 @@ import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toBackdropUrl
 import com.elna.moviedb.core.ui.utils.toPosterUrl
+import com.elna.moviedb.feature.movies.model.SharedElementKeys
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.rating
 import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun MovieHeroSection(movie: MovieDetails) {
+internal fun MovieHeroSection(
+    movie: MovieDetails,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,20 +72,27 @@ internal fun MovieHeroSection(movie: MovieDetails) {
         )
 
         // Poster
-        Card(
-            modifier = Modifier
-                .systemBarsPadding()
-                .width(120.dp)
-                .height(180.dp)
-                .align(Alignment.TopStart)
-                .padding(start = 16.dp),
-            shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            ImageLoader(
-                imageUrl = movie.posterPath.toPosterUrl(),
-                modifier = Modifier.fillMaxSize()
-            )
+        with(sharedTransitionScope) {
+            Card(
+                modifier = Modifier
+                    .systemBarsPadding()
+                    .width(120.dp)
+                    .height(180.dp)
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp),
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
+                ImageLoader(
+                    imageUrl = movie.posterPath.toPosterUrl(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .sharedElement(
+                            rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                )
+            }
         }
 
         // Title and Basic Info

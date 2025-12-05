@@ -1,5 +1,6 @@
 package com.elna.moviedb.navigation
 
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -26,22 +27,24 @@ import com.elna.moviedb.feature.tvshows.navigation.tvShowsEntry
 fun RootNavGraph(
     backStack: SnapshotStateList<Route>,
 ) {
-    NavDisplay(
-        backStack = backStack,
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        entryProvider = { key ->
-            when (key) {
-                MoviesRoute -> moviesEntry(key, backStack)
-                is MovieDetailsRoute -> movieDetailsEntry(key, backStack)
-                TvShowsRoute -> tvShowsEntry(key, backStack)
-                is TvShowDetailsRoute -> tvShowDetailsEntry(key, backStack)
-                SearchRoute -> searchEntry(key, backStack)
-                ProfileRoute -> profileEntry(key)
-                is PersonDetailsRoute -> personDetailsEntry(key, backStack)
+    SharedTransitionLayout {
+        NavDisplay(
+            backStack = backStack,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = { key ->
+                when (key) {
+                    MoviesRoute -> moviesEntry(key, backStack, this@SharedTransitionLayout)
+                    is MovieDetailsRoute -> movieDetailsEntry(key, backStack, this@SharedTransitionLayout)
+                    TvShowsRoute -> tvShowsEntry(key, backStack)
+                    is TvShowDetailsRoute -> tvShowDetailsEntry(key, backStack)
+                    SearchRoute -> searchEntry(key, backStack)
+                    ProfileRoute -> profileEntry(key)
+                    is PersonDetailsRoute -> personDetailsEntry(key, backStack)
+                }
             }
-        }
-    )
+        )
+    }
 }
