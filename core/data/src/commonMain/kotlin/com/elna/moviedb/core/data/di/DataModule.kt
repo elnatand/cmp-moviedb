@@ -22,9 +22,9 @@ val dataModule = module {
     single { LanguageProvider(get()) }
 
     // Language change coordinator - uses Observer Pattern for loose coupling
-    // Created at start to begin observing language changes immediately
+    // Lazily created when first repository is initialized
     // Repositories self-register during their initialization
-    single(createdAtStart = true) {
+    single {
         LanguageChangeCoordinator(
             appSettingsPreferences = get(),
             appDispatchers = get(),
