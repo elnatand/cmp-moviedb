@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.moviedb.composeMultiplatform)
-    alias(libs.plugins.moviedb.iosVersionUpdate)
 }
 
 kotlin {
