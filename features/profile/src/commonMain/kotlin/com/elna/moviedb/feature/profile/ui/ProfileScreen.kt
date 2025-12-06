@@ -235,7 +235,7 @@ private fun ProfileScreen(
 
             // App Version
             Text(
-                text = "Version $appVersion",
+                text = appVersion,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
