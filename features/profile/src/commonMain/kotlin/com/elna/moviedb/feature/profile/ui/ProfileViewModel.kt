@@ -2,6 +2,7 @@ package com.elna.moviedb.feature.profile.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.elna.moviedb.core.common.utils.AppVersion
 import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
@@ -25,7 +26,8 @@ import kotlinx.coroutines.launch
  * not the full PreferencesManager with pagination methods it doesn't need.
  */
 class ProfileViewModel(
-    private val appSettingsPreferences: AppSettingsPreferences
+    private val appSettingsPreferences: AppSettingsPreferences,
+    private val appVersion: AppVersion
 ) : ViewModel() {
 
     val uiState: StateFlow<ProfileUiState> = combine(
@@ -34,14 +36,16 @@ class ProfileViewModel(
     ) { languageCode, theme ->
         ProfileUiState(
             selectedLanguageCode = languageCode,
-            selectedThemeValue = theme
+            selectedThemeValue = theme,
+            appVersion = appVersion.getAppVersion()
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ProfileUiState(
             selectedLanguageCode = AppLanguage.ENGLISH.code,
-            selectedThemeValue = AppTheme.SYSTEM.value
+            selectedThemeValue = AppTheme.SYSTEM.value,
+            appVersion = appVersion.getAppVersion()
         )
     )
 
