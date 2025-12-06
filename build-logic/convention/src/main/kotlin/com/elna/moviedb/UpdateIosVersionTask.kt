@@ -11,13 +11,14 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.register
 
 /**
- * Plugin that auto-configures iOS version update task.
+ * Plugin that configures iOS version update task.
  *
- * This plugin automatically:
+ * This plugin:
  * - Reads app-version and app-build from libs.versions.toml
  * - Locates iOS Info.plist and project.pbxproj files
- * - Registers updateIosVersion task
- * - Executes the task automatically on every Gradle sync
+ * - Registers updateIosVersion task for manual execution
+ *
+ * Run manually with: ./gradlew updateIosVersion
  */
 class IosVersionUpdatePlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -35,8 +36,8 @@ class IosVersionUpdatePlugin : Plugin<Project> {
             val infoPlistFile = project.rootProject.file("iosApp/iosApp/Info.plist")
             val pbxprojFile = project.rootProject.file("iosApp/iosApp.xcodeproj/project.pbxproj")
 
-            // Register task
-            val updateTask = project.tasks.register<UpdateIosVersionTask>("updateIosVersion") {
+            // Register task for manual execution
+            project.tasks.register<UpdateIosVersionTask>("updateIosVersion") {
                 this.appVersion.set(appVersion.requiredVersion)
                 this.appBuild.set(appBuild.requiredVersion)
                 this.infoPlistFile.set(infoPlistFile)
@@ -44,18 +45,6 @@ class IosVersionUpdatePlugin : Plugin<Project> {
 
                 group = "versioning"
                 description = "Updates iOS version in Info.plist and project.pbxproj from libs.versions.toml"
-            }
-
-            // Make the task run before preBuild and prepareKotlinIdeaImport (sync)
-            project.tasks.configureEach {
-                if (name == "preBuild" || name == "prepareKotlinIdeaImport") {
-                    dependsOn(updateTask)
-                }
-            }
-
-            // Also run during project evaluation for immediate sync
-            project.gradle.projectsEvaluated {
-                updateTask.get().updateVersion()
             }
         }
     }
