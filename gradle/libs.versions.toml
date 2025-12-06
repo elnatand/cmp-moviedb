@@ -1,7 +1,7 @@
 [versions]
 
 app-version = "1.0.0"
-app-build = 1
+app-build = "1"
 
 android-minSdk = "24"
 android-compileSdk = "36"
