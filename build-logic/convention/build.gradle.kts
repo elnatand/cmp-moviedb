@@ -26,9 +26,5 @@ gradlePlugin {
             id = "moviedb.kotlin.composeMultiplatform"
             implementationClass = "ComposeMultiplatformConventionPlugin"
         }
-        register("iosVersionUpdate") {
-            id = "moviedb.ios.versionUpdate"
-            implementationClass = "com.elna.moviedb.IosVersionUpdatePlugin"
-        }
     }
 }
