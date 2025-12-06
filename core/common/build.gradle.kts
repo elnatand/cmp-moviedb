@@ -1,3 +1,5 @@
+import com.elna.moviedb.AppVersionGenerationPlugin
+
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
 }
@@ -5,6 +7,9 @@ plugins {
 android {
     namespace = "com.elna.moviedb.core.common"
 }
+
+// Apply app version generation
+apply<AppVersionGenerationPlugin>()
 
 kotlin {
     sourceSets {

@@ -14,20 +14,16 @@ import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /**
- * Plugin that auto-configures app version generation for core:common module.
+ * Plugin that auto-configures app version generation for Kotlin Multiplatform modules.
  *
  * This plugin automatically:
- * - Detects if the module is core:common
- * - Reads version from libs.versions.toml
- * - Derives package name from android.namespace
+ * - Reads version from libs.versions.toml (app-version)
+ * - Derives package name from android.namespace + ".utils"
  * - Generates GeneratedAppVersion.kt file
  * - Adds generated source to commonMain source set
  */
 class AppVersionGenerationPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        // Only apply to core:common module
-        if (project.path != ":core:common") return
-
         project.afterEvaluate {
             // Get namespace from android block
             val android = runCatching {
