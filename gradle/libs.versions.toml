@@ -39,6 +39,7 @@ androidx-room = { id = "androidx.room", version.ref = "room" }
 
 moviedb-kotlinMultiplatform = { id = "moviedb.kotlin.multiplatform" }
 moviedb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform" }
+moviedb-iosVersionUpdate = { id = "moviedb.ios.versionUpdate" }
 
 [libraries]
 compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
