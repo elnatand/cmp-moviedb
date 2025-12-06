@@ -1,6 +1,6 @@
 import com.android.build.gradle.LibraryExtension
+import com.elna.moviedb.AppVersionGenerationPlugin
 import com.elna.moviedb.configureAndroid
-import com.elna.moviedb.getAndroidSdkVersions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -41,5 +41,8 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                 }
             }
         }
+
+        // Apply app version generation plugin (auto-configures for core:common)
+        pluginManager.apply(AppVersionGenerationPlugin::class.java)
     }
 }
