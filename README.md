@@ -6,14 +6,8 @@ A Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform
 
 The app is now available on both major app stores:
 
-<p align="left">
-  <a href="https://play.google.com/store/apps/details?id=com.elna.moviedb">
-    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="60" style="vertical-align: middle;">
-  </a>
-  <a href="https://apps.apple.com/il/app/elnas-movie-db/id6756095438">
-    <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" height="60" style="vertical-align: middle;">
-  </a>
-</p>
+[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=com.elna.moviedb)
+[<img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" height="80">](https://apps.apple.com/il/app/elnas-movie-db/id6756095438)
 
 - **Google Play**: [https://play.google.com/store/apps/details?id=com.elna.moviedb](https://play.google.com/store/apps/details?id=com.elna.moviedb)
 - **App Store**: [https://apps.apple.com/il/app/elnas-movie-db/id6756095438](https://apps.apple.com/il/app/elnas-movie-db/id6756095438)
