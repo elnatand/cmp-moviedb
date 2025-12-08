@@ -6,6 +6,6 @@ interface AppVersion {
 
 class AppVersionImpl : AppVersion {
     override fun getAppVersion(): String {
-        return GeneratedAppVersion.VERSION
+        return APP_VERSION
     }
 }

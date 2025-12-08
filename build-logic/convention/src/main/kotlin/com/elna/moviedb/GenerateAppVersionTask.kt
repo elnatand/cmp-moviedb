@@ -82,9 +82,7 @@ abstract class GenerateAppVersionTask : DefaultTask() {
         file.writeText("""
             package $pkg
 
-            internal object GeneratedAppVersion {
-                const val VERSION = "${appVersion.get()}"
-            }
+            const val APP_VERSION = "${appVersion.get()}"
         """.trimIndent())
     }
 }
