@@ -4,7 +4,7 @@ A Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform
 
 ## 📲 Download the App
 
-The app is now available on both major app stores:
+The app is available on both Google Play and App Store:
 
 <table>
   <tr>
