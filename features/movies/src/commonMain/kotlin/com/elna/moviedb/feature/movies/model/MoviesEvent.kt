@@ -21,4 +21,9 @@ sealed interface MoviesEvent {
      * User clicked retry button after an error
      */
     data object Retry : MoviesEvent
+
+    /**
+     * User pulled down to refresh all movie categories
+     */
+    data object Refresh : MoviesEvent
 }

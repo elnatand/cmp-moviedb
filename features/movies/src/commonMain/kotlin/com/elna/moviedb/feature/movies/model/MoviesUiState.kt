@@ -18,7 +18,8 @@ import com.elna.moviedb.core.model.MovieCategory
 data class MoviesUiState(
     val state: State,
     val moviesByCategory: Map<MovieCategory, List<Movie>> = emptyMap(),
-    val loadingByCategory: Map<MovieCategory, Boolean> = emptyMap()
+    val loadingByCategory: Map<MovieCategory, Boolean> = emptyMap(),
+    val isRefreshing: Boolean = false
 ) {
 
     /**
@@ -46,7 +47,7 @@ data class MoviesUiState(
         loadingByCategory[category] ?: false
 
     enum class State {
-        LOADING, ERROR, SUCCESS
+        ERROR, SUCCESS
     }
 }
 
