@@ -102,19 +102,19 @@ private fun MoviesScreen(
             contentAlignment = Alignment.Center
         ) {
             when {
-                // Show in-memory data if available
-                uiState.hasAnyData -> {
-                    MoviesContent(
-                        uiState = uiState,
-                        onClick = onClick,
-                        onEvent = onEvent
-                    )
-                }
-
                 // Show error screen (only triggered when repository emits error)
                 uiState.state == MoviesUiState.State.ERROR -> {
                     AppErrorComponent(
                         onRetry = { onEvent(MoviesEvent.Retry) }
+                    )
+                }
+
+                // Show content with per-category loaders
+                else -> {
+                    MoviesContent(
+                        uiState = uiState,
+                        onClick = onClick,
+                        onEvent = onEvent
                     )
                 }
             }
@@ -147,15 +147,13 @@ private fun MoviesContent(
             // Following OCP - adding new categories requires ZERO changes here
             MovieCategory.entries.forEach { category ->
                 val movies = uiState.getMovies(category)
-                if (movies.isNotEmpty()) {
-                    MoviesSection(
-                        title = stringResource(getCategoryStringResource(category)),
-                        movies = movies,
-                        onClick = onClick,
-                        isLoading = uiState.isLoading(category),
-                        onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) }
-                    )
-                }
+                MoviesSection(
+                    title = stringResource(getCategoryStringResource(category)),
+                    movies = movies,
+                    onClick = onClick,
+                    isLoading = uiState.isLoading(category),
+                    onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) }
+                )
             }
             Spacer(modifier = Modifier.height(70.dp))
         }
@@ -176,6 +174,7 @@ private fun getCategoryStringResource(category: MovieCategory) = when (category)
 /**
  * Displays a horizontal scrolling section of movies with automatic pagination.
  * Monitors scroll position and triggers loading of more content when user scrolls near the end.
+ * Shows a loader when movies are empty (initial load state).
  *
  * @param title Section title to display
  * @param movies List of movies to display
@@ -195,7 +194,9 @@ private fun MoviesSection(
     val currentIsLoading by rememberUpdatedState(isLoading)
 
     // Automatic pagination: Detect when user scrolls near the end to trigger loading more
-    LaunchedEffect(listState) {
+    LaunchedEffect(listState, movies.isNotEmpty()) {
+        if (movies.isEmpty()) return@LaunchedEffect
+
         snapshotFlow {
             val layoutInfo = listState.layoutInfo
             val totalItemsNumber = layoutInfo.totalItemsCount
@@ -221,19 +222,31 @@ private fun MoviesSection(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
-        LazyRow(
-            state = listState,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            items(
-                items = movies,
-                key = { it.id }
-            ) { movie ->
-                MovieTile(
-                    movie = movie,
-                    onClick = onClick
-                )
+        if (movies.isEmpty()) {
+            // Show loader for initial load state
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                AppLoader()
+            }
+        } else {
+            LazyRow(
+                state = listState,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                items(
+                    items = movies,
+                    key = { it.id }
+                ) { movie ->
+                    MovieTile(
+                        movie = movie,
+                        onClick = onClick
+                    )
+                }
             }
         }
     }
