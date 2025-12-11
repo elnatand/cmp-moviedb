@@ -36,7 +36,7 @@ class MoviesViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.LOADING))
+    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.SUCCESS))
     val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
 
     private val _uiAction = Channel<MoviesUiAction>(Channel.BUFFERED)
@@ -78,10 +78,7 @@ class MoviesViewModel(
                         val updatedMoviesMap = currentState.moviesByCategory + (category to movies)
                         currentState.copy(
                             moviesByCategory = updatedMoviesMap,
-                            state = if (updatedMoviesMap.values.any { it.isNotEmpty() })
-                                MoviesUiState.State.SUCCESS
-                            else
-                                MoviesUiState.State.LOADING
+                            state = MoviesUiState.State.SUCCESS
                         )
                     }
                 }
@@ -155,8 +152,6 @@ class MoviesViewModel(
      */
     private fun retry() {
         viewModelScope.launch {
-            _uiState.update { it.copy(state = MoviesUiState.State.LOADING) }
-
             // Try to load all categories in parallel
             val results = MovieCategory.entries.map { category ->
                 async { moviesRepository.loadMoviesNextPage(category) }
@@ -187,6 +182,7 @@ class MoviesViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
             moviesRepository.clearAndReload()
+            _uiState.update { it.copy(isRefreshing = false) }
         }
     }
 }

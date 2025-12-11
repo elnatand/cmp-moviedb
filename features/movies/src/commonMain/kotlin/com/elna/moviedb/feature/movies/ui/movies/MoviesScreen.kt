@@ -117,11 +117,6 @@ private fun MoviesScreen(
                         onRetry = { onEvent(MoviesEvent.Retry) }
                     )
                 }
-
-                // Show loader during initial loading (repository hasn't emitted yet)
-                uiState.state == MoviesUiState.State.LOADING -> {
-                    AppLoader()
-                }
             }
 
             SnackbarHost(

@@ -47,7 +47,7 @@ data class MoviesUiState(
         loadingByCategory[category] ?: false
 
     enum class State {
-        LOADING, ERROR, SUCCESS
+        ERROR, SUCCESS
     }
 }
 
