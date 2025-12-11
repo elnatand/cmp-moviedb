@@ -56,6 +56,7 @@ class MoviesViewModel(
         when (event) {
             is MoviesEvent.LoadNextPage -> loadNextPage(event.category)
             MoviesEvent.Retry -> retry()
+            MoviesEvent.Refresh -> refresh()
         }
     }
 
@@ -170,6 +171,22 @@ class MoviesViewModel(
             } else if (hasSuccess) {
                 // Success - state will be updated via observeMovies()
             }
+        }
+    }
+
+    /**
+     * Refreshes all movie categories by clearing cache and reloading.
+     *
+     * This is triggered by the pull-to-refresh gesture.
+     * Shows a refresh indicator while maintaining the current content visible.
+     */
+    private fun refresh() {
+        // Prevent duplicate refresh operations
+        if (_uiState.value.isRefreshing) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true) }
+            moviesRepository.clearAndReload()
         }
     }
 }

@@ -18,7 +18,8 @@ import com.elna.moviedb.core.model.MovieCategory
 data class MoviesUiState(
     val state: State,
     val moviesByCategory: Map<MovieCategory, List<Movie>> = emptyMap(),
-    val loadingByCategory: Map<MovieCategory, Boolean> = emptyMap()
+    val loadingByCategory: Map<MovieCategory, Boolean> = emptyMap(),
+    val isRefreshing: Boolean = false
 ) {
 
     /**

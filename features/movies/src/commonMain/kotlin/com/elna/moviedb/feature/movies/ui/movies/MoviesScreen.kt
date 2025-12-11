@@ -22,6 +22,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -137,27 +138,32 @@ private fun MoviesContent(
     onClick: (id: Int, title: String) -> Unit,
     onEvent: (MoviesEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(vertical = 8.dp)
+    PullToRefreshBox(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { onEvent(MoviesEvent.Refresh) }
     ) {
-        // Dynamically render all movie categories
-        // Following OCP - adding new categories requires ZERO changes here
-        MovieCategory.entries.forEach { category ->
-            val movies = uiState.getMovies(category)
-            if (movies.isNotEmpty()) {
-                MoviesSection(
-                    title = stringResource(getCategoryStringResource(category)),
-                    movies = movies,
-                    onClick = onClick,
-                    isLoading = uiState.isLoading(category),
-                    onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) }
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 8.dp)
+        ) {
+            // Dynamically render all movie categories
+            // Following OCP - adding new categories requires ZERO changes here
+            MovieCategory.entries.forEach { category ->
+                val movies = uiState.getMovies(category)
+                if (movies.isNotEmpty()) {
+                    MoviesSection(
+                        title = stringResource(getCategoryStringResource(category)),
+                        movies = movies,
+                        onClick = onClick,
+                        isLoading = uiState.isLoading(category),
+                        onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) }
+                    )
+                }
             }
+            Spacer(modifier = Modifier.height(70.dp))
         }
-        Spacer(modifier = Modifier.height(70.dp))
     }
 }
 
