@@ -114,45 +114,20 @@ abstract class UpdateIosVersionTask : DefaultTask() {
 
         var content = pbxFile.readText()
 
-        // Update or add MARKETING_VERSION and CURRENT_PROJECT_VERSION in all buildSettings sections
-        val buildSettingsRegex = Regex("(buildSettings = \\{[^}]*?)(\\n\\s*\\};)", RegexOption.DOT_MATCHES_ALL)
+        // Simple approach: Replace ALL occurrences of MARKETING_VERSION and CURRENT_PROJECT_VERSION
+        // This ensures both project-level and target-level configurations are updated
+        content = content.replace(
+            Regex("MARKETING_VERSION = [^;]+;"),
+            "MARKETING_VERSION = $version;"
+        )
 
-        content = buildSettingsRegex.replace(content) { matchResult ->
-            val buildSettingsBlock = matchResult.groupValues[1]
-            val closingBrace = matchResult.groupValues[2]
-
-            // Check if MARKETING_VERSION already exists
-            val hasMarketingVersion = buildSettingsBlock.contains("MARKETING_VERSION")
-            val hasCurrentProjectVersion = buildSettingsBlock.contains("CURRENT_PROJECT_VERSION")
-
-            var updatedBlock = buildSettingsBlock
-
-            if (hasMarketingVersion) {
-                // Update existing MARKETING_VERSION
-                updatedBlock = updatedBlock.replace(
-                    Regex("MARKETING_VERSION = .*?;"),
-                    "MARKETING_VERSION = $version;"
-                )
-            } else {
-                // Add MARKETING_VERSION before closing brace
-                updatedBlock = "$updatedBlock\n\t\t\t\tMARKETING_VERSION = $version;"
-            }
-
-            if (hasCurrentProjectVersion) {
-                // Update existing CURRENT_PROJECT_VERSION
-                updatedBlock = updatedBlock.replace(
-                    Regex("CURRENT_PROJECT_VERSION = .*?;"),
-                    "CURRENT_PROJECT_VERSION = $build;"
-                )
-            } else {
-                // Add CURRENT_PROJECT_VERSION before closing brace
-                updatedBlock = "$updatedBlock\n\t\t\t\tCURRENT_PROJECT_VERSION = $build;"
-            }
-
-            updatedBlock + closingBrace
-        }
+        content = content.replace(
+            Regex("CURRENT_PROJECT_VERSION = [^;]+;"),
+            "CURRENT_PROJECT_VERSION = $build;"
+        )
 
         pbxFile.writeText(content)
-        logger.lifecycle("Updated project.pbxproj with MARKETING_VERSION and CURRENT_PROJECT_VERSION")
+        logger.lifecycle("Updated project.pbxproj with MARKETING_VERSION = $version and CURRENT_PROJECT_VERSION = $build")
+        logger.lifecycle("Updated both project-level and target-level build configurations")
     }
 }
