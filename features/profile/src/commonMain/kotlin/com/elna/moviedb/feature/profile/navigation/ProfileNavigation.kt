@@ -5,7 +5,7 @@ import com.elna.moviedb.core.ui.navigation.ProfileRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.feature.profile.ui.ProfileScreen
 
-fun EntryProviderScope<Route>.profileEntry(){
+fun EntryProviderScope<Route>.profileEntry() {
     entry<ProfileRoute> {
         ProfileScreen()
     }

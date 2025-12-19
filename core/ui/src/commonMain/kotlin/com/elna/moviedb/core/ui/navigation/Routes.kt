@@ -1,7 +1,6 @@
 package com.elna.moviedb.core.ui.navigation
 
 import kotlinx.serialization.Serializable
-import com.elna.moviedb.core.ui.navigation.MoviesRoute.MoviesListRoute
 
 sealed interface Route
 
