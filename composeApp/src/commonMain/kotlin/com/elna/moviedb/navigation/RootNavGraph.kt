@@ -8,8 +8,8 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.elna.moviedb.AppState
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
+import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TVShowsRoute
 import com.elna.moviedb.feature.movies.navigation.movieDetailsEntry
@@ -22,31 +22,42 @@ import com.elna.moviedb.feature.tvshows.navigation.tvShowsEntry
 
 @Composable
 fun RootNavGraph(
-    backStack: SnapshotStateList<Route>,
+    rootBackStack: SnapshotStateList<Route>,
 ) {
     NavDisplay(
-        backStack = backStack,
+        backStack = rootBackStack,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
         entryProvider = entryProvider {
             entry<MoviesRoute> {
-                MoviesNavigation()
+                MoviesNavigation(
+                    onCastMemberClick = { personId ->
+                        rootBackStack.add(PersonDetailsRoute(personId))
+                    }
+                )
             }
             entry<TVShowsRoute> {
-                TvShowsNavigation()
+                TvShowsNavigation(
+                    onCastMemberClick = { personId ->
+                        rootBackStack.add(PersonDetailsRoute(personId))
+                    }
+                )
             }
-            searchEntry(backStack)
-            profileEntry(backStack)
-            personDetailsEntry(backStack)
+            searchEntry(rootBackStack)
+            profileEntry(rootBackStack)
+            personDetailsEntry(rootBackStack)
         }
     )
 }
 
 @Composable
-fun MoviesNavigation() {
-    val backStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesRoute.MoviesListRoute) }
+fun MoviesNavigation(
+    onCastMemberClick: (personId: Int) -> Unit
+) {
+    val backStack: SnapshotStateList<Route> =
+        remember { mutableStateListOf(MoviesRoute.MoviesListRoute) }
 
     NavDisplay(
         backStack = backStack,
@@ -56,14 +67,17 @@ fun MoviesNavigation() {
         ),
         entryProvider = entryProvider {
             moviesEntry(backStack)
-            movieDetailsEntry(backStack)
+            movieDetailsEntry(onCastMemberClick)
         }
     )
 }
 
 @Composable
-fun TvShowsNavigation() {
-    val backStack: SnapshotStateList<Route> = remember { mutableStateListOf(TVShowsRoute.TvShowsListRoute) }
+fun TvShowsNavigation(
+    onCastMemberClick: (personId: Int) -> Unit = {}
+) {
+    val backStack: SnapshotStateList<Route> =
+        remember { mutableStateListOf(TVShowsRoute.TvShowsListRoute) }
 
     NavDisplay(
         backStack = backStack,
@@ -73,7 +87,7 @@ fun TvShowsNavigation() {
         ),
         entryProvider = entryProvider {
             tvShowsEntry(backStack)
-            tvShowDetailsEntry(backStack)
+            tvShowDetailsEntry(onCastMemberClick)
         }
     )
 }

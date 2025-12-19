@@ -19,14 +19,12 @@ fun EntryProviderScope<Route>.moviesEntry(
 }
 
 fun EntryProviderScope<Route>.movieDetailsEntry(
-    backStack: SnapshotStateList<Route>
+    onCastMemberClick: (personId: Int) -> Unit
 ) {
     entry<MoviesRoute.MovieDetailsRoute> {
         MovieDetailsScreen(
             movieId = it.movieId,
-            onCastMemberClick = { personId ->
-                backStack.add(PersonDetailsRoute(personId))
-            }
+            onCastMemberClick = onCastMemberClick
         )
     }
 }

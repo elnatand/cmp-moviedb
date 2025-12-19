@@ -19,14 +19,12 @@ fun EntryProviderScope<Route>.tvShowsEntry(
 }
 
 fun EntryProviderScope<Route>.tvShowDetailsEntry(
-    backStack: SnapshotStateList<Route>
+    onCastMemberClick: (personId: Int) -> Unit
 ) {
     entry<TVShowsRoute.TvShowDetailsRoute> {
         TvShowDetailsScreen(
             tvShowId = it.tvShowId,
-            onCastMemberClick = { personId ->
-                backStack.add(PersonDetailsRoute(personId))
-            }
+            onCastMemberClick = onCastMemberClick
         )
     }
 }
