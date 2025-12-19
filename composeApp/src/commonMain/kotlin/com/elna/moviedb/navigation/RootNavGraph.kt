@@ -29,8 +29,8 @@ fun RootNavGraph(
             tvShowsFlow(rootBackStack) // nested graph
 
             searchEntry(rootBackStack)
-            profileEntry(rootBackStack)
             personDetailsEntry(rootBackStack)
+            profileEntry()
         }
     )
 }
