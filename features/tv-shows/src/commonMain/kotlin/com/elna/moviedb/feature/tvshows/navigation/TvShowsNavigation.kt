@@ -1,31 +1,30 @@
 package com.elna.moviedb.feature.tvshows.navigation
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.navigation3.runtime.NavEntry
+import androidx.navigation3.runtime.EntryProviderScope
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsScreen
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowsScreen
 
-fun tvShowsEntry(
-    key: Route,
+fun EntryProviderScope<Route>.tvShowsEntry(
     backStack: SnapshotStateList<Route>
-): NavEntry<Route> {
-    return NavEntry(key = key) {
+) {
+    entry<TvShowsRoute> {
         TvShowsScreen(onClick = { tvShowId, _ ->
             backStack.add(TvShowDetailsRoute(tvShowId))
         })
     }
 }
 
-fun tvShowDetailsEntry(
-    key: TvShowDetailsRoute,
+fun EntryProviderScope<Route>.tvShowDetailsEntry(
     backStack: SnapshotStateList<Route>
-): NavEntry<Route> {
-    return NavEntry(key = key) {
+) {
+    entry<TvShowDetailsRoute> {
         TvShowDetailsScreen(
-            tvShowId = key.tvShowId,
+            tvShowId = it.tvShowId,
             onCastMemberClick = { personId ->
                 backStack.add(PersonDetailsRoute(personId))
             }

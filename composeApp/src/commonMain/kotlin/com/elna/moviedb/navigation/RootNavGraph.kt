@@ -38,18 +38,12 @@ fun RootNavGraph(
         entryProvider = entryProvider {
             moviesEntry(backStack)
             movieDetailsEntry(backStack)
+            tvShowsEntry(backStack)
+            tvShowDetailsEntry(backStack)
+            searchEntry(backStack)
+            profileEntry(backStack)
+            personDetailsEntry(backStack)
         }
-//        entryProvider = { key ->
-//            when (key) {
-//                MoviesRoute -> moviesEntry(key, backStack)
-//                is MovieDetailsRoute -> movieDetailsEntry(key, backStack)
-//                TvShowsRoute -> tvShowsEntry(key, backStack)
-//                is TvShowDetailsRoute -> tvShowDetailsEntry(key, backStack)
-//                SearchRoute -> searchEntry(key, backStack)
-//                ProfileRoute -> profileEntry(key)
-//                is PersonDetailsRoute -> personDetailsEntry(key, backStack)
-//            }
-//        }
     )
 }
 
