@@ -19,7 +19,7 @@ data class MoviesRoute(val startAt: Route = MoviesListRoute) : Route {
 }
 
 @Serializable
-data class TvShowsRoute(val startAt: Route = MoviesListRoute) : Route {
+data class TvShowsRoute(val startAt: Route = TvShowsListRoute) : Route {
 
     @Serializable
     data object TvShowsListRoute : Route
