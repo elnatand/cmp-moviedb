@@ -69,6 +69,7 @@ fun ProfileScreen() {
     ProfileScreen(
         selectedLanguage = uiState.selectedLanguageCode,
         selectedTheme = uiState.selectedThemeValue,
+        appVersion = uiState.appVersion,
         onLanguageSelected = { viewModel.onEvent(ProfileEvent.SetLanguage(it)) },
         onThemeSelected = { viewModel.onEvent(ProfileEvent.SetTheme(it)) }
     )
@@ -79,6 +80,7 @@ fun ProfileScreen() {
 private fun ProfileScreen(
     selectedLanguage: String,
     selectedTheme: String,
+    appVersion: String,
     onLanguageSelected: (AppLanguage) -> Unit,
     onThemeSelected: (AppTheme) -> Unit
 ) {
@@ -98,10 +100,7 @@ private fun ProfileScreen(
     // Confirmation Dialog
     if (showConfirmDialog && pendingLanguage != null) {
         AlertDialog(
-            onDismissRequest = {
-                showConfirmDialog = false
-                pendingLanguage = null
-            },
+            onDismissRequest = {},
             title = { Text(stringResource(Res.string.change_language_title)) },
             text = { Text(stringResource(Res.string.change_language_message)) },
             confirmButton = {
@@ -233,6 +232,15 @@ private fun ProfileScreen(
             }
 
             Spacer(modifier = Modifier.weight(1f))
+
+            // App Version
+            Text(
+                text = appVersion,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Card(
                 modifier = Modifier.fillMaxWidth(),

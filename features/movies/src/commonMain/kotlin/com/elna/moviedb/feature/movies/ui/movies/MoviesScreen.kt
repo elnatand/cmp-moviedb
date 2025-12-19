@@ -1,8 +1,6 @@
 package com.elna.moviedb.feature.movies.ui.movies
 
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +22,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,9 +52,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MoviesScreen(
-    onClick: (movieId: Int, title: String) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    onClick: (movieId: Int, title: String) -> Unit
 ) {
     val viewModel = koinViewModel<MoviesViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,9 +61,7 @@ fun MoviesScreen(
         uiState = uiState,
         onClick = onClick,
         onEvent = viewModel::onEvent,
-        uiActions = viewModel.uiAction,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope
+        uiActions = viewModel.uiAction
     )
 }
 
@@ -77,9 +72,7 @@ private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
     onEvent: (MoviesEvent) -> Unit,
-    uiActions: Flow<MoviesUiAction>,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    uiActions: Flow<MoviesUiAction>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -109,17 +102,6 @@ private fun MoviesScreen(
             contentAlignment = Alignment.Center
         ) {
             when {
-                // Show in-memory data if available
-                uiState.hasAnyData -> {
-                    MoviesContent(
-                        uiState = uiState,
-                        onClick = onClick,
-                        onEvent = onEvent,
-                        sharedTransitionScope = sharedTransitionScope,
-                        animatedVisibilityScope = animatedVisibilityScope
-                    )
-                }
-
                 // Show error screen (only triggered when repository emits error)
                 uiState.state == MoviesUiState.State.ERROR -> {
                     AppErrorComponent(
@@ -127,9 +109,13 @@ private fun MoviesScreen(
                     )
                 }
 
-                // Show loader during initial loading (repository hasn't emitted yet)
-                uiState.state == MoviesUiState.State.LOADING -> {
-                    AppLoader()
+                // Show content with per-category loaders
+                else -> {
+                    MoviesContent(
+                        uiState = uiState,
+                        onClick = onClick,
+                        onEvent = onEvent
+                    )
                 }
             }
 
@@ -145,33 +131,32 @@ private fun MoviesScreen(
 private fun MoviesContent(
     uiState: MoviesUiState,
     onClick: (id: Int, title: String) -> Unit,
-    onEvent: (MoviesEvent) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    onEvent: (MoviesEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(vertical = 8.dp)
+    PullToRefreshBox(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { onEvent(MoviesEvent.Refresh) }
     ) {
-        // Dynamically render all movie categories
-        // Following OCP - adding new categories requires ZERO changes here
-        MovieCategory.entries.forEach { category ->
-            val movies = uiState.getMovies(category)
-            if (movies.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 8.dp)
+        ) {
+            // Dynamically render all movie categories
+            // Following OCP - adding new categories requires ZERO changes here
+            MovieCategory.entries.forEach { category ->
+                val movies = uiState.getMovies(category)
                 MoviesSection(
                     title = stringResource(getCategoryStringResource(category)),
                     movies = movies,
                     onClick = onClick,
                     isLoading = uiState.isLoading(category),
-                    onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) },
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedVisibilityScope
+                    onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) }
                 )
             }
+            Spacer(modifier = Modifier.height(70.dp))
         }
-        Spacer(modifier = Modifier.height(70.dp))
     }
 }
 
@@ -189,6 +174,7 @@ private fun getCategoryStringResource(category: MovieCategory) = when (category)
 /**
  * Displays a horizontal scrolling section of movies with automatic pagination.
  * Monitors scroll position and triggers loading of more content when user scrolls near the end.
+ * Shows a loader when movies are empty (initial load state).
  *
  * @param title Section title to display
  * @param movies List of movies to display
@@ -202,15 +188,15 @@ private fun MoviesSection(
     movies: List<Movie>,
     onClick: (id: Int, title: String) -> Unit,
     isLoading: Boolean,
-    onLoadMore: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    onLoadMore: () -> Unit
 ) {
     val listState = rememberLazyListState()
     val currentIsLoading by rememberUpdatedState(isLoading)
 
     // Automatic pagination: Detect when user scrolls near the end to trigger loading more
-    LaunchedEffect(listState) {
+    LaunchedEffect(listState, movies.isNotEmpty()) {
+        if (movies.isEmpty()) return@LaunchedEffect
+
         snapshotFlow {
             val layoutInfo = listState.layoutInfo
             val totalItemsNumber = layoutInfo.totalItemsCount
@@ -236,21 +222,31 @@ private fun MoviesSection(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
-        LazyRow(
-            state = listState,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            items(
-                items = movies,
-                key = { it.id }
-            ) { movie ->
-                MovieTile(
-                    movie = movie,
-                    onClick = onClick,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
+        if (movies.isEmpty()) {
+            // Show loader for initial load state
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                AppLoader()
+            }
+        } else {
+            LazyRow(
+                state = listState,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                items(
+                    items = movies,
+                    key = { it.id }
+                ) { movie ->
+                    MovieTile(
+                        movie = movie,
+                        onClick = onClick
+                    )
+                }
             }
         }
     }

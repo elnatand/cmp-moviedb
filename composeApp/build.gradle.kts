@@ -47,7 +47,6 @@ kotlin {
             implementation(projects.features.person)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
-            implementation(libs.lifecycle.viewmodel.navigation3)
         }
     }
 
@@ -71,8 +70,8 @@ android {
         applicationId = "com.elna.moviedb"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = libs.versions.app.build.get().toInt()
+        versionName = libs.versions.app.version.get()
     }
     packaging {
         resources {

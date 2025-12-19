@@ -1,15 +1,18 @@
 [versions]
 
+app-version = "1.0.0"
+app-build = "1"
+
 android-minSdk = "24"
 android-compileSdk = "36"
 android-targetSdk = "36"
 
 kotlin = "2.2.21"
 ksp = "2.3.3"
-composeMultiplatform = "1.10.0-rc01"
+composeMultiplatform = "1.10.0-rc02"
 compose-material3 = "1.10.0-alpha05"
 compose-material-icons = "1.7.3"
-agp = "8.13.1"
+agp = "8.13.2"
 koin = "4.1.1"
 ktor = "3.3.3"
 coil = "3.3.0"
@@ -36,6 +39,7 @@ androidx-room = { id = "androidx.room", version.ref = "room" }
 
 moviedb-kotlinMultiplatform = { id = "moviedb.kotlin.multiplatform" }
 moviedb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform" }
+moviedb-iosVersionUpdate = { id = "moviedb.ios.versionUpdate" }
 
 [libraries]
 compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }

@@ -1,34 +1,58 @@
 package com.elna.moviedb.feature.tvshows.navigation
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.navigation3.runtime.NavEntry
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
-import com.elna.moviedb.core.ui.navigation.TvShowDetailsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsScreen
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowsScreen
 
-fun tvShowsEntry(
-    key: Route,
-    backStack: SnapshotStateList<Route>
-): NavEntry<Route> {
-    return NavEntry(key = key) {
-        TvShowsScreen(onClick = { tvShowId, _ ->
-            backStack.add(TvShowDetailsRoute(tvShowId))
-        })
+fun EntryProviderScope<Route>.tvShowsFlow(
+    rootBackStack: SnapshotStateList<Route>
+) {
+    entry<TvShowsRoute> {
+        TvShowsNavigation(
+            rootBackStack = rootBackStack,
+            startDestination = it.startAt
+        )
     }
 }
 
-fun tvShowDetailsEntry(
-    key: TvShowDetailsRoute,
-    backStack: SnapshotStateList<Route>
-): NavEntry<Route> {
-    return NavEntry(key = key) {
-        TvShowDetailsScreen(
-            tvShowId = key.tvShowId,
-            onCastMemberClick = { personId ->
-                backStack.add(PersonDetailsRoute(personId))
+@Composable
+private fun TvShowsNavigation(
+    rootBackStack: SnapshotStateList<Route>,
+    startDestination: Route,
+) {
+    val backStack: SnapshotStateList<Route> = remember { mutableStateListOf(startDestination) }
+
+    NavDisplay(
+        backStack = backStack,
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
+        entryProvider = entryProvider {
+            entry<TvShowsRoute.TvShowsListRoute> {
+                TvShowsScreen(onClick = { tvShowId, _ ->
+                    backStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
+                })
             }
-        )
-    }
+            entry<TvShowsRoute.TvShowDetailsRoute> {
+                TvShowDetailsScreen(
+                    tvShowId = it.tvShowId,
+                    onCastMemberClick = { personId ->
+                        rootBackStack.add(PersonDetailsRoute(personId))
+                    }
+                )
+            }
+        }
+    )
 }

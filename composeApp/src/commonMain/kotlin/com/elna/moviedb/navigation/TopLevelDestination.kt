@@ -18,11 +18,11 @@ enum class TopLevelDestination(
 ) {
     MOVIES(
         icon = Icons.Filled.Theaters,
-        route = MoviesRoute
+        route = MoviesRoute()
     ),
     TV_SHOWS(
         icon = Icons.Filled.Tv,
-        route = TvShowsRoute
+        route = TvShowsRoute()
     ),
     SEARCH(
         icon = Icons.Filled.Search,
