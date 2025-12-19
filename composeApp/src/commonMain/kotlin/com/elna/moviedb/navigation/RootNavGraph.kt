@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
@@ -47,7 +48,12 @@ fun RootNavGraph(
             }
             searchEntry(rootBackStack)
             profileEntry(rootBackStack)
-            personDetailsEntry(rootBackStack)
+            personDetailsEntry({ id, mediaType ->
+                when (mediaType) {
+                    MediaType.MOVIE -> rootBackStack.add(MoviesRoute.MovieDetailsRoute(id))
+                    MediaType.TV -> rootBackStack.add(TVShowsRoute.TvShowDetailsRoute(id))
+                }
+            })
         }
     )
 }
