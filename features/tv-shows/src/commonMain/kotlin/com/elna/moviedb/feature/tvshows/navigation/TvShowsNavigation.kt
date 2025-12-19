@@ -11,14 +11,14 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
-import com.elna.moviedb.core.ui.navigation.TVShowsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsScreen
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowsScreen
 
 fun EntryProviderScope<Route>.tvShowsFlow(
     rootBackStack: SnapshotStateList<Route>
 ) {
-    entry<TVShowsRoute> {
+    entry<TvShowsRoute> {
         TvShowsNavigation(
             rootBackStack = rootBackStack,
             startDestination = it.startAt
@@ -40,12 +40,12 @@ private fun TvShowsNavigation(
             rememberViewModelStoreNavEntryDecorator()
         ),
         entryProvider = entryProvider {
-            entry<TVShowsRoute.TvShowsListRoute> {
+            entry<TvShowsRoute.TvShowsListRoute> {
                 TvShowsScreen(onClick = { tvShowId, _ ->
-                    backStack.add(TVShowsRoute.TvShowDetailsRoute(tvShowId))
+                    backStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
                 })
             }
-            entry<TVShowsRoute.TvShowDetailsRoute> {
+            entry<TvShowsRoute.TvShowDetailsRoute> {
                 TvShowDetailsScreen(
                     tvShowId = it.tvShowId,
                     onCastMemberClick = { personId ->

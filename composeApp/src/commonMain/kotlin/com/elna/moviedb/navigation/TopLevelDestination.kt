@@ -10,7 +10,7 @@ import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.ProfileRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.SearchRoute
-import com.elna.moviedb.core.ui.navigation.TVShowsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 
 enum class TopLevelDestination(
     val icon: ImageVector,
@@ -22,7 +22,7 @@ enum class TopLevelDestination(
     ),
     TV_SHOWS(
         icon = Icons.Filled.Tv,
-        route = TVShowsRoute()
+        route = TvShowsRoute()
     ),
     SEARCH(
         icon = Icons.Filled.Search,

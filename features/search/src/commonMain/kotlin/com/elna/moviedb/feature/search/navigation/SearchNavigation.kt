@@ -6,7 +6,7 @@ import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.SearchRoute
-import com.elna.moviedb.core.ui.navigation.TVShowsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.search.ui.SearchScreen
 
 fun EntryProviderScope<Route>.searchEntry(
@@ -21,7 +21,7 @@ fun EntryProviderScope<Route>.searchEntry(
             },
             onTvShowClicked = { tvShowId ->
                 rootBackStack.add(
-                    TVShowsRoute(startAt = TVShowsRoute.TvShowDetailsRoute(tvShowId))
+                    TvShowsRoute(startAt = TvShowsRoute.TvShowDetailsRoute(tvShowId))
                 )
             },
             onPersonClicked = { personId ->

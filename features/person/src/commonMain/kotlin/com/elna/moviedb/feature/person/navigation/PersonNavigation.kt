@@ -6,7 +6,7 @@ import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
-import com.elna.moviedb.core.ui.navigation.TVShowsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.person.ui.PersonDetailsScreen
 
 fun EntryProviderScope<Route>.personDetailsEntry(
@@ -22,7 +22,7 @@ fun EntryProviderScope<Route>.personDetailsEntry(
                     )
 
                     MediaType.TV -> rootBackStack.add(
-                        TVShowsRoute(startAt = TVShowsRoute.TvShowDetailsRoute(id))
+                        TvShowsRoute(startAt = TvShowsRoute.TvShowDetailsRoute(id))
                     )
                 }
             }

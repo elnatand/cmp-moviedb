@@ -9,7 +9,7 @@ import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.ProfileRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.SearchRoute
-import com.elna.moviedb.core.ui.navigation.TVShowsRoute
+import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.navigation.TopLevelDestination
 
 @Composable
@@ -43,7 +43,7 @@ class AppState(
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         when (topLevelDestination) {
             TopLevelDestination.MOVIES -> navBackStack.add(MoviesRoute())
-            TopLevelDestination.TV_SHOWS -> navBackStack.add(TVShowsRoute())
+            TopLevelDestination.TV_SHOWS -> navBackStack.add(TvShowsRoute())
             TopLevelDestination.SEARCH -> navBackStack.add(SearchRoute)
             TopLevelDestination.PROFILE -> navBackStack.add(ProfileRoute)
         }
