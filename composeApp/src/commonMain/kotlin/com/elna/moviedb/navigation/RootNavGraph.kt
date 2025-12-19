@@ -46,7 +46,7 @@ fun RootNavGraph(
 
 @Composable
 fun MoviesNavigation() {
-    val backStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesRoute) }
+    val backStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesRoute.MoviesListRoute) }
 
     NavDisplay(
         backStack = backStack,
@@ -63,7 +63,7 @@ fun MoviesNavigation() {
 
 @Composable
 fun TvShowsNavigation() {
-    val backStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesRoute) }
+    val backStack: SnapshotStateList<Route> = remember { mutableStateListOf(TVShowsRoute.TvShowsListRoute) }
 
     NavDisplay(
         backStack = backStack,
