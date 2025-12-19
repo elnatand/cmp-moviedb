@@ -1,203 +1,295 @@
-# Claude Code Rules for CMP MovieDB
+# CLAUDE.md
 
-This file defines coding standards and conventions for the Kotlin Multiplatform Movie Database project.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
-- **Architecture**: Clean Architecture with MVVM pattern
-- **Platform**: Kotlin Multiplatform (Android/iOS)
-- **UI Framework**: Compose Multiplatform
-- **Database**: Room
-- **Networking**: Ktor
-- **DI**: Koin
-- **Design System**: Material 3
+Kotlin Multiplatform Movie Database app using Compose Multiplatform, targeting Android and iOS with a feature-based multi-module architecture following Clean Architecture and MVI pattern.
 
-## Coding Standards
+## Build Commands
 
-### Kotlin Conventions
-- Use `camelCase` for variables and functions
-- Use `PascalCase` for classes and interfaces
-- Use `UPPER_SNAKE_CASE` for constants
-- Prefer `val` over `var` when possible
-- Use explicit types for public APIs
+### Basic Build Operations
+```bash
+# Clean and build entire project
+./gradlew clean build
 
-### Architecture Patterns
-- Follow Clean Architecture layers: `data`, `domain`, `presentation`
-- Use Repository pattern for data access
-- Implement MVVM with ViewModels and UiState
-- Separate business logic from UI components
+# Build Android app
+./gradlew :composeApp:assembleDebug
 
-### File Organization
-```
-core/
-├── data/           # Data layer (repositories, network, database)
-├── database/       # Room database entities and DAOs
-├── model/          # Domain models
-├── network/        # Network clients and DTOs
-└── ui/            # Shared UI components
+# Build specific module (example)
+./gradlew :core:network:build
 
-features/
-├── movies/        # Movie-related features
-│   ├── data/      # Feature-specific data layer
-│   ├── model/     # Feature-specific models
-│   └── ui/        # Feature UI screens and components
-└── tv-shows/      # TV show features (future)
+# Build release (ensure secrets are configured)
+./gradlew :composeApp:assembleRelease
 ```
 
-### Compose UI Guidelines
-- Use Material 3 design system components
-- Create reusable composables in `core/ui`
-- Follow single responsibility principle for composables
-- Use `@Preview` for component testing
-- Prefer stateless composables when possible
+### Running the App
+```bash
+# Run on Android
+./gradlew :composeApp:installDebug
 
-### Data Layer Standards
-- Use `@Serializable` for data classes with API responses
-- Add `@SerialName()` annotations for JSON field mapping
-- Implement mapping between data and domain models
-- Use nullable types for optional API fields
-- Handle API errors gracefully
-
-### Database Conventions
-- Use Room for local data persistence
-- Create separate entities for each table
-- Implement DAOs with Flow for reactive data
-- Use database migrations for schema changes
-- Store page information for pagination
-
-### Networking Standards
-- Use TMDB API with proper authentication
-- Implement proper error handling
-- Use DTOs (Data Transfer Objects) for API responses
-- Map DTOs to domain models
-- Cache images and data appropriately
-
-### State Management
-- Use `MutableStateFlow` and `StateFlow` for UI state
-- Create sealed interfaces/classes for complex states
-- Handle loading, success, and error states
-- Implement proper state updates with `update {}`
-
-### String Resources
-- Always use string resources from `core/ui/src/commonMain/composeResources/values/Strings.xml`
-- Never hardcode user-facing strings
-- Use meaningful resource names
-
-### Security Best Practices
-- Store API keys securely using BuildConfig (Android) and plist (iOS)
-- Use `expect/actual` pattern for platform-specific configurations
-- Exclude sensitive files from version control
-- Implement proper certificate pinning for production
-
-## Code Quality
+# iOS: Open in Android Studio and select iOS target from run configuration
+```
 
 ### Testing
-- Write unit tests for ViewModels and repositories
-- Use mocking for external dependencies
-- Test both success and error scenarios
-- Maintain good test coverage
-
-### Documentation
-- Add KDoc comments for public APIs
-- Include parameter descriptions for complex functions
-- Document architecture decisions in README
-- Keep this CLAUDE.md file updated
-
-### Performance
-- Use `LazyColumn`/`LazyVerticalGrid` for lists
-- Implement proper image loading with caching
-- Use `derivedStateOf` for expensive calculations
-- Avoid unnecessary recompositions
-
-## Commands to Run
-
-### Build Commands
 ```bash
-./gradlew build                    # Build all modules
-./gradlew :composeApp:assembleDebug # Build Android debug
+# Run all tests
+./gradlew test
+
+# Run tests for specific module
+./gradlew :core:data:test
 ```
 
-### Testing Commands
-```bash
-./gradlew test                     # Run unit tests
-./gradlew connectedCheck          # Run instrumented tests
+## Architecture
+
+### Multi-Module Structure
+The project uses **convention plugins** in `build-logic/convention/` to standardize module configuration:
+
+- **`moviedb.kotlin.multiplatform`** (KotlinMultiplatformConventionPlugin): Configures KMP with iosArm64 + iosSimulatorArm64 targets, applies `-Xexpect-actual-classes` flag
+- **`moviedb.kotlin.composeMultiplatform`** (ComposeMultiplatformConventionPlugin): Applies Compose Multiplatform and compiler plugins
+- **`moviedb.android.library`**: Standardizes Android library configuration (compileSdk 36, minSdk 24)
+
+All versions are centralized in `gradle/libs.versions.toml` using Gradle version catalogs.
+
+### Module Organization
+```
+core/
+  ├── common/       # Shared utilities (AppDispatchers for coroutines)
+  ├── model/        # Domain models (Movie, TvShow, AppResult<T>, AppLanguage, AppTheme)
+  ├── network/      # Ktor HTTP client, TMDB API client, DTOs
+  ├── database/     # Room database (movies only; TV shows are in-memory)
+  ├── datastore/    # DataStore for preferences and pagination state
+  ├── data/         # Repository implementations (movies, tv-shows, person)
+  └── ui/           # Shared UI components, Material 3 design system, Compose resources
+
+features/
+  ├── movies/       # Movies list + details screens (offline-first with Room)
+  ├── tv-shows/     # TV shows list + details screens (in-memory)
+  ├── person/       # Cast/crew details screen
+  ├── search/       # Multi-type search (movies, TV, people)
+  └── profile/      # User profile, language/theme settings
+
+composeApp/         # Main app module with navigation and DI setup
 ```
 
-### Code Quality
-```bash
-./gradlew ktlintCheck             # Kotlin linting
-./gradlew ktlintFormat            # Auto-format code
+### MVI Pattern with Simplified Repositories
+
+**Repository**: Passive data provider
+- Returns `Flow<List<T>>` for reactive data streaming
+- Handles data operations (fetch, cache, invalidation)
+- No UI state management (loading/error states)
+- Example: `MoviesRepository.observeMovies()` returns `Flow<List<Movie>>`
+
+**ViewModel**: Active state coordinator
+- Manages UI state (loading, error, success)
+- Coordinates repository calls
+- Handles user events via `onEvent()`
+- Emits one-time UI actions via Channel (e.g., show snackbar)
+- Example: `MoviesViewModel` collects repository flows and manages `MoviesUiState`
+
+**Key Principles**:
+- Repository maintains data integrity
+- ViewModel manages UI state presentation
+- Clear separation of concerns between layers
+
+### Category Abstraction Pattern
+Both Movies and TV Shows use enum-based category abstraction (`MovieCategory`, `TvShowCategory`) following the Open-Closed Principle:
+
+- **Adding new categories**: Simply add to the enum; no code changes needed in ViewModel/Repository
+- **Map-based state**: `moviesByCategory: Map<MovieCategory, List<Movie>>`
+- **Automatic iteration**: ViewModels iterate over `Category.entries` to handle all categories
+- **No hardcoded branches**: No when statements on category types
+
+This pattern appears in:
+- `MoviesRepository` / `TvShowsRepository` interfaces
+- `MoviesViewModel` / `TvShowsViewModel` implementations
+- UI state classes
+
+### Data Storage Strategy
+
+**Movies**: Offline-first with Room database
+- 4 entity tables: `MovieEntity`, `MovieDetailsEntity`, `CastMemberEntity`, `VideoEntity`
+- Foreign key relationships between entities
+- Reactive updates via Flow from DAOs
+- Cache persists across app restarts
+
+**TV Shows**: In-memory storage
+- Uses `MutableStateFlow` in repository
+- Data cleared on app restart
+- No Room entities (planned for future)
+
+**Preferences**: DataStore
+- App settings (language, theme)
+- Pagination state (persists current page per category)
+- Survives app restarts
+
+### Language-Aware Cache Invalidation
+`LanguageChangeCoordinator` observes language changes and triggers repository `clearAndReload()`:
+- Clears stale cached content
+- Reloads initial pages with new language
+- Ensures UI displays content in selected language
+
+### Error Handling Strategy
+**Initial Load Errors**: Block UI with error screen
+- User sees full-screen error with retry button
+- No cached data available to display
+
+**Pagination Errors**: Non-blocking snackbar
+- Keep cached data visible
+- Show temporary error message at bottom
+- User can continue browsing existing content
+
+## Platform-Specific Configuration
+
+### expect/actual Pattern
+Used for platform-specific implementations:
+
+**API Key Loading** (`core/network/model/PlatformKeys.kt`):
+- Common: `expect val TMDB_API_KEY: String`
+- Android: Reads from `BuildConfig.TMDB_API_KEY` (generated from `secrets.properties`)
+- iOS: Reads from `Secrets.plist` bundle resource
+
+**Database Drivers** (`core/database/Database.kt`):
+- Android: Uses Android SQLite driver
+- iOS: Uses native iOS SQLite driver
+
+**DataStore Path** (`core/datastore/DataStoreFactory.kt`):
+- Android: Uses `Context.filesDir`
+- iOS: Uses `NSFileManager` document directory
+
+### API Key Setup (Required)
+**Android**:
+1. Create `secrets.properties` in project root:
+   ```properties
+   TMDB_API_KEY=your_api_key_here
+   ```
+2. Key is read via Gradle and injected into `BuildConfig` in `core/network/build.gradle.kts`
+
+**iOS**:
+1. Copy template: `cp iosApp/iosApp/Secrets.plist.template iosApp/iosApp/Secrets.plist`
+2. Edit `Secrets.plist`:
+   ```xml
+   <key>tmdbApiKey</key>
+   <string>your_api_key_here</string>
+   ```
+3. File must be in Xcode target's "Copy Bundle Resources"
+
+Both files are gitignored. Never commit API keys.
+
+## Dependency Injection with Koin
+
+**Module Structure**:
+- Each feature module defines its own Koin module (e.g., `MoviesModule`, `TvShowsModule`)
+- Core modules define DI for repositories, network, database
+- Platform-specific modules:
+  - `AndroidModule` in `core/network/androidMain` (provides Android-specific network config)
+  - `IosModule` in `composeApp/iosMain` (provides iOS-specific dependencies)
+
+**ViewModel Integration**:
+- Use `koinViewModel()` in Composables to inject ViewModels
+- ViewModels are scoped to navigation backstack entries
+- Navigation 3 + Koin integration via `koin-compose-navigation` library
+
+## String Resources
+
+All user-facing strings are in `core/ui/src/commonMain/composeResources/values/Strings.xml` with translations for 4 languages:
+- English (`values/Strings.xml`)
+- Hebrew (`values-iw/Strings.xml`) - RTL
+- Arabic (`values-ar/Strings.xml`) - RTL
+- Hindi (`values-hi/Strings.xml`)
+
+**Usage**: Always use `Res.string.*` from generated resources. Never hardcode strings.
+
+**Configuration** (`core/ui/build.gradle.kts`):
+```kotlin
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "com.elna.moviedb.resources"
+    generateResClass = always
+}
 ```
 
-## API Integration
+## Common Development Tasks
 
-### TMDB API Setup
-1. Get API key from https://developer.themoviedb.org/reference/intro/getting-started
-2. Add to `local.properties`: `TMDB_API_KEY=your_key_here`
-3. Create `iosApp/Secrets.plist` with apiKey entry
-4. Use `expect/actual` pattern for cross-platform access
+### Adding a New Feature Module
+1. Create module structure: `features/new-feature/`
+2. Add `build.gradle.kts` with:
+   ```kotlin
+   plugins {
+       alias(libs.plugins.moviedb.kotlinMultiplatform)
+       alias(libs.plugins.moviedb.composeMultiplatform)
+   }
+   ```
+3. Define sourceSets with dependencies
+4. Create Koin DI module for feature
+5. Add to `settings.gradle.kts`
+6. Add dependency in `composeApp/build.gradle.kts`
 
-### Image Loading
-- Base URL: `https://image.tmdb.org/t/p/w500/`
-- Use `ImageLoader` component from `core/ui`
-- Handle missing images gracefully
+### Adding a New Movie/TV Category
+Thanks to category abstraction:
+1. Add enum value to `MovieCategory` or `TvShowCategory` in `core/model`
+2. Add corresponding API endpoint in network client
+3. Add string resource for category name
+4. **No changes needed** in ViewModel or Repository implementations
 
-## UI/UX Guidelines
+### Modifying UI Theme
+Material 3 theme defined in:
+- `core/ui/src/commonMain/kotlin/com/elna/moviedb/core/ui/theme/Theme.kt`
+- `core/ui/src/commonMain/kotlin/com/elna/moviedb/core/ui/theme/Color.kt`
+- System theme detection via expect/actual in `SystemTheme.kt`
 
-### Design Principles
-- Follow Material Design 3 guidelines
-- Maintain consistent spacing (8dp grid system)
-- Use proper color schemes for light/dark themes
-- Implement smooth animations and transitions
+## Navigation
 
-### Component Structure
-- Create reusable components in `core/ui`
-- Use composition over inheritance
-- Implement proper accessibility support
-- Handle different screen sizes and orientations
+Uses **Navigation 3** (Compose Multiplatform navigation):
+- Type-safe navigation with `@Serializable` route classes
+- Navigation graph in `composeApp/src/commonMain/kotlin/com/elna/moviedb/navigation/RootNavGraph.kt`
+- Deep linking support via serializable routes
+- Koin integration for ViewModel scoping
 
-### Error Handling
-- Show user-friendly error messages
-- Use SnackBars for temporary messages
-- Implement retry mechanisms
-- Handle network connectivity issues
+## Image Loading
 
-## Git Conventions
+Uses **Coil 3** with:
+- Ktor network engine (shares HTTP client with app)
+- SVG support via `coil-svg`
+- Automatic disk/memory caching
+- Base URL: `https://image.tmdb.org/t/p/w500/` for TMDB images
 
-### Commit Messages
-- Use conventional commits format
-- Start with type: feat, fix, docs, style, refactor, test
-- Include scope when relevant: `feat(movies): add pagination`
-- Keep messages under 50 characters for title
+Configuration in `core/ui/build.gradle.kts`:
+```kotlin
+implementation(libs.coil.compose)
+implementation(libs.coil.ktor)
+implementation(libs.coil.svg)
+```
 
-### Branch Naming
-- Use descriptive names: `feature/movie-pagination`
-- Follow pattern: `type/short-description`
-- Create PRs for code review
+## Troubleshooting
 
-## Dependencies Management
+**Java Version Issues**:
+- Use JDK 17-21 (JDK 25 has compatibility issues)
+- Check: `./gradlew --version`
 
-### Adding Dependencies
-- Add to appropriate module's `build.gradle.kts`
-- Use version catalogs when possible
-- Document why dependency was added
-- Keep dependencies up to date
+**Build Failures**:
+- Run `./gradlew clean` to clear build cache
+- Check that API keys are configured (Android + iOS)
+- Ensure KMP plugin is installed in Android Studio
 
-### Common Libraries
-- **UI**: Compose Multiplatform, Material 3
-- **Database**: Room, SQLite
-- **Network**: Ktor, Kotlinx Serialization
-- **DI**: Koin
-- **Async**: Coroutines, Flow
-- **Image Loading**: Custom ImageLoader component
+**iOS Simulator Issues**:
+- Use ARM64 simulator on Apple Silicon Macs
+- Use x86_64 simulator on Intel Macs (add `iosX64()` target if needed)
 
-## Notes for Claude Code
+**Room/KSP Issues**:
+- Room uses KSP for code generation
+- Clean build if entities are modified: `./gradlew clean build`
+- Check that `@Database`, `@Entity`, `@Dao` annotations are correct
 
-When working on this project:
-1. Always check existing patterns before creating new ones
-2. Use proper error handling for all network calls
-3. Implement loading states for better UX
-4. Follow the established architecture patterns
-5. Add string resources instead of hardcoding text
-6. Test changes on both Android and iOS when possible
-7. Keep the TODO list in README updated
-8. Run linting and formatting before committing
+**API Key Not Found**:
+- Verify `secrets.properties` exists in project root
+- Verify `Secrets.plist` exists in `iosApp/iosApp/`
+- Check that files are not gitignored accidentally (only `secrets.properties` and `Secrets.plist` should be ignored)
+
+## Notes for Development
+
+- **Convention Plugins**: When adding common config, update plugins in `build-logic/convention/` rather than duplicating in module build files
+- **expect/actual**: Use for platform-specific code; add `-Xexpect-actual-classes` flag (already configured in convention plugins)
+- **Version Catalog**: Add new dependencies to `gradle/libs.versions.toml`, not directly to module build files
+- **Database Migrations**: Room migrations are required for schema changes; don't forget to increment database version
+- **Pull-to-Refresh**: Implemented in Movies screen; uses `clearAndReload()` pattern that can be reused for other features
+- **Pagination State**: Persisted via DataStore; survives app restarts; managed per category
