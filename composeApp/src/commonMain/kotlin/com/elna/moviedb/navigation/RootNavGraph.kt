@@ -24,8 +24,10 @@ fun RootNavGraph(
             rememberViewModelStoreNavEntryDecorator()
         ),
         entryProvider = entryProvider {
-            moviesFlow(rootBackStack)
-            tvShowsFlow(rootBackStack)
+
+            moviesFlow(rootBackStack) // nested graph
+            tvShowsFlow(rootBackStack) // nested graph
+
             searchEntry(rootBackStack)
             profileEntry(rootBackStack)
             personDetailsEntry(rootBackStack)
