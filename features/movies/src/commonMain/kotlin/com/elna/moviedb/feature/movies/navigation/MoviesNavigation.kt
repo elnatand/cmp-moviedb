@@ -2,8 +2,7 @@ package com.elna.moviedb.feature.movies.navigation
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
-import com.elna.moviedb.core.ui.navigation.MovieDetailsRoute
-import com.elna.moviedb.core.ui.navigation.MoviesListRoute
+import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
@@ -12,9 +11,9 @@ import com.elna.moviedb.feature.movies.ui.movies.MoviesScreen
 fun EntryProviderScope<Route>.moviesEntry(
     backStack: SnapshotStateList<Route>
 ) {
-    entry<MoviesListRoute> {
+    entry<MoviesRoute.MoviesListRoute> {
         MoviesScreen(onClick = { movieId, _ ->
-            backStack.add(MovieDetailsRoute(movieId))
+            backStack.add(MoviesRoute.MovieDetailsRoute(movieId))
         })
     }
 }
@@ -22,7 +21,7 @@ fun EntryProviderScope<Route>.moviesEntry(
 fun EntryProviderScope<Route>.movieDetailsEntry(
     backStack: SnapshotStateList<Route>
 ) {
-    entry<MovieDetailsRoute> {
+    entry<MoviesRoute.MovieDetailsRoute> {
         MovieDetailsScreen(
             movieId = it.movieId,
             onCastMemberClick = { personId ->

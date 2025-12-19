@@ -5,16 +5,16 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.elna.moviedb.core.ui.navigation.MoviesListRoute
+import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.ProfileRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.SearchRoute
-import com.elna.moviedb.core.ui.navigation.TvShowsListRoute
+import com.elna.moviedb.core.ui.navigation.TVShowsRoute
 import com.elna.moviedb.navigation.TopLevelDestination
 
 @Composable
 fun rememberAppState(
-    navBackStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesListRoute) }
+    navBackStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesRoute) }
 ): AppState {
     return remember(navBackStack) {
         AppState(navBackStack = navBackStack)
@@ -42,8 +42,8 @@ class AppState(
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         when (topLevelDestination) {
-            TopLevelDestination.MOVIES -> navBackStack.add(MoviesListRoute)
-            TopLevelDestination.TV_SHOWS -> navBackStack.add(TvShowsListRoute)
+            TopLevelDestination.MOVIES -> navBackStack.add(MoviesRoute)
+            TopLevelDestination.TV_SHOWS -> navBackStack.add(TVShowsRoute)
             TopLevelDestination.SEARCH -> navBackStack.add(SearchRoute)
             TopLevelDestination.PROFILE -> navBackStack.add(ProfileRoute)
         }

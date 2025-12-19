@@ -5,24 +5,29 @@ import kotlinx.serialization.Serializable
 sealed interface Route
 
 
+@Serializable
+data object MoviesRoute : Route {
 
+    @Serializable
+    data object MoviesListRoute : Route
 
+    @Serializable
+    data class MovieDetailsRoute(
+        val movieId: Int,
+    ) : Route
+}
 
 @Serializable
-data object MoviesListRoute : Route
+data object TVShowsRoute : Route {
 
-@Serializable
-data class MovieDetailsRoute(
-    val movieId: Int,
-) : Route
+    @Serializable
+    data object TvShowsListRoute : Route
 
-@Serializable
-data object TvShowsListRoute : Route
-
-@Serializable
-data class TvShowDetailsRoute(
-    val tvShowId: Int,
-) : Route
+    @Serializable
+    data class TvShowDetailsRoute(
+        val tvShowId: Int,
+    ) : Route
+}
 
 @Serializable
 data object SearchRoute : Route
