@@ -1,6 +1,6 @@
 # CMP MovieDB
 
-A Kotlin Multiplatform Mobile (KMP) application built with Compose Multiplatform (CMP) that displays movies, TV shows and Actors information. The app targets both Android and iOS platforms with shared business logic and UI components using a modular architecture approach.
+A Kotlin Multiplatform (KMP) multi-module application built with Compose Multiplatform (CMP) that displays movies, TV shows and Actors information. The app targets both Android and iOS platforms with shared business logic and UI components using a modular architecture approach.
 
 ## 📲 Download the App
 
