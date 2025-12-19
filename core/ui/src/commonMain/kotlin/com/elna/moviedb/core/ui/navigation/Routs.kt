@@ -1,12 +1,13 @@
 package com.elna.moviedb.core.ui.navigation
 
 import kotlinx.serialization.Serializable
+import com.elna.moviedb.core.ui.navigation.MoviesRoute.MoviesListRoute
 
 sealed interface Route
 
 
 @Serializable
-data object MoviesRoute : Route {
+data class MoviesRoute(val startAt: Route = MoviesListRoute) : Route {
 
     @Serializable
     data object MoviesListRoute : Route
@@ -18,7 +19,7 @@ data object MoviesRoute : Route {
 }
 
 @Serializable
-data object TVShowsRoute : Route {
+data class TVShowsRoute(val startAt: Route = MoviesListRoute) : Route {
 
     @Serializable
     data object TvShowsListRoute : Route
