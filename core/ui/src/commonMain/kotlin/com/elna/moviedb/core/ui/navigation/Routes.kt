@@ -14,6 +14,7 @@ data class MoviesRoute(val startAt: Route = MoviesListRoute) : Route {
     @Serializable
     data class MovieDetailsRoute(
         val movieId: Int,
+        val category: String? = null,
     ) : Route
 }
 

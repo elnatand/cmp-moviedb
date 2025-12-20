@@ -47,6 +47,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun MovieHeroSection(
     movie: MovieDetails,
+    category: String? = null,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -87,10 +88,15 @@ internal fun MovieHeroSection(
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
             val imageModifier = Modifier.fillMaxSize()
+            val sharedElementKey = if (category != null) {
+                "${SharedElementKeys.MOVIE_POSTER}${category}_${movie.id}"
+            } else {
+                "${SharedElementKeys.MOVIE_POSTER}${movie.id}"
+            }
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     imageModifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
+                        sharedContentState = rememberSharedContentState(key = sharedElementKey),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ ->
                             tween(durationMillis = 300, easing = FastOutSlowInEasing)

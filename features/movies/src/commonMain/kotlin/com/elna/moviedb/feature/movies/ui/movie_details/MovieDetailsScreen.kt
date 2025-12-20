@@ -58,6 +58,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
+    category: String? = null,
     onCastMemberClick: (Int) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
@@ -67,6 +68,7 @@ fun MovieDetailsScreen(
 
     MovieDetailsScreen(
         uiState = uiState,
+        category = category,
         onRetry = { viewModel.onEvent(MovieDetailsEvent.Retry) },
         onCastMemberClick = onCastMemberClick,
         sharedTransitionScope = sharedTransitionScope,
@@ -78,6 +80,7 @@ fun MovieDetailsScreen(
 @Composable
 private fun MovieDetailsScreen(
     uiState: MovieDetailsUiState,
+    category: String? = null,
     onRetry: () -> Unit,
     onCastMemberClick: (Int) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -99,6 +102,7 @@ private fun MovieDetailsScreen(
             is MovieDetailsUiState.Success -> {
                 MovieDetailsContent(
                     movie = uiState.movieDetails,
+                    category = category,
                     onCastMemberClick = onCastMemberClick,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope
@@ -112,6 +116,7 @@ private fun MovieDetailsScreen(
 @Composable
 private fun MovieDetailsContent(
     movie: MovieDetails,
+    category: String? = null,
     onCastMemberClick: (Int) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
@@ -124,6 +129,7 @@ private fun MovieDetailsContent(
         // Hero Section with Backdrop and Poster
         MovieHeroSection(
             movie = movie,
+            category = category,
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = animatedVisibilityScope
         )

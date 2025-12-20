@@ -49,8 +49,8 @@ private fun MoviesNavigation(
             entryProvider = entryProvider {
                 entry<MoviesRoute.MoviesListRoute> {
                     MoviesScreen(
-                        onClick = { movieId, _ ->
-                            backStack.add(MoviesRoute.MovieDetailsRoute(movieId))
+                        onClick = { movieId, _, category ->
+                            backStack.add(MoviesRoute.MovieDetailsRoute(movieId, category.name))
                         },
                         sharedTransitionScope = this@SharedTransitionLayout,
                         animatedVisibilityScope = LocalNavAnimatedContentScope.current
@@ -59,6 +59,7 @@ private fun MoviesNavigation(
                 entry<MoviesRoute.MovieDetailsRoute> {
                     MovieDetailsScreen(
                         movieId = it.movieId,
+                        category = it.category,
                         onCastMemberClick = { personId ->
                             rootBackStack.add(PersonDetailsRoute(personId))
                         },

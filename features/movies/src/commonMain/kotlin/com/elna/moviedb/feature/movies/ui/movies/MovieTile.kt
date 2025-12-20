@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.Movie
+import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
 import com.elna.moviedb.feature.movies.model.SharedElementKeys
@@ -29,6 +30,7 @@ import com.elna.moviedb.feature.movies.model.SharedElementKeys
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MovieTile(
+    category: MovieCategory,
     movie: Movie,
     onClick: (movieId: Int, title: String) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -54,7 +56,7 @@ fun MovieTile(
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     imageModifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
+                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}_${movie.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ ->
                             tween(durationMillis = 300, easing = FastOutSlowInEasing)

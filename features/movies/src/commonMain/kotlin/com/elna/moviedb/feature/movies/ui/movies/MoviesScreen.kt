@@ -54,7 +54,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MoviesScreen(
-    onClick: (movieId: Int, title: String) -> Unit,
+    onClick: (movieId: Int, title: String, category: MovieCategory) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -76,7 +76,7 @@ fun MoviesScreen(
 @Composable
 private fun MoviesScreen(
     uiState: MoviesUiState,
-    onClick: (Int, String) -> Unit,
+    onClick: (Int, String, MovieCategory) -> Unit,
     onEvent: (MoviesEvent) -> Unit,
     uiActions: Flow<MoviesUiAction>,
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -140,7 +140,7 @@ private fun MoviesScreen(
 @Composable
 private fun MoviesContent(
     uiState: MoviesUiState,
-    onClick: (id: Int, title: String) -> Unit,
+    onClick: (id: Int, title: String, category: MovieCategory) -> Unit,
     onEvent: (MoviesEvent) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
@@ -160,6 +160,7 @@ private fun MoviesContent(
             MovieCategory.entries.forEach { category ->
                 val movies = uiState.getMovies(category)
                 MoviesSection(
+                    category = category,
                     title = stringResource(getCategoryStringResource(category)),
                     movies = movies,
                     onClick = onClick,
@@ -198,9 +199,10 @@ private fun getCategoryStringResource(category: MovieCategory) = when (category)
  */
 @Composable
 private fun MoviesSection(
+    category: MovieCategory,
     title: String,
     movies: List<Movie>,
-    onClick: (id: Int, title: String) -> Unit,
+    onClick: (id: Int, title: String, category: MovieCategory) -> Unit,
     isLoading: Boolean,
     onLoadMore: () -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -256,11 +258,12 @@ private fun MoviesSection(
             ) {
                 items(
                     items = movies,
-                    key = { it.id }
+                    key = { "${category.name}_${it.id}" }
                 ) { movie ->
                     MovieTile(
+                        category = category,
                         movie = movie,
-                        onClick = onClick,
+                        onClick = { id, title -> onClick(id, title, category) },
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
                     )
