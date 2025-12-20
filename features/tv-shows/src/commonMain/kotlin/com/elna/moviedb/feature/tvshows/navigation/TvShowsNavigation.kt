@@ -49,6 +49,7 @@ private fun TvShowsNavigation(
                 TvShowDetailsScreen(
                     tvShowId = it.tvShowId,
                     onCastMemberClick = { personId ->
+                        rootBackStack.add(TvShowsRoute(startAt = it))
                         rootBackStack.add(PersonDetailsRoute(personId))
                     }
                 )

@@ -51,6 +51,7 @@ private fun MoviesNavigation(
                 MovieDetailsScreen(
                     movieId = it.movieId,
                     onCastMemberClick = { personId ->
+                        rootBackStack.add(MoviesRoute(startAt = it))
                         rootBackStack.add(PersonDetailsRoute(personId))
                     }
                 )
