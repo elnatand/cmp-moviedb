@@ -1,5 +1,8 @@
 package com.elna.moviedb.feature.person.ui
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,10 +45,13 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PersonDetailsScreen(
     personId: Int,
-    onCreditClick: (Int, MediaType) -> Unit
+    onCreditClick: (Int, MediaType) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val viewModel = koinViewModel<PersonDetailsViewModel> { parametersOf(personId) }
     val uiState by viewModel.uiState.collectAsState()
@@ -53,15 +59,20 @@ fun PersonDetailsScreen(
     PersonDetailsScreen(
         uiState = uiState,
         onRetry = { viewModel.onEvent(PersonDetailsEvent.Retry) },
-        onCreditClick = onCreditClick
+        onCreditClick = onCreditClick,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PersonDetailsScreen(
     uiState: PersonUiState,
     onRetry: () -> Unit,
-    onCreditClick: (Int, MediaType) -> Unit
+    onCreditClick: (Int, MediaType) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -79,17 +90,22 @@ private fun PersonDetailsScreen(
             is PersonUiState.Success -> {
                 PersonDetailsContent(
                     person = uiState.person,
-                    onCreditClick = onCreditClick
+                    onCreditClick = onCreditClick,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PersonDetailsContent(
     person: PersonDetails,
-    onCreditClick: (Int, MediaType) -> Unit
+    onCreditClick: (Int, MediaType) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Column(
         modifier = Modifier
@@ -97,7 +113,11 @@ private fun PersonDetailsContent(
             .verticalScroll(rememberScrollState())
     ) {
         // Hero Section with Profile Image
-        PersonHeroSection(person = person)
+        PersonHeroSection(
+            person = person,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope
+        )
 
         // Main Content
         Column(

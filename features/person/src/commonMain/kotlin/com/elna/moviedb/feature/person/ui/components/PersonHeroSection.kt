@@ -1,5 +1,10 @@
 package com.elna.moviedb.feature.person.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,9 +33,15 @@ import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
 
+// Using SharedElementKeys from movies feature as cast members are clicked from there
+private const val CAST_MEMBER_KEY = "cast-member-"
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun PersonHeroSection(
-    person: PersonDetails
+    person: PersonDetails,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -94,10 +105,26 @@ internal fun PersonHeroSection(
                             .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.surface)
                     ) {
+                        val imageModifier = Modifier.fillMaxSize()
+                        val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                            with(sharedTransitionScope) {
+                                imageModifier.sharedElement(
+                                    sharedContentState = rememberSharedContentState(key = "$CAST_MEMBER_KEY${person.id}"),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = { _, _ ->
+                                        tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                                    },
+                                    renderInOverlayDuringTransition = true
+                                )
+                            }
+                        } else {
+                            imageModifier
+                        }
+
                         ImageLoader(
                             contentScale = ContentScale.Fit,
                             imageUrl = profilePath.toProfileUrl(),
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = finalModifier,
                             contentDescription = person.name
                         )
                     }

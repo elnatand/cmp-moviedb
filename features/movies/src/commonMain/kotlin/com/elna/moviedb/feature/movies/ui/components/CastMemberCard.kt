@@ -1,5 +1,10 @@
 package com.elna.moviedb.feature.movies.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,11 +31,15 @@ import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.CastMember
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
+import com.elna.moviedb.feature.movies.model.SharedElementKeys
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun CastMemberCard(
     castMember: CastMember,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Card(
         modifier = Modifier
@@ -48,9 +57,25 @@ internal fun CastMemberCard(
             ) {
                 val profileUrl = castMember.profilePath.toProfileUrl()
                 if (profileUrl.isNotEmpty()) {
+                    val imageModifier = Modifier.fillMaxSize()
+                    val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                        with(sharedTransitionScope) {
+                            imageModifier.sharedElement(
+                                sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = { _, _ ->
+                                    tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                                },
+                                renderInOverlayDuringTransition = true
+                            )
+                        }
+                    } else {
+                        imageModifier
+                    }
+
                     ImageLoader(
                         imageUrl = profileUrl,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = finalModifier
                     )
                 } else {
                     Box(

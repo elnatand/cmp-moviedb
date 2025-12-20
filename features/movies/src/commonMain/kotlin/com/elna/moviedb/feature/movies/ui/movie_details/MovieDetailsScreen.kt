@@ -191,7 +191,9 @@ private fun MovieDetailsContent(
             // Cast Section
             CastSection(
                 movie = movie,
-                onCastMemberClick = onCastMemberClick
+                onCastMemberClick = onCastMemberClick,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
             )
 
             // Genres Section
