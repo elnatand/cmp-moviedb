@@ -26,46 +26,51 @@ import com.elna.moviedb.feature.movies.model.SharedElementKeys
 fun MovieTile(
     movie: Movie,
     onClick: (movieId: Int, title: String) -> Unit,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val imageUrl = movie.posterPath.toPosterUrl()
 
-    with(sharedTransitionScope) {
-        Card(
-            modifier = Modifier.width(144.dp),
-            shape = RoundedCornerShape(8.dp),
-            onClick = { onClick(movie.id, movie.title) },
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp,
-            ),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
+    Card(
+        modifier = Modifier.width(144.dp),
+        shape = RoundedCornerShape(8.dp),
+        onClick = { onClick(movie.id, movie.title) },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp,
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ImageLoader(
-                    imageUrl = imageUrl,
-                    modifier = Modifier
-                        .height(216.dp)
-                        .sharedElement(
-                            rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
-                )
-
-                Text(
-                    modifier = Modifier.height(64.dp).padding(8.dp),
-                    text = movie.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+            val imageModifier = Modifier.height(216.dp)
+            val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                with(sharedTransitionScope) {
+                    imageModifier.sharedElement(
+                        rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                }
+            } else {
+                imageModifier
             }
+
+            ImageLoader(
+                imageUrl = imageUrl,
+                modifier = finalModifier
+            )
+
+            Text(
+                modifier = Modifier.height(64.dp).padding(8.dp),
+                text = movie.title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

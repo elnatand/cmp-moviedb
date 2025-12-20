@@ -43,8 +43,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun MovieHeroSection(
     movie: MovieDetails,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Box(
         modifier = Modifier
@@ -72,27 +72,32 @@ internal fun MovieHeroSection(
         )
 
         // Poster
-        with(sharedTransitionScope) {
-            Card(
-                modifier = Modifier
-                    .systemBarsPadding()
-                    .width(120.dp)
-                    .height(180.dp)
-                    .align(Alignment.TopStart)
-                    .padding(start = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                ImageLoader(
-                    imageUrl = movie.posterPath.toPosterUrl(),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .sharedElement(
-                            rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
-                )
+        Card(
+            modifier = Modifier
+                .systemBarsPadding()
+                .width(120.dp)
+                .height(180.dp)
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp),
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            val imageModifier = Modifier.fillMaxSize()
+            val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                with(sharedTransitionScope) {
+                    imageModifier.sharedElement(
+                        rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                }
+            } else {
+                imageModifier
             }
+
+            ImageLoader(
+                imageUrl = movie.posterPath.toPosterUrl(),
+                modifier = finalModifier
+            )
         }
 
         // Title and Basic Info

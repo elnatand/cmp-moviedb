@@ -244,7 +244,7 @@ private fun MoviesSection(
                 ) { movie ->
                     MovieTile(
                         movie = movie,
-                        onClick = onClick
+                        onClick = onClick,
                     )
                 }
             }
