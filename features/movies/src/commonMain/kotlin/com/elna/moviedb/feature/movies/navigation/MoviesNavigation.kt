@@ -61,6 +61,7 @@ private fun MoviesNavigation(
                         movieId = it.movieId,
                         category = it.category,
                         onCastMemberClick = { personId ->
+                            rootBackStack.add(MoviesRoute(startAt = it))
                             rootBackStack.add(PersonDetailsRoute(personId))
                         },
                         sharedTransitionScope = this@SharedTransitionLayout,

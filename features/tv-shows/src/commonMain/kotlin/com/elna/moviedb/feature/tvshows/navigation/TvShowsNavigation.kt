@@ -60,6 +60,7 @@ private fun TvShowsNavigation(
                         tvShowId = it.tvShowId,
                         category = it.category,
                         onCastMemberClick = { personId ->
+                            rootBackStack.add(TvShowsRoute(startAt = it))
                             rootBackStack.add(PersonDetailsRoute(personId))
                         },
                         sharedTransitionScope = this@SharedTransitionLayout,
