@@ -43,7 +43,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowsScreen(
-    onClick: (id: Int, title: String) -> Unit,
+    onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -64,7 +64,7 @@ fun TvShowsScreen(
 @Composable
 private fun TvShowsScreen(
     uiState: TvShowsUiState,
-    onClick: (id: Int, title: String) -> Unit,
+    onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
     onEvent: (TvShowsEvent) -> Unit,
     uiActions: Flow<TvShowsUiAction>,
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -129,7 +129,7 @@ private fun TvShowsScreen(
 @Composable
 private fun TvShowsContent(
     uiState: TvShowsUiState,
-    onClick: (id: Int, title: String) -> Unit,
+    onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
     onEvent: (TvShowsEvent) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
@@ -149,6 +149,7 @@ private fun TvShowsContent(
             // Show section if it has data OR if it's loading (initial load)
             if (tvShows.isNotEmpty() || isLoading) {
                 TvShowsSection(
+                    category = category,
                     title = stringResource(getCategoryStringResource(category)),
                     tvShows = tvShows,
                     onClick = onClick,

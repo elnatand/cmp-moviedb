@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShow
+import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowTile
 
@@ -40,9 +41,10 @@ import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowTile
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowsSection(
+    category: TvShowCategory,
     title: String,
     tvShows: List<TvShow>,
-    onClick: (id: Int, title: String) -> Unit,
+    onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
     isLoading: Boolean,
     onLoadMore: () -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -85,11 +87,12 @@ fun TvShowsSection(
         ) {
             items(
                 items = tvShows,
-                key = { it.id }
+                key = { "${category.name}_${it.id}" }
             ) { tvShow ->
                 TvShowTile(
+                    category = category,
                     tvShow = tvShow,
-                    onClick = onClick,
+                    onClick = { id, title -> onClick(id, title, category) },
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope
                 )

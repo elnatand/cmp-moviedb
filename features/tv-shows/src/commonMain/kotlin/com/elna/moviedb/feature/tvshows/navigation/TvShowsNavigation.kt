@@ -12,6 +12,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
+import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute
@@ -47,8 +48,8 @@ private fun TvShowsNavigation(
             entryProvider = entryProvider {
                 entry<TvShowsRoute.TvShowsListRoute> {
                     TvShowsScreen(
-                        onClick = { tvShowId: Int, _: String ->
-                            backStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
+                        onClick = { tvShowId: Int, _: String, category: TvShowCategory ->
+                            backStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId, category.name))
                         },
                         sharedTransitionScope = this@SharedTransitionLayout,
                         animatedVisibilityScope = LocalNavAnimatedContentScope.current
@@ -57,6 +58,7 @@ private fun TvShowsNavigation(
                 entry<TvShowsRoute.TvShowDetailsRoute> {
                     TvShowDetailsScreen(
                         tvShowId = it.tvShowId,
+                        category = it.category,
                         onCastMemberClick = { personId ->
                             rootBackStack.add(PersonDetailsRoute(personId))
                         },

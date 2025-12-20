@@ -40,6 +40,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun TvShowDetailsScreen(
     tvShowId: Int,
+    category: String? = null,
     onCastMemberClick: (Int) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
@@ -49,6 +50,7 @@ fun TvShowDetailsScreen(
 
     TvShowDetailsScreen(
         uiState = uiState,
+        category = category,
         onRetry = { viewModel.onEvent(TvShowDetailsEvent.Retry) },
         onCastMemberClick = onCastMemberClick,
         sharedTransitionScope = sharedTransitionScope,
@@ -61,6 +63,7 @@ fun TvShowDetailsScreen(
 @Composable
 fun TvShowDetailsScreen(
     uiState: TvShowDetailsViewModel.TvShowDetailsUiState,
+    category: String? = null,
     onRetry: () -> Unit,
     onCastMemberClick: (Int) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -86,6 +89,7 @@ fun TvShowDetailsScreen(
                 ) {
                     HeroSection(
                         tvShow = uiState.tvShowDetails,
+                        category = category,
                         sharedTransitionScope = sharedTransitionScope,
                         animatedVisibilityScope = animatedVisibilityScope
                     )

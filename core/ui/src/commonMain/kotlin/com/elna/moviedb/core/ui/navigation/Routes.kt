@@ -26,6 +26,7 @@ data class TvShowsRoute(val startAt: Route = TvShowsListRoute) : Route {
     @Serializable
     data class TvShowDetailsRoute(
         val tvShowId: Int,
+        val category: String? = null,
     ) : Route
 }
 

@@ -46,6 +46,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HeroSection(
     tvShow: TvShowDetails,
+    category: String? = null,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -77,33 +78,43 @@ internal fun HeroSection(
 
         // Poster
         tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
-
-            val imageModifier = Modifier
-                .systemBarsPadding()
-                .width(120.dp)
-                .height(180.dp)
-                .align(Alignment.TopStart)
-                .padding(start = 16.dp)
-
-            val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                with(sharedTransitionScope) {
-                    imageModifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope
-                    )
-                }
-            } else {
-                imageModifier
-            }
-
             Card(
-                modifier = finalModifier,
+                modifier = Modifier
+                    .systemBarsPadding()
+                    .width(120.dp)
+                    .height(180.dp)
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp),
                 shape = RoundedCornerShape(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {
+                val imageModifier = Modifier.fillMaxSize()
+                val sharedElementKey = if (category != null) {
+                    "${SharedElementKeys.TV_SHOW_POSTER}${category}_${tvShow.id}"
+                } else {
+                    "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"
+                }
+                val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                    with(sharedTransitionScope) {
+                        imageModifier.sharedElement(
+                            sharedContentState = rememberSharedContentState(key = sharedElementKey),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ ->
+                                androidx.compose.animation.core.tween(
+                                    durationMillis = 300,
+                                    easing = androidx.compose.animation.core.FastOutSlowInEasing
+                                )
+                            },
+                            renderInOverlayDuringTransition = true
+                        )
+                    }
+                } else {
+                    imageModifier
+                }
+
                 ImageLoader(
                     imageUrl = posterPath.toPosterUrl(),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = finalModifier
                 )
             }
         }

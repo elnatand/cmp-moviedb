@@ -27,11 +27,13 @@ import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
 import androidx.compose.ui.tooling.preview.Preview
+import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.feature.tvshows.model.SharedElementKeys
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowTile(
+    category: TvShowCategory,
     tvShow: TvShow,
     onClick: (id: Int, title: String) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -57,7 +59,7 @@ fun TvShowTile(
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     imageModifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"),
+                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}_${tvShow.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
                         boundsTransform = { _, _ ->
                             tween(durationMillis = 300, easing = FastOutSlowInEasing)
@@ -97,6 +99,7 @@ private fun TvShowTilePreview() {
                 .padding(16.dp)
         ) {
             TvShowTile(
+                category = TvShowCategory.POPULAR,
                 tvShow = TvShow(
                     id = 1,
                     name = "Law and Order: Special Victims Unit",
