@@ -1,7 +1,11 @@
 package com.elna.moviedb.feature.movies.ui.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.BoundsTransform
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +44,7 @@ import com.elna.moviedb.resources.rating
 import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun MovieHeroSection(
     movie: MovieDetails,
@@ -86,8 +91,12 @@ internal fun MovieHeroSection(
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     imageModifier.sharedElement(
-                        rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope
+                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${movie.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                        },
+                        renderInOverlayDuringTransition = true
                     )
                 }
             } else {

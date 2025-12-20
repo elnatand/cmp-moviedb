@@ -1,6 +1,8 @@
 package com.elna.moviedb.feature.movies.ui.movies
 
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +54,9 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MoviesScreen(
-    onClick: (movieId: Int, title: String) -> Unit
+    onClick: (movieId: Int, title: String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val viewModel = koinViewModel<MoviesViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -61,7 +65,9 @@ fun MoviesScreen(
         uiState = uiState,
         onClick = onClick,
         onEvent = viewModel::onEvent,
-        uiActions = viewModel.uiAction
+        uiActions = viewModel.uiAction,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
@@ -72,7 +78,9 @@ private fun MoviesScreen(
     uiState: MoviesUiState,
     onClick: (Int, String) -> Unit,
     onEvent: (MoviesEvent) -> Unit,
-    uiActions: Flow<MoviesUiAction>
+    uiActions: Flow<MoviesUiAction>,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -114,7 +122,9 @@ private fun MoviesScreen(
                     MoviesContent(
                         uiState = uiState,
                         onClick = onClick,
-                        onEvent = onEvent
+                        onEvent = onEvent,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
             }
@@ -131,7 +141,9 @@ private fun MoviesScreen(
 private fun MoviesContent(
     uiState: MoviesUiState,
     onClick: (id: Int, title: String) -> Unit,
-    onEvent: (MoviesEvent) -> Unit
+    onEvent: (MoviesEvent) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     PullToRefreshBox(
         isRefreshing = uiState.isRefreshing,
@@ -152,7 +164,9 @@ private fun MoviesContent(
                     movies = movies,
                     onClick = onClick,
                     isLoading = uiState.isLoading(category),
-                    onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) }
+                    onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) },
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
             Spacer(modifier = Modifier.height(70.dp))
@@ -188,7 +202,9 @@ private fun MoviesSection(
     movies: List<Movie>,
     onClick: (id: Int, title: String) -> Unit,
     isLoading: Boolean,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val listState = rememberLazyListState()
     val currentIsLoading by rememberUpdatedState(isLoading)
@@ -245,6 +261,8 @@ private fun MoviesSection(
                     MovieTile(
                         movie = movie,
                         onClick = onClick,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
             }

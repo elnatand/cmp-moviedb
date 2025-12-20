@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.movies.ui.movie_details
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,7 +58,9 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val viewModel = koinViewModel<MovieDetailsViewModel> { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
@@ -64,7 +68,9 @@ fun MovieDetailsScreen(
     MovieDetailsScreen(
         uiState = uiState,
         onRetry = { viewModel.onEvent(MovieDetailsEvent.Retry) },
-        onCastMemberClick = onCastMemberClick
+        onCastMemberClick = onCastMemberClick,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
@@ -73,7 +79,9 @@ fun MovieDetailsScreen(
 private fun MovieDetailsScreen(
     uiState: MovieDetailsUiState,
     onRetry: () -> Unit,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -91,7 +99,9 @@ private fun MovieDetailsScreen(
             is MovieDetailsUiState.Success -> {
                 MovieDetailsContent(
                     movie = uiState.movieDetails,
-                    onCastMemberClick = onCastMemberClick
+                    onCastMemberClick = onCastMemberClick,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }
@@ -102,7 +112,9 @@ private fun MovieDetailsScreen(
 @Composable
 private fun MovieDetailsContent(
     movie: MovieDetails,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Column(
         modifier = Modifier
@@ -110,7 +122,11 @@ private fun MovieDetailsContent(
             .verticalScroll(rememberScrollState())
     ) {
         // Hero Section with Backdrop and Poster
-        MovieHeroSection(movie = movie)
+        MovieHeroSection(
+            movie = movie,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope
+        )
 
         // Main Content
         Column(
