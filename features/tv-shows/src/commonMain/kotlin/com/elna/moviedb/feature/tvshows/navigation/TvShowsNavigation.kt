@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.tvshows.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -8,6 +10,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import androidx.navigation3.ui.NavDisplay
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
@@ -26,6 +29,7 @@ fun EntryProviderScope<Route>.tvShowsFlow(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun TvShowsNavigation(
     rootBackStack: SnapshotStateList<Route>,
@@ -33,26 +37,34 @@ private fun TvShowsNavigation(
 ) {
     val backStack: SnapshotStateList<Route> = remember { mutableStateListOf(startDestination) }
 
-    NavDisplay(
-        backStack = backStack,
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        entryProvider = entryProvider {
-            entry<TvShowsRoute.TvShowsListRoute> {
-                TvShowsScreen(onClick = { tvShowId, _ ->
-                    backStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
-                })
+    SharedTransitionLayout {
+        NavDisplay(
+            backStack = backStack,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = entryProvider {
+                entry<TvShowsRoute.TvShowsListRoute> {
+                    TvShowsScreen(
+                        onClick = { tvShowId: Int, _: String ->
+                            backStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
+                        },
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = LocalNavAnimatedContentScope.current
+                    )
+                }
+                entry<TvShowsRoute.TvShowDetailsRoute> {
+                    TvShowDetailsScreen(
+                        tvShowId = it.tvShowId,
+                        onCastMemberClick = { personId ->
+                            rootBackStack.add(PersonDetailsRoute(personId))
+                        },
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = LocalNavAnimatedContentScope.current
+                    )
+                }
             }
-            entry<TvShowsRoute.TvShowDetailsRoute> {
-                TvShowDetailsScreen(
-                    tvShowId = it.tvShowId,
-                    onCastMemberClick = { personId ->
-                        rootBackStack.add(PersonDetailsRoute(personId))
-                    }
-                )
-            }
-        }
-    )
+        )
+    }
 }

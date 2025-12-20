@@ -1,5 +1,8 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,14 +35,20 @@ import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toBackdropUrl
 import com.elna.moviedb.core.ui.utils.toPosterUrl
+import com.elna.moviedb.feature.tvshows.model.SharedElementKeys
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.rating
 import com.elna.moviedb.resources.unknown
 import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun HeroSection(tvShow: TvShowDetails) {
+internal fun HeroSection(
+    tvShow: TvShowDetails,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -68,13 +77,27 @@ internal fun HeroSection(tvShow: TvShowDetails) {
 
         // Poster
         tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
+
+            val imageModifier = Modifier
+                .systemBarsPadding()
+                .width(120.dp)
+                .height(180.dp)
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp)
+
+            val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                with(sharedTransitionScope) {
+                    imageModifier.sharedElement(
+                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                }
+            } else {
+                imageModifier
+            }
+
             Card(
-                modifier = Modifier
-                    .systemBarsPadding()
-                    .width(120.dp)
-                    .height(180.dp)
-                    .align(Alignment.TopStart)
-                    .padding(start = 16.dp),
+                modifier = finalModifier,
                 shape = RoundedCornerShape(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
             ) {

@@ -1,5 +1,8 @@
 package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,9 +40,12 @@ import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowsScreen(
-    onClick: (id: Int, title: String) -> Unit
+    onClick: (id: Int, title: String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val viewModel = koinViewModel<TvShowsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -48,17 +54,21 @@ fun TvShowsScreen(
         uiState = uiState,
         onClick = onClick,
         onEvent = viewModel::onEvent,
-        uiActions = viewModel.uiAction
+        uiActions = viewModel.uiAction,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 private fun TvShowsScreen(
     uiState: TvShowsUiState,
     onClick: (id: Int, title: String) -> Unit,
     onEvent: (TvShowsEvent) -> Unit,
-    uiActions: Flow<TvShowsUiAction>
+    uiActions: Flow<TvShowsUiAction>,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -100,7 +110,9 @@ private fun TvShowsScreen(
                     TvShowsContent(
                         uiState = uiState,
                         onClick = onClick,
-                        onEvent = onEvent
+                        onEvent = onEvent,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
             }
@@ -113,11 +125,14 @@ private fun TvShowsScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun TvShowsContent(
     uiState: TvShowsUiState,
     onClick: (id: Int, title: String) -> Unit,
-    onEvent: (TvShowsEvent) -> Unit
+    onEvent: (TvShowsEvent) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Column(
         modifier = Modifier
@@ -138,7 +153,9 @@ private fun TvShowsContent(
                     tvShows = tvShows,
                     onClick = onClick,
                     isLoading = isLoading,
-                    onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(category)) }
+                    onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(category)) },
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }

@@ -1,5 +1,8 @@
 package com.elna.moviedb.feature.tvshows.ui.tv_show_details
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,10 +36,13 @@ import com.elna.moviedb.feature.tvshows.ui.components.TrailersSection
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowDetailsScreen(
     tvShowId: Int,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val viewModel = koinViewModel<TvShowDetailsViewModel> { parametersOf(tvShowId) }
     val uiState by viewModel.uiState.collectAsState()
@@ -44,16 +50,21 @@ fun TvShowDetailsScreen(
     TvShowDetailsScreen(
         uiState = uiState,
         onRetry = { viewModel.onEvent(TvShowDetailsEvent.Retry) },
-        onCastMemberClick = onCastMemberClick
+        onCastMemberClick = onCastMemberClick,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowDetailsScreen(
     uiState: TvShowDetailsViewModel.TvShowDetailsUiState,
     onRetry: () -> Unit,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Box(
         modifier = Modifier
@@ -73,7 +84,11 @@ fun TvShowDetailsScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    HeroSection(tvShow = uiState.tvShowDetails)
+                    HeroSection(
+                        tvShow = uiState.tvShowDetails,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
 
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -109,4 +124,3 @@ fun TvShowDetailsScreen(
         }
     }
 }
-

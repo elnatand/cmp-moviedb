@@ -1,5 +1,10 @@
 package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,11 +27,15 @@ import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
 import androidx.compose.ui.tooling.preview.Preview
+import com.elna.moviedb.feature.tvshows.model.SharedElementKeys
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowTile(
     tvShow: TvShow,
-    onClick: (id: Int, title: String) -> Unit
+    onClick: (id: Int, title: String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val imageUrl = tvShow.posterPath.toPosterUrl()
 
@@ -44,9 +53,25 @@ fun TvShowTile(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
+            val imageModifier = Modifier.height(216.dp)
+            val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                with(sharedTransitionScope) {
+                    imageModifier.sharedElement(
+                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                        },
+                        renderInOverlayDuringTransition = true
+                    )
+                }
+            } else {
+                imageModifier
+            }
+
             ImageLoader(
                 imageUrl = imageUrl,
-                modifier = Modifier.height(216.dp)
+                modifier = finalModifier
             )
 
             Text(

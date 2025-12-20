@@ -1,5 +1,8 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,13 +37,16 @@ import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowTile
  * @param isLoading Whether pagination is currently loading
  * @param onLoadMore Callback to trigger loading more TV shows
  */
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowsSection(
     title: String,
     tvShows: List<TvShow>,
     onClick: (id: Int, title: String) -> Unit,
     isLoading: Boolean,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val listState = rememberLazyListState()
     val currentIsLoading by rememberUpdatedState(isLoading)
@@ -83,7 +89,9 @@ fun TvShowsSection(
             ) { tvShow ->
                 TvShowTile(
                     tvShow = tvShow,
-                    onClick = onClick
+                    onClick = onClick,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
 
