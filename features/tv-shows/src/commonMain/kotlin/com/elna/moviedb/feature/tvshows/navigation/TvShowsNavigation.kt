@@ -49,7 +49,10 @@ private fun TvShowsNavigation(
                 TvShowDetailsScreen(
                     tvShowId = it.tvShowId,
                     onCastMemberClick = { personId ->
-                        rootBackStack.add(TvShowsRoute(startAt = it))
+                        val tvShowDetailsRoute = TvShowsRoute(startAt = it)
+                        if (tvShowDetailsRoute !in rootBackStack) {
+                            rootBackStack.add(tvShowDetailsRoute)
+                        }
                         rootBackStack.add(PersonDetailsRoute(personId))
                     }
                 )

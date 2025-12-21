@@ -51,7 +51,10 @@ private fun MoviesNavigation(
                 MovieDetailsScreen(
                     movieId = it.movieId,
                     onCastMemberClick = { personId ->
-                        rootBackStack.add(MoviesRoute(startAt = it))
+                        val movieDetailsRoute = MoviesRoute(startAt = it)
+                        if (movieDetailsRoute !in rootBackStack) {
+                            rootBackStack.add(movieDetailsRoute)
+                        }
                         rootBackStack.add(PersonDetailsRoute(personId))
                     }
                 )
