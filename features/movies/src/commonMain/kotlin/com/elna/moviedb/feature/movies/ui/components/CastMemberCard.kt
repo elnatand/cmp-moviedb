@@ -3,8 +3,6 @@ package com.elna.moviedb.feature.movies.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,9 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.CastMember
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
-import com.elna.moviedb.feature.movies.model.SharedElementKeys
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -62,11 +60,7 @@ internal fun CastMemberCard(
                         with(sharedTransitionScope) {
                             imageModifier.sharedElement(
                                 sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                boundsTransform = { _, _ ->
-                                    tween(durationMillis = 300, easing = FastOutSlowInEasing)
-                                },
-                                renderInOverlayDuringTransition = true
+                                animatedVisibilityScope = animatedVisibilityScope
                             )
                         }
                     } else {

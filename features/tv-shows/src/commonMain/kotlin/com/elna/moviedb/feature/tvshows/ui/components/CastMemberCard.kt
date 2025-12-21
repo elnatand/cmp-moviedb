@@ -1,5 +1,8 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,13 +27,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.CastMember
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun CastMemberCard(
     castMember: CastMember,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Card(
         modifier = Modifier
@@ -46,23 +53,38 @@ internal fun CastMemberCard(
                     .fillMaxWidth()
                     .height(160.dp)
             ) {
-                castMember.profilePath?.let { profilePath ->
+                val profileUrl = castMember.profilePath?.toProfileUrl().orEmpty()
+                if (profileUrl.isNotEmpty()) {
+                    val imageModifier = Modifier.fillMaxSize()
+                    val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                        with(sharedTransitionScope) {
+                            imageModifier.sharedElement(
+                                sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                        }
+                    } else {
+                        imageModifier
+                    }
+
                     ImageLoader(
-                        imageUrl = profilePath.toProfileUrl(),
-                        modifier = Modifier.fillMaxSize()
+                        imageUrl = profileUrl,
+                        modifier = finalModifier
                     )
-                } ?: Box(
+                } else {
+                    Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 

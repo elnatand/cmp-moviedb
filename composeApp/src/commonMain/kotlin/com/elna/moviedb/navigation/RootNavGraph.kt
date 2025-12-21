@@ -1,5 +1,7 @@
 package com.elna.moviedb.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -13,24 +15,39 @@ import com.elna.moviedb.feature.profile.navigation.profileEntry
 import com.elna.moviedb.feature.search.navigation.searchEntry
 import com.elna.moviedb.feature.tvshows.navigation.tvShowsFlow
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun RootNavGraph(
     rootBackStack: SnapshotStateList<Route>,
 ) {
-    NavDisplay(
-        backStack = rootBackStack,
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        entryProvider = entryProvider {
+    SharedTransitionLayout {
+        NavDisplay(
+            backStack = rootBackStack,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = entryProvider {
 
-            moviesFlow(rootBackStack) // nested graph
-            tvShowsFlow(rootBackStack) // nested graph
+                moviesFlow(
+                    rootBackStack = rootBackStack,
+                    sharedTransitionScope = this@SharedTransitionLayout
+                ) // nested graph
 
-            searchEntry(rootBackStack)
-            personDetailsEntry(rootBackStack)
-            profileEntry()
-        }
-    )
+                tvShowsFlow(
+                    rootBackStack = rootBackStack,
+                    sharedTransitionScope = this@SharedTransitionLayout
+                ) // nested graph
+
+                searchEntry(rootBackStack)
+
+                personDetailsEntry(
+                    rootBackStack = rootBackStack,
+                    sharedTransitionScope = this@SharedTransitionLayout
+                )
+
+                profileEntry()
+            }
+        )
+    }
 }

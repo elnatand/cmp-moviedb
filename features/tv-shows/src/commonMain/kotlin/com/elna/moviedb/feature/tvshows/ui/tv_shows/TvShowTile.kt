@@ -24,11 +24,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShow
+import com.elna.moviedb.core.model.TvShowCategory
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
 import androidx.compose.ui.tooling.preview.Preview
-import com.elna.moviedb.core.model.TvShowCategory
-import com.elna.moviedb.feature.tvshows.model.SharedElementKeys
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

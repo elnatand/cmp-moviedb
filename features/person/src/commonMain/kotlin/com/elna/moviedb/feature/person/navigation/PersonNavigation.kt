@@ -1,7 +1,7 @@
 package com.elna.moviedb.feature.person.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
@@ -14,26 +14,25 @@ import com.elna.moviedb.feature.person.ui.PersonDetailsScreen
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<Route>.personDetailsEntry(
-    rootBackStack: SnapshotStateList<Route>
+    rootBackStack: SnapshotStateList<Route>,
+    sharedTransitionScope: SharedTransitionScope
 ) {
     entry<PersonDetailsRoute> {
-        SharedTransitionLayout {
-            PersonDetailsScreen(
-                personId = it.personId,
-                onCreditClick = { id, mediaType ->
-                    when (mediaType) {
-                        MediaType.MOVIE -> rootBackStack.add(
-                            MoviesRoute(startAt = MoviesRoute.MovieDetailsRoute(id))
-                        )
+        PersonDetailsScreen(
+            personId = it.personId,
+            onCreditClick = { id, mediaType ->
+                when (mediaType) {
+                    MediaType.MOVIE -> rootBackStack.add(
+                        MoviesRoute(startAt = MoviesRoute.MovieDetailsRoute(id))
+                    )
 
-                        MediaType.TV -> rootBackStack.add(
-                            TvShowsRoute(startAt = TvShowsRoute.TvShowDetailsRoute(id))
-                        )
-                    }
-                },
-                sharedTransitionScope = this@SharedTransitionLayout,
-                animatedVisibilityScope = LocalNavAnimatedContentScope.current
-            )
-        }
+                    MediaType.TV -> rootBackStack.add(
+                        TvShowsRoute(startAt = TvShowsRoute.TvShowDetailsRoute(id))
+                    )
+                }
+            },
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = LocalNavAnimatedContentScope.current
+        )
     }
 }

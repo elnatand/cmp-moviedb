@@ -3,8 +3,6 @@ package com.elna.moviedb.feature.person.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,11 +28,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.PersonDetails
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
-
-// Using SharedElementKeys from movies feature as cast members are clicked from there
-private const val CAST_MEMBER_KEY = "cast-member-"
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -109,12 +105,8 @@ internal fun PersonHeroSection(
                         val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                             with(sharedTransitionScope) {
                                 imageModifier.sharedElement(
-                                    sharedContentState = rememberSharedContentState(key = "$CAST_MEMBER_KEY${person.id}"),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                    boundsTransform = { _, _ ->
-                                        tween(durationMillis = 300, easing = FastOutSlowInEasing)
-                                    },
-                                    renderInOverlayDuringTransition = true
+                                    sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${person.id}"),
+                                    animatedVisibilityScope = animatedVisibilityScope
                                 )
                             }
                         } else {
