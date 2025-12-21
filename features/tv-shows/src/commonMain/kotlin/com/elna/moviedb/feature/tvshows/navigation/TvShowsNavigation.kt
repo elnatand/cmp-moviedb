@@ -63,7 +63,10 @@ private fun TvShowsNavigation(
                     tvShowId = it.tvShowId,
                     category = it.category,
                     onCastMemberClick = { personId ->
-                        rootBackStack.add(TvShowsRoute(startAt = it))
+                        val tvShowDetailsRoute = TvShowsRoute(startAt = it)
+                        if (tvShowDetailsRoute !in rootBackStack) {
+                            rootBackStack.add(tvShowDetailsRoute)
+                        }
                         rootBackStack.add(PersonDetailsRoute(personId))
                     },
                     sharedTransitionScope = sharedTransitionScope,

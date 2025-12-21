@@ -64,7 +64,10 @@ private fun MoviesNavigation(
                     movieId = it.movieId,
                     category = it.category,
                     onCastMemberClick = { personId ->
-                        rootBackStack.add(MoviesRoute(startAt = it))
+                        val movieDetailsRoute = MoviesRoute(startAt = it)
+                        if (movieDetailsRoute !in rootBackStack) {
+                            rootBackStack.add(movieDetailsRoute)
+                        }
                         rootBackStack.add(PersonDetailsRoute(personId))
                     },
                     sharedTransitionScope = sharedTransitionScope,
