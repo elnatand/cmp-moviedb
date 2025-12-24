@@ -38,7 +38,6 @@ import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowTile
  * @param isLoading Whether pagination is currently loading
  * @param onLoadMore Callback to trigger loading more TV shows
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowsSection(
     category: TvShowCategory,

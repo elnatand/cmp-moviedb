@@ -43,7 +43,6 @@ import com.elna.moviedb.resources.rating
 import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun MovieHeroSection(
     movie: MovieDetails,
@@ -98,10 +97,6 @@ internal fun MovieHeroSection(
                     imageModifier.sharedElement(
                         sharedContentState = rememberSharedContentState(key = sharedElementKey),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 300, easing = FastOutSlowInEasing)
-                        },
-                        renderInOverlayDuringTransition = true
                     )
                 }
             } else {

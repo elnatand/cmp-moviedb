@@ -12,7 +12,6 @@ import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsScreen
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowsScreen
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 
 fun EntryProviderScope<Route>.tvShowsFlow(
     rootBackStack: SnapshotStateList<Route>,

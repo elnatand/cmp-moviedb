@@ -1,10 +1,7 @@
 package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,15 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
-import androidx.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowTile(
     category: TvShowCategory,
@@ -61,10 +57,6 @@ fun TvShowTile(
                     imageModifier.sharedElement(
                         sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}_${tvShow.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 300, easing = FastOutSlowInEasing)
-                        },
-                        renderInOverlayDuringTransition = true
                     )
                 }
             } else {

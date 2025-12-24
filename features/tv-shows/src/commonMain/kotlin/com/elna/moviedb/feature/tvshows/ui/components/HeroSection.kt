@@ -1,7 +1,6 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +41,6 @@ import com.elna.moviedb.resources.unknown
 import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HeroSection(
     tvShow: TvShowDetails,
@@ -99,13 +97,6 @@ internal fun HeroSection(
                         imageModifier.sharedElement(
                             sharedContentState = rememberSharedContentState(key = sharedElementKey),
                             animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ ->
-                                androidx.compose.animation.core.tween(
-                                    durationMillis = 300,
-                                    easing = androidx.compose.animation.core.FastOutSlowInEasing
-                                )
-                            },
-                            renderInOverlayDuringTransition = true
                         )
                     }
                 } else {

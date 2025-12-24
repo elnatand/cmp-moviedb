@@ -12,7 +12,6 @@ import com.elna.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
 import com.elna.moviedb.feature.movies.ui.movies.MoviesScreen
 
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<Route>.moviesFlow(
     rootBackStack: SnapshotStateList<Route>,
     sharedTransitionScope: SharedTransitionScope

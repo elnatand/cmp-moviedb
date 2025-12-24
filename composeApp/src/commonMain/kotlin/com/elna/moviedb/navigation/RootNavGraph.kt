@@ -15,7 +15,6 @@ import com.elna.moviedb.feature.profile.navigation.profileEntry
 import com.elna.moviedb.feature.search.navigation.searchEntry
 import com.elna.moviedb.feature.tvshows.navigation.tvShowsFlow
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun RootNavGraph(
     rootBackStack: SnapshotStateList<Route>,

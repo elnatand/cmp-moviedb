@@ -1,10 +1,7 @@
 package com.elna.moviedb.feature.person.ui.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.BoundsTransform
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +31,6 @@ import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun PersonHeroSection(
     person: PersonDetails,
@@ -110,12 +106,6 @@ internal fun PersonHeroSection(
                                     .sharedElement(
                                         sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${person.id}"),
                                         animatedVisibilityScope = animatedVisibilityScope,
-                                        boundsTransform = { _, _ ->
-                                            spring(
-                                                stiffness = 300f,
-                                                dampingRatio = 0.8f
-                                            )
-                                        }
                                     )
                                     .skipToLookaheadSize()
                             }

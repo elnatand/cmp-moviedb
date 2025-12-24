@@ -36,7 +36,6 @@ import com.elna.moviedb.feature.tvshows.ui.components.TrailersSection
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowDetailsScreen(
     tvShowId: Int,
@@ -59,7 +58,6 @@ fun TvShowDetailsScreen(
 }
 
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowDetailsScreen(
     uiState: TvShowDetailsViewModel.TvShowDetailsUiState,

@@ -1,11 +1,7 @@
 package com.elna.moviedb.feature.movies.ui.movies
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.BoundsTransform
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,7 +23,6 @@ import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MovieTile(
     category: MovieCategory,
@@ -58,10 +53,6 @@ fun MovieTile(
                     imageModifier.sharedElement(
                         sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}_${movie.id}"),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 300, easing = FastOutSlowInEasing)
-                        },
-                        renderInOverlayDuringTransition = true
                     )
                 }
             } else {

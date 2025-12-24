@@ -22,7 +22,6 @@ import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.cast
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun CastSection(
     tvShow: TvShowDetails,

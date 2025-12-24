@@ -45,7 +45,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PersonDetailsScreen(
     personId: Int,
@@ -65,7 +64,6 @@ fun PersonDetailsScreen(
     )
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PersonDetailsScreen(
     uiState: PersonUiState,
@@ -99,7 +97,6 @@ private fun PersonDetailsScreen(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PersonDetailsContent(
     person: PersonDetails,

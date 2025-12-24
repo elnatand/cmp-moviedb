@@ -40,7 +40,6 @@ import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TvShowsScreen(
     onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
@@ -125,7 +124,6 @@ private fun TvShowsScreen(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun TvShowsContent(
     uiState: TvShowsUiState,

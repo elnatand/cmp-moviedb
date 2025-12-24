@@ -12,7 +12,6 @@ import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.person.ui.PersonDetailsScreen
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun EntryProviderScope<Route>.personDetailsEntry(
     rootBackStack: SnapshotStateList<Route>,
     sharedTransitionScope: SharedTransitionScope
