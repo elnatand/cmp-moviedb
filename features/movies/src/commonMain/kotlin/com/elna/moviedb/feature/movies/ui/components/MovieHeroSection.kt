@@ -84,7 +84,8 @@ internal fun MovieHeroSection(
                 .align(Alignment.TopStart)
                 .padding(start = 16.dp),
             shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
         ) {
             val imageModifier = Modifier.fillMaxSize()
             val sharedElementKey = if (category != null) {
