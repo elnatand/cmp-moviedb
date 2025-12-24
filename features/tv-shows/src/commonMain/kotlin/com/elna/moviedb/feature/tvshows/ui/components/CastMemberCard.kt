@@ -1,8 +1,10 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,10 +60,18 @@ internal fun CastMemberCard(
                     val imageModifier = Modifier.fillMaxSize()
                     val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                         with(sharedTransitionScope) {
-                            imageModifier.sharedElement(
-                                sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
+                            imageModifier
+                                .sharedElement(
+                                    sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = { _, _ ->
+                                        spring(
+                                            stiffness = 300f,
+                                            dampingRatio = 0.8f
+                                        )
+                                    }
+                                )
+                                .skipToLookaheadSize()
                         }
                     } else {
                         imageModifier
