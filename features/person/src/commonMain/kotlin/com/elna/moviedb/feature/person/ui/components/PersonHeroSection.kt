@@ -90,33 +90,35 @@ internal fun PersonHeroSection(
                     }
 
                     // Main profile image (on top)
-                    Box(
-                        modifier = Modifier
+                    val boxModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                        with(sharedTransitionScope) {
+                            Modifier
+                                .padding(top = 40.dp)
+                                .width(240.dp)
+                                .height(360.dp)
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${person.id}"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
+                                .shadow(16.dp, RoundedCornerShape(8.dp))
+                                .clip(RoundedCornerShape(8.dp))
+                        }
+                    } else {
+                        Modifier
                             .padding(top = 40.dp)
                             .width(240.dp)
                             .height(360.dp)
                             .shadow(16.dp, RoundedCornerShape(8.dp))
                             .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                    ) {
-                        val imageModifier = Modifier.fillMaxSize()
-                        val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                            with(sharedTransitionScope) {
-                                imageModifier
-                                    .sharedElement(
-                                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${person.id}"),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                    )
-                                    .skipToLookaheadSize()
-                            }
-                        } else {
-                            imageModifier
-                        }
+                    }
 
+                    Box(
+                        modifier = boxModifier
+                    ) {
                         ImageLoader(
                             contentScale = ContentScale.Crop,
                             imageUrl = profilePath.toProfileUrl(),
-                            modifier = finalModifier,
+                            modifier = Modifier.fillMaxSize(),
                             contentDescription = person.name
                         )
                     }

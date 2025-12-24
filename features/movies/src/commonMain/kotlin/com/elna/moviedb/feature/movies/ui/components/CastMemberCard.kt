@@ -46,45 +46,44 @@ internal fun CastMemberCard(
     ) {
         Column {
             // Profile Image
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(160.dp)
-            ) {
-                val profileUrl = castMember.profilePath.toProfileUrl()
-                if (profileUrl.isNotEmpty()) {
-                    val imageModifier = Modifier.fillMaxSize()
-                    val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                        with(sharedTransitionScope) {
-                            imageModifier
-                                .sharedElement(
-                                    sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
-                                    animatedVisibilityScope = animatedVisibilityScope,
-                                )
-                                .skipToLookaheadSize()
-                        }
-                    } else {
-                        imageModifier
+            val profileUrl = castMember.profilePath.toProfileUrl()
+            if (profileUrl.isNotEmpty()) {
+                val boxModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                    with(sharedTransitionScope) {
+                        Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
                     }
+                } else {
+                    Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                }
 
+                Box(modifier = boxModifier) {
                     ImageLoader(
                         imageUrl = profileUrl,
-                        modifier = finalModifier
+                        modifier = Modifier.fillMaxSize()
                     )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.surfaceVariant),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = null,
-                            modifier = Modifier.size(48.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
 
