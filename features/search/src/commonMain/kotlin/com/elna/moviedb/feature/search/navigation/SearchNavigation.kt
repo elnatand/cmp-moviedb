@@ -15,14 +15,10 @@ fun EntryProviderScope<Route>.searchEntry(
     entry<SearchRoute> {
         SearchScreen(
             onMovieClicked = { movieId ->
-                rootBackStack.add(
-                    MoviesRoute(startAt = MoviesRoute.MovieDetailsRoute(movieId))
-                )
+                rootBackStack.add(MoviesRoute.MovieDetailsRoute(movieId))
             },
             onTvShowClicked = { tvShowId ->
-                rootBackStack.add(
-                    TvShowsRoute(startAt = TvShowsRoute.TvShowDetailsRoute(tvShowId))
-                )
+                rootBackStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
             },
             onPersonClicked = { personId ->
                 rootBackStack.add(PersonDetailsRoute(personId))

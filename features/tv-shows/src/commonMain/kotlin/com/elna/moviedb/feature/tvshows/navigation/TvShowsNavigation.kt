@@ -18,10 +18,18 @@ import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowsScreen
 fun EntryProviderScope<Route>.tvShowsFlow(
     rootBackStack: SnapshotStateList<Route>
 ) {
-    entry<TvShowsRoute> {
-        TvShowsNavigation(
-            rootBackStack = rootBackStack,
-            startDestination = it.startAt
+    entry<TvShowsRoute.TvShowsListRoute> {
+        TvShowsScreen(onClick = { tvShowId, _ ->
+            rootBackStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
+        })
+    }
+
+    entry<TvShowsRoute.TvShowDetailsRoute> {
+        TvShowDetailsScreen(
+            tvShowId = it.tvShowId,
+            onCastMemberClick = { personId ->
+                rootBackStack.add(PersonDetailsRoute(personId))
+            }
         )
     }
 }
@@ -40,23 +48,7 @@ private fun TvShowsNavigation(
             rememberViewModelStoreNavEntryDecorator()
         ),
         entryProvider = entryProvider {
-            entry<TvShowsRoute.TvShowsListRoute> {
-                TvShowsScreen(onClick = { tvShowId, _ ->
-                    backStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
-                })
-            }
-            entry<TvShowsRoute.TvShowDetailsRoute> {
-                TvShowDetailsScreen(
-                    tvShowId = it.tvShowId,
-                    onCastMemberClick = { personId ->
-                        val tvShowDetailsRoute = TvShowsRoute(startAt = it)
-                        if (tvShowDetailsRoute !in rootBackStack) {
-                            rootBackStack.add(tvShowDetailsRoute)
-                        }
-                        rootBackStack.add(PersonDetailsRoute(personId))
-                    }
-                )
-            }
+
         }
     )
 }
