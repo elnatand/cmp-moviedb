@@ -6,7 +6,7 @@ sealed interface Route
 
 
 @Serializable
-data class MoviesRoute(val startAt: Route = MoviesListRoute) : Route {
+data object MoviesRoute : Route {
 
     @Serializable
     data object MoviesListRoute : Route
@@ -18,7 +18,7 @@ data class MoviesRoute(val startAt: Route = MoviesListRoute) : Route {
 }
 
 @Serializable
-data class TvShowsRoute(val startAt: Route = TvShowsListRoute) : Route {
+data object TvShowsRoute : Route {
 
     @Serializable
     data object TvShowsListRoute : Route

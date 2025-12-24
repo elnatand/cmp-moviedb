@@ -14,7 +14,7 @@ import com.elna.moviedb.navigation.TopLevelDestination
 
 @Composable
 fun rememberAppState(
-    navBackStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesRoute()) }
+    navBackStack: SnapshotStateList<Route> = remember { mutableStateListOf(MoviesRoute.MoviesListRoute) }
 ): AppState {
     return remember(navBackStack) {
         AppState(navBackStack = navBackStack)
@@ -42,8 +42,8 @@ class AppState(
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         when (topLevelDestination) {
-            TopLevelDestination.MOVIES -> navBackStack.add(MoviesRoute())
-            TopLevelDestination.TV_SHOWS -> navBackStack.add(TvShowsRoute())
+            TopLevelDestination.MOVIES -> navBackStack.add(MoviesRoute.MoviesListRoute)
+            TopLevelDestination.TV_SHOWS -> navBackStack.add(TvShowsRoute.TvShowsListRoute)
             TopLevelDestination.SEARCH -> navBackStack.add(SearchRoute)
             TopLevelDestination.PROFILE -> navBackStack.add(ProfileRoute)
         }

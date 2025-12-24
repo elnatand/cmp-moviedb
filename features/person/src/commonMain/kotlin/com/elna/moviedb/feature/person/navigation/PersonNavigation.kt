@@ -17,13 +17,8 @@ fun EntryProviderScope<Route>.personDetailsEntry(
             personId = it.personId,
             onCreditClick = { id, mediaType ->
                 when (mediaType) {
-                    MediaType.MOVIE -> rootBackStack.add(
-                        MoviesRoute(startAt = MoviesRoute.MovieDetailsRoute(id))
-                    )
-
-                    MediaType.TV -> rootBackStack.add(
-                        TvShowsRoute(startAt = TvShowsRoute.TvShowDetailsRoute(id))
-                    )
+                    MediaType.MOVIE -> rootBackStack.add(MoviesRoute.MovieDetailsRoute(id))
+                    MediaType.TV -> rootBackStack.add(TvShowsRoute.TvShowDetailsRoute(id))
                 }
             }
         )
