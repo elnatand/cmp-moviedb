@@ -32,12 +32,12 @@ fun RootNavGraph(
                 moviesFlow(
                     rootBackStack = rootBackStack,
                     sharedTransitionScope = this@SharedTransitionLayout
-                ) // nested graph
+                )
 
                 tvShowsFlow(
                     rootBackStack = rootBackStack,
                     sharedTransitionScope = this@SharedTransitionLayout
-                ) // nested graph
+                )
 
                 searchEntry(rootBackStack)
 
