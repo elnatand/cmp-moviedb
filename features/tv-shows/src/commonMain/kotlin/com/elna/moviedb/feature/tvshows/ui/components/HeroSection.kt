@@ -76,36 +76,43 @@ internal fun HeroSection(
 
         // Poster
         tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
-            Card(
-                modifier = Modifier
+            val sharedElementKey = if (category != null) {
+                "${SharedElementKeys.TV_SHOW_POSTER}${category}_${tvShow.id}"
+            } else {
+                "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"
+            }
+
+            val cardModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                with(sharedTransitionScope) {
+                    Modifier
+                        .systemBarsPadding()
+                        .width(120.dp)
+                        .height(180.dp)
+                        .align(Alignment.TopStart)
+                        .padding(start = 16.dp)
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = sharedElementKey),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                }
+            } else {
+                Modifier
                     .systemBarsPadding()
                     .width(120.dp)
                     .height(180.dp)
                     .align(Alignment.TopStart)
-                    .padding(start = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                val imageModifier = Modifier.fillMaxSize()
-                val sharedElementKey = if (category != null) {
-                    "${SharedElementKeys.TV_SHOW_POSTER}${category}_${tvShow.id}"
-                } else {
-                    "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"
-                }
-                val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                    with(sharedTransitionScope) {
-                        imageModifier.sharedElement(
-                            sharedContentState = rememberSharedContentState(key = sharedElementKey),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        )
-                    }
-                } else {
-                    imageModifier
-                }
+                    .padding(start = 16.dp)
+            }
 
+            Card(
+                modifier = cardModifier,
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+            ) {
                 ImageLoader(
                     imageUrl = posterPath.toPosterUrl(),
-                    modifier = finalModifier
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

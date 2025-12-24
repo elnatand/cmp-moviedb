@@ -1,10 +1,7 @@
 package com.elna.moviedb.feature.movies.ui.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -76,37 +73,43 @@ internal fun MovieHeroSection(
         )
 
         // Poster
-        Card(
-            modifier = Modifier
+        val sharedElementKey = if (category != null) {
+            "${SharedElementKeys.MOVIE_POSTER}${category}_${movie.id}"
+        } else {
+            "${SharedElementKeys.MOVIE_POSTER}${movie.id}"
+        }
+
+        val cardModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+            with(sharedTransitionScope) {
+                Modifier
+                    .systemBarsPadding()
+                    .width(120.dp)
+                    .height(180.dp)
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp)
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(key = sharedElementKey),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+            }
+        } else {
+            Modifier
                 .systemBarsPadding()
                 .width(120.dp)
                 .height(180.dp)
                 .align(Alignment.TopStart)
-                .padding(start = 16.dp),
+                .padding(start = 16.dp)
+        }
+
+        Card(
+            modifier = cardModifier,
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent)
         ) {
-            val imageModifier = Modifier.fillMaxSize()
-            val sharedElementKey = if (category != null) {
-                "${SharedElementKeys.MOVIE_POSTER}${category}_${movie.id}"
-            } else {
-                "${SharedElementKeys.MOVIE_POSTER}${movie.id}"
-            }
-            val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                with(sharedTransitionScope) {
-                    imageModifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(key = sharedElementKey),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    )
-                }
-            } else {
-                imageModifier
-            }
-
             ImageLoader(
                 imageUrl = movie.posterPath.toPosterUrl(),
-                modifier = finalModifier
+                modifier = Modifier.fillMaxSize()
             )
         }
 
