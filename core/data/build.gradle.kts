@@ -2,11 +2,11 @@ plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
 }
 
-android {
-    namespace = "com.elna.moviedb.core.data"
-}
-
 kotlin {
+    androidLibrary {
+        namespace = "com.elna.moviedb.core.data"
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)

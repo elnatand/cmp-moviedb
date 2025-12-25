@@ -5,11 +5,11 @@ plugins {
     alias(libs.plugins.androidx.room)
 }
 
-android {
-    namespace = "com.elna.moviedb.core.database"
-}
-
 kotlin {
+    androidLibrary {
+        namespace = "com.elna.moviedb.core.database"
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.koin.core)

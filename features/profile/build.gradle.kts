@@ -3,11 +3,11 @@ plugins {
     alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
-android {
-    namespace = "com.elna.moviedb.profile"
-}
-
 kotlin {
+    androidLibrary {
+        namespace = "com.elna.moviedb.profile"
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)

@@ -7,7 +7,7 @@ android-minSdk = "24"
 android-compileSdk = "36"
 android-targetSdk = "36"
 
-kotlin = "2.2.21"
+kotlin = "2.3.0"
 ksp = "2.3.3"
 composeMultiplatform = "1.10.0-rc02"
 compose-material3 = "1.10.0-alpha05"
@@ -18,7 +18,7 @@ ktor = "3.3.3"
 coil = "3.3.0"
 kotlinx-coroutines = "1.10.2"
 navigation = "1.0.0-alpha06"
-lifecycle = "2.10.0-alpha06"
+lifecycle = "2.10.0-alpha07"
 room = "2.8.4"
 sqlite = "2.6.2"
 datastore = "1.2.0"
@@ -32,7 +32,7 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }

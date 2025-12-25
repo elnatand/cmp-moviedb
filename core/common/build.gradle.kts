@@ -4,14 +4,14 @@ plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
 }
 
-android {
-    namespace = "com.elna.moviedb.core.common"
-}
-
 // Apply app version generation
 apply<AppVersionGenerationPlugin>()
 
 kotlin {
+    androidLibrary {
+        namespace = "com.elna.moviedb.core.common"
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core) // for AppDispatchers

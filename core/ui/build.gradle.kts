@@ -4,16 +4,16 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)  // for navigation routes
 }
 
-android {
-    namespace = "com.elna.moviedb.core.ui"
-}
-
-dependencies{
-    debugImplementation(libs.compose.ui.tooling)
-}
-
 kotlin {
+    androidLibrary {
+        namespace = "com.elna.moviedb.core.ui"
+    }
+
     sourceSets {
+        androidMain.dependencies {
+            // Tooling support - the new plugin doesn't support debugImplementation
+            implementation(libs.compose.ui.tooling)
+        }
         commonMain.dependencies {
             api(libs.compose.material3)
             api(libs.compose.material.icons.extended)

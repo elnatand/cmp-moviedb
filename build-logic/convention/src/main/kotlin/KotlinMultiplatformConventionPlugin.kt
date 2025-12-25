@@ -1,43 +1,48 @@
-import com.android.build.gradle.LibraryExtension
-import com.elna.moviedb.configureAndroid
+import com.android.build.api.dsl.androidLibrary
+import com.elna.moviedb.getAndroidSdkVersions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 class KotlinMultiplatformConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
             apply("org.jetbrains.kotlin.multiplatform")
-            apply("com.android.library")
+            apply("com.android.kotlin.multiplatform.library")
         }
 
-        extensions.configure<LibraryExtension> {
-            configureAndroid(this)
-        }
-
+        // Configure Kotlin Multiplatform extension
         extensions.configure<KotlinMultiplatformExtension> {
 
-            androidTarget()
+            val sdkVersions = getAndroidSdkVersions()
+            androidLibrary {
+                compileSdk = sdkVersions.compileSdk
+                minSdk = sdkVersions.minSdk
 
-            listOf(
-                iosArm64(), // for ios devices
-                iosSimulatorArm64(), // for ios simulators in Apple silicon Mac computer
-            ).forEach { target ->
-                target.binaries.framework {
-                    baseName = path.substring(1).replace(':', '-')
+                compilerOptions {
+                    jvmTarget.set(JvmTarget.JVM_17)
                 }
             }
 
-           //remove expect actual warning
-            targets.configureEach {
-                compilations.configureEach {
-                    compileTaskProvider.configure{
-                        compilerOptions {
-                            freeCompilerArgs.add("-Xexpect-actual-classes")
-                        }
-                    }
+
+            // Configure iOS targets
+            listOf(
+                iosArm64(), // for ios devices
+                iosSimulatorArm64(), // for ios simulators in Apple silicon Mac computer
+            ).forEach { iosTarget ->
+                iosTarget.binaries.framework {
+                    baseName = path.substring(1).replace(':', '-')
                 }
+            }
+        }
+        // Apply expect-actual-classes flag to all Kotlin compilation tasks
+        tasks.withType<KotlinCompilationTask<*>>().configureEach {
+            compilerOptions {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
             }
         }
     }
