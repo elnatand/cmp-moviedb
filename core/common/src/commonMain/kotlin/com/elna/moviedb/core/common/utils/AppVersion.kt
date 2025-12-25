@@ -1,5 +1,7 @@
 package com.elna.moviedb.core.common.utils
 
+import com.elna.moviedb.core.common.utils.BuildKonfig.APP_VERSION
+
 interface AppVersion {
     fun getAppVersion(): String
 }

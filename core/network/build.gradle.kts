@@ -1,6 +1,9 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
     alias(libs.plugins.kotlinxSerialization) // for remote objects
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -30,4 +33,21 @@ kotlin {
     }
 }
 
+buildkonfig {
+    packageName = "com.elna.moviedb.core.network"
+    objectName = "BuildKonfig"
+    exposeObjectWithName = "BuildKonfig"
 
+    defaultConfigs {
+        val secretsPropertiesFile = rootProject.file("secrets.properties")
+        val tmdbApiKey = if (secretsPropertiesFile.exists()) {
+            val properties = Properties()
+            secretsPropertiesFile.inputStream().use { properties.load(it) }
+            properties.getProperty("TMDB_API_KEY", "")
+        } else {
+            ""
+        }
+
+        buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "TMDB_API_KEY", tmdbApiKey)
+    }
+}

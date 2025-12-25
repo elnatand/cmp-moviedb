@@ -4,7 +4,7 @@ import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.network.mapper.toTmdbPath
-import com.elna.moviedb.core.network.model.TMDB_API_KEY
+import com.elna.moviedb.core.network.BuildKonfig
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
@@ -59,7 +59,7 @@ class SearchRemoteDataSource(
                 val endpoint = filter.toTmdbPath()
                 httpClient.get("$TMDB_BASE_URL$endpoint") {
                     url {
-                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("api_key", BuildKonfig.TMDB_API_KEY)
                         parameters.append("query", query)
                         parameters.append("page", page.toString())
                         parameters.append("language", language)
