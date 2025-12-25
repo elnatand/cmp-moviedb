@@ -109,8 +109,8 @@ internal fun PersonHeroSection(
                             .padding(top = 40.dp)
                             .width(240.dp)
                             .height(360.dp)
-                            .shadow(16.dp, cornerShape)
                             .clip(cornerShape)
+                            .shadow(16.dp, cornerShape)
                     }
 
                     Box(

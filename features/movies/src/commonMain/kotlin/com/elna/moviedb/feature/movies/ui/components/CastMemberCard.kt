@@ -58,22 +58,21 @@ internal fun CastMemberCard(
                             Modifier
                                 .fillMaxWidth()
                                 .height(160.dp)
-                                .clip(cornerShape)
                                 .sharedBounds(
                                     sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
                                     animatedVisibilityScope = animatedVisibilityScope
                                 )
+                                .clip(cornerShape)
                         }
                     } else {
                         Modifier
                             .fillMaxWidth()
                             .height(160.dp)
+                            .clip(cornerShape)
                     }
                 ImageLoader(
                     imageUrl = profileUrl,
-                    modifier = modifier
-                        .fillMaxSize()
-                        .clip(cornerShape)
+                    modifier = modifier.fillMaxSize()
                 )
             } else {
                 Box(

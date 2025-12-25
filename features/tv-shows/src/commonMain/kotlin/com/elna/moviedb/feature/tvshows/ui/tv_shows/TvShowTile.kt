@@ -60,7 +60,7 @@ fun TvShowTile(
                 with(sharedTransitionScope) {
                     imageModifier
                         .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}_${tvShow.id}"),
+                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}-${tvShow.id}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                         )
                         .clip(cornerShape)

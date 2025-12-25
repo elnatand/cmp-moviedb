@@ -56,7 +56,7 @@ fun MovieTile(
                 with(sharedTransitionScope) {
                     imageModifier
                         .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}_${movie.id}"),
+                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}-${movie.id}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                         )
                         .clip(cornerShape)

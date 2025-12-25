@@ -78,7 +78,7 @@ internal fun HeroSection(
         // Poster
         tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
             val sharedElementKey = if (category != null) {
-                "${SharedElementKeys.TV_SHOW_POSTER}${category}_${tvShow.id}"
+                "${SharedElementKeys.TV_SHOW_POSTER}${category}-${tvShow.id}"
             } else {
                 "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"
             }
@@ -92,11 +92,11 @@ internal fun HeroSection(
                         .height(180.dp)
                         .align(Alignment.TopStart)
                         .padding(start = 16.dp)
-                        .clip(cornerShape)
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = sharedElementKey),
                             animatedVisibilityScope = animatedVisibilityScope
                         )
+                        .clip(cornerShape)
                 }
             } else {
                 Modifier
@@ -105,6 +105,7 @@ internal fun HeroSection(
                     .height(180.dp)
                     .align(Alignment.TopStart)
                     .padding(start = 16.dp)
+                    .clip(cornerShape)
             }
 
             Card(
@@ -115,9 +116,7 @@ internal fun HeroSection(
             ) {
                 ImageLoader(
                     imageUrl = posterPath.toPosterUrl(),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(cornerShape)
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

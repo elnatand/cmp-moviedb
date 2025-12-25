@@ -75,7 +75,7 @@ internal fun MovieHeroSection(
 
         // Poster
         val sharedElementKey = if (category != null) {
-            "${SharedElementKeys.MOVIE_POSTER}${category}_${movie.id}"
+            "${SharedElementKeys.MOVIE_POSTER}${category}-${movie.id}"
         } else {
             "${SharedElementKeys.MOVIE_POSTER}${movie.id}"
         }
