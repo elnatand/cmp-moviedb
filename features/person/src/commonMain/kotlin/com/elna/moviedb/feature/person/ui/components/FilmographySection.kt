@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.person.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +25,9 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun FilmographySection(
     filmography: List<FilmographyCredit>,
-    onCreditClick: (Int, MediaType) -> Unit
+    onCreditClick: (Int, MediaType) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     if (filmography.isEmpty()) return
 
@@ -53,7 +57,9 @@ internal fun FilmographySection(
                 ) { credit ->
                     FilmographyCard(
                         credit = credit,
-                        onClick = { onCreditClick(credit.id, credit.mediaType) }
+                        onClick = { onCreditClick(credit.id, credit.mediaType) },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
             }

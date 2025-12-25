@@ -103,9 +103,7 @@ fun TvShowDetailsScreen(
 
                         CastSection(
                             tvShow = uiState.tvShowDetails,
-                            onCastMemberClick = onCastMemberClick,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope
+                            onCastMemberClick = onCastMemberClick
                         )
 
                         RatingsSection(tvShow = uiState.tvShowDetails)

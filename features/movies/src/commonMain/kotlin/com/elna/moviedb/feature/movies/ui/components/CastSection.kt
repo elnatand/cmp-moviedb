@@ -1,7 +1,5 @@
 package com.elna.moviedb.feature.movies.ui.components
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,9 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun CastSection(
     movie: MovieDetails,
-    onCastMemberClick: (Int) -> Unit,
-    sharedTransitionScope: SharedTransitionScope? = null,
-    animatedVisibilityScope: AnimatedVisibilityScope? = null
+    onCastMemberClick: (Int) -> Unit
 ) {
     movie.cast?.takeIf { it.isNotEmpty() }?.let { cast ->
         Card(
@@ -52,9 +48,7 @@ internal fun CastSection(
                     ) { castMember ->
                         CastMemberCard(
                             castMember = castMember,
-                            onClick = { onCastMemberClick(castMember.id) },
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope
+                            onClick = { onCastMemberClick(castMember.id) }
                         )
                     }
                 }

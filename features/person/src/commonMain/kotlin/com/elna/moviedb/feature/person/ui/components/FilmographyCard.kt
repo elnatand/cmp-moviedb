@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.person.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,11 +25,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.FilmographyCredit
 import com.elna.moviedb.core.model.MediaType
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,7 +39,9 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 internal fun FilmographyCard(
     credit: FilmographyCredit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Card(
         modifier = Modifier
@@ -47,29 +53,48 @@ internal fun FilmographyCard(
     ) {
         Column {
             // Poster Image
-            Box(
+            val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+            credit.posterPath?.let { posterPath ->
+                val sharedElementKey = when (credit.mediaType) {
+                    MediaType.MOVIE -> "${SharedElementKeys.MOVIE_POSTER}${credit.id}"
+                    MediaType.TV -> "${SharedElementKeys.TV_SHOW_POSTER}${credit.id}"
+                }
+
+                val posterModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                    with(sharedTransitionScope) {
+                        Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = sharedElementKey),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                            .clip(cornerShape)
+                    }
+                } else {
+                    Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                        .clip(cornerShape)
+                }
+
+                ImageLoader(
+                    imageUrl = posterPath.toPosterUrl(),
+                    modifier = posterModifier
+                )
+            } ?: Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
             ) {
-                credit.posterPath?.let { posterPath ->
-                    ImageLoader(
-                        imageUrl = posterPath.toPosterUrl(),
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } ?: Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Movie,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Movie,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
             // Credit Info

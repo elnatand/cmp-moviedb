@@ -1,7 +1,5 @@
 package com.elna.moviedb.feature.person.ui.components
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,15 +25,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.PersonDetails
-import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
 
 @Composable
 internal fun PersonHeroSection(
-    person: PersonDetails,
-    sharedTransitionScope: SharedTransitionScope? = null,
-    animatedVisibilityScope: AnimatedVisibilityScope? = null
+    person: PersonDetails
 ) {
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -91,30 +86,13 @@ internal fun PersonHeroSection(
 
                     // Main profile image (on top)
                     val cornerShape = RoundedCornerShape(8.dp)
-                    val boxModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                        with(sharedTransitionScope) {
-                            Modifier
-                                .padding(top = 40.dp)
-                                .width(240.dp)
-                                .height(360.dp)
-                                .clip(cornerShape)
-                                .sharedBounds(
-                                    sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${person.id}"),
-                                    animatedVisibilityScope = animatedVisibilityScope
-                                )
-                                .shadow(16.dp, cornerShape)
-                        }
-                    } else {
-                        Modifier
+                    Box(
+                        modifier = Modifier
                             .padding(top = 40.dp)
                             .width(240.dp)
                             .height(360.dp)
                             .clip(cornerShape)
                             .shadow(16.dp, cornerShape)
-                    }
-
-                    Box(
-                        modifier = boxModifier
                     ) {
                         ImageLoader(
                             contentScale = ContentScale.Crop,

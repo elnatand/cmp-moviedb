@@ -1,14 +1,11 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,16 +25,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.CastMember
-import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
 
 @Composable
 internal fun CastMemberCard(
     castMember: CastMember,
-    onClick: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope? = null,
-    animatedVisibilityScope: AnimatedVisibilityScope? = null
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -51,31 +45,13 @@ internal fun CastMemberCard(
             val profileUrl = castMember.profilePath?.toProfileUrl().orEmpty()
             val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
             if (profileUrl.isNotEmpty()) {
-                val boxModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                    with(sharedTransitionScope) {
-                        Modifier
-                            .fillMaxWidth()
-                            .height(160.dp)
-                            .clip(cornerShape)
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
-                    }
-                } else {
-                    Modifier
+                ImageLoader(
+                    imageUrl = profileUrl,
+                    modifier = Modifier
                         .fillMaxWidth()
                         .height(160.dp)
-                }
-
-                Box(modifier = boxModifier) {
-                    ImageLoader(
-                        imageUrl = profileUrl,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(cornerShape)
-                    )
-                }
+                        .clip(cornerShape)
+                )
             } else {
                 Box(
                     modifier = Modifier

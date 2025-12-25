@@ -110,9 +110,7 @@ private fun PersonDetailsContent(
     ) {
         // Hero Section with Profile Image
         PersonHeroSection(
-            person = person,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope
+            person = person
         )
 
         // Main Content
@@ -137,7 +135,9 @@ private fun PersonDetailsContent(
             // Filmography Section
             FilmographySection(
                 filmography = person.filmography,
-                onCreditClick = onCreditClick
+                onCreditClick = onCreditClick,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
             )
 
             // Also Known As Section
