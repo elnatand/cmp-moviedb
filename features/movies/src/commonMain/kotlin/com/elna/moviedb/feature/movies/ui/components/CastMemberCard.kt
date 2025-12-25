@@ -44,7 +44,8 @@ internal fun CastMemberCard(
             .width(110.dp)
             .padding(2.dp),
         onClick = onClick,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(8.dp),
     ) {
         Column {
             // Profile Image
