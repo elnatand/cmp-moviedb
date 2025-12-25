@@ -16,10 +16,4 @@ object SharedElementKeys {
      * Append the TV show ID and category to create a unique key: `"${TV_SHOW_POSTER}${tvShowId}-${category}"`
      */
     const val TV_SHOW_POSTER = "tv-show-poster-"
-
-    /**
-     * Key prefix for cast member profile image shared element transitions.
-     * Append the person ID to create a unique key: `"${CAST_MEMBER}${personId}"`
-     */
-    const val CAST_MEMBER = "cast-member-"
 }

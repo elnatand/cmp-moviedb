@@ -1,11 +1,10 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,21 +41,19 @@ internal fun CastMemberCard(
     ) {
         Column {
             // Profile Image
-            val profileUrl = castMember.profilePath?.toProfileUrl().orEmpty()
-            val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
-            if (profileUrl.isNotEmpty()) {
-                ImageLoader(
-                    imageUrl = profileUrl,
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+            ) {
+                castMember.profilePath?.let { profilePath ->
+                    ImageLoader(
+                        imageUrl = profilePath.toProfileUrl(),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } ?: Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp)
-                        .clip(cornerShape)
-                )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp)
+                        .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {

@@ -1,7 +1,5 @@
 package com.elna.moviedb.feature.person.ui
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,11 +18,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.formatDate
-import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.feature.person.model.PersonDetailsEvent
 import com.elna.moviedb.feature.person.model.PersonUiState
 import com.elna.moviedb.feature.person.ui.components.DetailItem
@@ -48,8 +46,6 @@ import org.koin.core.parameter.parametersOf
 fun PersonDetailsScreen(
     personId: Int,
     onCreditClick: (Int, MediaType) -> Unit,
-    sharedTransitionScope: SharedTransitionScope? = null,
-    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val viewModel = koinViewModel<PersonDetailsViewModel> { parametersOf(personId) }
     val uiState by viewModel.uiState.collectAsState()
@@ -58,8 +54,6 @@ fun PersonDetailsScreen(
         uiState = uiState,
         onRetry = { viewModel.onEvent(PersonDetailsEvent.Retry) },
         onCreditClick = onCreditClick,
-        sharedTransitionScope = sharedTransitionScope,
-        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
@@ -68,8 +62,6 @@ private fun PersonDetailsScreen(
     uiState: PersonUiState,
     onRetry: () -> Unit,
     onCreditClick: (Int, MediaType) -> Unit,
-    sharedTransitionScope: SharedTransitionScope? = null,
-    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -88,8 +80,6 @@ private fun PersonDetailsScreen(
                 PersonDetailsContent(
                     person = uiState.person,
                     onCreditClick = onCreditClick,
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }
@@ -100,8 +90,6 @@ private fun PersonDetailsScreen(
 private fun PersonDetailsContent(
     person: PersonDetails,
     onCreditClick: (Int, MediaType) -> Unit,
-    sharedTransitionScope: SharedTransitionScope? = null,
-    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Column(
         modifier = Modifier
@@ -136,8 +124,6 @@ private fun PersonDetailsContent(
             FilmographySection(
                 filmography = person.filmography,
                 onCreditClick = onCreditClick,
-                sharedTransitionScope = sharedTransitionScope,
-                animatedVisibilityScope = animatedVisibilityScope
             )
 
             // Also Known As Section

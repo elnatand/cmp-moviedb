@@ -41,7 +41,6 @@ fun RootNavGraph(
 
                 personDetailsEntry(
                     rootBackStack = rootBackStack,
-                    sharedTransitionScope = this@SharedTransitionLayout
                 )
 
                 profileEntry()

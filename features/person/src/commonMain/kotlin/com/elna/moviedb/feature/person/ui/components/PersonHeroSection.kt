@@ -85,21 +85,19 @@ internal fun PersonHeroSection(
                     }
 
                     // Main profile image (on top)
-                    val cornerShape = RoundedCornerShape(8.dp)
                     Box(
                         modifier = Modifier
                             .padding(top = 40.dp)
                             .width(240.dp)
                             .height(360.dp)
-                            .clip(cornerShape)
-                            .shadow(16.dp, cornerShape)
+                            .shadow(16.dp, RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surface)
                     ) {
                         ImageLoader(
-                            contentScale = ContentScale.Crop,
+                            contentScale = ContentScale.Fit,
                             imageUrl = profilePath.toProfileUrl(),
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(cornerShape),
+                            modifier = Modifier.fillMaxSize(),
                             contentDescription = person.name
                         )
                     }
