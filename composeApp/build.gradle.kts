@@ -1,43 +1,15 @@
-
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
 kotlin {
-    android {
-        namespace = "com.elna.moviedb"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-
-//        defaultConfig {
-//            applicationId = "com.elna.moviedb"
-//            minSdk = libs.versions.android.minSdk.get().toInt()
-//            targetSdk = libs.versions.android.targetSdk.get().toInt()
-//            versionCode = libs.versions.app.build.get().toInt()
-//            versionName = libs.versions.app.version.get()
-//        }
-        packaging {
-            resources {
-                excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            }
-        }
+    androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
-        }
-    }
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-            binaryOption("bundleId", "com.elna.moviedb")
         }
     }
 
@@ -66,16 +38,31 @@ kotlin {
             implementation(libs.koin.compose)
         }
     }
-
-    //remove expect actual warning
-    targets.configureEach {
-        compilations.configureEach {
-            compileTaskProvider.configure{
-                compilerOptions {
-                    freeCompilerArgs.add("-Xexpect-actual-classes")
-                }
-            }
-        }
-    }
 }
 
+android {
+    namespace = "com.elna.moviedb"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        applicationId = "com.elna.moviedb"
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        versionCode = libs.versions.app.build.get().toInt()
+        versionName = libs.versions.app.version.get()
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
