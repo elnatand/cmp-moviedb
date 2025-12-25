@@ -3,6 +3,7 @@ package com.elna.moviedb.feature.tvshows.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -82,6 +83,7 @@ internal fun HeroSection(
                 "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"
             }
 
+            val cornerShape = RoundedCornerShape(8.dp)
             val cardModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     Modifier
@@ -90,6 +92,7 @@ internal fun HeroSection(
                         .height(180.dp)
                         .align(Alignment.TopStart)
                         .padding(start = 16.dp)
+                        .clip(cornerShape)
                         .sharedBounds(
                             sharedContentState = rememberSharedContentState(key = sharedElementKey),
                             animatedVisibilityScope = animatedVisibilityScope
@@ -106,13 +109,15 @@ internal fun HeroSection(
 
             Card(
                 modifier = cardModifier,
-                shape = RoundedCornerShape(8.dp),
+                shape = cornerShape,
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent)
             ) {
                 ImageLoader(
                     imageUrl = posterPath.toPosterUrl(),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(cornerShape)
                 )
             }
         }

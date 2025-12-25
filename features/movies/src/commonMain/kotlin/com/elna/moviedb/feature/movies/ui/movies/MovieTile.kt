@@ -3,6 +3,7 @@ package com.elna.moviedb.feature.movies.ui.movies
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,7 @@ fun MovieTile(
 ) {
     val imageUrl = movie.posterPath.toPosterUrl()
 
+    val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
     Card(
         modifier = Modifier.width(144.dp),
         shape = RoundedCornerShape(8.dp),
@@ -47,13 +49,17 @@ fun MovieTile(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            val imageModifier = Modifier.height(216.dp)
+            val imageModifier = Modifier
+                .height(216.dp)
+                .clip(cornerShape)
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
-                    imageModifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}_${movie.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    )
+                    imageModifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}_${movie.id}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
+                        .clip(cornerShape)
                 }
             } else {
                 imageModifier

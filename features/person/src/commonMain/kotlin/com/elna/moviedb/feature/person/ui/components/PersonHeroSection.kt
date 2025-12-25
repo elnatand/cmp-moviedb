@@ -90,26 +90,27 @@ internal fun PersonHeroSection(
                     }
 
                     // Main profile image (on top)
+                    val cornerShape = RoundedCornerShape(8.dp)
                     val boxModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                         with(sharedTransitionScope) {
                             Modifier
                                 .padding(top = 40.dp)
                                 .width(240.dp)
                                 .height(360.dp)
+                                .clip(cornerShape)
                                 .sharedBounds(
                                     sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${person.id}"),
                                     animatedVisibilityScope = animatedVisibilityScope
                                 )
-                                .shadow(16.dp, RoundedCornerShape(8.dp))
-                                .clip(RoundedCornerShape(8.dp))
+                                .shadow(16.dp, cornerShape)
                         }
                     } else {
                         Modifier
                             .padding(top = 40.dp)
                             .width(240.dp)
                             .height(360.dp)
-                            .shadow(16.dp, RoundedCornerShape(8.dp))
-                            .clip(RoundedCornerShape(8.dp))
+                            .shadow(16.dp, cornerShape)
+                            .clip(cornerShape)
                     }
 
                     Box(
@@ -118,7 +119,9 @@ internal fun PersonHeroSection(
                         ImageLoader(
                             contentScale = ContentScale.Crop,
                             imageUrl = profilePath.toProfileUrl(),
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(cornerShape),
                             contentDescription = person.name
                         )
                     }

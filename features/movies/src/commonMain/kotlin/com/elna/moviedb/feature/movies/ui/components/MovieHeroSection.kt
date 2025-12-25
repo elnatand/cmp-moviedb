@@ -3,6 +3,7 @@ package com.elna.moviedb.feature.movies.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -79,6 +80,7 @@ internal fun MovieHeroSection(
             "${SharedElementKeys.MOVIE_POSTER}${movie.id}"
         }
 
+        val cornerShape = RoundedCornerShape(8.dp)
         val cardModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
             with(sharedTransitionScope) {
                 Modifier
@@ -87,6 +89,7 @@ internal fun MovieHeroSection(
                     .height(180.dp)
                     .align(Alignment.TopStart)
                     .padding(start = 16.dp)
+                    .clip(cornerShape)
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(key = sharedElementKey),
                         animatedVisibilityScope = animatedVisibilityScope
@@ -100,16 +103,17 @@ internal fun MovieHeroSection(
                 .align(Alignment.TopStart)
                 .padding(start = 16.dp)
         }
-
         Card(
             modifier = cardModifier,
-            shape = RoundedCornerShape(8.dp),
+            shape = cornerShape,
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             colors = CardDefaults.cardColors(containerColor = Color.Transparent)
         ) {
             ImageLoader(
                 imageUrl = movie.posterPath.toPosterUrl(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(cornerShape)
             )
         }
 

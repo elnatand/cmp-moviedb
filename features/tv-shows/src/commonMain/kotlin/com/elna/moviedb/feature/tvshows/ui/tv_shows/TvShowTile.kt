@@ -5,6 +5,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,6 +38,7 @@ fun TvShowTile(
 ) {
     val imageUrl = tvShow.posterPath.toPosterUrl()
 
+    val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
     Card(
         modifier = Modifier.width(144.dp),
         onClick = { onClick(tvShow.id, tvShow.name) },
@@ -51,13 +53,17 @@ fun TvShowTile(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            val imageModifier = Modifier.height(216.dp)
+            val imageModifier = Modifier
+                .height(216.dp)
+                .clip(cornerShape)
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
-                    imageModifier.sharedElement(
-                        sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}_${tvShow.id}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                    )
+                    imageModifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}_${tvShow.id}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
+                        .clip(cornerShape)
                 }
             } else {
                 imageModifier

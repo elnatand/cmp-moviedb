@@ -3,6 +3,8 @@ package com.elna.moviedb.feature.movies.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,12 +49,14 @@ internal fun CastMemberCard(
         Column {
             // Profile Image
             val profileUrl = castMember.profilePath.toProfileUrl()
+            val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
             if (profileUrl.isNotEmpty()) {
                 val boxModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                     with(sharedTransitionScope) {
                         Modifier
                             .fillMaxWidth()
                             .height(160.dp)
+                            .clip(cornerShape)
                             .sharedBounds(
                                 sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
                                 animatedVisibilityScope = animatedVisibilityScope
@@ -67,7 +71,9 @@ internal fun CastMemberCard(
                 Box(modifier = boxModifier) {
                     ImageLoader(
                         imageUrl = profileUrl,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(cornerShape)
                     )
                 }
             } else {
