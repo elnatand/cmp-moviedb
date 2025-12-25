@@ -52,31 +52,29 @@ internal fun CastMemberCard(
             val profileUrl = castMember.profilePath.toProfileUrl()
             val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
             if (profileUrl.isNotEmpty()) {
-                val boxModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                    with(sharedTransitionScope) {
+                val modifier =
+                    if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                        with(sharedTransitionScope) {
+                            Modifier
+                                .fillMaxWidth()
+                                .height(160.dp)
+                                .clip(cornerShape)
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
+                        }
+                    } else {
                         Modifier
                             .fillMaxWidth()
                             .height(160.dp)
-                            .clip(cornerShape)
-                            .sharedBounds(
-                                sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.CAST_MEMBER}${castMember.id}"),
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
                     }
-                } else {
-                    Modifier
-                        .fillMaxWidth()
-                        .height(160.dp)
-                }
-
-                Box(modifier = boxModifier) {
-                    ImageLoader(
-                        imageUrl = profileUrl,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(cornerShape)
-                    )
-                }
+                ImageLoader(
+                    imageUrl = profileUrl,
+                    modifier = modifier
+                        .fillMaxSize()
+                        .clip(cornerShape)
+                )
             } else {
                 Box(
                     modifier = Modifier
