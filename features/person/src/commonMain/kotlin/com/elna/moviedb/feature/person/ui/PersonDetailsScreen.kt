@@ -18,11 +18,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.utils.formatDate
+import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.feature.person.model.PersonDetailsEvent
 import com.elna.moviedb.feature.person.model.PersonUiState
 import com.elna.moviedb.feature.person.ui.components.DetailItem
@@ -45,7 +45,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun PersonDetailsScreen(
     personId: Int,
-    onCreditClick: (Int, MediaType) -> Unit,
+    onCreditClick: (Int, MediaType) -> Unit
 ) {
     val viewModel = koinViewModel<PersonDetailsViewModel> { parametersOf(personId) }
     val uiState by viewModel.uiState.collectAsState()
@@ -53,7 +53,7 @@ fun PersonDetailsScreen(
     PersonDetailsScreen(
         uiState = uiState,
         onRetry = { viewModel.onEvent(PersonDetailsEvent.Retry) },
-        onCreditClick = onCreditClick,
+        onCreditClick = onCreditClick
     )
 }
 
@@ -61,7 +61,7 @@ fun PersonDetailsScreen(
 private fun PersonDetailsScreen(
     uiState: PersonUiState,
     onRetry: () -> Unit,
-    onCreditClick: (Int, MediaType) -> Unit,
+    onCreditClick: (Int, MediaType) -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -79,7 +79,7 @@ private fun PersonDetailsScreen(
             is PersonUiState.Success -> {
                 PersonDetailsContent(
                     person = uiState.person,
-                    onCreditClick = onCreditClick,
+                    onCreditClick = onCreditClick
                 )
             }
         }
@@ -89,7 +89,7 @@ private fun PersonDetailsScreen(
 @Composable
 private fun PersonDetailsContent(
     person: PersonDetails,
-    onCreditClick: (Int, MediaType) -> Unit,
+    onCreditClick: (Int, MediaType) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -97,9 +97,7 @@ private fun PersonDetailsContent(
             .verticalScroll(rememberScrollState())
     ) {
         // Hero Section with Profile Image
-        PersonHeroSection(
-            person = person
-        )
+        PersonHeroSection(person = person)
 
         // Main Content
         Column(
@@ -123,7 +121,7 @@ private fun PersonDetailsContent(
             // Filmography Section
             FilmographySection(
                 filmography = person.filmography,
-                onCreditClick = onCreditClick,
+                onCreditClick = onCreditClick
             )
 
             // Also Known As Section

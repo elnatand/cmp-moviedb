@@ -10,7 +10,7 @@ import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.person.ui.PersonDetailsScreen
 
 fun EntryProviderScope<Route>.personDetailsEntry(
-    rootBackStack: SnapshotStateList<Route>,
+    rootBackStack: SnapshotStateList<Route>
 ) {
     entry<PersonDetailsRoute> {
         PersonDetailsScreen(
@@ -20,7 +20,7 @@ fun EntryProviderScope<Route>.personDetailsEntry(
                     MediaType.MOVIE -> rootBackStack.add(MoviesRoute.MovieDetailsRoute(id))
                     MediaType.TV -> rootBackStack.add(TvShowsRoute.TvShowDetailsRoute(id))
                 }
-            },
+            }
         )
     }
 }
