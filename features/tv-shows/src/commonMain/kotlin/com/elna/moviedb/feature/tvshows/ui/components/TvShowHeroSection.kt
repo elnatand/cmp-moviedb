@@ -1,6 +1,9 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +32,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toBackdropUrl
 import com.elna.moviedb.core.ui.utils.toPosterUrl
@@ -39,7 +43,12 @@ import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun HeroSection(tvShow: TvShowDetails) {
+internal fun HeroSection(
+    tvShow: TvShowDetails,
+    category: String? = null,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -68,15 +77,42 @@ internal fun HeroSection(tvShow: TvShowDetails) {
 
         // Poster
         tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
-            Card(
-                modifier = Modifier
+            val sharedElementKey = if (category != null) {
+                "${SharedElementKeys.TV_SHOW_POSTER}${category}-${tvShow.id}"
+            } else {
+                "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"
+            }
+
+            val cornerShape = RoundedCornerShape(8.dp)
+            val cardModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                with(sharedTransitionScope) {
+                    Modifier
+                        .systemBarsPadding()
+                        .width(120.dp)
+                        .height(180.dp)
+                        .align(Alignment.TopStart)
+                        .padding(start = 16.dp)
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = sharedElementKey),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                        .clip(cornerShape)
+                }
+            } else {
+                Modifier
                     .systemBarsPadding()
                     .width(120.dp)
                     .height(180.dp)
                     .align(Alignment.TopStart)
-                    .padding(start = 16.dp),
-                shape = RoundedCornerShape(8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    .padding(start = 16.dp)
+                    .clip(cornerShape)
+            }
+
+            Card(
+                modifier = cardModifier,
+                shape = cornerShape,
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
             ) {
                 ImageLoader(
                     imageUrl = posterPath.toPosterUrl(),

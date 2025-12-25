@@ -1,6 +1,9 @@
 package com.elna.moviedb.feature.movies.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +32,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toBackdropUrl
 import com.elna.moviedb.core.ui.utils.toPosterUrl
@@ -38,7 +42,12 @@ import com.elna.moviedb.resources.votes
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun MovieHeroSection(movie: MovieDetails) {
+internal fun MovieHeroSection(
+    movie: MovieDetails,
+    category: String? = null,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,19 +74,46 @@ internal fun MovieHeroSection(movie: MovieDetails) {
         )
 
         // Poster
-        Card(
-            modifier = Modifier
+        val sharedElementKey = if (category != null) {
+            "${SharedElementKeys.MOVIE_POSTER}${category}-${movie.id}"
+        } else {
+            "${SharedElementKeys.MOVIE_POSTER}${movie.id}"
+        }
+
+        val cornerShape = RoundedCornerShape(8.dp)
+        val cardModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+            with(sharedTransitionScope) {
+                Modifier
+                    .systemBarsPadding()
+                    .width(120.dp)
+                    .height(180.dp)
+                    .align(Alignment.TopStart)
+                    .padding(start = 16.dp)
+                    .clip(cornerShape)
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(key = sharedElementKey),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+            }
+        } else {
+            Modifier
                 .systemBarsPadding()
                 .width(120.dp)
                 .height(180.dp)
                 .align(Alignment.TopStart)
-                .padding(start = 16.dp),
-            shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                .padding(start = 16.dp)
+        }
+        Card(
+            modifier = cardModifier,
+            shape = cornerShape,
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
         ) {
             ImageLoader(
                 imageUrl = movie.posterPath.toPosterUrl(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(cornerShape)
             )
         }
 

@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.tvshows.ui.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShow
+import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowTile
 
@@ -36,11 +39,14 @@ import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowTile
  */
 @Composable
 fun TvShowsSection(
+    category: TvShowCategory,
     title: String,
     tvShows: List<TvShow>,
-    onClick: (id: Int, title: String) -> Unit,
+    onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
     isLoading: Boolean,
-    onLoadMore: () -> Unit
+    onLoadMore: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val listState = rememberLazyListState()
     val currentIsLoading by rememberUpdatedState(isLoading)
@@ -79,11 +85,14 @@ fun TvShowsSection(
         ) {
             items(
                 items = tvShows,
-                key = { it.id }
+                key = { "${category.name}_${it.id}" }
             ) { tvShow ->
                 TvShowTile(
+                    category = category,
                     tvShow = tvShow,
-                    onClick = onClick
+                    onClick = { id, title -> onClick(id, title, category) },
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
 

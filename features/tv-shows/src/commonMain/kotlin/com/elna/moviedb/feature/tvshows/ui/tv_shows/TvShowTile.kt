@@ -1,8 +1,11 @@
 package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,19 +20,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.TvShow
+import com.elna.moviedb.core.model.TvShowCategory
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TvShowTile(
+    category: TvShowCategory,
     tvShow: TvShow,
-    onClick: (id: Int, title: String) -> Unit
+    onClick: (id: Int, title: String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val imageUrl = tvShow.posterPath.toPosterUrl()
 
+    val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
     Card(
         modifier = Modifier.width(144.dp),
         onClick = { onClick(tvShow.id, tvShow.name) },
@@ -44,9 +53,25 @@ fun TvShowTile(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
+            val imageModifier = Modifier
+                .height(216.dp)
+                .clip(cornerShape)
+            val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                with(sharedTransitionScope) {
+                    imageModifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}-${tvShow.id}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
+                        .clip(cornerShape)
+                }
+            } else {
+                imageModifier
+            }
+
             ImageLoader(
                 imageUrl = imageUrl,
-                modifier = Modifier.height(216.dp)
+                modifier = finalModifier
             )
 
             Text(
@@ -72,6 +97,7 @@ private fun TvShowTilePreview() {
                 .padding(16.dp)
         ) {
             TvShowTile(
+                category = TvShowCategory.POPULAR,
                 tvShow = TvShow(
                     id = 1,
                     name = "Law and Order: Special Victims Unit",

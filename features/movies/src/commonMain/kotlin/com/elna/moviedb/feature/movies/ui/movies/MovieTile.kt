@@ -1,6 +1,9 @@
 package com.elna.moviedb.feature.movies.ui.movies
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,16 +19,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.Movie
+import com.elna.moviedb.core.model.MovieCategory
+import com.elna.moviedb.core.ui.navigation.SharedElementKeys
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toPosterUrl
 
 @Composable
 fun MovieTile(
+    category: MovieCategory,
     movie: Movie,
-    onClick: (movieId: Int, title: String) -> Unit
+    onClick: (movieId: Int, title: String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val imageUrl = movie.posterPath.toPosterUrl()
 
+    val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
     Card(
         modifier = Modifier.width(144.dp),
         shape = RoundedCornerShape(8.dp),
@@ -40,9 +49,25 @@ fun MovieTile(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
+            val imageModifier = Modifier
+                .height(216.dp)
+                .clip(cornerShape)
+            val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                with(sharedTransitionScope) {
+                    imageModifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}-${movie.id}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
+                        .clip(cornerShape)
+                }
+            } else {
+                imageModifier
+            }
+
             ImageLoader(
                 imageUrl = imageUrl,
-                modifier = Modifier.height(216.dp)
+                modifier = finalModifier
             )
 
             Text(

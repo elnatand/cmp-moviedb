@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.movies.ui.movie_details
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,30 +51,40 @@ import com.elna.moviedb.resources.revenue
 import com.elna.moviedb.resources.runtime
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.elna.moviedb.feature.movies.model.MovieDetailsUiState
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
-    onCastMemberClick: (Int) -> Unit = {}
+    category: String? = null,
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val viewModel = koinViewModel<MovieDetailsViewModel> { parametersOf(movieId) }
     val uiState by viewModel.uiState.collectAsState()
 
     MovieDetailsScreen(
         uiState = uiState,
+        category = category,
         onRetry = { viewModel.onEvent(MovieDetailsEvent.Retry) },
-        onCastMemberClick = onCastMemberClick
+        onCastMemberClick = onCastMemberClick,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope
     )
 }
 
 
 @Composable
 private fun MovieDetailsScreen(
-    uiState: MovieDetailsViewModel.MovieDetailsUiState,
+    uiState: MovieDetailsUiState,
+    category: String? = null,
     onRetry: () -> Unit,
-    onCastMemberClick: (Int) -> Unit = {}
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -81,16 +93,19 @@ private fun MovieDetailsScreen(
             .background(MaterialTheme.colorScheme.background),
     ) {
         when (uiState) {
-            is MovieDetailsViewModel.MovieDetailsUiState.Loading -> AppLoader()
+            is MovieDetailsUiState.Loading -> AppLoader()
 
-            is MovieDetailsViewModel.MovieDetailsUiState.Error -> AppErrorComponent(
+            is MovieDetailsUiState.Error -> AppErrorComponent(
                 onRetry = onRetry
             )
 
-            is MovieDetailsViewModel.MovieDetailsUiState.Success -> {
+            is MovieDetailsUiState.Success -> {
                 MovieDetailsContent(
                     movie = uiState.movieDetails,
-                    onCastMemberClick = onCastMemberClick
+                    category = category,
+                    onCastMemberClick = onCastMemberClick,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }
@@ -101,7 +116,10 @@ private fun MovieDetailsScreen(
 @Composable
 private fun MovieDetailsContent(
     movie: MovieDetails,
-    onCastMemberClick: (Int) -> Unit = {}
+    category: String? = null,
+    onCastMemberClick: (Int) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     Column(
         modifier = Modifier
@@ -109,7 +127,12 @@ private fun MovieDetailsContent(
             .verticalScroll(rememberScrollState())
     ) {
         // Hero Section with Backdrop and Poster
-        MovieHeroSection(movie = movie)
+        MovieHeroSection(
+            movie = movie,
+            category = category,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope
+        )
 
         // Main Content
         Column(
@@ -283,7 +306,7 @@ private fun MovieDetailsScreenSuccessPreview() {
     )
 
     MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.MovieDetailsUiState.Success(sampleMovie),
+        uiState = MovieDetailsUiState.Success(sampleMovie),
         onRetry = {}
     )
 }
@@ -292,7 +315,7 @@ private fun MovieDetailsScreenSuccessPreview() {
 @Composable
 private fun MovieDetailsScreenLoadingPreview() {
     MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.MovieDetailsUiState.Loading,
+        uiState = MovieDetailsUiState.Loading,
         onRetry = {}
     )
 }
@@ -301,7 +324,7 @@ private fun MovieDetailsScreenLoadingPreview() {
 @Composable
 private fun MovieDetailsScreenErrorPreview() {
     MovieDetailsScreen(
-        uiState = MovieDetailsViewModel.MovieDetailsUiState.Error("Failed to load movie details. Please check your internet connection."),
+        uiState = MovieDetailsUiState.Error("Failed to load movie details. Please check your internet connection."),
         onRetry = {}
     )
 }

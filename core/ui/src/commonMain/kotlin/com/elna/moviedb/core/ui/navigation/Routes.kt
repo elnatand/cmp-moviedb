@@ -14,6 +14,7 @@ data object MoviesRoute : Route {
     @Serializable
     data class MovieDetailsRoute(
         val movieId: Int,
+        val category: String? = null
     ) : Route
 }
 
@@ -26,6 +27,7 @@ data object TvShowsRoute : Route {
     @Serializable
     data class TvShowDetailsRoute(
         val tvShowId: Int,
+        val category: String? = null
     ) : Route
 }
 
