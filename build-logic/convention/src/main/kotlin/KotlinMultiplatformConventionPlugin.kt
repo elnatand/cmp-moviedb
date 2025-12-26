@@ -28,7 +28,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                 }
             }
 
-
             // Configure iOS targets
             listOf(
                 iosArm64(), // for ios devices
@@ -38,12 +37,8 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                     baseName = path.substring(1).replace(':', '-')
                 }
             }
-        }
-        // Apply expect-actual-classes flag to all Kotlin compilation tasks
-        tasks.withType<KotlinCompilationTask<*>>().configureEach {
-            compilerOptions {
-                freeCompilerArgs.add("-Xexpect-actual-classes")
-            }
+
+            compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
     }
 }
