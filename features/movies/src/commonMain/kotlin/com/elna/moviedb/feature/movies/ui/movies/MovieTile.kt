@@ -55,7 +55,7 @@ fun MovieTile(
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     imageModifier
-                        .sharedBounds(
+                        .sharedElement(
                             sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}-${movie.id}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                         )

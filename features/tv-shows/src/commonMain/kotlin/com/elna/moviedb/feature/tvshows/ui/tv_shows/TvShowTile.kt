@@ -59,7 +59,7 @@ fun TvShowTile(
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     imageModifier
-                        .sharedBounds(
+                        .sharedElement(
                             sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}-${tvShow.id}"),
                             animatedVisibilityScope = animatedVisibilityScope,
                         )

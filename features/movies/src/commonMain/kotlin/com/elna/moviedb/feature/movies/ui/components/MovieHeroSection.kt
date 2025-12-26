@@ -90,7 +90,7 @@ internal fun MovieHeroSection(
                     .align(Alignment.TopStart)
                     .padding(start = 16.dp)
                     .clip(cornerShape)
-                    .sharedBounds(
+                    .sharedElement(
                         sharedContentState = rememberSharedContentState(key = sharedElementKey),
                         animatedVisibilityScope = animatedVisibilityScope
                     )
