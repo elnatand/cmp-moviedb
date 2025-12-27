@@ -2,7 +2,6 @@ package com.elna.moviedb.core.network
 
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
-
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails

@@ -4,7 +4,6 @@ import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.network.mapper.toTmdbPath
-import com.elna.moviedb.core.network.BuildKonfig
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
