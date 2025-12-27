@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.elna.moviedb.core.ui"
         experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }

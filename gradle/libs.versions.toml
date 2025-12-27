@@ -22,7 +22,7 @@ lifecycle = "2.10.0-alpha07"
 room = "2.8.4"
 sqlite = "2.6.2"
 datastore = "1.2.0"
-buildkonfig = "0.15.2"
+buildkonfig = "0.17.1"
 
 
 [plugins]
