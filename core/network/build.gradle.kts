@@ -1,3 +1,4 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
 import java.util.Properties
 
 plugins {
@@ -48,6 +49,15 @@ buildkonfig {
             ""
         }
 
-        buildConfigField(com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING, "TMDB_API_KEY", tmdbApiKey)
+        if (tmdbApiKey.isEmpty()) {
+            logger.warn("WARNING: TMDB_API_KEY is not set. API calls will fail at runtime.")
+            logger.warn("Please create secrets.properties with TMDB_API_KEY=<your-key>")
+        }
+
+        buildConfigField(
+            FieldSpec.Type.STRING,
+            "TMDB_API_KEY",
+            tmdbApiKey
+        )
     }
 }

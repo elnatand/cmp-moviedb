@@ -25,11 +25,8 @@ buildkonfig {
     exposeObjectWithName = "BuildKonfig"
 
     defaultConfigs {
-        val versionCatalog = project.extensions.findByType(
-            VersionCatalogsExtension::class.java
-        )
-        val libs = versionCatalog?.find("libs")?.orElse(null)
-        val appVersion = libs?.findVersion("app-version")?.orElse(null)?.requiredVersion ?: "1.0.0"
+        val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
+        val appVersion = libs.findVersion("app-version").get().requiredVersion
 
         buildConfigField(FieldSpec.Type.STRING, "APP_VERSION", appVersion)
     }
