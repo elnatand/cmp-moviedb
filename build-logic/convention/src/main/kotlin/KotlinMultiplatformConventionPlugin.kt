@@ -36,6 +36,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                 }
             }
 
+            //remove expect actual warning
             compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
     }

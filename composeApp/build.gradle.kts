@@ -49,6 +49,9 @@ kotlin {
             implementation(libs.koin.compose)
         }
     }
+
+    //remove expect actual warning
+    compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
 }
 
 android {
