@@ -92,7 +92,7 @@ internal fun HeroSection(
                         .height(180.dp)
                         .align(Alignment.TopStart)
                         .padding(start = 16.dp)
-                        .sharedBounds(
+                        .sharedElement(
                             sharedContentState = rememberSharedContentState(key = sharedElementKey),
                             animatedVisibilityScope = animatedVisibilityScope
                         )
