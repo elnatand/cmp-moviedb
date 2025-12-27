@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.androidLibrary
 import com.elna.moviedb.getAndroidSdkVersions
+import com.elna.moviedb.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -9,8 +10,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 class KotlinMultiplatformConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
-            apply("org.jetbrains.kotlin.multiplatform")
-            apply("com.android.kotlin.multiplatform.library")
+            apply(libs.findPlugin("kotlinMultiplatform").get().get().pluginId)
+            apply(libs.findPlugin("androidLibrary").get().get().pluginId)
         }
 
         // Configure Kotlin Multiplatform extension
