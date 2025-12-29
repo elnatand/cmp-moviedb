@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinxSerialization) apply false
     alias(libs.plugins.moviedb.iosVersionUpdate)
+    alias(libs.plugins.moviedb.moduleDependenciesGraph)
 }

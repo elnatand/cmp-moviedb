@@ -30,5 +30,9 @@ gradlePlugin {
             id = "moviedb.ios.versionUpdate"
             implementationClass = "com.elna.moviedb.IosVersionUpdatePlugin"
         }
+        register("moduleDependenciesGraph") {
+            id = "moviedb.module.dependenciesGraph"
+            implementationClass = "com.elna.moviedb.ModuleDependenciesGraphPlugin"
+        }
     }
 }
