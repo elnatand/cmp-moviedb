@@ -30,6 +30,7 @@ fun EntryProviderScope<Route>.moviesFlow(
         MovieDetailsScreen(
             movieId = it.movieId,
             category = it.category,
+            onBack = { rootBackStack.removeLast() },
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
             onCastMemberClick = { personId ->
