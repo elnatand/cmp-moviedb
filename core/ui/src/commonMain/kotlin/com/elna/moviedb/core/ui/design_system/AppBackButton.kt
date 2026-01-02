@@ -33,11 +33,6 @@ fun AppBackButton(
         modifier = modifier
             .size(40.dp)
             .minimumInteractiveComponentSize()
-            .shadow(
-                elevation = 8.dp,
-                shape = CircleShape,
-                ambientColor = Color.Black.copy(alpha = 0.2f)
-            )
             .clip(CircleShape)
             .background(Color.Black.copy(alpha = 0.2f))
             .clickable(onClick = onClick),
