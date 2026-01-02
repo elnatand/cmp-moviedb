@@ -15,7 +15,7 @@ fun EntryProviderScope<Route>.personDetailsEntry(
     entry<PersonDetailsRoute> {
         PersonDetailsScreen(
             personId = it.personId,
-            onBack = { rootBackStack.removeLast() },
+            onBack = { rootBackStack.removeLastOrNull() },
             onCreditClick = { id, mediaType ->
                 when (mediaType) {
                     MediaType.MOVIE -> rootBackStack.add(MoviesRoute.MovieDetailsRoute(id))

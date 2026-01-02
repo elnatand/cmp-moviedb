@@ -30,7 +30,7 @@ fun EntryProviderScope<Route>.tvShowsFlow(
         TvShowDetailsScreen(
             tvShowId = it.tvShowId,
             category = it.category,
-            onBack = { rootBackStack.removeLast() },
+            onBack = { rootBackStack.removeLastOrNull() },
             sharedTransitionScope = sharedTransitionScope,
             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
             onCastMemberClick = { personId ->
