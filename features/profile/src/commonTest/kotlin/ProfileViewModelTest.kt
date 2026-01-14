@@ -48,7 +48,6 @@ class ProfileViewModelTest {
 
         // When
         viewModel.onEvent(ProfileEvent.SetLanguage(newLanguage))
-        advanceUntilIdle()
 
         // Then
         assertEquals(AppLanguage.HEBREW, fakeAppSettingsPreferences.lastSetLanguage)
@@ -61,7 +60,6 @@ class ProfileViewModelTest {
 
         // When
         viewModel.onEvent(ProfileEvent.SetTheme(newTheme))
-        advanceUntilIdle()
 
         // Then
         assertEquals(AppTheme.DARK, fakeAppSettingsPreferences.lastSetTheme)
@@ -150,10 +148,9 @@ class ProfileViewModelTest {
     @Test
     fun `initial UI state has correct default values`() = runTest {
         // When - ViewModel is initialized
-        advanceUntilIdle()
+        val state = viewModel.uiState.value
 
         // Then
-        val state = viewModel.uiState.value
         assertEquals(AppLanguage.ENGLISH.code, state.selectedLanguageCode)
         assertEquals(AppTheme.SYSTEM.value, state.selectedThemeValue)
         assertEquals("1.0.0-test", state.appVersion)
