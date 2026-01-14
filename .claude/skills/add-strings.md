@@ -10,6 +10,25 @@ Add a new string resource across all supported languages in the project (English
 
 If `key` and `english_text` are not provided as arguments, the skill will prompt for them.
 
+## Proactive Usage
+
+This skill MUST be invoked automatically whenever:
+
+1. **Claude is about to generate code with hardcoded user-facing strings**
+   - Immediately invoke this skill with the string key and English text
+   - Do NOT ask the user for permission - just invoke it automatically
+   - Wait for the skill to complete, then generate code using the string resource
+
+2. **The user asks to add UI text, labels, messages, or buttons**
+   - Examples: "Add a save button", "Show an error message", "Add a welcome label"
+   - Automatically invoke `/add-strings` to add the text across all languages
+
+3. **A code change requires new user-facing text**
+   - During feature implementation that introduces new UI elements
+   - When updating existing UI that needs different text
+
+**Important**: This skill should run automatically in the background. Never ask the user to run it manually or wait for approval. Just invoke it, let it complete, then continue with code generation.
+
 ## Instructions
 
 When this skill is invoked:
@@ -23,19 +42,21 @@ When this skill is invoked:
 2. **Validate the string key**:
    - Check that the key uses snake_case format (lowercase with underscores)
    - Read the English strings file to verify the key doesn't already exist
-   - If it exists, inform the user and ask if they want to update it instead
+   - If it exists, inform the user that the key already exists and skip adding it
 
-3. **Get translations**:
-   - Use AskUserQuestion to ask if the user wants to:
-     - Provide translations manually for all languages
-     - Skip translations for now (will add placeholders)
+3. **Generate translations automatically**:
+   - **Do NOT prompt the user for translations**
+   - Automatically translate the English text to all 4 languages:
+     - English: Use the provided text
+     - Hebrew (עברית): Translate to Hebrew
+     - Arabic (العربية): Translate to Arabic
+     - Hindi (हिंदी): Translate to Hindi
 
-   - If providing manually, collect translations for:
-     - Hebrew (עברית)
-     - Arabic (العربية)
-     - Hindi (हिंदी)
-
-   - If skipping, use the English text as a placeholder for all languages (to be translated later)
+   - Translation guidelines:
+     - Keep proper nouns and brand names in English
+     - Maintain consistent terminology with existing translations
+     - For technical terms, check existing strings for precedent
+     - Preserve placeholders, formatting, and special characters
 
 4. **Add strings to all XML files**:
 
@@ -62,23 +83,31 @@ When this skill is invoked:
    - Show the user the generated code reference (e.g., `Res.string.your_key_name`)
 
 6. **Output summary**:
-   - Confirm that the string was added to all 4 language files
-   - Show the usage example: `stringResource(Res.string.your_key_name)`
-   - Remind the user that they can update translations later if placeholders were used
+   - Briefly confirm that the string was added to all 4 language files
+   - Show the key name for reference: `Res.string.your_key_name`
+   - Keep the summary concise - this should be a seamless, automatic process
 
 ## Example Interactions
 
-### Example 1: With arguments
+### Example 1: Automatic invocation during code generation
+```
+User: "Add a logout button to the profile screen"
+Claude: *Automatically invokes /add-strings logout_button "Logout"*
+Claude: *Adds translations to all 4 language files*
+Claude: *Generates code with stringResource(Res.string.logout_button)*
+```
+
+### Example 2: Manual invocation with arguments
 ```
 /add-strings save_button "Save Changes"
 ```
-→ Prompts for translations, then adds the string to all files
+→ Automatically translates and adds the string to all 4 files
 
-### Example 2: Without arguments
+### Example 3: Manual invocation without arguments
 ```
 /add-strings
 ```
-→ Prompts for key, text, and translations, then adds to all files
+→ Prompts for key and text, then automatically translates and adds to all files
 
 ## Notes
 - All user-facing strings MUST use the string resources system (never hardcoded)
