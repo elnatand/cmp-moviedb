@@ -193,11 +193,9 @@ Both files are gitignored. Never commit API keys.
 
 All user-facing strings are in `core/ui/src/commonMain/composeResources/values/Strings.xml` with translations for 4 languages:
 - English (`values/Strings.xml`)
-- Hebrew (`values-iw/Strings.xml`) - RTL
+- Hebrew (`values-he/Strings.xml`) - RTL
 - Arabic (`values-ar/Strings.xml`) - RTL
 - Hindi (`values-hi/Strings.xml`)
-
-**Usage**: Always use `Res.string.*` from generated resources. Never hardcode strings.
 
 **Configuration** (`core/ui/build.gradle.kts`):
 ```kotlin
@@ -207,6 +205,38 @@ compose.resources {
     generateResClass = always
 }
 ```
+
+### STRICT RULE: No Hardcoded Strings
+
+**NEVER hardcode user-facing strings in code.** This is a critical rule that must be followed without exception.
+
+When writing code that requires new user-facing strings:
+
+1. **First, check if the string already exists** in `Res.string.*`
+2. **If it's a new string, automatically invoke the `/add-strings` skill**:
+   - Use the Skill tool to call `/add-strings <key> "<text>"`
+   - The skill will automatically add the string to all 4 language files
+   - Wait for the skill to complete before proceeding
+3. **After the string is added**, generate code using `stringResource(Res.string.key_name)`
+
+**Examples**:
+- ❌ **WRONG**: `Text("Save Changes")` (hardcoded)
+- ✅ **CORRECT**: First invoke `/add-strings save_button "Save Changes"`, then use `Text(stringResource(Res.string.save_button))`
+
+**Workflow Example**:
+```
+User: "Add a logout button"
+Claude: *Invokes /add-strings logout_button "Logout"*
+Claude: *Generates code with stringResource(Res.string.logout_button)*
+```
+
+**Why this matters**:
+- The app supports 4 languages with proper translations
+- Hebrew and Arabic are RTL languages requiring special handling
+- Hardcoded strings break localization and create maintenance issues
+- All strings must be translatable across all supported languages
+
+**Important**: Always use the `/add-strings` skill automatically when new strings are needed. Never ask the user to run it manually.
 
 ## Common Development Tasks
 
