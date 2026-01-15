@@ -1,7 +1,3 @@
-
-
-
-import com.elna.moviedb.getAndroidSdkVersions
 import com.elna.moviedb.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -14,8 +10,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             apply(libs.findPlugin("kotlinMultiplatform").get().get().pluginId)
             apply(libs.findPlugin("androidLibrary").get().get().pluginId)
         }
-
-        val sdkVersions = getAndroidSdkVersions()
 
         // Configure Kotlin Multiplatform extension
         extensions.configure<KotlinMultiplatformExtension> {
@@ -33,14 +27,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
 
-        // Configure Android-specific settings in each module's build file
-        // Modules should add:
-        // kotlin {
-        //     androidLibrary {
-        //         compileSdk = <version>
-        //         minSdk = <version>
-        //         compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
-        //     }
-        // }
+        // Note: compileSdk, minSdk, and compilerOptions must be configured in each module's
+        // androidLibrary {} block due to AGP 9.0 API limitations in convention plugins
     }
 }
