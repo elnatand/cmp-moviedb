@@ -5,6 +5,12 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.elna.moviedb.core.datastore"
+        compileSdk = 36
+        minSdk = 24
+
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 
     sourceSets {

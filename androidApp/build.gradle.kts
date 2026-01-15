@@ -2,14 +2,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
 dependencies {
     implementation(projects.composeApp)
-//    implementation(projects.core.network)
-//    implementation(projects.core.ui)
+    implementation(projects.core.network)
+    implementation(projects.core.ui)
 
     implementation(libs.koin.android)
 }

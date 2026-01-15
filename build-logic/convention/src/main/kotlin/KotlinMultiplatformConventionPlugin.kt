@@ -6,7 +6,6 @@ import com.elna.moviedb.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KotlinMultiplatformConventionPlugin : Plugin<Project> {
@@ -16,19 +15,10 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             apply(libs.findPlugin("androidLibrary").get().get().pluginId)
         }
 
+        val sdkVersions = getAndroidSdkVersions()
+
         // Configure Kotlin Multiplatform extension
         extensions.configure<KotlinMultiplatformExtension> {
-
-            val sdkVersions = getAndroidSdkVersions()
-            androidLibrary {
-                compileSdk = sdkVersions.compileSdk
-                minSdk = sdkVersions.minSdk
-
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_17)
-                }
-            }
-
             // Configure iOS targets
             listOf(
                 iosArm64(), // for ios devices
@@ -42,5 +32,15 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             //remove expect actual warning
             compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
+
+        // Configure Android-specific settings in each module's build file
+        // Modules should add:
+        // kotlin {
+        //     androidLibrary {
+        //         compileSdk = <version>
+        //         minSdk = <version>
+        //         compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+        //     }
+        // }
     }
 }

@@ -10,6 +10,12 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.elna.moviedb.core.network"
+        compileSdk = 36
+        minSdk = 24
+
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 
     sourceSets {

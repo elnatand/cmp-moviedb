@@ -9,8 +9,8 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.elna.moviedb.composeapp"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk = 36
+        minSdk = 24
 
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_17)
@@ -30,19 +30,19 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-//            implementation(projects.core.common)
-//            implementation(projects.core.model)
-//            implementation(projects.core.network)
-//            implementation(projects.core.data)
-//            implementation(projects.core.database)
-//            implementation(projects.core.datastore)
-//            implementation(projects.core.ui)
-//
-//            implementation(projects.features.movies)
-//            implementation(projects.features.tvShows)
-//            implementation(projects.features.search)
-//            implementation(projects.features.profile)
-//            implementation(projects.features.person)
+            implementation(projects.core.common)
+            implementation(projects.core.model)
+            implementation(projects.core.network)
+            implementation(projects.core.data)
+            implementation(projects.core.database)
+            implementation(projects.core.datastore)
+            implementation(projects.core.ui)
+
+            implementation(projects.features.movies)
+            implementation(projects.features.tvShows)
+            implementation(projects.features.search)
+            implementation(projects.features.profile)
+            implementation(projects.features.person)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)

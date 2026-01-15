@@ -7,6 +7,13 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.elna.moviedb.core.ui"
+        compileSdk = 36
+        minSdk = 24
+
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+
         experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
 
