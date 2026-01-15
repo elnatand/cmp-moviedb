@@ -30,19 +30,20 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.common)
-            implementation(projects.core.model)
-            implementation(projects.core.network)
-            implementation(projects.core.data)
-            implementation(projects.core.database)
-            implementation(projects.core.datastore)
-            implementation(projects.core.ui)
+//            implementation(projects.core.common)
+//            implementation(projects.core.model)
+//            implementation(projects.core.network)
+//            implementation(projects.core.data)
+//            implementation(projects.core.database)
+//            implementation(projects.core.datastore)
+//            implementation(projects.core.ui)
+//
+//            implementation(projects.features.movies)
+//            implementation(projects.features.tvShows)
+//            implementation(projects.features.search)
+//            implementation(projects.features.profile)
+//            implementation(projects.features.person)
 
-            implementation(projects.features.movies)
-            implementation(projects.features.tvShows)
-            implementation(projects.features.search)
-            implementation(projects.features.profile)
-            implementation(projects.features.person)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
         }
