@@ -12,7 +12,6 @@ kotlin {
     androidLibrary {
         namespace = "com.elna.moviedb.core.network"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
     sourceSets {
