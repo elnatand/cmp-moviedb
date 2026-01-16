@@ -1,5 +1,4 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
