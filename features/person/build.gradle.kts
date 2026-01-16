@@ -10,11 +10,6 @@ kotlin {
         namespace = "com.elna.moviedb.person"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
-
-
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
     }
 
     sourceSets {

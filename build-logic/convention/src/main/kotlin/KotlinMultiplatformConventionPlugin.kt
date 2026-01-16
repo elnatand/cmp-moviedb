@@ -27,7 +27,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
 
-        // Note: compileSdk, minSdk, and compilerOptions must be configured in each module's
+        // Note: compileSdk and minSdk must be configured in each module's
         // androidLibrary {} block due to AGP 9.0 API limitations in convention plugins
     }
 }
