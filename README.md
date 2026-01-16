@@ -69,8 +69,11 @@ The app supports **4 languages** with full UI localization:
 
 ```
 cmp-moviedb/
-├── composeApp/           # Main application module
-│   ├── androidMain/      # Android-specific code (MainActivity, DI)
+├── androidApp/           # Android application module (APK entry point)
+│   └── src/main/         # Android-specific code (MainActivity, resources)
+│
+├── composeApp/           # Shared Compose Multiplatform library
+│   ├── androidMain/      # Android-specific DI configuration
 │   ├── commonMain/       # Shared app code (App.kt, navigation, DI)
 │   └── iosMain/          # iOS-specific code (MainViewController, DI)
 │
@@ -99,7 +102,7 @@ cmp-moviedb/
 ## 🛠️ Technology Stack
 
 ### Shared
-- **Kotlin Multiplatform** - Multi-platform development
+- **Kotlin Multiplatform** (2.3.0) - Multi-platform development
 - **Compose Multiplatform** - UI framework
 - **Koin** - Dependency injection with Compose and ViewModel support
 - **Room** - Local database with SQLite bundled driver
@@ -111,6 +114,7 @@ cmp-moviedb/
 - **Navigation 3** - Navigation 3 framework with Koin integration
 - **Material 3** - Design system components
 - **KSP** - Kotlin Symbol Processing for Room code generation
+- **BuildKonfig** - Build-time constant generation for secrets and configuration
 
 ### Android
 - **Jetpack Compose** - UI toolkit
@@ -133,7 +137,7 @@ cmp-moviedb/
 
 ### 🔑 API Key Setup
 
-This app uses The Movie Database (TMDB) API. You'll need to obtain an API key and configure it for both Android and iOS platforms.
+This app uses The Movie Database (TMDB) API. You'll need to obtain an API key and configure it using BuildKonfig.
 
 #### Step 1: Get TMDB API Key
 
@@ -156,7 +160,9 @@ This app uses The Movie Database (TMDB) API. You'll need to obtain an API key an
    - Once approved, you'll receive your API key
    - Copy the **API Key (v3 auth)** - this is what you'll use
 
-#### Step 2: Configure Android (secrets.properties)
+#### Step 2: Configure API Key (secrets.properties)
+
+The project uses **BuildKonfig** to generate build-time constants from `secrets.properties`. This approach works seamlessly for both Android and iOS.
 
 1. **Create secrets.properties file** in the project root directory:
    ```bash
@@ -175,52 +181,29 @@ This app uses The Movie Database (TMDB) API. You'll need to obtain an API key an
    /secrets.properties
    ```
 
-#### Step 3: Configure iOS (Secrets.plist)
+#### Step 3: Build the Project
 
-1. **Create Secrets.plist** from the template:
-   ```bash
-   cp iosApp/iosApp/Secrets.plist.template iosApp/iosApp/Secrets.plist
-   ```
+BuildKonfig will automatically generate the `BuildKonfig` object containing your API key during the Gradle build process. The generated constant is available to both Android and iOS platforms.
 
-2. **Edit Secrets.plist** and replace the placeholder:
-   ```xml
-   <?xml version="1.0" encoding="UTF-8"?>
-   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-   <plist version="1.0">
-   <dict>
-       <key>tmdbApiKey</key>
-       <string>your_actual_api_key_here</string>
-   </dict>
-   </plist>
-   ```
+**How it works:**
+- The `core/network/build.gradle.kts` reads `secrets.properties` at build time
+- BuildKonfig generates a `BuildKonfig.TMDB_API_KEY` constant
+- The constant is accessible across all platforms without platform-specific code
 
-3. **Add to Xcode project** (if not already added):
-   - Open the iOS project in Xcode
-   - Drag `Secrets.plist` into the project navigator
-   - Ensure it's added to the target's "Copy Bundle Resources" phase
-
-#### Step 4: Verify Setup
-
-Both files should contain the same API key but in different formats:
-
-**secrets.properties**:
-```properties
-TMDB_API_KEY=abcd1234567890efgh
-```
-
-**Secrets.plist**:
-```xml
-<key>tmdbApiKey</key>
-<string>abcd1234567890efgh</string>
-```
-
-> ⚠️ **Important**: Never commit these files to version control. They are already excluded in `.gitignore`.
+> ⚠️ **Important**:
+> - Never commit `secrets.properties` to version control (it's gitignored)
+> - If the API key is not set, you'll see a build warning but the app will compile
+> - API calls will fail at runtime if the key is missing
 
 ### Running the Project
 
 #### Android
 ```bash
-./gradlew :composeApp:assembleDebug
+# Install debug build on connected device
+./gradlew :androidApp:installDebug
+
+# Or assemble APK without installing
+./gradlew :androidApp:assembleDebug
 ```
 
 #### iOS
@@ -233,7 +216,10 @@ TMDB_API_KEY=abcd1234567890efgh
 # Clean and build all modules
 ./gradlew clean build
 
-# Build specific module
+# Build Android app
+./gradlew :androidApp:build
+
+# Build shared library
 ./gradlew :composeApp:build
 ```
 
@@ -278,28 +264,70 @@ The project uses a simplified repository pattern where:
 - **Error Handling Strategy**:
   - Initial load errors: Block UI with error screen
   - Pagination errors: Non-blocking snackbar while keeping cached data
-- **Platform-specific configs** using expect/actual pattern
+- **Platform-specific configs** minimized with BuildKonfig (expect/actual used only where necessary)
 - **Feature-based modular design** with clear separation of concerns
 - **Module isolation** with well-defined APIs and dependency injection
+- **Modern KMP Architecture**: Uses `com.android.kotlin.multiplatform.library` plugin with dedicated platform entry points
 
 ### Build Configuration
 - **Gradle Version Catalogs** (`gradle/libs.versions.toml`) - Centralized dependency management
 - **Custom Convention Plugins** in `build-logic/convention/` module:
-  - **moviedb.kotlin.multiplatform**: Configures KMP with iOS ARM64/Simulator targets
+  - **moviedb.kotlin.multiplatform**: Configures KMP with `com.android.kotlin.multiplatform.library` plugin, iOS ARM64/Simulator targets, and expect/actual classes compiler flag
   - **moviedb.kotlin.composeMultiplatform**: Adds all Compose Multiplatform dependencies
-  - **moviedb.android.library**: Standardizes Android module configuration
-  - **Shared Android Config**: Compile/target SDK 36, min SDK 24
+  - **Shared Android Config**: Compile/target SDK 36, min SDK 24, JVM target 17
+- **Modern Android Library Plugin**: Uses `com.android.kotlin.multiplatform.library` for better KMP integration (replaces deprecated `com.android.library`)
+- **BuildKonfig** for build-time constant generation (API keys, app version)
 - **KSP** for Room database code generation across platforms
 - **DataStore** for preferences and app state persistence
 - **Compose Resources** for shared string resources with 4-language support (English, Hebrew, Hindi, Arabic)
-- **Platform-specific** configurations using expect/actual pattern
+- **Platform-specific** configurations using expect/actual pattern (minimized with BuildKonfig)
 - **Room Database** with SQLite bundled driver for offline support
+- **Dedicated Android App Module**: `androidApp` wraps the shared `composeApp` library
 
 ### Troubleshooting
 - **Java Version Issues**: Use JDK 17-21. Java 25 has compatibility issues
 - **Build Failures**: Run `./gradlew clean` and retry
 - **iOS Simulator**: Use ARM64 simulator on Apple Silicon Macs
-- **API Key Issues**: Verify both `secrets.properties` and `Secrets.plist` contain valid TMDB API key
+- **API Key Issues**:
+  - Verify `secrets.properties` exists in project root with valid TMDB API key
+  - Check for build warnings about missing API key
+  - Rebuild the project after adding/modifying the API key
+- **BuildKonfig Issues**: Clean build cache if constants are not updating: `./gradlew clean build`
+
+### Recent Architectural Improvements
+
+This project recently underwent a significant refactoring to adopt modern Kotlin Multiplatform best practices:
+
+#### Migration to `com.android.kotlin.multiplatform.library` Plugin
+- **What Changed**: Migrated from the deprecated `com.android.library` plugin to the new KMP-aware `com.android.kotlin.multiplatform.library` plugin
+- **Benefits**:
+  - Better integration between Android and Kotlin Multiplatform tooling
+  - Simplified build scripts with `androidLibrary {}` block inside `kotlin {}` block
+  - Improved IDE support and build performance
+  - Future-proof architecture aligned with official KMP recommendations
+
+#### Dedicated Android App Module
+- **What Changed**: Created a dedicated `androidApp` module that serves as the Android application entry point, while `composeApp` is now a pure multiplatform library
+- **Benefits**:
+  - Clear separation between platform-specific entry points and shared code
+  - `composeApp` can now be consumed as a library by both `androidApp` and `iosApp`
+  - Better aligns with KMP architectural patterns
+  - Easier to add platform-specific configurations without affecting shared code
+
+#### BuildKonfig for Cross-Platform Secrets
+- **What Changed**: Replaced the custom expect/actual pattern for API keys and build constants with BuildKonfig
+- **Benefits**:
+  - Single source of truth for secrets (just `secrets.properties`)
+  - No need for platform-specific files like `Secrets.plist` for iOS
+  - Build-time constant generation works seamlessly across all platforms
+  - Better developer experience with compile-time warnings for missing secrets
+
+#### Simplified Gradle Configuration
+- **What Changed**: Improved convention plugins with centralized compiler flag management
+- **Benefits**:
+  - Expect/actual warning suppression applied once in convention plugin
+  - Cleaner module build scripts with less boilerplate
+  - Consistent configuration across all modules
 
 ## 🎬 TMDB Attribution
 
@@ -319,6 +347,11 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 ## 📋 Development Roadmap
 
 ### Recently Completed ✨
+- [x] **Migration to `com.android.kotlin.multiplatform.library` plugin** for improved KMP integration
+- [x] **Dedicated Android app module** (`androidApp`) wrapping shared `composeApp` library
+- [x] **BuildKonfig integration** for cross-platform secrets management (replaced expect/actual pattern)
+- [x] **Gradle convention plugin improvements** with centralized expect/actual warning suppression
+- [x] **Kotlin 2.3.0 upgrade** and lifecycle dependencies update to 2.10.0-alpha07
 - [x] Simplified repository architecture (Repository = data provider, ViewModel = state coordinator)
 - [x] DataStore integration for persistent pagination state
 - [x] Language-aware cache invalidation with LanguageChangeCoordinator
@@ -331,7 +364,6 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 - [x] Trailers/videos for movies and TV shows
 - [x] Budget and revenue formatting with comma separators
 - [x] Foreign key relationships in database entities
-- [x] Platform-specific API key loading via expect/actual pattern
 
 ### Current Status ✅
 - [x] Multi-module Clean Architecture with KMP

@@ -12,7 +12,7 @@ ksp = "2.3.4"
 composeMultiplatform = "1.10.0"
 compose-material3 = "1.10.0-alpha05"
 compose-material-icons = "1.7.3"
-agp = "8.13.2"
+agp = "9.0.0"
 koin = "4.1.1"
 ktor = "3.3.3"
 coil = "3.3.0"
@@ -22,6 +22,7 @@ lifecycle = "2.10.0-alpha07"
 room = "2.8.4"
 sqlite = "2.6.2"
 datastore = "1.2.0"
+buildkonfig = "0.17.1"
 
 
 [plugins]
@@ -29,13 +30,15 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMul
 
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 
 moviedb-kotlinMultiplatform = { id = "moviedb.kotlin.multiplatform" }
 moviedb-composeMultiplatform = { id = "moviedb.kotlin.composeMultiplatform" }
