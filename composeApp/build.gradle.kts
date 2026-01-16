@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
@@ -18,8 +20,8 @@ kotlin {
 
     // iOS targets are configured by the convention plugin
     // Customize the framework configuration
-    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
-        binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.Framework>().configureEach {
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.withType<Framework>().configureEach {
             baseName = "ComposeApp"
             isStatic = true
             binaryOption("bundleId", "com.elna.moviedb")
@@ -46,7 +48,4 @@ kotlin {
             implementation(libs.koin.compose)
         }
     }
-
-    //remove expect actual warning
-    compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
 }
