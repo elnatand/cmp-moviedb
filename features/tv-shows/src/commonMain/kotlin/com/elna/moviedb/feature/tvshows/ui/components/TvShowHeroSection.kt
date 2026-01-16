@@ -3,7 +3,6 @@ package com.elna.moviedb.feature.tvshows.ui.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
@@ -75,100 +74,105 @@ internal fun HeroSection(
                 )
         )
 
-        // Poster
-        tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
-            val sharedElementKey = if (category != null) {
-                "${SharedElementKeys.TV_SHOW_POSTER}${category}-${tvShow.id}"
-            } else {
-                "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"
-            }
-
-            val cornerShape = RoundedCornerShape(8.dp)
-            val cardModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
-                with(sharedTransitionScope) {
-                    Modifier
-                        .systemBarsPadding()
-                        .width(120.dp)
-                        .height(180.dp)
-                        .align(Alignment.TopStart)
-                        .padding(start = 16.dp)
-                        .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = sharedElementKey),
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
-                        .clip(cornerShape)
-                }
-            } else {
-                Modifier
-                    .systemBarsPadding()
-                    .width(120.dp)
-                    .height(180.dp)
-                    .align(Alignment.TopStart)
-                    .padding(start = 16.dp)
-                    .clip(cornerShape)
-            }
-
-            Card(
-                modifier = cardModifier,
-                shape = cornerShape,
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-            ) {
-                ImageLoader(
-                    imageUrl = posterPath.toPosterUrl(),
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        }
-
-        // Title and Basic Info
-        Column(
+        // Content Row with Poster and Info
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomStart)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.Bottom
         ) {
-            Text(
-                text = tvShow.name ?: stringResource(Res.string.unknown),
-                style = MaterialTheme.typography.headlineLarge,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+            // Poster Card - Bottom Left
+            tvShow.posterPath?.takeIf { it.isNotEmpty() }?.let { posterPath ->
+                val sharedElementKey = if (category != null) {
+                    "${SharedElementKeys.TV_SHOW_POSTER}${category}-${tvShow.id}"
+                } else {
+                    "${SharedElementKeys.TV_SHOW_POSTER}${tvShow.id}"
+                }
 
-            tvShow.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
-                Text(
-                    text = tagline,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontStyle = FontStyle.Italic
-                )
+                val cornerShape = RoundedCornerShape(12.dp)
+                val cardModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                    with(sharedTransitionScope) {
+                        Modifier
+                            .width(110.dp)
+                            .height(165.dp)
+                            .clip(cornerShape)
+                            .sharedElement(
+                                sharedContentState = rememberSharedContentState(key = sharedElementKey),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                    }
+                } else {
+                    Modifier
+                        .width(110.dp)
+                        .height(165.dp)
+                }
+
+                Card(
+                    modifier = cardModifier,
+                    shape = cornerShape,
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                ) {
+                    ImageLoader(
+                        imageUrl = posterPath.toPosterUrl(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(cornerShape)
+                    )
+                }
             }
 
-            // Rating
-            tvShow.voteAverage?.let { rating ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = stringResource(Res.string.rating),
-                        tint = Color.Yellow,
-                        modifier = Modifier.size(24.dp)
-                    )
+            // Info Text - Right of Poster
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(bottom = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = tvShow.name ?: stringResource(Res.string.unknown),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+
+                tvShow.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
                     Text(
-                        text = "${(rating * 10).toInt() / 10.0}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
+                        text = tagline,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f),
+                        fontStyle = FontStyle.Italic,
+                        lineHeight = MaterialTheme.typography.bodyMedium.lineHeight
                     )
-                    tvShow.voteCount?.let { count ->
-                        Text(
-                            text = "($count ${stringResource(Res.string.votes)})",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.7f)
+                }
+
+                // Rating
+                tvShow.voteAverage?.let { rating ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = stringResource(Res.string.rating),
+                            tint = Color(0xFFFFD700),
+                            modifier = Modifier.size(20.dp)
                         )
+                        Text(
+                            text = "${(rating * 10).toInt() / 10.0}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                        tvShow.voteCount?.let { count ->
+                            Text(
+                                text = "($count ${stringResource(Res.string.votes)})",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                        }
                     }
                 }
             }

@@ -51,6 +51,7 @@ import com.elna.moviedb.resources.revenue
 import com.elna.moviedb.resources.runtime
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.elna.moviedb.core.ui.design_system.AppBackButton
 import com.elna.moviedb.feature.movies.model.MovieDetailsUiState
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -59,7 +60,8 @@ import org.koin.core.parameter.parametersOf
 fun MovieDetailsScreen(
     movieId: Int,
     category: String? = null,
-    onCastMemberClick: (Int) -> Unit = {},
+    onBack: () -> Unit,
+    onCastMemberClick: (Int) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -69,6 +71,7 @@ fun MovieDetailsScreen(
     MovieDetailsScreen(
         uiState = uiState,
         category = category,
+        onBack = onBack,
         onRetry = { viewModel.onEvent(MovieDetailsEvent.Retry) },
         onCastMemberClick = onCastMemberClick,
         sharedTransitionScope = sharedTransitionScope,
@@ -81,8 +84,9 @@ fun MovieDetailsScreen(
 private fun MovieDetailsScreen(
     uiState: MovieDetailsUiState,
     category: String? = null,
+    onBack: () -> Unit,
     onRetry: () -> Unit,
-    onCastMemberClick: (Int) -> Unit = {},
+    onCastMemberClick: (Int) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -103,6 +107,7 @@ private fun MovieDetailsScreen(
                 MovieDetailsContent(
                     movie = uiState.movieDetails,
                     category = category,
+                    onBack = onBack,
                     onCastMemberClick = onCastMemberClick,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope
@@ -117,162 +122,172 @@ private fun MovieDetailsScreen(
 private fun MovieDetailsContent(
     movie: MovieDetails,
     category: String? = null,
-    onCastMemberClick: (Int) -> Unit = {},
+    onBack: () -> Unit,
+    onCastMemberClick: (Int) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        // Hero Section with Backdrop and Poster
-        MovieHeroSection(
-            movie = movie,
-            category = category,
-            sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = animatedVisibilityScope
-        )
-
-        // Main Content
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            // Quick Info Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                movie.releaseDate?.let { date ->
-                    InfoItem(
-                        icon = Icons.Default.DateRange,
-                        label = stringResource(Res.string.release),
-                        value = date.take(4)
-                    )
-                }
-
-                movie.runtime?.let { runtime ->
-                    InfoItem(
-                        icon = Icons.Default.Timer,
-                        label = stringResource(Res.string.runtime),
-                        value = "$runtime ${stringResource(Res.string.minutes_suffix)}"
-                    )
-                }
-
-                movie.originalLanguage?.let { language ->
-                    InfoItem(
-                        icon = Icons.Default.Language,
-                        label = stringResource(Res.string.language),
-                        value = language.uppercase()
-                    )
-                }
-            }
-
-            // Overview Section
-            movie.overview.takeIf { it.isNotBlank() }?.let { overview ->
-                SectionCard(
-                    title = stringResource(Res.string.overview),
-                    content = {
-                        Text(
-                            text = overview,
-                            style = MaterialTheme.typography.bodyMedium,
-                            lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
-                        )
-                    }
-                )
-            }
-
-            // Trailers Section
-            movie.trailers?.takeIf { it.isNotEmpty() }?.let { trailers ->
-                TrailersSection(trailers = trailers)
-            }
-
-            // Cast Section
-            CastSection(
+            // Hero Section with Backdrop and Poster
+            MovieHeroSection(
                 movie = movie,
-                onCastMemberClick = onCastMemberClick
+                category = category,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
             )
 
-            // Genres Section
-            movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
-                SectionCard(
-                    title = stringResource(Res.string.genres),
-                    content = {
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            genres.forEach { genre ->
-                                SuggestionChip(
-                                    onClick = { },
-                                    label = { Text(genre) },
-                                    colors = SuggestionChipDefaults.suggestionChipColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                                    )
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-
-            // Box Office Section
-            if (movie.budget != null || movie.revenue != null) {
-                SectionCard(
-                    title = stringResource(Res.string.box_office),
-                    content = {
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            movie.budget?.takeIf { it > 0 }?.let { budget ->
-                                BoxOfficeItem(
-                                    label = stringResource(Res.string.budget),
-                                    amount = budget
-                                )
-                            }
-                            movie.revenue?.takeIf { it > 0 }?.let { revenue ->
-                                BoxOfficeItem(
-                                    label = stringResource(Res.string.revenue),
-                                    amount = revenue
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-
-            // Production Section
-            movie.productionCompanies?.takeIf { it.isNotEmpty() }?.let { companies ->
-                SectionCard(
-                    title = stringResource(Res.string.production_companies),
-                    content = {
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            companies.forEach { company ->
-                                SuggestionChip(
-                                    onClick = { },
-                                    label = { Text(company) }
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-
-            // Countries Section
-            movie.productionCountries?.takeIf { it.isNotEmpty() }?.let { countries ->
-                SectionCard(
-                    title = stringResource(Res.string.production_countries),
-                    content = {
-                        Text(
-                            text = countries.joinToString(", "),
-                            style = MaterialTheme.typography.bodyMedium
+            // Main Content
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                // Quick Info Row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    movie.releaseDate?.let { date ->
+                        InfoItem(
+                            icon = Icons.Default.DateRange,
+                            label = stringResource(Res.string.release),
+                            value = date.take(4)
                         )
                     }
+
+                    movie.runtime?.let { runtime ->
+                        InfoItem(
+                            icon = Icons.Default.Timer,
+                            label = stringResource(Res.string.runtime),
+                            value = "$runtime ${stringResource(Res.string.minutes_suffix)}"
+                        )
+                    }
+
+                    movie.originalLanguage?.let { language ->
+                        InfoItem(
+                            icon = Icons.Default.Language,
+                            label = stringResource(Res.string.language),
+                            value = language.uppercase()
+                        )
+                    }
+                }
+
+                // Overview Section
+                movie.overview.takeIf { it.isNotBlank() }?.let { overview ->
+                    SectionCard(
+                        title = stringResource(Res.string.overview),
+                        content = {
+                            Text(
+                                text = overview,
+                                style = MaterialTheme.typography.bodyMedium,
+                                lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
+                            )
+                        }
+                    )
+                }
+
+                // Trailers Section
+                movie.trailers?.takeIf { it.isNotEmpty() }?.let { trailers ->
+                    TrailersSection(trailers = trailers)
+                }
+
+                // Cast Section
+                CastSection(
+                    movie = movie,
+                    onCastMemberClick = onCastMemberClick
                 )
+
+                // Genres Section
+                movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->
+                    SectionCard(
+                        title = stringResource(Res.string.genres),
+                        content = {
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                genres.forEach { genre ->
+                                    SuggestionChip(
+                                        onClick = { },
+                                        label = { Text(genre) },
+                                        colors = SuggestionChipDefaults.suggestionChipColors(
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+
+                // Box Office Section
+                if (movie.budget != null || movie.revenue != null) {
+                    SectionCard(
+                        title = stringResource(Res.string.box_office),
+                        content = {
+                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                movie.budget?.takeIf { it > 0 }?.let { budget ->
+                                    BoxOfficeItem(
+                                        label = stringResource(Res.string.budget),
+                                        amount = budget
+                                    )
+                                }
+                                movie.revenue?.takeIf { it > 0 }?.let { revenue ->
+                                    BoxOfficeItem(
+                                        label = stringResource(Res.string.revenue),
+                                        amount = revenue
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+
+                // Production Section
+                movie.productionCompanies?.takeIf { it.isNotEmpty() }?.let { companies ->
+                    SectionCard(
+                        title = stringResource(Res.string.production_companies),
+                        content = {
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                companies.forEach { company ->
+                                    SuggestionChip(
+                                        onClick = { },
+                                        label = { Text(company) }
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+
+                // Countries Section
+                movie.productionCountries?.takeIf { it.isNotEmpty() }?.let { countries ->
+                    SectionCard(
+                        title = stringResource(Res.string.production_countries),
+                        content = {
+                            Text(
+                                text = countries.joinToString(", "),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    )
+                }
             }
         }
+
+        AppBackButton(
+            onClick = onBack,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 16.dp, top = 48.dp)
+        )
     }
 }
 
@@ -307,7 +322,9 @@ private fun MovieDetailsScreenSuccessPreview() {
 
     MovieDetailsScreen(
         uiState = MovieDetailsUiState.Success(sampleMovie),
-        onRetry = {}
+        onBack = {},
+        onRetry = {},
+        onCastMemberClick = {}
     )
 }
 
@@ -316,7 +333,9 @@ private fun MovieDetailsScreenSuccessPreview() {
 private fun MovieDetailsScreenLoadingPreview() {
     MovieDetailsScreen(
         uiState = MovieDetailsUiState.Loading,
-        onRetry = {}
+        onBack = {},
+        onRetry = {},
+        onCastMemberClick = {}
     )
 }
 
@@ -325,6 +344,8 @@ private fun MovieDetailsScreenLoadingPreview() {
 private fun MovieDetailsScreenErrorPreview() {
     MovieDetailsScreen(
         uiState = MovieDetailsUiState.Error("Failed to load movie details. Please check your internet connection."),
-        onRetry = {}
+        onBack = {},
+        onRetry = {},
+        onCastMemberClick = {}
     )
 }

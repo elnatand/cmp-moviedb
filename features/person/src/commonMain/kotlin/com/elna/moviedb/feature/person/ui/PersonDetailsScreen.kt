@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.PersonDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.core.ui.design_system.AppBackButton
 import com.elna.moviedb.core.ui.utils.formatDate
 import com.elna.moviedb.core.model.MediaType
 import com.elna.moviedb.feature.person.model.PersonDetailsEvent
@@ -45,6 +46,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun PersonDetailsScreen(
     personId: Int,
+    onBack: () -> Unit,
     onCreditClick: (Int, MediaType) -> Unit
 ) {
     val viewModel = koinViewModel<PersonDetailsViewModel> { parametersOf(personId) }
@@ -52,6 +54,7 @@ fun PersonDetailsScreen(
 
     PersonDetailsScreen(
         uiState = uiState,
+        onBack = onBack,
         onRetry = { viewModel.onEvent(PersonDetailsEvent.Retry) },
         onCreditClick = onCreditClick
     )
@@ -60,6 +63,7 @@ fun PersonDetailsScreen(
 @Composable
 private fun PersonDetailsScreen(
     uiState: PersonUiState,
+    onBack: () -> Unit,
     onRetry: () -> Unit,
     onCreditClick: (Int, MediaType) -> Unit
 ) {
@@ -77,10 +81,20 @@ private fun PersonDetailsScreen(
             )
 
             is PersonUiState.Success -> {
-                PersonDetailsContent(
-                    person = uiState.person,
-                    onCreditClick = onCreditClick
-                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    PersonDetailsContent(
+                        person = uiState.person,
+                        onCreditClick = onCreditClick
+                    )
+
+                    // Elegant Back Button with gradient and opacity
+                    AppBackButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(start = 16.dp, top = 48.dp)
+                    )
+                }
             }
         }
     }
