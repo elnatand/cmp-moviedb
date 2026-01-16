@@ -1,34 +1,19 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
-import kotlin.apply
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
     alias(libs.plugins.kotlinxSerialization) // for remote objects
-}
-
-val secretKeyProperties: Properties by lazy {
-    val secretKeyPropertiesFile = rootProject.file("secrets.properties")
-    Properties().apply { secretKeyPropertiesFile.inputStream().use { secret -> load(secret) } }
-}
-
-android {
-    namespace = "com.elna.moviedb.core.network"
-
-    buildFeatures {
-        buildConfig = true
-    }
-
-    buildTypes {
-        getByName("debug") {
-            buildConfigField("String", "TMDB_API_KEY", "\"${secretKeyProperties.getProperty("TMDB_API_KEY")}\"")
-        }
-        getByName("release") {
-            buildConfigField("String", "TMDB_API_KEY", "\"${secretKeyProperties.getProperty("TMDB_API_KEY")}\"")
-        }
-    }
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
+    androidLibrary {
+        namespace = "com.elna.moviedb.core.network"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)
@@ -51,4 +36,30 @@ kotlin {
     }
 }
 
+buildkonfig {
+    packageName = "com.elna.moviedb.core.network"
+    objectName = "BuildKonfig"
+    exposeObjectWithName = "BuildKonfig"
 
+    defaultConfigs {
+        val secretsPropertiesFile = rootProject.file("secrets.properties")
+        val tmdbApiKey = if (secretsPropertiesFile.exists()) {
+            val properties = Properties()
+            secretsPropertiesFile.inputStream().use { properties.load(it) }
+            properties.getProperty("TMDB_API_KEY", "")
+        } else {
+            ""
+        }
+
+        if (tmdbApiKey.isEmpty()) {
+            logger.warn("WARNING: TMDB_API_KEY is not set. API calls will fail at runtime.")
+            logger.warn("Please create secrets.properties with TMDB_API_KEY=<your-key>")
+        }
+
+        buildConfigField(
+            FieldSpec.Type.STRING,
+            "TMDB_API_KEY",
+            tmdbApiKey
+        )
+    }
+}

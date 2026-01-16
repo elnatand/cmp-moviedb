@@ -2,7 +2,6 @@ package com.elna.moviedb.core.network
 
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.network.model.TMDB_API_KEY
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
@@ -40,7 +39,7 @@ class MoviesRemoteDataSource(
             safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}$apiPath") {
                     url {
-                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("api_key", BuildKonfig.TMDB_API_KEY)
                         parameters.append("page", page.toString())
                         parameters.append("language", language)
                     }
@@ -54,7 +53,7 @@ class MoviesRemoteDataSource(
             safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}/movie/${movieId}") {
                     url {
-                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("api_key", BuildKonfig.TMDB_API_KEY)
                         parameters.append("language", language)
                     }
                 }.body<RemoteMovieDetails>()
@@ -67,7 +66,7 @@ class MoviesRemoteDataSource(
             safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}/movie/${movieId}/videos") {
                     url {
-                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("api_key", BuildKonfig.TMDB_API_KEY)
                         parameters.append("language", language)
                         parameters.append("include_video_language", "$language,null")
                     }
@@ -81,7 +80,7 @@ class MoviesRemoteDataSource(
             safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}/movie/${movieId}/credits") {
                     url {
-                        parameters.append("api_key", TMDB_API_KEY)
+                        parameters.append("api_key", BuildKonfig.TMDB_API_KEY)
                         parameters.append("language", language)
                     }
                 }.body<RemoteMovieCredits>()

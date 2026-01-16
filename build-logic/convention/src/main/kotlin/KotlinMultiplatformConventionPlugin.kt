@@ -1,5 +1,4 @@
-import com.android.build.gradle.LibraryExtension
-import com.elna.moviedb.configureAndroid
+import com.elna.moviedb.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -8,37 +7,24 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 class KotlinMultiplatformConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         with(pluginManager) {
-            apply("org.jetbrains.kotlin.multiplatform")
-            apply("com.android.library")
+            apply(libs.findPlugin("kotlinMultiplatform").get().get().pluginId)
+            apply(libs.findPlugin("androidLibrary").get().get().pluginId)
         }
 
-        extensions.configure<LibraryExtension> {
-            configureAndroid(this)
-        }
-
+        // Configure Kotlin Multiplatform extension
         extensions.configure<KotlinMultiplatformExtension> {
-
-            androidTarget()
-
+            // Configure iOS targets
             listOf(
                 iosArm64(), // for ios devices
                 iosSimulatorArm64(), // for ios simulators in Apple silicon Mac computer
-            ).forEach { target ->
-                target.binaries.framework {
+            ).forEach { iosTarget ->
+                iosTarget.binaries.framework {
                     baseName = path.substring(1).replace(':', '-')
                 }
             }
 
-           //remove expect actual warning
-            targets.configureEach {
-                compilations.configureEach {
-                    compileTaskProvider.configure{
-                        compilerOptions {
-                            freeCompilerArgs.add("-Xexpect-actual-classes")
-                        }
-                    }
-                }
-            }
+            //remove expect actual warning
+            compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
         }
     }
 }

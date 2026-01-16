@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
 
@@ -5,11 +7,12 @@ plugins {
     alias(libs.plugins.androidx.room)
 }
 
-android {
-    namespace = "com.elna.moviedb.core.database"
-}
-
 kotlin {
+    androidLibrary {
+        namespace = "com.elna.moviedb.core.database"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.koin.core)
@@ -31,7 +34,6 @@ kotlin {
 dependencies{
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-   // add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
 }
 

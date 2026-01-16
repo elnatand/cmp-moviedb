@@ -1,13 +1,16 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
     alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
-android {
-    namespace = "com.elna.moviedb.profile"
-}
-
 kotlin {
+    androidLibrary {
+        namespace = "com.elna.moviedb.profile"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)
