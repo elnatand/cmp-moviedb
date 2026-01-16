@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
@@ -11,7 +10,7 @@ kotlin {
         namespace = "com.elna.moviedb.core.ui"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
-        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
+        androidResources.enable = true
     }
 
     sourceSets {
