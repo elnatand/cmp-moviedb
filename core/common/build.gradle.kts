@@ -9,8 +9,8 @@ plugins {
 kotlin {
     androidLibrary {
         namespace = "com.elna.moviedb.core.common"
-        compileSdk = 36
-        minSdk = 24
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
 
 
         compilerOptions {
