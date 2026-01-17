@@ -1,7 +1,6 @@
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
-    alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
 kotlin {
@@ -18,6 +17,7 @@ kotlin {
             implementation(projects.features.tvShows.presentation)
 
             implementation(libs.koin.core)
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
 }
