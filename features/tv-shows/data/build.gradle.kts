@@ -11,10 +11,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.features.tvShows.domain)
+
             implementation(projects.core.model)
             implementation(projects.core.network)
             implementation(projects.core.data)
-            implementation(projects.features.tvShows.presentation)
 
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)

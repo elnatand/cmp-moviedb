@@ -29,8 +29,11 @@ include(":core:model")
 include(":core:ui")
 include(":core:database")
 include(":features:movies")
+
 include(":features:tv-shows:data")
+include(":features:tv-shows:domain")
 include(":features:tv-shows:presentation")
+
 include(":features:profile")
 include(":features:search")
 include(":features:person")
