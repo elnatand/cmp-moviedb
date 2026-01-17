@@ -13,7 +13,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.withContext
 
-class TvShowsRemoteDataSource(
+class TvShowsRemoteService(
     private val httpClient: HttpClient,
     private val appDispatchers: AppDispatchers
 ) {

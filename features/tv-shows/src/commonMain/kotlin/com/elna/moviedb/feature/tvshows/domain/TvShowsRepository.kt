@@ -1,9 +1,9 @@
-package com.elna.moviedb.core.data.tv_shows
+package com.elna.moviedb.feature.tvshows.domain
 
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
-import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.feature.tvshows.model.TvShowDetails
 import kotlinx.coroutines.flow.Flow
 
 /**

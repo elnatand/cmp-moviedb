@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
+import com.elna.moviedb.feature.tvshows.domain.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent

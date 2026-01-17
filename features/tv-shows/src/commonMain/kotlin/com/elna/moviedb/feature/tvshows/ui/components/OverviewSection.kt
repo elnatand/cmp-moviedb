@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.feature.tvshows.model.TvShowDetails
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.overview
 import org.jetbrains.compose.resources.stringResource

@@ -1,5 +1,7 @@
-package com.elna.moviedb.core.model
+package com.elna.moviedb.feature.tvshows.model
 
+import com.elna.moviedb.core.model.CastMember
+import com.elna.moviedb.core.model.Video
 
 data class TvShowDetails(
     val id: Int?,

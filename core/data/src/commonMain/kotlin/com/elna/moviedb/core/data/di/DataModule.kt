@@ -9,8 +9,6 @@ import com.elna.moviedb.core.data.search.SearchRepository
 import com.elna.moviedb.core.data.search.SearchRepositoryImpl
 import com.elna.moviedb.core.data.strategy.CachingStrategy
 import com.elna.moviedb.core.data.strategy.OfflineFirstCachingStrategy
-import com.elna.moviedb.core.data.tv_shows.TvShowRepositoryImpl
-import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
 import com.elna.moviedb.core.data.util.LanguageProvider
 import org.koin.dsl.module
 
@@ -42,13 +40,7 @@ val dataModule = module {
         )
     }
 
-    single<TvShowsRepository> {
-        TvShowRepositoryImpl(
-            remoteDataSource = get(),
-            languageProvider = get(),
-            languageChangeCoordinator = get(),
-        )
-    }
+
 
     single<SearchRepository> {
         SearchRepositoryImpl(

@@ -2,9 +2,9 @@ package com.elna.moviedb.feature.tvshows.ui.tv_show_details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.elna.moviedb.core.data.tv_shows.TvShowsRepository
+import com.elna.moviedb.feature.tvshows.domain.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.feature.tvshows.model.TvShowDetails
 import com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

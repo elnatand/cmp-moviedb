@@ -1,28 +1,29 @@
-package com.elna.moviedb.core.data.tv_shows
+package com.elna.moviedb.feature.tvshows.data
 
 import com.elna.moviedb.core.data.LanguageChangeCoordinator
 import com.elna.moviedb.core.data.LanguageChangeListener
+import com.elna.moviedb.feature.tvshows.domain.TvShowsRepository
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
-import com.elna.moviedb.core.model.TvShowDetails
-import com.elna.moviedb.core.network.TvShowsRemoteDataSource
+import com.elna.moviedb.core.network.TvShowsRemoteService
 import com.elna.moviedb.core.network.mapper.toTmdbPath
+import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
+import com.elna.moviedb.feature.tvshows.model.TvShowDetails
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 
 /**
  * Implementation of TvShowsRepository that manages TV show data from remote API.
  *
  * This repository uses category abstraction.
- * New TV show categories can be added to [TvShowCategory] enum without modifying this class.
+ * New TV show categories can be added to [com.elna.moviedb.core.model.TvShowCategory] enum without modifying this class.
  *
  * **Note:** This repository uses in-memory storage (MutableStateFlow) rather than
  * local database caching. TV shows are fetched from the API and held in memory
@@ -37,7 +38,7 @@ import kotlinx.coroutines.flow.map
  * @param languageChangeCoordinator Coordinator for language change notifications
  */
 class TvShowRepositoryImpl(
-    private val remoteDataSource: TvShowsRemoteDataSource,
+    private val remoteDataSource: TvShowsRemoteService,
     private val languageProvider: LanguageProvider,
     languageChangeCoordinator: LanguageChangeCoordinator,
 ) : TvShowsRepository, LanguageChangeListener {
@@ -147,59 +148,98 @@ class TvShowRepositoryImpl(
         }
     }
 
-    override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> = coroutineScope {
-        val language = languageProvider.getCurrentLanguage()
+    override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> =
+        coroutineScope {
+            val language = languageProvider.getCurrentLanguage()
 
-        // Fetch details, videos, and credits in parallel
-        val detailsDeferred =
-            async { remoteDataSource.getTvShowDetails(tvShowId, language) }
-        val videosDeferred =
-            async { remoteDataSource.getTvShowVideos(tvShowId, language) }
-        val creditsDeferred =
-            async { remoteDataSource.getTvShowCredits(tvShowId, language) }
+            // Fetch details, videos, and credits in parallel
+            val detailsDeferred =
+                async { remoteDataSource.getTvShowDetails(tvShowId, language) }
+            val videosDeferred =
+                async { remoteDataSource.getTvShowVideos(tvShowId, language) }
+            val creditsDeferred =
+                async { remoteDataSource.getTvShowCredits(tvShowId, language) }
 
-        val detailsResult = detailsDeferred.await()
-        val videosResult = videosDeferred.await()
-        val creditsResult = creditsDeferred.await()
+            val detailsResult = detailsDeferred.await()
+            val videosResult = videosDeferred.await()
+            val creditsResult = creditsDeferred.await()
 
-        // Extract details or return error
-        val details = when (detailsResult) {
-            is AppResult.Success -> detailsResult.data
-            is AppResult.Error -> return@coroutineScope detailsResult
-        }
-
-        // Map videos to domain and filter for trailers/teasers
-        val trailers = when (videosResult) {
-            is AppResult.Success -> {
-                videosResult.data.results
-                    .filter { it.type == "Trailer" || it.type == "Teaser" }
-                    .sortedWith(compareByDescending<RemoteVideo> { it.official }
-                        .thenByDescending { it.publishedAt })
-                    .map { it.toDomain() }
+            // Extract details or return error
+            val details = when (detailsResult) {
+                is AppResult.Success -> detailsResult.data
+                is AppResult.Error -> return@coroutineScope detailsResult
             }
 
-            is AppResult.Error -> emptyList() // Videos are optional, don't fail if they error
-        }
+            // Map videos to domain and filter for trailers/teasers
+            val trailers = when (videosResult) {
+                is AppResult.Success -> {
+                    videosResult.data.results
+                        .filter { it.type == "Trailer" || it.type == "Teaser" }
+                        .sortedWith(compareByDescending<RemoteVideo> { it.official }
+                            .thenByDescending { it.publishedAt })
+                        .map { it.toDomain() }
+                }
 
-        // Map cast to domain and sort by order
-        val cast = when (creditsResult) {
-            is AppResult.Success -> {
-                creditsResult.data.cast
-                    ?.sortedBy { it.order }
-                    ?.map { remoteCastMember ->
-                        remoteCastMember.toDomain()
-                    }
-                    ?: emptyList()
+                is AppResult.Error -> emptyList() // Videos are optional, don't fail if they error
             }
 
-            is AppResult.Error -> emptyList() // Cast is optional, don't fail if they error
-        }
+            // Map cast to domain and sort by order
+            val cast = when (creditsResult) {
+                is AppResult.Success -> {
+                    creditsResult.data.cast
+                        ?.sortedBy { it.order }
+                        ?.map { remoteCastMember ->
+                            remoteCastMember.toDomain()
+                        }
+                        ?: emptyList()
+                }
 
-        // Combine details with trailers and cast
-        val tvShowDetails = details.toDomain().copy(
-            trailers = trailers,
-            cast = cast
-        )
-        AppResult.Success(tvShowDetails)
-    }
+                is AppResult.Error -> emptyList() // Cast is optional, don't fail if they error
+            }
+
+            // Combine details with trailers and cast
+            val tvShowDetails = details.toDomain().copy(
+                trailers = trailers,
+                cast = cast
+            )
+            AppResult.Success(tvShowDetails)
+        }
 }
+
+
+fun RemoteTvShowDetails.toDomain() = TvShowDetails(
+    id = id,
+    name = name,
+    overview = overview,
+    posterPath = posterPath,
+    backdropPath = backdropPath,
+    adult = adult,
+    firstAirDate = firstAirDate,
+    lastAirDate = lastAirDate,
+    numberOfEpisodes = numberOfEpisodes,
+    numberOfSeasons = numberOfSeasons,
+    episodeRunTime = episodeRunTime,
+    status = status,
+    tagline = tagline,
+    type = type,
+    voteAverage = voteAverage,
+    voteCount = voteCount,
+    popularity = popularity,
+    originalName = originalName,
+    originalLanguage = originalLanguage,
+    originCountry = originCountry,
+    homepage = homepage,
+    inProduction = inProduction,
+    languages = languages,
+    genres = genres?.map { it.name },
+    networks = networks?.mapNotNull { it.name },
+    productionCompanies = productionCompanies?.map { it.name },
+    productionCountries = productionCountries?.map { it.name },
+    spokenLanguages = spokenLanguages?.map { it.englishName },
+    seasonsCount = seasons?.size,
+    createdBy = createdBy?.mapNotNull { it.name },
+    lastEpisodeName = lastEpisodeToAir?.name,
+    lastEpisodeAirDate = lastEpisodeToAir?.airDate,
+    nextEpisodeToAir = nextEpisodeToAir?.airDate,
+    nextEpisodeAirDate = null
+)
