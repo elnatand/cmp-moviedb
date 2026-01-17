@@ -33,7 +33,8 @@ kotlin {
             implementation(projects.core.ui)
 
             implementation(projects.features.movies)
-            implementation(projects.features.tvShows)
+            implementation(projects.features.tvShows.data)
+            implementation(projects.features.tvShows.presentation)
             implementation(projects.features.search)
             implementation(projects.features.profile)
             implementation(projects.features.person)
