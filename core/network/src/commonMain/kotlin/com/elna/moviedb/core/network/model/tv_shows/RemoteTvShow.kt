@@ -1,6 +1,6 @@
 package com.elna.moviedb.core.network.model.tv_shows
 
-import com.elna.moviedb.core.model.TvShow
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -13,11 +13,3 @@ data class RemoteTvShow(
     @SerialName("poster_path")
     val posterPath: String?,
 )
-
-fun RemoteTvShow.toDomain(): TvShow {
-    return TvShow(
-        id = id,
-        name = name,
-        posterPath = posterPath
-    )
-}

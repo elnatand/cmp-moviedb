@@ -2,7 +2,6 @@ package com.elna.moviedb.core.network.model.search
 
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.SearchResultItem
-import com.elna.moviedb.core.model.TvShow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -45,47 +44,47 @@ data class RemoteMultiSearchItem(
 )
 
 
-fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
-    return when (mediaType) {
-        "movie" -> {
-            val movieTitle = title ?: return null
-            SearchResultItem.MovieItem(
-                movie = Movie(
-                    id = id,
-                    title = movieTitle,
-                    posterPath = posterPath
-                ),
-                overview = overview,
-                releaseDate = releaseDate,
-                voteAverage = voteAverage,
-                voteCount = voteCount,
-                backdropPath = backdropPath
-            )
-        }
-        "tv" -> {
-            val tvShowName = name ?: return null
-            SearchResultItem.TvShowItem(
-                tvShow = TvShow(
-                    id = id,
-                    name = tvShowName,
-                    posterPath = posterPath
-                ),
-                overview = overview,
-                firstAirDate = firstAirDate,
-                voteAverage = voteAverage,
-                voteCount = voteCount,
-                backdropPath = backdropPath
-            )
-        }
-        "person" -> {
-            val personName = name ?: return null
-            SearchResultItem.PersonItem(
-                id = id,
-                name = personName,
-                knownForDepartment = knownForDepartment,
-                profilePath = profilePath
-            )
-        }
-        else -> null
-    }
-}
+//fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
+//    return when (mediaType) {
+//        "movie" -> {
+//            val movieTitle = title ?: return null
+//            SearchResultItem.MovieItem(
+//                movie = Movie(
+//                    id = id,
+//                    title = movieTitle,
+//                    posterPath = posterPath
+//                ),
+//                overview = overview,
+//                releaseDate = releaseDate,
+//                voteAverage = voteAverage,
+//                voteCount = voteCount,
+//                backdropPath = backdropPath
+//            )
+//        }
+//        "tv" -> {
+//            val tvShowName = name ?: return null
+//            SearchResultItem.TvShowItem(
+//                tvShow = TvShow(
+//                    id = id,
+//                    name = tvShowName,
+//                    posterPath = posterPath
+//                ),
+//                overview = overview,
+//                firstAirDate = firstAirDate,
+//                voteAverage = voteAverage,
+//                voteCount = voteCount,
+//                backdropPath = backdropPath
+//            )
+//        }
+//        "person" -> {
+//            val personName = name ?: return null
+//            SearchResultItem.PersonItem(
+//                id = id,
+//                name = personName,
+//                knownForDepartment = knownForDepartment,
+//                profilePath = profilePath
+//            )
+//        }
+//        else -> null
+//    }
+//}

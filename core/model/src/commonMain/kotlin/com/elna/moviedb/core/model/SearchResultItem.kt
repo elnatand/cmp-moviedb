@@ -15,14 +15,14 @@ sealed class SearchResultItem {
         override val backdropPath: String?
     ) : SearchResultItem()
 
-    data class TvShowItem(
-        val tvShow: TvShow,
-        override val overview: String?,
-        val firstAirDate: String?,
-        override val voteAverage: Double?,
-        override val voteCount: Int?,
-        override val backdropPath: String?
-    ) : SearchResultItem()
+//    data class TvShowItem(
+//    //    val tvShow: TvShow,
+//        override val overview: String?,
+//        val firstAirDate: String?,
+//        override val voteAverage: Double?,
+//        override val voteCount: Int?,
+//        override val backdropPath: String?
+//    ) : SearchResultItem()
 
     data class PersonItem(
         val id: Int,

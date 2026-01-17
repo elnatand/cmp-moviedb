@@ -39,11 +39,11 @@ private fun interface SearchStrategy {
  * - No modification to repository when adding filters
  */
 private val searchStrategies: Map<SearchFilter, SearchStrategy> = mapOf(
-    SearchFilter.ALL to SearchStrategy { dataSource, filter, query, page, language ->
-        dataSource
-            .search<RemoteMultiSearchPage>(filter, query, page, language)
-            .map { it.results.mapNotNull { item -> item.toSearchResult() } }
-    },
+//    SearchFilter.ALL to SearchStrategy { dataSource, filter, query, page, language ->
+//        dataSource
+//            .search<RemoteMultiSearchPage>(filter, query, page, language)
+//            .map { it.results.mapNotNull { item -> item.toSearchResult() } }
+//    },
 
     SearchFilter.MOVIES to SearchStrategy { dataSource, filter, query, page, language ->
         dataSource
@@ -51,11 +51,11 @@ private val searchStrategies: Map<SearchFilter, SearchStrategy> = mapOf(
             .map { it.results.map { item -> item.toSearchResult() } }
     },
 
-    SearchFilter.TV_SHOWS to SearchStrategy { dataSource, filter, query, page, language ->
-        dataSource
-            .search<RemoteSearchTvShowsPage>(filter, query, page, language)
-            .map { it.results.map { item -> item.toSearchResult() } }
-    },
+//    SearchFilter.TV_SHOWS to SearchStrategy { dataSource, filter, query, page, language ->
+//        dataSource
+//            .search<RemoteSearchTvShowsPage>(filter, query, page, language)
+//            .map { it.results.map { item -> item.toSearchResult() } }
+//    },
 
     SearchFilter.PEOPLE to SearchStrategy { dataSource, filter, query, page, language ->
         dataSource

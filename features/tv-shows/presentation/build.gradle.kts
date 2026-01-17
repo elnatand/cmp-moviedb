@@ -15,6 +15,7 @@ kotlin {
             implementation(projects.features.tvShows.domain)
 
             implementation(projects.core.ui)
+            implementation(projects.core.model)
 
             implementation(libs.koin.core)
         }

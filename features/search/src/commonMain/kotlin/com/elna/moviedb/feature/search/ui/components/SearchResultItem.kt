@@ -47,7 +47,7 @@ fun SearchResultItem(
             ImageLoader(
                 imageUrl = when (item) {
                     is SearchResultItem.MovieItem -> item.movie.posterPath.toImageUrl()
-                    is SearchResultItem.TvShowItem -> item.tvShow.posterPath.toImageUrl()
+                  //  is SearchResultItem.TvShowItem -> item.tvShow.posterPath.toImageUrl()
                     is SearchResultItem.PersonItem -> item.profilePath.toImageUrl()
                 },
                 modifier = Modifier
@@ -62,7 +62,7 @@ fun SearchResultItem(
                 Text(
                     text = when (item) {
                         is SearchResultItem.MovieItem -> item.movie.title
-                        is SearchResultItem.TvShowItem -> item.tvShow.name
+                    //    is SearchResultItem.TvShowItem -> item.tvShow.name
                         is SearchResultItem.PersonItem -> item.name
                     },
                     style = MaterialTheme.typography.titleMedium,
@@ -132,17 +132,17 @@ fun SearchResultItem(
                                 }
                             }
                         }
-                        is SearchResultItem.TvShowItem -> {
-                            item.firstAirDate?.let { date ->
-                                if (date.isNotBlank()) {
-                                    Text(
-                                        text = date.take(4), // Show only year
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                            }
-                        }
+//                        is SearchResultItem.TvShowItem -> {
+//                            item.firstAirDate?.let { date ->
+//                                if (date.isNotBlank()) {
+//                                    Text(
+//                                        text = date.take(4), // Show only year
+//                                        style = MaterialTheme.typography.bodySmall,
+//                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+//                                    )
+//                                }
+//                            }
+//                        }
                         is SearchResultItem.PersonItem -> {
                             // No additional date info for person
                         }

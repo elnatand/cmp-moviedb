@@ -135,7 +135,7 @@ private fun SearchScreen(
                             onItemClicked = {
                                 when (item) {
                                     is SearchResultItem.MovieItem -> onMovieClicked(item.movie.id)
-                                    is SearchResultItem.TvShowItem -> onTvShowClicked(item.tvShow.id)
+                                 //   is SearchResultItem.TvShowItem -> onTvShowClicked(item.tvShow.id)
                                     is SearchResultItem.PersonItem -> onPersonClicked(item.id)
                                 }
                             }

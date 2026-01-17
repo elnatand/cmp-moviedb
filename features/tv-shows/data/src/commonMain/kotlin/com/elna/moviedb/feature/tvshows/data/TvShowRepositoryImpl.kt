@@ -8,7 +8,7 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.model.TvShow
 import com.elna.moviedb.feature.tvshows.model.TvShowCategory
 import com.elna.moviedb.core.network.TvShowsRemoteService
-import com.elna.moviedb.core.network.mapper.toTmdbPath
+import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShow
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
@@ -204,6 +204,14 @@ class TvShowRepositoryImpl(
             )
             AppResult.Success(tvShowDetails)
         }
+}
+
+fun RemoteTvShow.toDomain(): TvShow {
+    return TvShow(
+        id = id,
+        name = name,
+        posterPath = posterPath
+    )
 }
 
 

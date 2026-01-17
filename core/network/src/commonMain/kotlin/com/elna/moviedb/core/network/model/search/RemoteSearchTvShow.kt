@@ -1,7 +1,6 @@
 package com.elna.moviedb.core.network.model.search
 
 import com.elna.moviedb.core.model.SearchResultItem
-import com.elna.moviedb.core.model.TvShow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -37,25 +36,25 @@ data class RemoteSearchTvShow(
     val originalLanguage: String?
 )
 
-fun RemoteSearchTvShow.toDomain(): TvShow {
-    return TvShow(
-        id = id,
-        name = name,
-        posterPath = posterPath
-    )
-}
+//fun RemoteSearchTvShow.toDomain(): TvShow {
+//    return TvShow(
+//        id = id,
+//        name = name,
+//        posterPath = posterPath
+//    )
+//}
 
-fun RemoteSearchTvShow.toSearchResult(): SearchResultItem.TvShowItem {
-    return SearchResultItem.TvShowItem(
-        tvShow = TvShow(
-            id = id,
-            name = name,
-            posterPath = posterPath
-        ),
-        overview = overview,
-        firstAirDate = firstAirDate,
-        voteAverage = voteAverage,
-        voteCount = voteCount,
-        backdropPath = backdropPath
-    )
-}
+//fun RemoteSearchTvShow.toSearchResult(): SearchResultItem.TvShowItem {
+//    return SearchResultItem.TvShowItem(
+//        tvShow = TvShow(
+//            id = id,
+//            name = name,
+//            posterPath = posterPath
+//        ),
+//        overview = overview,
+//        firstAirDate = firstAirDate,
+//        voteAverage = voteAverage,
+//        voteCount = voteCount,
+//        backdropPath = backdropPath
+//    )
+//}
