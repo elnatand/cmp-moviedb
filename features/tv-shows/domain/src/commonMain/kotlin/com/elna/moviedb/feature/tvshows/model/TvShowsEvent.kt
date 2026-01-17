@@ -1,7 +1,5 @@
 package com.elna.moviedb.feature.tvshows.model
 
-import com.elna.moviedb.core.model.TvShowCategory
-
 /**
  * Represents all possible user actions/events in the TV Shows screen.
  * Following Android's unidirectional data flow pattern, these are the only ways

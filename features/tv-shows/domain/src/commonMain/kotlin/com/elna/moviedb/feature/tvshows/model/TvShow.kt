@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.model
+package com.elna.moviedb.feature.tvshows.model
 
 /**
  * Domain model representing a TV show.

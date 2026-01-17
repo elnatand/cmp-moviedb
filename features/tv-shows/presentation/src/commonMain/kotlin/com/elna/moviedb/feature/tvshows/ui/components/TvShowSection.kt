@@ -22,8 +22,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.model.TvShow
-import com.elna.moviedb.core.model.TvShowCategory
+import com.elna.moviedb.feature.tvshows.model.TvShow
+import com.elna.moviedb.feature.tvshows.model.TvShowCategory
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.ui.tv_shows.TvShowTile
 

@@ -4,7 +4,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
-import com.elna.moviedb.core.model.TvShowCategory
+import com.elna.moviedb.feature.tvshows.model.TvShowCategory
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute

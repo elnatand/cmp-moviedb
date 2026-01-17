@@ -1,8 +1,5 @@
 package com.elna.moviedb.feature.tvshows.model
 
-import com.elna.moviedb.core.model.TvShow
-import com.elna.moviedb.core.model.TvShowCategory
-
 /**
  * Represents the UI state for the TV Shows screen.
  * Uses map-based state management.

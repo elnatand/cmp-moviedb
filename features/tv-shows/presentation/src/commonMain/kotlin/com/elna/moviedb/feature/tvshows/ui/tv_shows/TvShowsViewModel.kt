@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.elna.moviedb.feature.tvshows.domain.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.TvShowCategory
+import com.elna.moviedb.feature.tvshows.model.TvShowCategory
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState

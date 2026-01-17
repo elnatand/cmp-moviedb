@@ -5,8 +5,8 @@ import com.elna.moviedb.core.data.LanguageChangeListener
 import com.elna.moviedb.feature.tvshows.domain.TvShowsRepository
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.TvShow
-import com.elna.moviedb.core.model.TvShowCategory
+import com.elna.moviedb.feature.tvshows.model.TvShow
+import com.elna.moviedb.feature.tvshows.model.TvShowCategory
 import com.elna.moviedb.core.network.TvShowsRemoteService
 import com.elna.moviedb.core.network.mapper.toTmdbPath
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * Implementation of TvShowsRepository that manages TV show data from remote API.
  *
  * This repository uses category abstraction.
- * New TV show categories can be added to [com.elna.moviedb.core.model.TvShowCategory] enum without modifying this class.
+ * New TV show categories can be added to [TvShowCategory] enum without modifying this class.
  *
  * **Note:** This repository uses in-memory storage (MutableStateFlow) rather than
  * local database caching. TV shows are fetched from the API and held in memory
