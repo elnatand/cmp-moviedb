@@ -1,5 +1,4 @@
-package com.elna.moviedb.core.data.movies
-
+package com.elna.moviedb.feature.movies.repositories
 
 import com.elna.moviedb.core.data.LanguageChangeCoordinator
 import com.elna.moviedb.core.data.LanguageChangeListener
@@ -14,17 +13,18 @@ import com.elna.moviedb.core.datastore.PaginationPreferences
 import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.CastMember
-import com.elna.moviedb.core.model.Movie
-import com.elna.moviedb.core.model.MovieCategory
-import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
-import com.elna.moviedb.core.network.mapper.toTmdbPath
 import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
 import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import com.elna.moviedb.core.network.model.videos.toDomain
+import com.elna.moviedb.feature.movies.mappers.toDomain
+import com.elna.moviedb.feature.movies.mappers.toTmdbPath
+import com.elna.moviedb.feature.movies.model.Movie
+import com.elna.moviedb.feature.movies.model.MovieCategory
+import com.elna.moviedb.feature.movies.model.MovieDetails
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.map
  * Implementation of MoviesRepository that manages movie data from remote API and local cache.
  *
  * This repository uses category abstraction.
- * New movie categories can be added to [MovieCategory] enum without modifying this class.
+ * New movie categories can be added to [com.elna.moviedb.feature.movies.model.MovieCategory] enum without modifying this class.
  *
  * This repository uses the Strategy Pattern for caching, allowing different caching
  * behaviors to be injected without modifying repository code.
@@ -178,40 +178,41 @@ class MoviesRepositoryImpl(
      * Fetches movie details from network, making parallel API calls.
      * Implements graceful degradation for optional data (videos, cast).
      */
-    private suspend fun fetchMovieDetailsFromNetwork(movieId: Int): AppResult<MovieDetails> = coroutineScope {
-        val language = languageProvider.getCurrentLanguage()
+    private suspend fun fetchMovieDetailsFromNetwork(movieId: Int): AppResult<MovieDetails> =
+        coroutineScope {
+            val language = languageProvider.getCurrentLanguage()
 
-        // Fetch all data in parallel for performance
-        val detailsDeferred = async { remoteDataSource.getMovieDetails(movieId, language) }
-        val videosDeferred = async { remoteDataSource.getMovieVideos(movieId, language) }
-        val creditsDeferred = async { remoteDataSource.getMovieCredits(movieId, language) }
+            // Fetch all data in parallel for performance
+            val detailsDeferred = async { remoteDataSource.getMovieDetails(movieId, language) }
+            val videosDeferred = async { remoteDataSource.getMovieVideos(movieId, language) }
+            val creditsDeferred = async { remoteDataSource.getMovieCredits(movieId, language) }
 
-        // Details are required - fail if they don't load
-        val detailsResult = detailsDeferred.await()
-        val details = when (detailsResult) {
-            is AppResult.Success -> detailsResult.data
-            is AppResult.Error -> return@coroutineScope detailsResult
-        }
+            // Details are required - fail if they don't load
+            val detailsResult = detailsDeferred.await()
+            val details = when (detailsResult) {
+                is AppResult.Success -> detailsResult.data
+                is AppResult.Error -> return@coroutineScope detailsResult
+            }
 
-        // Videos and cast are optional - graceful degradation
-        val videosResult = videosDeferred.await()
-        val creditsResult = creditsDeferred.await()
+            // Videos and cast are optional - graceful degradation
+            val videosResult = videosDeferred.await()
+            val creditsResult = creditsDeferred.await()
 
-        val trailers = processVideosResult(videosResult)
-        val cast = processCreditsResult(creditsResult)
+            val trailers = processVideosResult(videosResult)
+            val cast = processCreditsResult(creditsResult)
 
-        // Convert to entity then to domain (to apply mapping logic)
-        val detailsEntity = details.asEntity()
-        val detailsDomain = detailsEntity.toDomain()
+            // Convert to entity then to domain (to apply mapping logic)
+            val detailsEntity = details.asEntity()
+            val detailsDomain = detailsEntity.toDomain()
 
-        // Return domain model with trailers and cast
-        AppResult.Success(
-            detailsDomain.copy(
-                trailers = trailers,
-                cast = cast
+            // Return domain model with trailers and cast
+            AppResult.Success(
+                detailsDomain.copy(
+                    trailers = trailers,
+                    cast = cast
+                )
             )
-        )
-    }
+        }
 
     /**
      * Processes video results, filtering for trailers and teasers.
@@ -324,7 +325,7 @@ class MoviesRepositoryImpl(
      * This method is called when the app language changes via onLanguageChanged().
      * It clears the local cache and fetches fresh data in the new language.
      *
-     * This method automatically handles all categories defined in [MovieCategory] enum.
+     * This method automatically handles all categories defined in [com.elna.moviedb.feature.movies.model.MovieCategory] enum.
      */
     override suspend fun clearAndReload() {
         // Clear all pagination state and local data

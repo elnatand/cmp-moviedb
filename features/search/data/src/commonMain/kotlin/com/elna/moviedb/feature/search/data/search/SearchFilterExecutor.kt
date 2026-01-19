@@ -1,7 +1,6 @@
 package com.elna.moviedb.feature.search.data.search
 
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
 import com.elna.moviedb.core.model.map
@@ -12,6 +11,7 @@ import com.elna.moviedb.core.network.model.search.RemoteMultiSearchPage
 import com.elna.moviedb.core.network.model.search.RemoteSearchMoviesPage
 import com.elna.moviedb.core.network.model.search.RemoteSearchPeoplePage
 import com.elna.moviedb.core.network.model.search.RemoteSearchTvShowsPage
+import com.elna.moviedb.feature.movies.model.Movie
 import com.elna.moviedb.feature.search.data.mapper.toSearchResult
 import com.elna.moviedb.feature.tvshows.model.TvShow
 

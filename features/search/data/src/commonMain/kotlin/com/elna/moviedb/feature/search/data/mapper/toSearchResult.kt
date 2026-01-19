@@ -1,9 +1,10 @@
 package com.elna.moviedb.feature.search.data.mapper
 
-import com.elna.moviedb.core.model.Movie
+
 import com.elna.moviedb.core.network.model.search.RemoteSearchMovie
 import com.elna.moviedb.core.network.model.search.RemoteSearchPerson
 import com.elna.moviedb.core.network.model.search.RemoteSearchTvShow
+import com.elna.moviedb.feature.movies.model.Movie
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
 import com.elna.moviedb.feature.tvshows.model.TvShow
 

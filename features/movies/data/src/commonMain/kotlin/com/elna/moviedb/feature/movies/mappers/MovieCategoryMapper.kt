@@ -1,6 +1,6 @@
-package com.elna.moviedb.core.network.mapper
+package com.elna.moviedb.feature.movies.mappers
 
-import com.elna.moviedb.core.model.MovieCategory
+import com.elna.moviedb.feature.movies.model.MovieCategory
 
 /**
  * Maps domain MovieCategory to TMDB API endpoint paths.

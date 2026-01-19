@@ -14,6 +14,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.features.movies.domain)
+
             implementation(libs.koin.core)
             implementation(projects.core.model)
             implementation(projects.core.common)

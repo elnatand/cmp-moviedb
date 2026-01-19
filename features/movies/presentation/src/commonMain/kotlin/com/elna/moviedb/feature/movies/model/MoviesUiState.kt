@@ -1,8 +1,5 @@
 package com.elna.moviedb.feature.movies.model
 
-import com.elna.moviedb.core.model.Movie
-import com.elna.moviedb.core.model.MovieCategory
-
 /**
  * Represents the UI state for the Movies screen.
  * Uses map-based state management.

@@ -1,16 +1,16 @@
-package com.elna.moviedb.core.data.movies
+package com.elna.moviedb.feature.movies.repositories
 
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.Movie
-import com.elna.moviedb.core.model.MovieCategory
-import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.feature.movies.model.Movie
+import com.elna.moviedb.feature.movies.model.MovieCategory
+import com.elna.moviedb.feature.movies.model.MovieDetails
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository interface for movie data operations.
  *
  * This interface uses category abstraction.
- * New movie categories can be added to [MovieCategory] enum without modifying this interface.
+ * New movie categories can be added to [com.elna.moviedb.feature.movies.model.MovieCategory] enum without modifying this interface.
  */
 interface MoviesRepository {
 

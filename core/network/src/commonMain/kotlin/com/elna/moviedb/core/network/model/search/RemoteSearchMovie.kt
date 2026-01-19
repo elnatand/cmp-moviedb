@@ -1,6 +1,5 @@
 package com.elna.moviedb.core.network.model.search
 
-import com.elna.moviedb.core.model.Movie
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -35,11 +34,3 @@ data class RemoteSearchMovie(
     @SerialName("video")
     val video: Boolean?
 )
-
-fun RemoteSearchMovie.toDomain(): Movie {
-    return Movie(
-        id = id,
-        title = title,
-        posterPath = posterPath
-    )
-}

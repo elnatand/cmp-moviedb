@@ -1,7 +1,5 @@
 package com.elna.moviedb.feature.movies.model
 
-import com.elna.moviedb.core.model.MovieCategory
-
 /**
  * Represents all possible user actions/events in the Movies screen.
  * Following Android's unidirectional data flow pattern, these are the only ways

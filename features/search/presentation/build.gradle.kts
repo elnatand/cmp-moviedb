@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.features.search.domain)
             implementation(projects.features.tvShows.domain)
+            implementation(projects.features.movies.domain)
 
             implementation(projects.core.model)
             implementation(projects.core.ui)

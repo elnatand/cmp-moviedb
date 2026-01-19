@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.model
+package com.elna.moviedb.feature.movies.model
 
 data class Movie(
     val id: Int,

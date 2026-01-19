@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
 }
@@ -12,10 +11,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.features.tvShows.domain)
+            implementation(projects.features.movies.domain)
 
-           implementation(projects.core.model)
+            implementation(projects.core.model)
 
-           implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
 }

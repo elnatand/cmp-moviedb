@@ -4,7 +4,7 @@ import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
 import com.elna.moviedb.core.database.model.VideoEntity
-import com.elna.moviedb.core.model.MovieCategory
+import com.elna.moviedb.feature.movies.model.MovieCategory
 import kotlinx.coroutines.flow.Flow
 
 /**

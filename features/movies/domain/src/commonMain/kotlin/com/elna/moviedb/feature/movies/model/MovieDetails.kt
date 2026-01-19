@@ -1,4 +1,7 @@
-package com.elna.moviedb.core.model
+package com.elna.moviedb.feature.movies.model
+
+import com.elna.moviedb.core.model.CastMember
+import com.elna.moviedb.core.model.Video
 
 /**
  * Full movie details.

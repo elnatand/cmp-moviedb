@@ -2,12 +2,7 @@ package com.elna.moviedb.core.database.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
-enum class MovieCategory {
-    POPULAR,
-    TOP_RATED,
-    NOW_PLAYING
-}
+import com.elna.moviedb.feature.movies.model.MovieCategory
 
 @Entity
 data class MovieEntity(

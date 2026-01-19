@@ -3,7 +3,6 @@ package com.elna.moviedb.core.database.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.elna.moviedb.core.model.MovieDetails
 
 @Entity
 data class MovieDetailsEntity(
@@ -41,30 +40,4 @@ data class MovieDetailsEntity(
     val productionCountries: String?,
     @ColumnInfo(name = "spoken_languages")
     val spokenLanguages: String?
-) {
-    fun toDomain(): MovieDetails = MovieDetails(
-        id = id,
-        title = title,
-        overview = overview,
-        posterPath = posterPath,
-        backdropPath = backdropPath,
-        releaseDate = releaseDate,
-        runtime = runtime,
-        voteAverage = voteAverage,
-        voteCount = voteCount,
-        adult = adult,
-        budget = budget,
-        revenue = revenue,
-        homepage = homepage,
-        imdbId = imdbId,
-        originalLanguage = originalLanguage,
-        originalTitle = originalTitle,
-        popularity = popularity,
-        status = status,
-        tagline = tagline,
-        genres = genres?.split(",")?.filter { it.isNotBlank() },
-        productionCompanies = productionCompanies?.split(",")?.filter { it.isNotBlank() },
-        productionCountries = productionCountries?.split(",")?.filter { it.isNotBlank() },
-        spokenLanguages = spokenLanguages?.split(",")?.filter { it.isNotBlank() }
-    )
-}
+)

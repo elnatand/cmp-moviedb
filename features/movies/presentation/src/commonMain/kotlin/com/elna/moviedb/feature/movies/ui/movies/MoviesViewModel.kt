@@ -3,9 +3,9 @@ package com.elna.moviedb.feature.movies.ui.movies
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.elna.moviedb.core.data.movies.MoviesRepository
+import com.elna.moviedb.feature.movies.repositories.MoviesRepository
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.MovieCategory
+import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.feature.movies.model.MoviesEvent
 import com.elna.moviedb.feature.movies.model.MoviesUiAction
 import com.elna.moviedb.feature.movies.model.MoviesUiState
