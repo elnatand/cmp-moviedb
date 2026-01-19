@@ -73,9 +73,9 @@ cmp-moviedb/
 │   └── src/main/         # Android-specific code (MainActivity, resources)
 │
 ├── composeApp/           # Shared Compose Multiplatform library
-│   ├── androidMain/      # Android-specific DI configuration
+│   ├── androidMain/      # Android-specific locale configuration
 │   ├── commonMain/       # Shared app code (App.kt, navigation, DI)
-│   └── iosMain/          # iOS-specific code (MainViewController, DI)
+│   └── iosMain/          # iOS-specific code (MainViewController, Locale, DI)
 │
 ├── core/                 # Core shared modules
 │   ├── common/           # Common utilities and coroutine dispatchers
