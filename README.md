@@ -78,19 +78,32 @@ cmp-moviedb/
 │   └── iosMain/          # iOS-specific code (MainViewController, Locale, DI)
 │
 ├── core/                 # Core shared modules
-│   ├── common/           # Common infrastructure utilities
+│   ├── common/           # Common infrastructure utilities (AppDispatchers)
 │   ├── database/         # Room database with cross-platform drivers
-│   ├── datastore/        # DataStore preferences for pagination state & settings
-│   ├── model/            # Shared models across the app
+│   ├── datastore/        # DataStore for preferences, pagination state, and language coordination
+│   ├── model/            # Shared domain models (Movie, TvShow, AppResult, AppLanguage, AppTheme)
 │   ├── network/          # Ktor HTTP client and TMDB API integration
-│   └── ui/               # Shared UI components and design system
+│   └── ui/               # Shared UI components, Material 3 design system, Compose resources
 │
-├── features/             # Feature-specific modules
-│   ├── movies/           # Movies list and details screens
-│   ├── tv-shows/         # TV shows list and details screens
-│   ├── person/           # Person details screen (cast/crew info)
-│   ├── search/           # Search functionality
-│   └── profile/          # User profile and settings screen
+├── features/             # Feature-specific modules (each with data/domain/presentation layers)
+│   ├── movies/           # Movies feature
+│   │   ├── data/         # Repository implementation, data sources, Room entities
+│   │   ├── domain/       # Repository interface, domain models
+│   │   └── presentation/ # ViewModels, UI composables, navigation
+│   ├── tv-shows/         # TV shows feature
+│   │   ├── data/         # Repository implementation, in-memory data sources
+│   │   ├── domain/       # Repository interface, domain models
+│   │   └── presentation/ # ViewModels, UI composables, navigation
+│   ├── person/           # Person details feature
+│   │   ├── data/         # Repository implementation, data sources
+│   │   ├── domain/       # Repository interface, domain models
+│   │   └── presentation/ # ViewModels, UI composables
+│   ├── search/           # Multi-type search feature
+│   │   ├── data/         # Repository implementation, search strategies
+│   │   ├── domain/       # Repository interface, search models
+│   │   └── presentation/ # ViewModels, UI composables
+│   └── profile/          # User profile and settings feature
+│       └── presentation/ # ViewModels, UI composables (no data layer needed)
 │
 ├── build-logic/          # Custom Gradle convention plugins
 ├── iosApp/               # iOS app wrapper with Xcode project
@@ -225,47 +238,52 @@ BuildKonfig will automatically generate the `BuildKonfig` object containing your
 
 ## 🏛️ Architecture Overview
 
+### Feature-Based Clean Architecture
+Each feature module follows Clean Architecture with three distinct layers:
+
+1. **Presentation Layer** (`presentation/`) - Compose UI, ViewModels, MVI state management, Navigation
+2. **Domain Layer** (`domain/`) - Repository interfaces, domain models, business logic contracts
+3. **Data Layer** (`data/`) - Repository implementations, data sources (network/database), caching strategies
+
 ### Repository Pattern (Simplified)
 The project uses a simplified repository pattern where:
 - **Repository**: Passive data provider that returns `Flow<List<T>>` and handles cache invalidation
 - **ViewModel**: Active state coordinator that manages loading/error states and UI logic
 - **Clear Separation**: Repository maintains data integrity, ViewModel manages UI state
+- **Feature Isolation**: Each feature owns its repository implementation in its `data/` module
 
 ### Data Storage Strategy
-- **Movies**: Offline-first with Room database for persistent caching
-- **TV Shows**: In-memory storage with reactive StateFlow updates
-- **Preferences**: DataStore for app settings and pagination state persistence
-- **Cache Invalidation**: Automatic clearing of stale data on language changes
-
-### Architecture Layers
-
-1. **Presentation Layer** - Compose UI, ViewModels, Navigation
-2. **Domain Layer** - Business logic, Use cases (Repository interfaces)
-3. **Data Layer** - Repository implementations, Data sources, Network, Database
+- **Movies**: Offline-first with Room database for persistent caching (entities in `features/movies/data`)
+- **TV Shows**: In-memory storage with reactive StateFlow updates (in `features/tv-shows/data`)
+- **Preferences**: DataStore in `core/datastore` for app settings and pagination state persistence
+- **Language Coordination**: `LanguageChangeCoordinator` in `core/datastore` triggers cache invalidation across features
 
 ## 🔧 Development Setup
 
 ### Architecture Details
-- **Multi-Module Clean Architecture** with Repository pattern across modules
+- **Feature-Based Multi-Module Clean Architecture**: Each feature has its own data/domain/presentation layers
 - **MVI (Model-View-Intent) with Simplified Repositories**:
   - Model: Immutable UI state representing the screen
   - View: Compose UI that renders state and dispatches events
   - Intent: User events handled via `onEvent()`
-  - Repository: Passive data provider returning simple `Flow<List<T>>`
+  - Repository: Passive data provider returning simple `Flow<List<T>>` (owned by each feature)
   - ViewModel: Coordinates state and handles loading/error logic
   - Clear separation: Data layer maintains integrity, Presentation layer manages UI state
-- **Reactive UI** with Flow-based data streaming between modules
+- **Self-Contained Features**: Each feature module contains its complete vertical slice:
+  - `data/` - Repository implementations, data sources, Room entities (if needed)
+  - `domain/` - Repository interfaces, domain models, business contracts
+  - `presentation/` - ViewModels, UI composables, navigation
+- **Reactive UI** with Flow-based data streaming within features
 - **Offline-First Architecture**:
-  - Movies: Room database caching with reactive updates
-  - TV Shows: In-memory storage with StateFlow
-  - Pagination state persists across app restarts via DataStore
-- **Language-Aware Cache Invalidation**: Repository observes language changes and clears stale content
+  - Movies: Room database entities in `features/movies/data` with reactive updates
+  - TV Shows: In-memory storage with StateFlow in `features/tv-shows/data`
+  - Pagination state persists across app restarts via `core/datastore`
+- **Language-Aware Cache Invalidation**: `LanguageChangeCoordinator` in `core/datastore` observes language changes and triggers feature repositories to clear stale content
 - **Error Handling Strategy**:
   - Initial load errors: Block UI with error screen
   - Pagination errors: Non-blocking snackbar while keeping cached data
 - **Platform-specific configs** minimized with BuildKonfig (expect/actual used only where necessary)
-- **Feature-based modular design** with clear separation of concerns
-- **Module isolation** with well-defined APIs and dependency injection
+- **Module isolation** with well-defined APIs and dependency injection via Koin
 - **Modern KMP Architecture**: Uses `com.android.kotlin.multiplatform.library` plugin with dedicated platform entry points
 
 ### Build Configuration
@@ -346,6 +364,8 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 ## 📋 Development Roadmap
 
 ### Recently Completed ✨
+- [x] **Feature-based architecture refactoring**: Removed `core:data` module and distributed repositories into self-contained feature modules with data/domain/presentation layers
+- [x] **Language coordination consolidation**: Merged language handling logic from `core:data` into `core:datastore` with `LanguageChangeCoordinator`
 - [x] **Migration to `com.android.kotlin.multiplatform.library` plugin** for improved KMP integration
 - [x] **Dedicated Android app module** (`androidApp`) wrapping shared `composeApp` library
 - [x] **BuildKonfig integration** for cross-platform secrets management (replaced expect/actual pattern)
