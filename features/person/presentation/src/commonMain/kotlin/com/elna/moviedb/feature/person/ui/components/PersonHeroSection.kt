@@ -24,7 +24,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.model.PersonDetails
+import com.elna.moviedb.feature.person.model.PersonDetails
 import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.core.ui.utils.toProfileUrl
 

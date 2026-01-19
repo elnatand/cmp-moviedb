@@ -1,12 +1,11 @@
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
-    alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
 kotlin {
     androidLibrary {
-        namespace = "com.elna.moviedb.person.presentation"
+        namespace = "com.elna.moviedb.person.data"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
@@ -15,10 +14,11 @@ kotlin {
             implementation(projects.features.person.domain)
 
             implementation(projects.core.model)
+            implementation(projects.core.network)
             implementation(projects.core.data)
-            implementation(projects.core.ui)
 
             implementation(libs.koin.core)
+            implementation(libs.kotlinx.coroutines.core)
         }
     }
 }

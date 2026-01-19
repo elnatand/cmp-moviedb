@@ -6,14 +6,12 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "com.elna.moviedb.person.presentation"
+        namespace = "com.elna.moviedb.person.domain"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.features.person.domain)
-
             implementation(projects.core.model)
             implementation(projects.core.data)
             implementation(projects.core.ui)

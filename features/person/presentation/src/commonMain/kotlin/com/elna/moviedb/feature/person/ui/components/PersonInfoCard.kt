@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.model.PersonDetails
+import com.elna.moviedb.feature.person.model.PersonDetails
 import com.elna.moviedb.core.ui.utils.formatDate
 
 @Composable

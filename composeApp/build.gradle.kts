@@ -34,15 +34,16 @@ kotlin {
 
             implementation(projects.features.movies)
 
-            implementation(projects.features.tvShows.data)
             implementation(projects.features.tvShows.presentation)
+            implementation(projects.features.tvShows.data)
 
-            implementation(projects.features.search.data)
             implementation(projects.features.search.presentation)
+            implementation(projects.features.search.data)
 
             implementation(projects.features.profile.presentation)
 
             implementation(projects.features.person.presentation)
+            implementation(projects.features.person.data)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)

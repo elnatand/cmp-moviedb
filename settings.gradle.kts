@@ -34,10 +34,12 @@ include(":features:tv-shows:data")
 include(":features:tv-shows:domain")
 include(":features:tv-shows:presentation")
 
-include(":features:profile:presentation")
-
 include(":features:search:data")
 include(":features:search:domain")
 include(":features:search:presentation")
 
+include(":features:person:data")
+include(":features:person:domain")
 include(":features:person:presentation")
+
+include(":features:profile:presentation")

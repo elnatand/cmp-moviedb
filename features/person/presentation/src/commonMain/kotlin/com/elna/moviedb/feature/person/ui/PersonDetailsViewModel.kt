@@ -2,10 +2,10 @@ package com.elna.moviedb.feature.person.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.elna.moviedb.core.data.person.PersonRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.person.model.PersonDetailsEvent
 import com.elna.moviedb.feature.person.model.PersonUiState
+import com.elna.moviedb.feature.person.repositories.PersonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
