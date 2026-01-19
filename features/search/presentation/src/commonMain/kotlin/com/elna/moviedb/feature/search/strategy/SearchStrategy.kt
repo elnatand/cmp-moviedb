@@ -3,7 +3,7 @@ package com.elna.moviedb.feature.search.strategy
 
 
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.feature.search.domain.data_sources.SearchRepository
+import com.elna.moviedb.feature.search.domain.repository.SearchRepository
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
 import kotlinx.coroutines.flow.Flow

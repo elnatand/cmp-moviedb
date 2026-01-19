@@ -1,12 +1,12 @@
-package com.elna.moviedb.feature.search.data
+package com.elna.moviedb.feature.search.data.repository
 
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.SearchRemoteDataSource
-import com.elna.moviedb.feature.search.domain.data_sources.SearchRepository
 import com.elna.moviedb.feature.search.data.search.executeSearch
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
+import com.elna.moviedb.feature.search.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

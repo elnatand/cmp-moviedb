@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.search.domain.data_sources
+package com.elna.moviedb.feature.search.domain.repository
 
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
