@@ -79,7 +79,6 @@ cmp-moviedb/
 │
 ├── core/                 # Core shared modules
 │   ├── common/           # Common infrastructure utilities
-│   ├── data/             # Repository implementations and data layer
 │   ├── database/         # Room database with cross-platform drivers
 │   ├── datastore/        # DataStore preferences for pagination state & settings
 │   ├── model/            # Shared models across the app
