@@ -2,6 +2,8 @@ package com.elna.moviedb.core.datastore.di
 
 import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.datastore.AppSettingsPreferencesImpl
+import com.elna.moviedb.core.datastore.LanguageChangeCoordinator
+import com.elna.moviedb.core.datastore.LanguageProvider
 import com.elna.moviedb.core.datastore.PaginationPreferences
 import com.elna.moviedb.core.datastore.PaginationPreferencesImpl
 import org.koin.core.module.Module
@@ -28,4 +30,16 @@ val dataStoreModule = module {
     // Segregated interfaces
     single { AppSettingsPreferencesImpl(get()) } bind AppSettingsPreferences::class
     single { PaginationPreferencesImpl(get()) } bind PaginationPreferences::class
+
+    single { LanguageProvider(get()) }
+
+    // Language change coordinator - uses Observer Pattern for loose coupling
+    // Lazily created when first repository is initialized
+    // Repositories self-register during their initialization
+    single {
+        LanguageChangeCoordinator(
+            appSettingsPreferences = get(),
+            appDispatchers = get(),
+        )
+    }
 }
