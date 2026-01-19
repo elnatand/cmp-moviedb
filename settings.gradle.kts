@@ -22,7 +22,7 @@ rootProject.name = "CMPMovieDB"
 include(":androidApp")
 include(":composeApp")
 include(":core:common")
-include(":core:data")
+//include(":core:data")
 include(":core:datastore")
 include(":core:network")
 include(":core:model")

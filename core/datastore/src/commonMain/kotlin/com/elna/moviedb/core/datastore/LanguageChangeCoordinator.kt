@@ -1,7 +1,6 @@
-package com.elna.moviedb.core.data
+package com.elna.moviedb.core.datastore
 
 import com.elna.moviedb.core.common.AppDispatchers
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.distinctUntilChanged

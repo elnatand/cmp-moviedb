@@ -1,7 +1,7 @@
 package com.elna.moviedb.core.data.di
 
-import com.elna.moviedb.core.data.LanguageChangeCoordinator
-import com.elna.moviedb.core.data.util.LanguageProvider
+import com.elna.moviedb.core.datastore.LanguageChangeCoordinator
+import com.elna.moviedb.core.datastore.LanguageProvider
 import org.koin.dsl.module
 
 val dataModule = module {

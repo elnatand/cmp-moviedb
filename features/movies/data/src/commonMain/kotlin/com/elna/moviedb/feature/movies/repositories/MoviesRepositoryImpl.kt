@@ -1,8 +1,8 @@
 package com.elna.moviedb.feature.movies.repositories
 
-import com.elna.moviedb.core.data.LanguageChangeCoordinator
-import com.elna.moviedb.core.data.LanguageChangeListener
-import com.elna.moviedb.core.data.util.LanguageProvider
+import com.elna.moviedb.core.datastore.LanguageChangeCoordinator
+import com.elna.moviedb.core.datastore.LanguageChangeListener
+import com.elna.moviedb.core.datastore.LanguageProvider
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity

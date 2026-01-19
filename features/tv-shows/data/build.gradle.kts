@@ -15,7 +15,7 @@ kotlin {
 
             implementation(projects.core.model)
             implementation(projects.core.network)
-            implementation(projects.core.data)
+            implementation(projects.core.datastore)
 
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)

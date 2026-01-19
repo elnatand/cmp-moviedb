@@ -1,6 +1,6 @@
 package com.elna.moviedb.feature.search.data.repositories
 
-import com.elna.moviedb.core.data.util.LanguageProvider
+import com.elna.moviedb.core.datastore.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.SearchRemoteDataSource
 import com.elna.moviedb.feature.search.domain.model.SearchFilter

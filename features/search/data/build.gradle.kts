@@ -16,7 +16,7 @@ kotlin {
             implementation(projects.features.movies.domain)
 
             implementation(projects.core.model)
-            implementation(projects.core.data)
+            implementation(projects.core.datastore)
             implementation(projects.core.network)
 
             implementation(libs.koin.core)

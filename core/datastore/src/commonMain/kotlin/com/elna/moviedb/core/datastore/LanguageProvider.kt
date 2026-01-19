@@ -1,6 +1,5 @@
-package com.elna.moviedb.core.data.util
+package com.elna.moviedb.core.datastore
 
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
