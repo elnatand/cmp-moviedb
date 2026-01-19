@@ -4,7 +4,8 @@ package com.elna.moviedb.di
 import com.elna.moviedb.core.common.di.commonModule
 import com.elna.moviedb.feature.person.di.personModule
 import com.elna.moviedb.feature.profile.di.profileModule
-import com.elna.moviedb.feature.search.di.searchModule
+import com.elna.moviedb.feature.search.di.searchPresentationModule
+import com.elna.moviedb.feature.tvshows.di.tvShowsDataModule
 import com.elna.moviedb.feature.tvshows.di.tvShowsPresentationModule
 import com.elna.moviedb.feature.movies.di.moviesModule
 import com.elna.moviedb.core.data.di.dataModule
@@ -28,9 +29,13 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
         databaseModule,
         dataStoreModule,
         moviesModule,
+
+        tvShowsDataModule,
         tvShowsPresentationModule,
-        searchModule,
+
+        searchPresentationModule,
         searchDataModule,
+
         profileModule,
         personModule
     )
