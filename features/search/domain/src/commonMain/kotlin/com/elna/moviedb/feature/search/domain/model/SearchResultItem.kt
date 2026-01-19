@@ -1,7 +1,7 @@
 package com.elna.moviedb.feature.search.domain.model
 
 import com.elna.moviedb.feature.movies.model.Movie
-import com.elna.moviedb.feature.tvshows.model.TvShow
+import com.elna.moviedb.feature.tvshows.domain.model.TvShow
 
 sealed class SearchResultItem {
     abstract val overview: String?

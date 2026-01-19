@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "com.elna.moviedb.profile"
+        namespace = "com.elna.moviedb.profile.presentation"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
