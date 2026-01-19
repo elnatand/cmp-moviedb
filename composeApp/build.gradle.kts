@@ -32,7 +32,8 @@ kotlin {
             implementation(projects.core.datastore)
             implementation(projects.core.ui)
 
-            implementation(projects.features.movies)
+            implementation(projects.features.movies.presentation)
+            implementation(projects.features.movies.data)
 
             implementation(projects.features.tvShows.presentation)
             implementation(projects.features.tvShows.data)
