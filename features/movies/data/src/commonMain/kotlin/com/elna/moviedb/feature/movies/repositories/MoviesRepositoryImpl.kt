@@ -2,7 +2,6 @@ package com.elna.moviedb.feature.movies.repositories
 
 import com.elna.moviedb.core.data.LanguageChangeCoordinator
 import com.elna.moviedb.core.data.LanguageChangeListener
-import com.elna.moviedb.core.data.model.asEntity
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
@@ -19,6 +18,7 @@ import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import com.elna.moviedb.core.network.model.videos.toDomain
+import com.elna.moviedb.feature.movies.mappers.asEntity
 import com.elna.moviedb.feature.movies.mappers.toDomain
 import com.elna.moviedb.feature.movies.mappers.toTmdbPath
 import com.elna.moviedb.feature.movies.model.Movie

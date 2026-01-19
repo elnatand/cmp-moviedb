@@ -1,8 +1,13 @@
 package com.elna.moviedb.feature.movies.mappers
 
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
+import com.elna.moviedb.core.database.model.MovieEntity
+import com.elna.moviedb.core.network.model.movies.RemoteMovie
+import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.feature.movies.model.MovieDetails
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 fun MovieDetailsEntity.toDomain(): MovieDetails = MovieDetails(
     id = id,
@@ -43,3 +48,40 @@ fun MovieCategory.toTmdbPath(): String = when (this) {
     MovieCategory.TOP_RATED -> "/movie/top_rated"
     MovieCategory.NOW_PLAYING -> "/movie/now_playing"
 }
+
+
+@OptIn(ExperimentalTime::class)
+fun RemoteMovie.asEntity() = MovieEntity(
+    id = id,
+    timestamp = Clock.System.now().epochSeconds,
+    title = title,
+    posterPath = posterPath
+)
+
+
+fun RemoteMovieDetails.asEntity() = MovieDetailsEntity(
+    id = id,
+    title = title,
+    overview = overview,
+    posterPath = posterPath,
+    backdropPath = backdropPath,
+    releaseDate = releaseDate,
+    runtime = runtime,
+    voteAverage = voteAverage,
+    voteCount = voteCount,
+    adult = adult,
+    budget = budget,
+    revenue = revenue,
+    homepage = homepage,
+    imdbId = imdbId,
+    originalLanguage = originalLanguage,
+    originalTitle = originalTitle,
+    popularity = popularity,
+    status = status,
+    tagline = tagline,
+    genres = genres?.joinToString(",") { it.name },
+    productionCompanies = productionCompanies?.joinToString(",") { it.name },
+    productionCountries = productionCountries?.joinToString(",") { it.name },
+    spokenLanguages = spokenLanguages?.joinToString(",") { it.englishName }
+)
+
