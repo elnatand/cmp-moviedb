@@ -40,4 +40,4 @@ include(":features:search:data")
 include(":features:search:domain")
 include(":features:search:presentation")
 
-include(":features:person")
+include(":features:person:presentation")

@@ -42,7 +42,7 @@ kotlin {
 
             implementation(projects.features.profile.presentation)
 
-            implementation(projects.features.person)
+            implementation(projects.features.person.presentation)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
