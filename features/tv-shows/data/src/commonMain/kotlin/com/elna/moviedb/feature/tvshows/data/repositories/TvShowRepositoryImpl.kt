@@ -1,9 +1,9 @@
 package com.elna.moviedb.feature.tvshows.data.repositories
 
-import com.elna.moviedb.core.datastore.LanguageChangeCoordinator
-import com.elna.moviedb.core.datastore.LanguageChangeListener
+import com.elna.moviedb.core.datastore.language.LanguageChangeCoordinator
+import com.elna.moviedb.core.datastore.language.LanguageChangeListener
 import com.elna.moviedb.feature.tvshows.domain.repositories.TvShowsRepository
-import com.elna.moviedb.core.datastore.LanguageProvider
+import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.domain.model.TvShow
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory

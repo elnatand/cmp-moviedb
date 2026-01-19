@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.datastore
+package com.elna.moviedb.core.datastore.settings
 
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme

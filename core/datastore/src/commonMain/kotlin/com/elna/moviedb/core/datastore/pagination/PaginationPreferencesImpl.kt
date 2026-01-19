@@ -1,10 +1,10 @@
-package com.elna.moviedb.core.datastore
+package com.elna.moviedb.core.datastore.pagination
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import com.elna.moviedb.core.datastore.model.PaginationState
+import com.elna.moviedb.core.datastore.pagination.PaginationState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

@@ -1,14 +1,14 @@
 package com.elna.moviedb.feature.movies.repositories
 
-import com.elna.moviedb.core.datastore.LanguageChangeCoordinator
-import com.elna.moviedb.core.datastore.LanguageChangeListener
-import com.elna.moviedb.core.datastore.LanguageProvider
+import com.elna.moviedb.core.datastore.language.LanguageChangeCoordinator
+import com.elna.moviedb.core.datastore.language.LanguageChangeListener
+import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.asEntity
-import com.elna.moviedb.core.datastore.PaginationPreferences
-import com.elna.moviedb.core.datastore.model.PaginationState
+import com.elna.moviedb.core.datastore.pagination.PaginationPreferences
+import com.elna.moviedb.core.datastore.pagination.PaginationState
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.CastMember
 import com.elna.moviedb.core.model.Video

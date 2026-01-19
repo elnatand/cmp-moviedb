@@ -1,6 +1,6 @@
 package com.elna.moviedb.feature.person.data.repositories
 
-import com.elna.moviedb.core.datastore.LanguageProvider
+import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.map
 import com.elna.moviedb.core.network.PersonRemoteDataSource

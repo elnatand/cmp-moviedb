@@ -3,7 +3,7 @@ package com.elna.moviedb.feature.profile.presentation.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.common.utils.AppVersion
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
+import com.elna.moviedb.core.datastore.settings.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
 import com.elna.moviedb.feature.profile.presentation.model.ProfileEvent

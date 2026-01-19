@@ -1,11 +1,11 @@
 package com.elna.moviedb.core.datastore.di
 
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
-import com.elna.moviedb.core.datastore.AppSettingsPreferencesImpl
-import com.elna.moviedb.core.datastore.LanguageChangeCoordinator
-import com.elna.moviedb.core.datastore.LanguageProvider
-import com.elna.moviedb.core.datastore.PaginationPreferences
-import com.elna.moviedb.core.datastore.PaginationPreferencesImpl
+import com.elna.moviedb.core.datastore.settings.AppSettingsPreferences
+import com.elna.moviedb.core.datastore.settings.AppSettingsPreferencesImpl
+import com.elna.moviedb.core.datastore.language.LanguageChangeCoordinator
+import com.elna.moviedb.core.datastore.language.LanguageProvider
+import com.elna.moviedb.core.datastore.pagination.PaginationPreferences
+import com.elna.moviedb.core.datastore.pagination.PaginationPreferencesImpl
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module

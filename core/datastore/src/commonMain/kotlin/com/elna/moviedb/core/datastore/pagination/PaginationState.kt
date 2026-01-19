@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.datastore.model
+package com.elna.moviedb.core.datastore.pagination
 
 /**
  * Represents pagination state for a paginated data source.

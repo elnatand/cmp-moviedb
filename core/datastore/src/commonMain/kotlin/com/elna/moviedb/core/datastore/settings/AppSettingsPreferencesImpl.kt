@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.datastore
+package com.elna.moviedb.core.datastore.settings
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
