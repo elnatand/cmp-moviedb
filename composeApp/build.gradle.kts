@@ -40,7 +40,8 @@ kotlin {
             implementation(projects.features.search.data)
             implementation(projects.features.search.presentation)
 
-            implementation(projects.features.profile)
+            implementation(projects.features.profile.presentation)
+
             implementation(projects.features.person)
 
             implementation(libs.koin.core)
