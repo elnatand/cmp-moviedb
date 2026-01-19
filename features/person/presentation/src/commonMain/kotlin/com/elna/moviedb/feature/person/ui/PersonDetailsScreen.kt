@@ -23,7 +23,7 @@ import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.design_system.AppBackButton
 import com.elna.moviedb.core.ui.utils.formatDate
-import com.elna.moviedb.core.model.MediaType
+import com.elna.moviedb.feature.person.model.MediaType
 import com.elna.moviedb.feature.person.model.PersonDetailsEvent
 import com.elna.moviedb.feature.person.model.PersonUiState
 import com.elna.moviedb.feature.person.ui.components.DetailItem

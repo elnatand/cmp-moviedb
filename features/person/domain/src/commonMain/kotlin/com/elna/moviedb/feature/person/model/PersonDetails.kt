@@ -1,7 +1,5 @@
 package com.elna.moviedb.feature.person.model
 
-import com.elna.moviedb.core.model.FilmographyCredit
-
 data class PersonDetails(
     val id: Int,
     val name: String,

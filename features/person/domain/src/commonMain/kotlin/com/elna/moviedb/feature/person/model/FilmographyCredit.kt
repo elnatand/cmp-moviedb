@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.model
+package com.elna.moviedb.feature.person.model
 
 data class FilmographyCredit(
     val id: Int,

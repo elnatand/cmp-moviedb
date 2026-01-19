@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.model.FilmographyCredit
-import com.elna.moviedb.core.model.MediaType
+import com.elna.moviedb.feature.person.model.FilmographyCredit
+import com.elna.moviedb.feature.person.model.MediaType
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.filmography
 import org.jetbrains.compose.resources.stringResource

@@ -1,7 +1,6 @@
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
-    alias(libs.plugins.moviedb.composeMultiplatform)
 }
 
 kotlin {
@@ -13,10 +12,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.model)
-            implementation(projects.core.data)
-            implementation(projects.core.ui)
-
-            implementation(libs.koin.core)
         }
     }
 }
