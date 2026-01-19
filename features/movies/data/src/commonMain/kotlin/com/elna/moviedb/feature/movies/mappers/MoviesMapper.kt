@@ -1,17 +1,8 @@
 package com.elna.moviedb.feature.movies.mappers
 
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
-import com.elna.moviedb.core.network.model.search.RemoteSearchMovie
-import com.elna.moviedb.feature.movies.model.Movie
+import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.feature.movies.model.MovieDetails
-
-fun RemoteSearchMovie.toDomain(): Movie {
-    return Movie(
-        id = id,
-        title = title,
-        posterPath = posterPath
-    )
-}
 
 fun MovieDetailsEntity.toDomain(): MovieDetails = MovieDetails(
     id = id,
@@ -38,3 +29,17 @@ fun MovieDetailsEntity.toDomain(): MovieDetails = MovieDetails(
     productionCountries = productionCountries?.split(",")?.filter { it.isNotBlank() },
     spokenLanguages = spokenLanguages?.split(",")?.filter { it.isNotBlank() }
 )
+
+/**
+ * Maps domain MovieCategory to TMDB API endpoint paths.
+ *
+ * Following Clean Architecture - keeps domain layer independent of infrastructure.
+ * This mapper lives in the network layer where TMDB-specific details belong.
+ *
+ * @return TMDB API movie category endpoint path (e.g., "movie/popular", "movie/top_rated")
+ */
+fun MovieCategory.toTmdbPath(): String = when (this) {
+    MovieCategory.POPULAR -> "/movie/popular"
+    MovieCategory.TOP_RATED -> "/movie/top_rated"
+    MovieCategory.NOW_PLAYING -> "/movie/now_playing"
+}
