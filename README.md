@@ -78,11 +78,11 @@ cmp-moviedb/
 │   └── iosMain/          # iOS-specific code (MainViewController, Locale, DI)
 │
 ├── core/                 # Core shared modules
-│   ├── common/           # Common utilities and coroutine dispatchers
+│   ├── common/           # Common infrastructure utilities
 │   ├── data/             # Repository implementations and data layer
 │   ├── database/         # Room database with cross-platform drivers
 │   ├── datastore/        # DataStore preferences for pagination state & settings
-│   ├── model/            # Domain models (Movie, TvShow, AppResult)
+│   ├── model/            # Shared models across the app
 │   ├── network/          # Ktor HTTP client and TMDB API integration
 │   └── ui/               # Shared UI components and design system
 │
