@@ -35,5 +35,9 @@ include(":features:tv-shows:domain")
 include(":features:tv-shows:presentation")
 
 include(":features:profile")
-include(":features:search")
+
+include(":features:search:data")
+include(":features:search:domain")
+include(":features:search:presentation")
+
 include(":features:person")

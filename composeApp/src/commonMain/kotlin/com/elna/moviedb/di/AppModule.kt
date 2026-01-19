@@ -11,6 +11,7 @@ import com.elna.moviedb.core.data.di.dataModule
 import com.elna.moviedb.core.database.di.databaseModule
 import com.elna.moviedb.core.datastore.di.dataStoreModule
 import com.elna.moviedb.core.network.di.networkModule
+import com.elna.moviedb.feature.search.data.di.searchDataModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 
@@ -29,6 +30,7 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
         moviesModule,
         tvShowsPresentationModule,
         searchModule,
+        searchDataModule,
         profileModule,
         personModule
     )

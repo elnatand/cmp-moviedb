@@ -1,7 +1,6 @@
 package com.elna.moviedb.core.network.model.search
 
 import com.elna.moviedb.core.model.Movie
-import com.elna.moviedb.core.model.SearchResultItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -42,20 +41,5 @@ fun RemoteSearchMovie.toDomain(): Movie {
         id = id,
         title = title,
         posterPath = posterPath
-    )
-}
-
-fun RemoteSearchMovie.toSearchResult(): SearchResultItem.MovieItem {
-    return SearchResultItem.MovieItem(
-        movie = Movie(
-            id = id,
-            title = title,
-            posterPath = posterPath
-        ),
-        overview = overview,
-        releaseDate = releaseDate,
-        voteAverage = voteAverage,
-        voteCount = voteCount,
-        backdropPath = backdropPath
     )
 }

@@ -1,6 +1,5 @@
 package com.elna.moviedb.core.network.model.search
 
-import com.elna.moviedb.core.model.SearchResultItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,12 +18,3 @@ data class RemoteSearchPerson(
     @SerialName("adult")
     val adult: Boolean?
 )
-
-fun RemoteSearchPerson.toSearchResult(): SearchResultItem.PersonItem {
-    return SearchResultItem.PersonItem(
-        id = id,
-        name = name,
-        knownForDepartment = knownForDepartment,
-        profilePath = profilePath
-    )
-}

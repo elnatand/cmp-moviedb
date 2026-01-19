@@ -2,7 +2,6 @@ package com.elna.moviedb.core.network
 
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.SearchFilter
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
@@ -47,14 +46,13 @@ class SearchRemoteDataSource(
      * ```
      */
     suspend inline fun <reified T> search(
-        filter: SearchFilter,
+        endpoint: String,
         query: String,
         page: Int,
         language: String
     ): AppResult<T> {
         return withContext(appDispatchers.io) {
             safeApiCall {
-                val endpoint = ""// filter.toTmdbPath()
                 httpClient.get("$TMDB_BASE_URL$endpoint") {
                     url {
                         parameters.append("api_key", BuildKonfig.TMDB_API_KEY)
