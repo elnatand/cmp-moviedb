@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.tvshows.domain
+package com.elna.moviedb.feature.tvshows.repositories
 
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.model.TvShow

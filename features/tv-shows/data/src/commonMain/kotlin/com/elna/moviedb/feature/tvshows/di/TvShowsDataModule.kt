@@ -1,7 +1,7 @@
 package com.elna.moviedb.feature.tvshows.di
 
 import com.elna.moviedb.feature.tvshows.data.TvShowRepositoryImpl
-import com.elna.moviedb.feature.tvshows.domain.TvShowsRepository
+import com.elna.moviedb.feature.tvshows.repositories.TvShowsRepository
 import org.koin.dsl.module
 
 val tvShowsDataModule = module {

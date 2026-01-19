@@ -2,7 +2,7 @@ package com.elna.moviedb.feature.tvshows.data
 
 import com.elna.moviedb.core.data.LanguageChangeCoordinator
 import com.elna.moviedb.core.data.LanguageChangeListener
-import com.elna.moviedb.feature.tvshows.domain.TvShowsRepository
+import com.elna.moviedb.feature.tvshows.repositories.TvShowsRepository
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.model.TvShow

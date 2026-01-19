@@ -13,11 +13,9 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.features.tvShows.domain)
 
-            implementation(projects.core.model)
-            implementation(projects.core.data)
+           implementation(projects.core.model)
 
-            implementation(libs.koin.core)
-            implementation(libs.kotlinx.coroutines.core)
+           implementation(libs.kotlinx.coroutines.core)
         }
     }
 }

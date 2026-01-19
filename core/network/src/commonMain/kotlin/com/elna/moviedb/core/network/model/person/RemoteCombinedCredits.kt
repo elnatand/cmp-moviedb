@@ -1,7 +1,5 @@
 package com.elna.moviedb.core.network.model.person
 
-import com.elna.moviedb.core.model.FilmographyCredit
-import com.elna.moviedb.core.model.MediaType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -61,47 +59,3 @@ data class RemoteCrewCredit(
     val voteAverage: Double? = null
 )
 
-fun RemoteCombinedCredits.toDomain(): List<FilmographyCredit> {
-    val castCredits = cast?.map { it.toDomain() } ?: emptyList()
-    val crewCredits = crew?.map { it.toDomain() } ?: emptyList()
-
-    return (castCredits + crewCredits)
-        .distinctBy { it.id }
-        .sortedByDescending { credit ->
-            credit.releaseDate ?: credit.firstAirDate ?: ""
-        }
-}
-
-fun RemoteCastCredit.toDomain(): FilmographyCredit {
-    return FilmographyCredit(
-        id = id ?: 0,
-        title = title,
-        name = name,
-        character = character,
-        posterPath = posterPath,
-        releaseDate = releaseDate,
-        firstAirDate = firstAirDate,
-        mediaType = when (mediaType) {
-            "tv" -> MediaType.TV
-            else -> MediaType.MOVIE
-        },
-        voteAverage = voteAverage
-    )
-}
-
-fun RemoteCrewCredit.toDomain(): FilmographyCredit {
-    return FilmographyCredit(
-        id = id ?: 0,
-        title = title,
-        name = name,
-        character = job, // Use job as the "character" field for crew
-        posterPath = posterPath,
-        releaseDate = releaseDate,
-        firstAirDate = firstAirDate,
-        mediaType = when (mediaType) {
-            "tv" -> MediaType.TV
-            else -> MediaType.MOVIE
-        },
-        voteAverage = voteAverage
-    )
-}

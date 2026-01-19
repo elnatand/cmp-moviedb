@@ -2,7 +2,7 @@ package com.elna.moviedb.feature.tvshows.ui.tv_show_details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.elna.moviedb.feature.tvshows.domain.TvShowsRepository
+import com.elna.moviedb.feature.tvshows.repositories.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.model.TvShowDetails
 import com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent

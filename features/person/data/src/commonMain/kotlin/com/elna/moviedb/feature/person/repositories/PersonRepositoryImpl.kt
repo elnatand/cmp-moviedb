@@ -4,7 +4,6 @@ import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.map
 import com.elna.moviedb.core.network.PersonRemoteDataSource
-import com.elna.moviedb.core.network.model.person.toDomain
 import com.elna.moviedb.feature.person.mappar.toDomain
 import com.elna.moviedb.feature.person.model.PersonDetails
 import kotlinx.coroutines.async
