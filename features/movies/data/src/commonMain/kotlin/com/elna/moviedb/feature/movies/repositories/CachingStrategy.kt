@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.data.strategy
+package com.elna.moviedb.feature.movies.repositories
 
 import com.elna.moviedb.core.model.AppResult
 
