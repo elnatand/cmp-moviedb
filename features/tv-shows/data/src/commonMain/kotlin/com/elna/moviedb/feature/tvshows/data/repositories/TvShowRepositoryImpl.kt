@@ -7,12 +7,12 @@ import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.domain.model.TvShow
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
-import com.elna.moviedb.core.network.TvShowsRemoteService
-import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShow
-import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
-import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
+import com.elna.moviedb.feature.tvshows.data.datasources.TvShowsRemoteService
+import com.elna.moviedb.feature.tvshows.data.model.RemoteTvShow
+import com.elna.moviedb.feature.tvshows.data.model.RemoteTvShowDetails
+import com.elna.moviedb.feature.tvshows.data.model.toDomain
 import com.elna.moviedb.feature.tvshows.data.mappers.toTmdbPath
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowDetails
 import kotlinx.coroutines.async

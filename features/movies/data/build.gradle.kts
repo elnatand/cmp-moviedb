@@ -1,6 +1,7 @@
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -20,6 +21,7 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.core)
         }
     }
 }

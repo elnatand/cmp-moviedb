@@ -2,10 +2,10 @@ package com.elna.moviedb.feature.movies.mappers
 
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
-import com.elna.moviedb.core.network.model.movies.RemoteMovie
-import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.feature.movies.model.MovieDetails
+import com.elna.moviedb.feature.movies.model.RemoteMovie
+import com.elna.moviedb.feature.movies.model.RemoteMovieDetails
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 

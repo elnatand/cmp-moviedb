@@ -1,5 +1,9 @@
-package com.elna.moviedb.core.network.model.movies
+package com.elna.moviedb.feature.movies.model
 
+import com.elna.moviedb.core.network.model.shared.Genre
+import com.elna.moviedb.core.network.model.shared.ProductionCompany
+import com.elna.moviedb.core.network.model.shared.ProductionCountry
+import com.elna.moviedb.core.network.model.shared.SpokenLanguage
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -52,42 +56,4 @@ data class RemoteMovieDetails(
     val productionCountries: List<ProductionCountry>?,
     @SerialName("spoken_languages")
     val spokenLanguages: List<SpokenLanguage>?
-)
-
-@Serializable
-data class Genre(
-    @SerialName("id")
-    val id: Int,
-    @SerialName("name")
-    val name: String
-)
-
-@Serializable
-data class ProductionCompany(
-    @SerialName("id")
-    val id: Int,
-    @SerialName("logo_path")
-    val logoPath: String?,
-    @SerialName("name")
-    val name: String,
-    @SerialName("origin_country")
-    val originCountry: String
-)
-
-@Serializable
-data class ProductionCountry(
-    @SerialName("iso_3166_1")
-    val iso31661: String,
-    @SerialName("name")
-    val name: String
-)
-
-@Serializable
-data class SpokenLanguage(
-    @SerialName("english_name")
-    val englishName: String,
-    @SerialName("iso_639_1")
-    val iso6391: String,
-    @SerialName("name")
-    val name: String
 )

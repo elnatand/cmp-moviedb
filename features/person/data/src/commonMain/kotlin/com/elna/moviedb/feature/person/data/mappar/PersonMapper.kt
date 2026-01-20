@@ -1,9 +1,9 @@
 package com.elna.moviedb.feature.person.data.mappar
 
-import com.elna.moviedb.core.network.model.person.RemoteCastCredit
-import com.elna.moviedb.core.network.model.person.RemoteCombinedCredits
-import com.elna.moviedb.core.network.model.person.RemoteCrewCredit
-import com.elna.moviedb.core.network.model.person.RemotePersonDetails
+import com.elna.moviedb.feature.person.data.model.RemoteCastCredit
+import com.elna.moviedb.feature.person.data.model.RemoteCombinedCredits
+import com.elna.moviedb.feature.person.data.model.RemoteCrewCredit
+import com.elna.moviedb.feature.person.data.model.RemotePersonDetails
 import com.elna.moviedb.feature.person.domain.model.FilmographyCredit
 import com.elna.moviedb.feature.person.domain.model.MediaType
 import com.elna.moviedb.feature.person.domain.model.PersonDetails

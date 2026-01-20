@@ -12,12 +12,12 @@ import com.elna.moviedb.core.datastore.pagination.PaginationState
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.CastMember
 import com.elna.moviedb.core.model.Video
-import com.elna.moviedb.core.network.MoviesRemoteDataSource
-import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
-import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import com.elna.moviedb.core.network.model.videos.toDomain
+import com.elna.moviedb.feature.movies.datasources.MoviesRemoteDataSource
+import com.elna.moviedb.feature.movies.model.RemoteMovieCredits
+import com.elna.moviedb.feature.movies.model.toDomain
 import com.elna.moviedb.feature.movies.mappers.asEntity
 import com.elna.moviedb.feature.movies.mappers.toDomain
 import com.elna.moviedb.feature.movies.mappers.toTmdbPath

@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.network.model.movies
+package com.elna.moviedb.feature.movies.model
 
 
 import kotlinx.serialization.SerialName

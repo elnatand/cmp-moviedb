@@ -3,7 +3,7 @@ package com.elna.moviedb.feature.person.data.repositories
 import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.map
-import com.elna.moviedb.core.network.PersonRemoteDataSource
+import com.elna.moviedb.feature.person.data.datasources.PersonRemoteDataSource
 import com.elna.moviedb.feature.person.data.mappar.toDomain
 import com.elna.moviedb.feature.person.domain.model.PersonDetails
 import com.elna.moviedb.feature.person.domain.repositories.PersonRepository

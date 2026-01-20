@@ -2,11 +2,11 @@ package com.elna.moviedb.feature.search.data.repositories
 
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.map
-import com.elna.moviedb.core.network.SearchRemoteDataSource
-import com.elna.moviedb.core.network.model.search.RemoteMultiSearchPage
-import com.elna.moviedb.core.network.model.search.RemoteSearchMoviesPage
-import com.elna.moviedb.core.network.model.search.RemoteSearchPeoplePage
-import com.elna.moviedb.core.network.model.search.RemoteSearchTvShowsPage
+import com.elna.moviedb.feature.search.data.datasources.SearchRemoteDataSource
+import com.elna.moviedb.feature.search.data.model.RemoteMultiSearchPage
+import com.elna.moviedb.feature.search.data.model.RemoteSearchMoviesPage
+import com.elna.moviedb.feature.search.data.model.RemoteSearchPeoplePage
+import com.elna.moviedb.feature.search.data.model.RemoteSearchTvShowsPage
 import com.elna.moviedb.feature.search.data.mappers.toSearchResult
 import com.elna.moviedb.feature.search.data.mappers.toTmdbPath
 import com.elna.moviedb.feature.search.domain.model.SearchFilter

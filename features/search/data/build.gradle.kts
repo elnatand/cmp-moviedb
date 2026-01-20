@@ -1,6 +1,7 @@
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
+    alias(libs.plugins.kotlinxSerialization)
 }
 
 kotlin {
@@ -16,11 +17,12 @@ kotlin {
             implementation(projects.features.movies.domain)
 
             implementation(projects.core.model)
-            implementation(projects.core.datastore)
             implementation(projects.core.network)
+            implementation(projects.core.datastore)
 
             implementation(libs.koin.core)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.core)
         }
     }
 }

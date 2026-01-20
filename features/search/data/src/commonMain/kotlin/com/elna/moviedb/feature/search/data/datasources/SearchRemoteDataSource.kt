@@ -1,13 +1,7 @@
-package com.elna.moviedb.core.network
+package com.elna.moviedb.feature.search.data.datasources
 
-import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.network.model.TMDB_BASE_URL
-import com.elna.moviedb.core.network.utils.safeApiCall
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import kotlinx.coroutines.withContext
+import com.elna.moviedb.core.network.TmdbApiClient
 
 /**
  * Remote data source for TMDB search API endpoints.
@@ -21,15 +15,15 @@ import kotlinx.coroutines.withContext
  * Uses reified generics to maintain type safety while eliminating method duplication.
  */
 class SearchRemoteDataSource(
-     val httpClient: HttpClient,
-     val appDispatchers: AppDispatchers
+    @PublishedApi
+    internal val apiClient: TmdbApiClient
 ) {
 
     /**
      * Unified search method using SearchFilter enum.
      * New filters don't require code changes here.
      *
-     * @param filter Type-safe search filter (ALL, MOVIES, TV_SHOWS, PEOPLE)
+     * @param endpoint The search endpoint path
      * @param query The search query string
      * @param page The page number for pagination
      * @param language The language code for results
@@ -38,7 +32,7 @@ class SearchRemoteDataSource(
      * Example usage:
      * ```kotlin
      * val result = search<RemoteSearchMoviesPage>(
-     *     filter = SearchFilter.MOVIES,
+     *     endpoint = "/search/movie",
      *     query = "Inception",
      *     page = 1,
      *     language = "en-US"
@@ -51,18 +45,12 @@ class SearchRemoteDataSource(
         page: Int,
         language: String
     ): AppResult<T> {
-        return withContext(appDispatchers.io) {
-            safeApiCall {
-                httpClient.get("$TMDB_BASE_URL$endpoint") {
-                    url {
-                        parameters.append("api_key", BuildKonfig.TMDB_API_KEY)
-                        parameters.append("query", query)
-                        parameters.append("page", page.toString())
-                        parameters.append("language", language)
-                        parameters.append("include_adult", "false")
-                    }
-                }.body<T>()
-            }
-        }
+        return apiClient.get(
+            path = endpoint,
+            "query" to query,
+            "page" to page.toString(),
+            "language" to language,
+            "include_adult" to "false"
+        )
     }
 }

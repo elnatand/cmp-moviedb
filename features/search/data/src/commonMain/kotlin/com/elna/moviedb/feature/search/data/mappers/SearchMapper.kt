@@ -1,9 +1,9 @@
 package com.elna.moviedb.feature.search.data.mappers
 
-import com.elna.moviedb.core.network.model.search.RemoteMultiSearchItem
-import com.elna.moviedb.core.network.model.search.RemoteSearchMovie
-import com.elna.moviedb.core.network.model.search.RemoteSearchPerson
-import com.elna.moviedb.core.network.model.search.RemoteSearchTvShow
+import com.elna.moviedb.feature.search.data.model.RemoteMultiSearchItem
+import com.elna.moviedb.feature.search.data.model.RemoteSearchMovie
+import com.elna.moviedb.feature.search.data.model.RemoteSearchPerson
+import com.elna.moviedb.feature.search.data.model.RemoteSearchTvShow
 import com.elna.moviedb.feature.movies.model.Movie
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem

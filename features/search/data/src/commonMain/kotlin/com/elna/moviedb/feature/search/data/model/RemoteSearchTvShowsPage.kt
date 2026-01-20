@@ -1,15 +1,16 @@
-package com.elna.moviedb.core.network.model.tv_shows
-
+package com.elna.moviedb.feature.search.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RemoteTvShowsPage(
+data class RemoteSearchTvShowsPage(
     @SerialName("page")
     val page: Int,
     @SerialName("total_pages")
     val totalPages: Int,
+    @SerialName("total_results")
+    val totalResults: Int,
     @SerialName("results")
-    val results: List<RemoteTvShow>
+    val results: List<RemoteSearchTvShow>
 )

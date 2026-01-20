@@ -2,7 +2,7 @@ package com.elna.moviedb.feature.search.data.repositories
 
 import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.network.SearchRemoteDataSource
+import com.elna.moviedb.feature.search.data.datasources.SearchRemoteDataSource
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
 import com.elna.moviedb.feature.search.domain.repository.SearchRepository

@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.network.model.tv_shows
+package com.elna.moviedb.feature.tvshows.data.model
 
 import com.elna.moviedb.core.model.CastMember
 import kotlinx.serialization.SerialName

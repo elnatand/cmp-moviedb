@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.network.model.search
+package com.elna.moviedb.feature.search.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
