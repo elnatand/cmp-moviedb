@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)  // for navigation routes
 }
 
+
 kotlin {
     androidLibrary {
         namespace = "com.elna.moviedb.core.ui"
@@ -13,10 +14,12 @@ kotlin {
         androidResources.enable = true
     }
 
+
+
     sourceSets {
         androidMain.dependencies {
-            // Tooling support - the new plugin doesn't support debugImplementation
-            implementation(libs.compose.ui.tooling)
+            // Tooling support - runtime only but transitive to consumer modules
+            runtimeOnly(libs.compose.ui.tooling)
         }
         commonMain.dependencies {
             api(libs.compose.material3)
