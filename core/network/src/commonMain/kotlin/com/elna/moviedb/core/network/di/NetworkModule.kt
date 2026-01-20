@@ -5,11 +5,13 @@ import com.elna.moviedb.core.network.MoviesRemoteDataSource
 import com.elna.moviedb.core.network.PersonRemoteDataSource
 import com.elna.moviedb.core.network.SearchRemoteDataSource
 import com.elna.moviedb.core.network.TvShowsRemoteDataSource
-import com.elna.moviedb.core.network.ktor.createHttpClient
+import com.elna.moviedb.core.network.client.provideHttpClientEngine
+import com.elna.moviedb.core.network.client.createHttpClient
 import org.koin.dsl.module
 
 val networkModule = module {
-    single { createHttpClient(httpClientEngine = get()) }
+    single { provideHttpClientEngine() }
+    single { createHttpClient(get()) }
 
     single {
         TvShowsRemoteDataSource(
