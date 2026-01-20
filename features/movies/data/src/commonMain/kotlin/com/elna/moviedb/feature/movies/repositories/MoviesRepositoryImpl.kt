@@ -3,7 +3,7 @@ package com.elna.moviedb.feature.movies.repositories
 import com.elna.moviedb.core.datastore.language.LanguageChangeCoordinator
 import com.elna.moviedb.core.datastore.language.LanguageChangeListener
 import com.elna.moviedb.core.datastore.language.LanguageProvider
-import com.elna.moviedb.core.database.MoviesLocalDataSource
+import com.elna.moviedb.feature.movies.datasources.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.asEntity

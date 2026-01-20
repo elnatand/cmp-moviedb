@@ -1,6 +1,8 @@
 package com.elna.moviedb.feature.movies.di
 
 
+import com.elna.moviedb.feature.movies.datasources.MoviesLocalDataSource
+import com.elna.moviedb.feature.movies.datasources.MoviesLocalDataSourceImpl
 import com.elna.moviedb.feature.movies.datasources.MoviesRemoteDataSource
 import com.elna.moviedb.feature.movies.repositories.CachingStrategy
 import com.elna.moviedb.feature.movies.repositories.MoviesRepository
@@ -28,6 +30,13 @@ val moviesDataModule = module {
             languageProvider = get(),
             cachingStrategy = get(),
             languageChangeCoordinator = get(),
+        )
+    }
+
+    single<MoviesLocalDataSource> {
+        MoviesLocalDataSourceImpl(
+            movieDao = get(),
+            movieDetailsDao = get(),
         )
     }
 }

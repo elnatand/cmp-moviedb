@@ -6,13 +6,13 @@ import org.koin.dsl.module
 
 val tvShowsPresentationModule = module {
     factory {
-        _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.TvShowsViewModel(
+        TvShowsViewModel(
             tvShowsRepository = get(),
         )
     }
 
     factory { (id: Int) ->
-        _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details.TvShowDetailsViewModel(
+        TvShowDetailsViewModel(
             tvShowId = id,
             tvShowsRepository = get()
         )

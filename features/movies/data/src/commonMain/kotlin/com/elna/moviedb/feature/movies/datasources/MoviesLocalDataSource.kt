@@ -1,5 +1,7 @@
-package com.elna.moviedb.core.database
+package com.elna.moviedb.feature.movies.datasources
 
+import com.elna.moviedb.core.database.MovieDao
+import com.elna.moviedb.core.database.MovieDetailsDao
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity

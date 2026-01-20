@@ -7,7 +7,6 @@ import com.elna.moviedb.feature.movies.model.MovieDetails
 import com.elna.moviedb.feature.movies.model.RemoteMovie
 import com.elna.moviedb.feature.movies.model.RemoteMovieDetails
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 fun MovieDetailsEntity.toDomain(): MovieDetails = MovieDetails(
     id = id,
@@ -50,12 +49,11 @@ fun MovieCategory.toTmdbPath(): String = when (this) {
 }
 
 
-@OptIn(ExperimentalTime::class)
 fun RemoteMovie.asEntity() = MovieEntity(
     id = id,
     timestamp = Clock.System.now().epochSeconds,
     title = title,
-    posterPath = posterPath
+    posterPath = posterPath,
 )
 
 
