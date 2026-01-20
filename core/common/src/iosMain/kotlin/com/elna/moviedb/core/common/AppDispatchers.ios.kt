@@ -1,11 +1,12 @@
 package com.elna.moviedb.core.common
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
-class IOSDispatcherProvider : AppDispatchers {
-    override val io = Dispatchers.Default  // iOS doesnt have an dedicated io
+object IOSDispatcherProvider : AppDispatchers {
+    override val io = Dispatchers.IO
     override val main = Dispatchers.Main
     override val default = Dispatchers.Default
 }
 
-actual fun provideAppDispatchers(): AppDispatchers = IOSDispatcherProvider()
+actual fun provideAppDispatchers(): AppDispatchers = IOSDispatcherProvider
