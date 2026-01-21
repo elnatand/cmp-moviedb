@@ -24,8 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.designsystem.component.AppErrorComponent
 import com.elna.moviedb.core.model.TvShowCategory
-import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.feature.tvshows.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState

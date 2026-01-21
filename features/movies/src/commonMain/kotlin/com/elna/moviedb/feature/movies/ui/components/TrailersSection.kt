@@ -27,8 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.designsystem.component.ImageLoader
 import com.elna.moviedb.core.model.Video
-import com.elna.moviedb.core.ui.utils.ImageLoader
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.trailers
 import org.jetbrains.compose.resources.stringResource

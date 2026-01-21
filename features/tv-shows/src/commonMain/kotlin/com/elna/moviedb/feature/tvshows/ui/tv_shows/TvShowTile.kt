@@ -5,7 +5,6 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,16 +16,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.common.utils.toPosterUrl
+import com.elna.moviedb.core.designsystem.component.ImageLoader
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
-import com.elna.moviedb.core.ui.navigation.SharedElementKeys
-import com.elna.moviedb.core.ui.utils.ImageLoader
-import com.elna.moviedb.core.ui.utils.toPosterUrl
+import com.elna.moviedb.core.navigation.SharedElementKeys
 
 @Composable
 fun TvShowTile(

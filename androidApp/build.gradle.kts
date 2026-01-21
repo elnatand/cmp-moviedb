@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.moviedb.composeMultiplatform)
@@ -7,7 +6,8 @@ plugins {
 dependencies {
     implementation(projects.composeApp)
     implementation(projects.core.network)
-    implementation(projects.core.ui)
+    implementation(projects.core.designsystem)
+    implementation(projects.core.navigation)
 
     implementation(libs.koin.android)
 }
