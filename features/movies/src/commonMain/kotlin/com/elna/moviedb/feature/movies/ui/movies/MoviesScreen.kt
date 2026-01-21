@@ -35,10 +35,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.designsystem.component.AppErrorComponent
+import com.elna.moviedb.core.designsystem.component.AppLoader
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
-import com.elna.moviedb.core.ui.design_system.AppErrorComponent
-import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MoviesEvent
 import com.elna.moviedb.feature.movies.model.MoviesUiAction
 import com.elna.moviedb.feature.movies.model.MoviesUiState
