@@ -33,11 +33,20 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(projects.core.navigation)
 
-            implementation(projects.features.movies)
-            implementation(projects.features.tvShows)
-            implementation(projects.features.search)
-            implementation(projects.features.profile)
-            implementation(projects.features.person)
+            implementation(projects.features.movies.api)
+            implementation(projects.features.movies.impl)
+
+            implementation(projects.features.tvShows.api)
+            implementation(projects.features.tvShows.impl)
+
+            implementation(projects.features.search.api)
+            implementation(projects.features.search.impl)
+
+            implementation(projects.features.profile.api)
+            implementation(projects.features.profile.impl)
+
+            implementation(projects.features.person.api)
+            implementation(projects.features.person.impl)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)

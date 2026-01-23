@@ -5,11 +5,11 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.elna.moviedb.core.navigation.MoviesRoute
-import com.elna.moviedb.core.navigation.ProfileRoute
 import com.elna.moviedb.core.navigation.Route
-import com.elna.moviedb.core.navigation.SearchRoute
-import com.elna.moviedb.core.navigation.TvShowsRoute
+import com.elna.moviedb.feature.movie.api.navigation.MoviesRoute
+import com.elna.moviedb.feature.profile.api.navigation.ProfileRoute
+import com.elna.moviedb.feature.search.api.navigation.SearchRoute
+import com.elna.moviedb.feature.tvshows.api.navigation.TvShowsRoute
 import com.elna.moviedb.navigation.TopLevelDestination
 
 @Composable
