@@ -72,6 +72,8 @@ cmp-moviedb/
 ├── androidApp/           # Android application module (APK entry point)
 │   └── src/main/         # Android-specific code (MainActivity, resources)
 │
+├── iosApp/               # iOS app wrapper with Xcode project
+│
 ├── composeApp/           # Shared Compose Multiplatform library
 │   ├── androidMain/      # Android-specific locale configuration
 │   ├── commonMain/       # Shared app code (App.kt, navigation, DI)
@@ -94,7 +96,6 @@ cmp-moviedb/
 │   └── profile/          # User profile and settings screen
 │
 ├── build-logic/          # Custom Gradle convention plugins
-├── iosApp/               # iOS app wrapper with Xcode project
 ├── gradle/               # Gradle configuration and version catalog
 └── Configuration files   # Build scripts, API keys, properties
 ```
