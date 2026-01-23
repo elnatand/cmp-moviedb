@@ -1,0 +1,111 @@
+package com.elna.moviedb.feature.tvshows.ui.tv_shows
+
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.common.utils.toPosterUrl
+import com.elna.moviedb.core.designsystem.component.ImageLoader
+import com.elna.moviedb.core.model.TvShow
+import com.elna.moviedb.core.model.TvShowCategory
+import com.elna.moviedb.core.navigation.SharedElementKeys
+
+@Composable
+fun TvShowTile(
+    category: TvShowCategory,
+    tvShow: TvShow,
+    onClick: (id: Int, title: String) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
+) {
+    val imageUrl = tvShow.posterPath.toPosterUrl()
+
+    val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+    Card(
+        modifier = Modifier.width(144.dp),
+        onClick = { onClick(tvShow.id, tvShow.name) },
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 8.dp,
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            val imageModifier = Modifier
+                .height(216.dp)
+                .clip(cornerShape)
+            val finalModifier =
+                if (sharedTransitionScope != null && animatedVisibilityScope != null) {
+                    with(sharedTransitionScope) {
+                        imageModifier
+                            .sharedElement(
+                                sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.TV_SHOW_POSTER}${category.name}-${tvShow.id}"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                            )
+                            .clip(cornerShape)
+                    }
+                } else {
+                    imageModifier
+                }
+
+            ImageLoader(
+                imageUrl = imageUrl,
+                modifier = finalModifier
+            )
+
+            Text(
+                modifier = Modifier.height(64.dp).padding(8.dp),
+                text = tvShow.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun TvShowTilePreview() {
+    MaterialTheme {
+        Box(
+            modifier = Modifier
+                .background(Color.White)
+                .padding(16.dp)
+        ) {
+            TvShowTile(
+                category = TvShowCategory.POPULAR,
+                tvShow = TvShow(
+                    id = 1,
+                    name = "Law and Order: Special Victims Unit",
+                    posterPath = "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg"
+                ),
+                onClick = { _, _ -> }
+            )
+        }
+    }
+}
