@@ -36,9 +36,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.designsystem.component.ImageLoader
 import com.elna.moviedb.core.model.AppLanguage
-import com.elna.moviedb.core.model.AppTheme
-import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.model.ThemeConfig
 import com.elna.moviedb.feature.profile.model.ProfileEvent
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.arabic
@@ -82,7 +82,7 @@ private fun ProfileScreen(
     selectedTheme: String,
     appVersion: String,
     onLanguageSelected: (AppLanguage) -> Unit,
-    onThemeSelected: (AppTheme) -> Unit
+    onThemeSelected: (ThemeConfig) -> Unit
 ) {
     var languageExpanded by remember { mutableStateOf(false) }
     var themeExpanded by remember { mutableStateOf(false) }
@@ -187,11 +187,11 @@ private fun ProfileScreen(
             }
 
             // Theme Selector
-            val selectedAppTheme = AppTheme.getAppThemeByValue(selectedTheme)
-            val selectedThemeNameRes = when (selectedAppTheme) {
-                AppTheme.LIGHT -> Res.string.theme_light
-                AppTheme.DARK -> Res.string.theme_dark
-                AppTheme.SYSTEM -> Res.string.theme_system
+            val selectedThemeConfig = ThemeConfig.getThemeConfigByValue(selectedTheme)
+            val selectedThemeNameRes = when (selectedThemeConfig) {
+                ThemeConfig.LIGHT -> Res.string.theme_light
+                ThemeConfig.DARK -> Res.string.theme_dark
+                ThemeConfig.SYSTEM -> Res.string.theme_system
             }
 
             ExposedDropdownMenuBox(
@@ -213,17 +213,17 @@ private fun ProfileScreen(
                     expanded = themeExpanded,
                     onDismissRequest = { themeExpanded = false }
                 ) {
-                    AppTheme.entries.forEach { appTheme ->
-                        val themeNameRes = when (appTheme) {
-                            AppTheme.LIGHT -> Res.string.theme_light
-                            AppTheme.DARK -> Res.string.theme_dark
-                            AppTheme.SYSTEM -> Res.string.theme_system
+                    ThemeConfig.entries.forEach { themeConfig ->
+                        val themeNameRes = when (themeConfig) {
+                            ThemeConfig.LIGHT -> Res.string.theme_light
+                            ThemeConfig.DARK -> Res.string.theme_dark
+                            ThemeConfig.SYSTEM -> Res.string.theme_system
                         }
                         DropdownMenuItem(
                             text = { Text(stringResource(themeNameRes)) },
                             onClick = {
                                 themeExpanded = false
-                                onThemeSelected(appTheme)
+                                onThemeSelected(themeConfig)
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
                         )

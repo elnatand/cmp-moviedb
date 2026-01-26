@@ -1,7 +1,7 @@
 package com.elna.moviedb.feature.profile.model
 
 import com.elna.moviedb.core.model.AppLanguage
-import com.elna.moviedb.core.model.AppTheme
+import com.elna.moviedb.core.model.ThemeConfig
 
 /**
  * Represents all possible user actions/events in the Profile screen.
@@ -17,5 +17,5 @@ sealed interface ProfileEvent {
     /**
      * User selected a new theme
      */
-    data class SetTheme(val theme: AppTheme) : ProfileEvent
+    data class SetTheme(val theme: ThemeConfig) : ProfileEvent
 }
