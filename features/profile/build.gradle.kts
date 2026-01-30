@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
     alias(libs.plugins.moviedb.composeMultiplatform)
@@ -16,7 +15,8 @@ kotlin {
             implementation(projects.core.data)
             implementation(projects.core.datastore)
             implementation(projects.core.common)
-            implementation(projects.core.ui)
+            implementation(projects.core.designsystem)
+            implementation(projects.core.navigation)
 
             implementation(libs.koin.core)
         }

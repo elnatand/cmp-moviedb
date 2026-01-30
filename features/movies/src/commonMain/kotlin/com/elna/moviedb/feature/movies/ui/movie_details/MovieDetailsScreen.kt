@@ -26,11 +26,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.designsystem.component.AppBackButton
+import com.elna.moviedb.core.designsystem.component.AppErrorComponent
+import com.elna.moviedb.core.designsystem.component.AppLoader
 import com.elna.moviedb.core.model.MovieDetails
-import com.elna.moviedb.core.ui.design_system.AppErrorComponent
-import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
+import com.elna.moviedb.feature.movies.model.MovieDetailsUiState
 import com.elna.moviedb.feature.movies.ui.components.BoxOfficeItem
 import com.elna.moviedb.feature.movies.ui.components.CastSection
 import com.elna.moviedb.feature.movies.ui.components.InfoItem
@@ -50,9 +53,6 @@ import com.elna.moviedb.resources.release
 import com.elna.moviedb.resources.revenue
 import com.elna.moviedb.resources.runtime
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import com.elna.moviedb.core.ui.design_system.AppBackButton
-import com.elna.moviedb.feature.movies.model.MovieDetailsUiState
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 

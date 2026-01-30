@@ -6,11 +6,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Theaters
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.elna.moviedb.core.ui.navigation.MoviesRoute
-import com.elna.moviedb.core.ui.navigation.ProfileRoute
-import com.elna.moviedb.core.ui.navigation.Route
-import com.elna.moviedb.core.ui.navigation.SearchRoute
-import com.elna.moviedb.core.ui.navigation.TvShowsRoute
+import com.elna.moviedb.core.navigation.MoviesRoute
+import com.elna.moviedb.core.navigation.ProfileRoute
+import com.elna.moviedb.core.navigation.Route
+import com.elna.moviedb.core.navigation.SearchRoute
+import com.elna.moviedb.core.navigation.TvShowsRoute
 
 enum class TopLevelDestination(
     val icon: ImageVector,
