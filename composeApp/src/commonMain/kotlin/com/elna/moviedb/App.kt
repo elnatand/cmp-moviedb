@@ -1,13 +1,13 @@
 package com.elna.moviedb
 
-import Theme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.datastore.AppSettingsPreferences
+import com.elna.moviedb.core.designsystem.theme.AppTheme
 import com.elna.moviedb.core.model.AppLanguage
-import com.elna.moviedb.core.model.AppTheme
+import com.elna.moviedb.core.model.ThemeConfig
 import com.elna.moviedb.navigation.RootNavGraph
 import com.elna.moviedb.ui.Localization
 import com.elna.moviedb.ui.NavigationBar
@@ -21,11 +21,11 @@ fun App() {
     val selectedLanguage by preferencesManager.getAppLanguageCode()
         .collectAsStateWithLifecycle(AppLanguage.ENGLISH.code)
 
-    val selectedTheme by preferencesManager.getAppTheme()
-        .collectAsStateWithLifecycle(AppTheme.SYSTEM.value)
+    val selectedTheme by preferencesManager.getThemeConfig()
+        .collectAsStateWithLifecycle(ThemeConfig.SYSTEM.value)
 
     Localization(selectedLanguage) {
-        Theme(selectedTheme) {
+        AppTheme(selectedTheme) {
             Scaffold(
                 bottomBar = {
                     NavigationBar(appState = appState)
