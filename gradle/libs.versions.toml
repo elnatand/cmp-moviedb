@@ -7,7 +7,7 @@ android-minSdk = "24"
 android-compileSdk = "36"
 android-targetSdk = "36"
 
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 ksp = "2.3.4"
 composeMultiplatform = "1.10.0"
 compose-material3 = "1.10.0-alpha05"
