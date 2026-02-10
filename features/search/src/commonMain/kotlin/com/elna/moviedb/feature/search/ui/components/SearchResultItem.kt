@@ -18,12 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.ui.utils.ImageLoader
-import com.elna.moviedb.core.ui.utils.toImageUrl
+import com.elna.moviedb.core.common.utils.toImageUrl
+import com.elna.moviedb.core.designsystem.component.ImageLoader
 import com.elna.moviedb.core.model.SearchResultItem
 
 @Composable

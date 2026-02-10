@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.core.common.utils.AppVersion
 import com.elna.moviedb.core.datastore.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
-import com.elna.moviedb.core.model.AppTheme
+import com.elna.moviedb.core.model.ThemeConfig
 import com.elna.moviedb.feature.profile.model.ProfileEvent
 import com.elna.moviedb.feature.profile.model.ProfileUiState
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,7 +32,7 @@ class ProfileViewModel(
 
     val uiState: StateFlow<ProfileUiState> = combine(
         appSettingsPreferences.getAppLanguageCode(),
-        appSettingsPreferences.getAppTheme()
+        appSettingsPreferences.getThemeConfig()
     ) { languageCode, theme ->
         ProfileUiState(
             selectedLanguageCode = languageCode,
@@ -44,7 +44,7 @@ class ProfileViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = ProfileUiState(
             selectedLanguageCode = AppLanguage.ENGLISH.code,
-            selectedThemeValue = AppTheme.SYSTEM.value,
+            selectedThemeValue = ThemeConfig.SYSTEM.value,
             appVersion = appVersion.getAppVersion()
         )
     )
@@ -66,9 +66,9 @@ class ProfileViewModel(
         }
     }
 
-    private fun setTheme(theme: AppTheme) {
+    private fun setTheme(theme: ThemeConfig) {
         viewModelScope.launch {
-            appSettingsPreferences.setAppTheme(theme)
+            appSettingsPreferences.setThemeConfig(theme)
         }
     }
 }

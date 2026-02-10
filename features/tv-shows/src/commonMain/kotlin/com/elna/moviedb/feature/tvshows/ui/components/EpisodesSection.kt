@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.common.utils.formatDate
 import com.elna.moviedb.core.model.TvShowDetails
-import com.elna.moviedb.core.ui.utils.formatDate
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.aired_prefix
 import com.elna.moviedb.resources.airs_prefix

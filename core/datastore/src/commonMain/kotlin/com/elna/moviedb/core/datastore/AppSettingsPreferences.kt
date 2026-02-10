@@ -1,7 +1,7 @@
 package com.elna.moviedb.core.datastore
 
 import com.elna.moviedb.core.model.AppLanguage
-import com.elna.moviedb.core.model.AppTheme
+import com.elna.moviedb.core.model.ThemeConfig
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -31,12 +31,12 @@ interface AppSettingsPreferences {
      *
      * @return Flow emitting the theme value
      */
-    fun getAppTheme(): Flow<String>
+    fun getThemeConfig(): Flow<String>
 
     /**
      * Sets the app theme.
      *
      * @param theme The theme to set
      */
-    suspend fun setAppTheme(theme: AppTheme)
+    suspend fun setThemeConfig(theme: ThemeConfig)
 }

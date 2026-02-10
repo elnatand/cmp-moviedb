@@ -23,9 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.common.utils.toProfileUrl
+import com.elna.moviedb.core.designsystem.component.ImageLoader
 import com.elna.moviedb.core.model.CastMember
-import com.elna.moviedb.core.ui.utils.ImageLoader
-import com.elna.moviedb.core.ui.utils.toProfileUrl
 
 @Composable
 internal fun CastMemberCard(
