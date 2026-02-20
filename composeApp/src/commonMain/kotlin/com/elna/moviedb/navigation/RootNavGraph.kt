@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.elna.moviedb.core.ui.navigation.Route
+import com.elna.moviedb.core.navigation.Route
 import com.elna.moviedb.feature.movies.navigation.moviesFlow
 import com.elna.moviedb.feature.person.navigation.personDetailsEntry
 import com.elna.moviedb.feature.profile.navigation.profileEntry
