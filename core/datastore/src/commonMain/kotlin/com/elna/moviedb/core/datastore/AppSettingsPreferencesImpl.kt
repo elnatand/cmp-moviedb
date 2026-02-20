@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.elna.moviedb.core.model.AppLanguage
-import com.elna.moviedb.core.model.AppTheme
+import com.elna.moviedb.core.model.ThemeConfig
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -37,13 +37,13 @@ internal class AppSettingsPreferencesImpl(
         }
     }
 
-    override fun getAppTheme(): Flow<String> {
+    override fun getThemeConfig(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[PreferenceKeys.THEME] ?: AppTheme.SYSTEM.value
+            preferences[PreferenceKeys.THEME] ?: ThemeConfig.SYSTEM.value
         }
     }
 
-    override suspend fun setAppTheme(theme: AppTheme) {
+    override suspend fun setThemeConfig(theme: ThemeConfig) {
         dataStore.edit { preferences ->
             preferences[PreferenceKeys.THEME] = theme.value
         }
