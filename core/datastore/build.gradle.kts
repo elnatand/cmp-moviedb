@@ -4,7 +4,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.elna.moviedb.core.datastore"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
