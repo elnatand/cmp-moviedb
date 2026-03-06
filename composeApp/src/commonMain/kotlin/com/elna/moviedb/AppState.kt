@@ -41,11 +41,16 @@ class AppState(
     }
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
-        when (topLevelDestination) {
-            TopLevelDestination.MOVIES -> navBackStack.add(MoviesRoute.MoviesListRoute)
-            TopLevelDestination.TV_SHOWS -> navBackStack.add(TvShowsRoute.TvShowsListRoute)
-            TopLevelDestination.SEARCH -> navBackStack.add(SearchRoute)
-            TopLevelDestination.PROFILE -> navBackStack.add(ProfileRoute)
+        val targetRoute = when (topLevelDestination) {
+            TopLevelDestination.MOVIES -> MoviesRoute.MoviesListRoute
+            TopLevelDestination.TV_SHOWS -> TvShowsRoute.TvShowsListRoute
+            TopLevelDestination.SEARCH -> SearchRoute
+            TopLevelDestination.PROFILE -> ProfileRoute
         }
+
+        if (navBackStack.lastOrNull() == targetRoute) return
+
+        navBackStack.clear()
+        navBackStack.add(targetRoute)
     }
 }
