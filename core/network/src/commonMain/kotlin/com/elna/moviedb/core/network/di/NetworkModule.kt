@@ -1,14 +1,9 @@
 package com.elna.moviedb.core.network.di
 
 
-import com.elna.moviedb.core.network.MoviesRemoteDataSource
-import com.elna.moviedb.core.network.PersonRemoteDataSource
-import com.elna.moviedb.core.network.SearchRemoteDataSource
-import com.elna.moviedb.core.network.TvShowsRemoteDataSource
-import com.elna.moviedb.core.network.client.provideHttpClientEngine
-import com.elna.moviedb.core.network.client.createHttpClient
 import com.elna.moviedb.core.network.TmdbApiClient
-import com.elna.moviedb.core.network.ktor.createHttpClient
+import com.elna.moviedb.core.network.client.createHttpClient
+import com.elna.moviedb.core.network.client.provideHttpClientEngine
 import org.koin.dsl.module
 
 /**
@@ -21,8 +16,6 @@ import org.koin.dsl.module
 val networkModule = module {
     single { provideHttpClientEngine() }
     single { createHttpClient(get()) }
-    // Internal HTTP client - not exposed to features
-    single { createHttpClient(httpClientEngine = get()) }
 
     // Public API client - the only network dependency features should use
     single {
