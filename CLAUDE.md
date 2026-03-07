@@ -241,25 +241,10 @@ Claude: *Generates code with stringResource(Res.string.logout_button)*
 ## Common Development Tasks
 
 ### Adding a New Feature Module
-1. Create module structure: `features/new-feature/`
-2. Add `build.gradle.kts` with:
-   ```kotlin
-   plugins {
-       alias(libs.plugins.moviedb.kotlinMultiplatform)
-       alias(libs.plugins.moviedb.composeMultiplatform)
-   }
-   ```
-3. Define sourceSets with dependencies
-4. Create Koin DI module for feature
-5. Add to `settings.gradle.kts`
-6. Add dependency in `composeApp/build.gradle.kts`
+Use the `/add-feature-module` skill to scaffold a new feature module with the standard structure, build config, Koin DI, and project registration.
 
 ### Adding a New Movie/TV Category
-Thanks to category abstraction:
-1. Add enum value to `MovieCategory` or `TvShowCategory` in `core/model`
-2. Add corresponding API endpoint in network client
-3. Add string resource for category name
-4. **No changes needed** in ViewModel or Repository implementations
+Use the `/add-category` skill to add a new category. Thanks to the category abstraction pattern, no ViewModel or UI changes are needed.
 
 ### Modifying UI Theme
 Material 3 theme defined in:
