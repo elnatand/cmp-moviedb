@@ -53,10 +53,10 @@ class ProfileViewModel(
      * Main entry point for handling user intents.
      * All UI interactions should go through this method.
      */
-    fun onEvent(intent: ProfileEvent) {
-        when (intent) {
-            is ProfileEvent.SetLanguage -> setLanguage(intent.language)
-            is ProfileEvent.SetTheme -> setTheme(intent.theme)
+    fun onEvent(event: ProfileEvent) {
+        when (event) {
+            is ProfileEvent.SetLanguage -> setLanguage(event.language)
+            is ProfileEvent.SetTheme -> setTheme(event.theme)
         }
     }
 
