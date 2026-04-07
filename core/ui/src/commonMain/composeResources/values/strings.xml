@@ -112,6 +112,13 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System Default</string>
 
+    <!-- Movie List Screen -->
+    <string name="now_playing">Now Playing</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="watch_now">WATCH NOW</string>
+    <string name="view_details">VIEW DETAILS</string>
+
     <!-- TMDB Attribution -->
     <string name="about">About</string>
     <string name="data_source">Data Source</string>

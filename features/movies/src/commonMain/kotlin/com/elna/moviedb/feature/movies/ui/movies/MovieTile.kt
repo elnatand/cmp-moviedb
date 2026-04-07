@@ -2,9 +2,9 @@ package com.elna.moviedb.feature.movies.ui.movies
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -14,7 +14,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,30 +37,30 @@ fun MovieTile(
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val imageUrl = movie.posterPath.toPosterUrl()
+    val cornerShape = RoundedCornerShape(12.dp)
 
-    val cornerShape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
     Card(
-        modifier = Modifier.width(144.dp),
-        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier
+            .width(128.dp)
+            .height(192.dp),
+        shape = cornerShape,
         onClick = { onClick(movie.id, movie.title) },
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp,
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             val imageModifier = Modifier
-                .height(216.dp)
+                .width(128.dp)
+                .height(192.dp)
                 .clip(cornerShape)
+
             val finalModifier = if (sharedTransitionScope != null && animatedVisibilityScope != null) {
                 with(sharedTransitionScope) {
                     imageModifier
                         .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "${SharedElementKeys.MOVIE_POSTER}${category.name}-${movie.id}"),
+                            sharedContentState = rememberSharedContentState(
+                                key = "${SharedElementKeys.MOVIE_POSTER}${category.name}-${movie.id}"
+                            ),
                             animatedVisibilityScope = animatedVisibilityScope,
                         )
                         .clip(cornerShape)
@@ -70,14 +74,29 @@ fun MovieTile(
                 modifier = finalModifier
             )
 
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colorStops = arrayOf(
+                                0.5f to Color.Transparent,
+                                1.0f to Color.Black.copy(alpha = 0.9f)
+                            )
+                        )
+                    )
+            )
+
             Text(
-                modifier = Modifier.height(64.dp).padding(8.dp),
                 text = movie.title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(horizontal = 8.dp, vertical = 6.dp)
             )
         }
     }

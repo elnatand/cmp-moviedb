@@ -1,4 +1,9 @@
 <resources>
+    <string name="now_playing">अभी चल रहा है</string>
+    <string name="popular">लोकप्रिय</string>
+    <string name="top_rated">शीर्ष रेटेड</string>
+    <string name="watch_now">अभी देखें</string>
+    <string name="view_details">विवरण देखें</string>
     <string name="popular_movies">लोकप्रिय फ़िल्में</string>
     <string name="top_rated_movies">शीर्ष रेटेड फ़िल्में</string>
     <string name="now_playing_movies">प्रदर्शित फ़िल्में</string>

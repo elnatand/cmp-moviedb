@@ -1,4 +1,9 @@
 <resources>
+    <string name="now_playing">מוקרן עכשיו</string>
+    <string name="popular">פופולרי</string>
+    <string name="top_rated">מדורגים גבוה</string>
+    <string name="watch_now">צפה עכשיו</string>
+    <string name="view_details">פרטים</string>
     <string name="popular_movies">סרטים פופולריים</string>
     <string name="top_rated_movies">סרטים מדורגים</string>
     <string name="now_playing_movies">סרטים בקולנוע</string>

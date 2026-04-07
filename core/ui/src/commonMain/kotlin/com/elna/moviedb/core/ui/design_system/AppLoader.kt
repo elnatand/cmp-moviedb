@@ -14,7 +14,7 @@ fun AppLoader(
 ) {
     CircularProgressIndicator(
         modifier = modifier.width(40.dp),
-        color = Color.Blue,
+        color = MaterialTheme.colorScheme.primary,
         trackColor = MaterialTheme.colorScheme.secondary,
     )
 }

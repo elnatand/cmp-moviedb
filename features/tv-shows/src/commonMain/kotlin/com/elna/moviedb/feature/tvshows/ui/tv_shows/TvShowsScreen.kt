@@ -2,6 +2,7 @@ package com.elna.moviedb.feature.tvshows.ui.tv_shows
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,11 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,7 +34,6 @@ import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.on_the_air_tv_shows
 import com.elna.moviedb.resources.popular_tv_shows
 import com.elna.moviedb.resources.top_rated_tv_shows
-import com.elna.moviedb.resources.tv_shows
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,7 +69,6 @@ private fun TvShowsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Handle UI actions (one-time events)
     LaunchedEffect(Unit) {
         uiActions.collect { effect ->
             when (effect) {
@@ -85,25 +83,24 @@ private fun TvShowsScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(Res.string.tv_shows)) },
+        containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.padding(top = 16.dp)
             )
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
             when {
-                // Show error screen only when there's no data and repository emits error
                 uiState.state == TvShowsUiState.State.ERROR && !uiState.hasAnyData -> {
-                    AppErrorComponent(
-                        onRetry = { onEvent(TvShowsEvent.Retry) }
-                    )
+                    AppErrorComponent(onRetry = { onEvent(TvShowsEvent.Retry) })
                 }
-
-                // Show content with section-specific loaders
                 else -> {
                     TvShowsContent(
                         uiState = uiState,
@@ -114,11 +111,6 @@ private fun TvShowsScreen(
                     )
                 }
             }
-
-            SnackbarHost(
-                hostState = snackbarHostState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }
@@ -134,16 +126,14 @@ private fun TvShowsContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
-            .padding(vertical = 8.dp)
+            .padding(top = 16.dp)
     ) {
-        // Dynamically render all TV show categories
-        // Following OCP - adding new categories requires ZERO changes here
         TvShowCategory.entries.forEach { category ->
             val tvShows = uiState.getTvShows(category)
             val isLoading = uiState.isLoading(category)
 
-            // Show section if it has data OR if it's loading (initial load)
             if (tvShows.isNotEmpty() || isLoading) {
                 TvShowsSection(
                     category = category,
@@ -157,14 +147,10 @@ private fun TvShowsContent(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(70.dp))
+        Spacer(modifier = Modifier.height(80.dp))
     }
 }
 
-/**
- * Maps TvShowCategory to its corresponding string resource.
- * This is the only place that needs updating when adding a new category.
- */
 @Composable
 private fun getCategoryStringResource(category: TvShowCategory) = when (category) {
     TvShowCategory.POPULAR -> Res.string.popular_tv_shows

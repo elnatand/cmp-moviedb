@@ -64,10 +64,9 @@ internal fun MovieHeroSection(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.7f)
-                        )
+                        0.0f to Color.Transparent,
+                        0.55f to Color(0xFF131318).copy(alpha = 0.6f),
+                        1.0f to Color(0xFF131318)
                     )
                 )
         )
@@ -153,7 +152,7 @@ internal fun MovieHeroSection(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = stringResource(Res.string.rating),
-                            tint = Color(0xFFFFD700),
+                            tint = Color(0xFFE9C400),
                             modifier = Modifier.size(20.dp)
                         )
                         Text(

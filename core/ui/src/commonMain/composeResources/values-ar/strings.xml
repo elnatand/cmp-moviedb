@@ -1,4 +1,9 @@
 <resources>
+    <string name="now_playing">يُعرض الآن</string>
+    <string name="popular">شائع</string>
+    <string name="top_rated">الأعلى تقييمًا</string>
+    <string name="watch_now">شاهد الآن</string>
+    <string name="view_details">عرض التفاصيل</string>
     <string name="popular_movies">أفلام شائعة</string>
     <string name="top_rated_movies">أفلام الأعلى تقييمًا</string>
     <string name="now_playing_movies">أفلام قيد العرض</string>
