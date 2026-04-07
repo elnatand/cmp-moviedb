@@ -4,6 +4,8 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
+import androidx.room.migration.Migration
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.database.model.CastMemberEntity
@@ -11,6 +13,12 @@ import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
 import com.elna.moviedb.core.database.model.VideoEntity
 
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.prepare("ALTER TABLE MovieDetailsEntity ADD COLUMN directors TEXT DEFAULT NULL")
+            .use { it.step() }
+    }
+}
 
 @Database(
     entities = [
@@ -19,7 +27,7 @@ import com.elna.moviedb.core.database.model.VideoEntity
         VideoEntity::class,
         CastMemberEntity::class
     ],
-    version = 1
+    version = 2
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -37,6 +45,7 @@ fun getRoomDatabase(
     appDispatchers: AppDispatchers
 ): AppDatabase {
     return builder
+        .addMigrations(MIGRATION_1_2)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(appDispatchers.io)
         .build()

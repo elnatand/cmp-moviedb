@@ -44,6 +44,7 @@ import com.elna.moviedb.resources.genres
 import com.elna.moviedb.resources.language
 import com.elna.moviedb.resources.minutes_suffix
 import com.elna.moviedb.resources.overview
+import com.elna.moviedb.resources.director
 import com.elna.moviedb.resources.production_companies
 import com.elna.moviedb.resources.production_countries
 import com.elna.moviedb.resources.release
@@ -185,6 +186,19 @@ private fun MovieDetailsContent(
                                 text = overview,
                                 style = MaterialTheme.typography.bodyMedium,
                                 lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
+                            )
+                        }
+                    )
+                }
+
+                // Director Section
+                movie.directors?.takeIf { it.isNotEmpty() }?.let { directors ->
+                    SectionCard(
+                        title = stringResource(Res.string.director),
+                        content = {
+                            Text(
+                                text = directors.joinToString(", "),
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
                     )

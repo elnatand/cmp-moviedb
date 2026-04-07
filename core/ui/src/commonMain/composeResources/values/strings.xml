@@ -27,6 +27,7 @@
     <string name="revenue">Revenue</string>
     <string name="production_companies">Production Companies</string>
     <string name="production_countries">Production Countries</string>
+    <string name="director">Director</string>
     <string name="minutes_suffix">min</string>
 
     <!-- Generic / Common -->

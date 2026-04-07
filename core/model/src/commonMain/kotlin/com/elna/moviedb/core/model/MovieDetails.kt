@@ -31,5 +31,6 @@ data class MovieDetails(
     val productionCountries: List<String>?,
     val spokenLanguages: List<String>?,
     val trailers: List<Video>? = null,
-    val cast: List<CastMember>? = null
+    val cast: List<CastMember>? = null,
+    val directors: List<String>? = null
 )

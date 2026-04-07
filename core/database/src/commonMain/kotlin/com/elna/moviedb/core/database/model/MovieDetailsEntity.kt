@@ -40,7 +40,8 @@ data class MovieDetailsEntity(
     @ColumnInfo(name = "production_countries")
     val productionCountries: String?,
     @ColumnInfo(name = "spoken_languages")
-    val spokenLanguages: String?
+    val spokenLanguages: String?,
+    val directors: String? = null
 ) {
     fun toDomain(): MovieDetails = MovieDetails(
         id = id,
@@ -65,6 +66,7 @@ data class MovieDetailsEntity(
         genres = genres?.split(",")?.filter { it.isNotBlank() },
         productionCompanies = productionCompanies?.split(",")?.filter { it.isNotBlank() },
         productionCountries = productionCountries?.split(",")?.filter { it.isNotBlank() },
-        spokenLanguages = spokenLanguages?.split(",")?.filter { it.isNotBlank() }
+        spokenLanguages = spokenLanguages?.split(",")?.filter { it.isNotBlank() },
+        directors = directors?.split(",")?.filter { it.isNotBlank() }
     )
 }

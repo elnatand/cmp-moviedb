@@ -199,16 +199,18 @@ class MoviesRepositoryImpl(
 
         val trailers = processVideosResult(videosResult)
         val cast = processCreditsResult(creditsResult)
+        val directors = processDirectorsResult(creditsResult)
 
         // Convert to entity then to domain (to apply mapping logic)
         val detailsEntity = details.asEntity()
         val detailsDomain = detailsEntity.toDomain()
 
-        // Return domain model with trailers and cast
+        // Return domain model with trailers, cast, and directors
         AppResult.Success(
             detailsDomain.copy(
                 trailers = trailers,
-                cast = cast
+                cast = cast,
+                directors = directors
             )
         )
     }
@@ -251,6 +253,23 @@ class MoviesRepositoryImpl(
     }
 
     /**
+     * Extracts director names from crew credits.
+     * Returns empty list on error (graceful degradation).
+     */
+    private fun processDirectorsResult(creditsResult: AppResult<RemoteMovieCredits>)
+        : List<String> {
+        return when (creditsResult) {
+            is AppResult.Success -> {
+                creditsResult.data.crew
+                    ?.filter { it.job == "Director" }
+                    ?.map { it.name }
+                    ?: emptyList()
+            }
+            is AppResult.Error -> emptyList()
+        }
+    }
+
+    /**
      * Saves movie details to local cache.
      * Saves details, videos, and cast in separate operations.
      */
@@ -280,7 +299,8 @@ class MoviesRepositoryImpl(
                 genres = genres?.joinToString(","),
                 productionCompanies = productionCompanies?.joinToString(","),
                 productionCountries = productionCountries?.joinToString(","),
-                spokenLanguages = spokenLanguages?.joinToString(",")
+                spokenLanguages = spokenLanguages?.joinToString(","),
+                directors = directors?.joinToString(",")
             )
         }
         localDataSource.insertMovieDetails(detailsEntity)

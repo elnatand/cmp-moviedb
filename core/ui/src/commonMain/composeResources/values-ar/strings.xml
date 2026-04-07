@@ -27,6 +27,7 @@
     <string name="revenue">الإيرادات</string>
     <string name="production_companies">شركات الإنتاج</string>
     <string name="production_countries">بلدان الإنتاج</string>
+    <string name="director">المخرج</string>
     <string name="minutes_suffix">دقيقة</string>
 
     <!-- Generic / Common -->

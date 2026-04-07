@@ -27,6 +27,7 @@
     <string name="revenue">राजस्व</string>
     <string name="production_companies">निर्माण कंपनियाँ</string>
     <string name="production_countries">निर्माण देश</string>
+    <string name="director">निर्देशक</string>
     <string name="minutes_suffix">मिनट</string>
 
     <!-- Generic / Common -->

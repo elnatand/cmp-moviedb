@@ -9,7 +9,23 @@ data class RemoteMovieCredits(
     @SerialName("id")
     val id: Int,
     @SerialName("cast")
-    val cast: List<RemoteCastMember>?
+    val cast: List<RemoteCastMember>?,
+    @SerialName("crew")
+    val crew: List<RemoteCrewMember>?
+)
+
+@Serializable
+data class RemoteCrewMember(
+    @SerialName("id")
+    val id: Int,
+    @SerialName("name")
+    val name: String,
+    @SerialName("job")
+    val job: String?,
+    @SerialName("department")
+    val department: String?,
+    @SerialName("profile_path")
+    val profilePath: String?
 )
 
 @Serializable
