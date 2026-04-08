@@ -8,12 +8,14 @@ import com.elna.moviedb.core.data.strategy.CachingStrategy
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
+import com.elna.moviedb.core.database.model.DirectorEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.datastore.PaginationPreferences
 import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.CastMember
+import com.elna.moviedb.core.model.Director
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.model.MovieDetails
@@ -167,10 +169,12 @@ class MoviesRepositoryImpl(
         val cachedMovieDetails = localDataSource.getMovieDetails(movieId) ?: return null
         val cachedVideos = localDataSource.getVideosForMovie(movieId)
         val cachedCast = localDataSource.getCastForMovie(movieId)
+        val cachedDirectors = localDataSource.getDirectorsForMovie(movieId)
 
         return cachedMovieDetails.toDomain().copy(
             trailers = cachedVideos.map { it.toDomain() },
-            cast = cachedCast.sortedBy { it.order }.map { it.toDomain() }
+            cast = cachedCast.sortedBy { it.order }.map { it.toDomain() },
+            directors = cachedDirectors.map { it.toDomain() }
         )
     }
 
@@ -253,16 +257,16 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Extracts director names from crew credits.
+     * Extracts directors from crew credits.
      * Returns empty list on error (graceful degradation).
      */
     private fun processDirectorsResult(creditsResult: AppResult<RemoteMovieCredits>)
-        : List<String> {
+        : List<Director> {
         return when (creditsResult) {
             is AppResult.Success -> {
                 creditsResult.data.crew
                     ?.filter { it.job == "Director" }
-                    ?.map { it.name }
+                    ?.map { it.toDomain() }
                     ?: emptyList()
             }
             is AppResult.Error -> emptyList()
@@ -300,7 +304,7 @@ class MoviesRepositoryImpl(
                 productionCompanies = productionCompanies?.joinToString(","),
                 productionCountries = productionCountries?.joinToString(","),
                 spokenLanguages = spokenLanguages?.joinToString(","),
-                directors = directors?.joinToString(",")
+                directors = null
             )
         }
         localDataSource.insertMovieDetails(detailsEntity)
@@ -326,6 +330,18 @@ class MoviesRepositoryImpl(
             )
         }
         localDataSource.replaceCastForMovie(movieId, castEntities)
+
+        // Save directors
+        val directorList = movieDetails.directors ?: emptyList()
+        val directorEntities = directorList.map { director ->
+            DirectorEntity(
+                movieId = movieId,
+                personId = director.id,
+                name = director.name,
+                profilePath = director.profilePath
+            )
+        }
+        localDataSource.replaceDirectorsForMovie(movieId, directorEntities)
     }
 
     /**
@@ -356,6 +372,7 @@ class MoviesRepositoryImpl(
         localDataSource.clearMovieDetails()
         localDataSource.clearAllVideos()
         localDataSource.clearAllCast()
+        localDataSource.clearAllDirectors()
 
         // Load all categories in parallel
         coroutineScope {

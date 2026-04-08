@@ -33,6 +33,7 @@ import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
 import com.elna.moviedb.feature.movies.ui.components.BoxOfficeItem
 import com.elna.moviedb.feature.movies.ui.components.CastSection
+import com.elna.moviedb.feature.movies.ui.components.DirectorSection
 import com.elna.moviedb.feature.movies.ui.components.InfoItem
 import com.elna.moviedb.feature.movies.ui.components.MovieHeroSection
 import com.elna.moviedb.feature.movies.ui.components.SectionCard
@@ -44,7 +45,6 @@ import com.elna.moviedb.resources.genres
 import com.elna.moviedb.resources.language
 import com.elna.moviedb.resources.minutes_suffix
 import com.elna.moviedb.resources.overview
-import com.elna.moviedb.resources.director
 import com.elna.moviedb.resources.production_companies
 import com.elna.moviedb.resources.production_countries
 import com.elna.moviedb.resources.release
@@ -63,6 +63,7 @@ fun MovieDetailsScreen(
     category: String? = null,
     onBack: () -> Unit,
     onCastMemberClick: (Int) -> Unit,
+    onDirectorClick: (Int) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -75,6 +76,7 @@ fun MovieDetailsScreen(
         onBack = onBack,
         onRetry = { viewModel.onEvent(MovieDetailsEvent.Retry) },
         onCastMemberClick = onCastMemberClick,
+        onDirectorClick = onDirectorClick,
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope
     )
@@ -88,6 +90,7 @@ private fun MovieDetailsScreen(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onCastMemberClick: (Int) -> Unit,
+    onDirectorClick: (Int) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -110,6 +113,7 @@ private fun MovieDetailsScreen(
                     category = category,
                     onBack = onBack,
                     onCastMemberClick = onCastMemberClick,
+                    onDirectorClick = onDirectorClick,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope
                 )
@@ -125,6 +129,7 @@ private fun MovieDetailsContent(
     category: String? = null,
     onBack: () -> Unit,
     onCastMemberClick: (Int) -> Unit,
+    onDirectorClick: (Int) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -192,17 +197,7 @@ private fun MovieDetailsContent(
                 }
 
                 // Director Section
-                movie.directors?.takeIf { it.isNotEmpty() }?.let { directors ->
-                    SectionCard(
-                        title = stringResource(Res.string.director),
-                        content = {
-                            Text(
-                                text = directors.joinToString(", "),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    )
-                }
+                DirectorSection(movie = movie, onDirectorClick = onDirectorClick)
 
                 // Trailers Section
                 movie.trailers?.takeIf { it.isNotEmpty() }?.let { trailers ->

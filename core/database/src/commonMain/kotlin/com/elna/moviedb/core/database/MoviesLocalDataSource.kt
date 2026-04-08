@@ -1,6 +1,7 @@
 package com.elna.moviedb.core.database
 
 import com.elna.moviedb.core.database.model.CastMemberEntity
+import com.elna.moviedb.core.database.model.DirectorEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
 import com.elna.moviedb.core.database.model.VideoEntity
@@ -132,6 +133,15 @@ interface MovieCastDataSource {
 }
 
 /**
+ * Interface for movie directors operations.
+ */
+interface MovieDirectorsDataSource {
+    suspend fun getDirectorsForMovie(movieId: Int): List<DirectorEntity>
+    suspend fun replaceDirectorsForMovie(movieId: Int, directors: List<DirectorEntity>)
+    suspend fun clearAllDirectors()
+}
+
+/**
  * Composite interface combining all movie data source interfaces.
  * Clients can depend on focused interfaces or this composite if they need multiple data sources.
  *
@@ -146,7 +156,8 @@ interface MoviesLocalDataSource :
     MoviesListDataSource,
     MovieDetailsDataSource,
     MovieVideosDataSource,
-    MovieCastDataSource
+    MovieCastDataSource,
+    MovieDirectorsDataSource
 
 /**
  * Implementation of MoviesLocalDataSource using Room DAOs.
@@ -211,5 +222,18 @@ class MoviesLocalDataSourceImpl(
 
     override suspend fun clearAllCast() {
         movieDetailsDao.clearAllCast()
+    }
+
+    // MovieDirectorsDataSource implementation
+    override suspend fun getDirectorsForMovie(movieId: Int): List<DirectorEntity> {
+        return movieDetailsDao.getDirectorsForMovie(movieId)
+    }
+
+    override suspend fun replaceDirectorsForMovie(movieId: Int, directors: List<DirectorEntity>) {
+        movieDetailsDao.replaceDirectorsForMovie(movieId, directors)
+    }
+
+    override suspend fun clearAllDirectors() {
+        movieDetailsDao.clearAllDirectors()
     }
 }

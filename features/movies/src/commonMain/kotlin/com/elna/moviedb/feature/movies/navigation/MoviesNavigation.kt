@@ -35,6 +35,9 @@ fun EntryProviderScope<Route>.moviesFlow(
             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
             onCastMemberClick = { personId ->
                 rootBackStack.add(PersonDetailsRoute(personId))
+            },
+            onDirectorClick = { personId ->
+                rootBackStack.add(PersonDetailsRoute(personId))
             }
         )
     }

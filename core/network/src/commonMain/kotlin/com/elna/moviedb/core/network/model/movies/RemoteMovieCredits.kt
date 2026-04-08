@@ -1,6 +1,7 @@
 package com.elna.moviedb.core.network.model.movies
 
 import com.elna.moviedb.core.model.CastMember
+import com.elna.moviedb.core.model.Director
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -52,6 +53,12 @@ data class RemoteCastMember(
     val creditId: String?,
     @SerialName("order")
     val order: Int
+)
+
+fun RemoteCrewMember.toDomain() = Director(
+    id = id,
+    name = name,
+    profilePath = profilePath
 )
 
 fun RemoteCastMember.toDomain() = CastMember(

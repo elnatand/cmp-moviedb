@@ -67,6 +67,6 @@ data class MovieDetailsEntity(
         productionCompanies = productionCompanies?.split(",")?.filter { it.isNotBlank() },
         productionCountries = productionCountries?.split(",")?.filter { it.isNotBlank() },
         spokenLanguages = spokenLanguages?.split(",")?.filter { it.isNotBlank() },
-        directors = directors?.split(",")?.filter { it.isNotBlank() }
+        directors = null
     )
 }
