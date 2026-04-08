@@ -8,6 +8,7 @@ import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.core.network.model.movies.RemoteMoviesPage
 import com.elna.moviedb.core.network.model.movies.RemoteReleaseDatesResponse
+import com.elna.moviedb.core.network.model.movies.RemoteReviewResponse
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
@@ -106,6 +107,16 @@ class MoviesRemoteDataSource(
                 httpClient.get("${TMDB_BASE_URL}/movie/${movieId}/keywords") {
                     url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
                 }.body<RemoteMovieKeywordsResponse>()
+            }
+        }
+    }
+
+    suspend fun getMovieReviews(movieId: Int): AppResult<RemoteReviewResponse> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}/movie/${movieId}/reviews") {
+                    url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
+                }.body<RemoteReviewResponse>()
             }
         }
     }

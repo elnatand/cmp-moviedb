@@ -4,6 +4,7 @@ import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.DirectorEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
+import com.elna.moviedb.core.database.model.ReviewEntity
 import com.elna.moviedb.core.database.model.VideoEntity
 import com.elna.moviedb.core.model.MovieCategory
 import kotlinx.coroutines.flow.Flow
@@ -142,6 +143,15 @@ interface MovieDirectorsDataSource {
 }
 
 /**
+ * Interface for movie reviews operations.
+ */
+interface MovieReviewsDataSource {
+    suspend fun getReviewsForMovie(movieId: Int): List<ReviewEntity>
+    suspend fun replaceReviewsForMovie(movieId: Int, reviews: List<ReviewEntity>)
+    suspend fun clearAllReviews()
+}
+
+/**
  * Composite interface combining all movie data source interfaces.
  * Clients can depend on focused interfaces or this composite if they need multiple data sources.
  *
@@ -157,7 +167,8 @@ interface MoviesLocalDataSource :
     MovieDetailsDataSource,
     MovieVideosDataSource,
     MovieCastDataSource,
-    MovieDirectorsDataSource
+    MovieDirectorsDataSource,
+    MovieReviewsDataSource
 
 /**
  * Implementation of MoviesLocalDataSource using Room DAOs.
@@ -235,5 +246,18 @@ class MoviesLocalDataSourceImpl(
 
     override suspend fun clearAllDirectors() {
         movieDetailsDao.clearAllDirectors()
+    }
+
+    // MovieReviewsDataSource implementation
+    override suspend fun getReviewsForMovie(movieId: Int): List<ReviewEntity> {
+        return movieDetailsDao.getReviewsForMovie(movieId)
+    }
+
+    override suspend fun replaceReviewsForMovie(movieId: Int, reviews: List<ReviewEntity>) {
+        movieDetailsDao.replaceReviewsForMovie(movieId, reviews)
+    }
+
+    override suspend fun clearAllReviews() {
+        movieDetailsDao.clearAllReviews()
     }
 }

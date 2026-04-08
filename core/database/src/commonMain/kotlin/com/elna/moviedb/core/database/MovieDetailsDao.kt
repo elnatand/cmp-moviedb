@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.DirectorEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
+import com.elna.moviedb.core.database.model.ReviewEntity
 import com.elna.moviedb.core.database.model.VideoEntity
 
 @Dao
@@ -67,5 +68,23 @@ interface MovieDetailsDao {
     suspend fun replaceDirectorsForMovie(movieId: Int, directors: List<DirectorEntity>) {
         deleteDirectorsForMovie(movieId)
         if (directors.isNotEmpty()) insertDirectors(directors)
+    }
+
+    @Query("SELECT * FROM reviews WHERE movie_id = :movieId ORDER BY created_at DESC")
+    suspend fun getReviewsForMovie(movieId: Int): List<ReviewEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertReviews(reviews: List<ReviewEntity>)
+
+    @Query("DELETE FROM reviews WHERE movie_id = :movieId")
+    suspend fun deleteReviewsForMovie(movieId: Int)
+
+    @Query("DELETE FROM reviews")
+    suspend fun clearAllReviews()
+
+    @Transaction
+    suspend fun replaceReviewsForMovie(movieId: Int, reviews: List<ReviewEntity>) {
+        deleteReviewsForMovie(movieId)
+        if (reviews.isNotEmpty()) insertReviews(reviews)
     }
 }

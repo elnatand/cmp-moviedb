@@ -70,6 +70,9 @@
     <string name="no">לא</string>
     <string name="trailers">טריילרים</string>
     <string name="cast">שחקנים</string>
+    <string name="reviews">ביקורות</string>
+    <string name="read_more">קרא עוד</string>
+    <string name="show_less">הצג פחות</string>
 
     <!-- Error Messages -->
     <string name="unknown_error_occurred">אירעה שגיאה לא ידועה</string>

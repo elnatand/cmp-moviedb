@@ -70,6 +70,9 @@
     <string name="no">नहीं</string>
     <string name="trailers">ट्रेलर</string>
     <string name="cast">कलाकार</string>
+    <string name="reviews">समीक्षाएं</string>
+    <string name="read_more">और पढ़ें</string>
+    <string name="show_less">कम दिखाएं</string>
 
     <!-- Error Messages -->
     <string name="unknown_error_occurred">अज्ञात त्रुटि हुई</string>

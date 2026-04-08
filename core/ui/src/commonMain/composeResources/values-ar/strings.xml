@@ -70,6 +70,9 @@
     <string name="no">لا</string>
     <string name="trailers">عرض تشويقي</string>
     <string name="cast">طاقم التمثيل</string>
+    <string name="reviews">المراجعات</string>
+    <string name="read_more">اقرأ المزيد</string>
+    <string name="show_less">عرض أقل</string>
 
     <!-- Error Messages -->
     <string name="unknown_error_occurred">حدث خطأ غير معروف</string>

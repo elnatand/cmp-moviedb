@@ -10,6 +10,7 @@ import com.elna.moviedb.core.database.MoviesLocalDataSource
 import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.DirectorEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
+import com.elna.moviedb.core.database.model.ReviewEntity
 import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.datastore.PaginationPreferences
 import com.elna.moviedb.core.datastore.model.PaginationState
@@ -20,10 +21,12 @@ import com.elna.moviedb.core.model.Director
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.core.model.Review
 import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
 import com.elna.moviedb.core.network.mapper.toTmdbPath
 import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
+import com.elna.moviedb.core.network.model.movies.RemoteReviewResponse
 import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
@@ -190,11 +193,13 @@ class MoviesRepositoryImpl(
         val cachedVideos = localDataSource.getVideosForMovie(movieId)
         val cachedCast = localDataSource.getCastForMovie(movieId)
         val cachedDirectors = localDataSource.getDirectorsForMovie(movieId)
+        val cachedReviews = localDataSource.getReviewsForMovie(movieId)
 
         return cachedMovieDetails.toDomain().copy(
             trailers = cachedVideos.map { it.toDomain() },
             cast = cachedCast.sortedBy { it.order }.map { it.toDomain() },
-            directors = cachedDirectors.map { it.toDomain() }
+            directors = cachedDirectors.map { it.toDomain() },
+            reviews = cachedReviews.map { it.toDomain() }
         )
     }
 
@@ -209,6 +214,7 @@ class MoviesRepositoryImpl(
         val detailsDeferred = async { remoteDataSource.getMovieDetails(movieId, language) }
         val videosDeferred = async { remoteDataSource.getMovieVideos(movieId, language) }
         val creditsDeferred = async { remoteDataSource.getMovieCredits(movieId, language) }
+        val reviewsDeferred = async { remoteDataSource.getMovieReviews(movieId) }
 
         // Details are required - fail if they don't load
         val detailsResult = detailsDeferred.await()
@@ -217,24 +223,27 @@ class MoviesRepositoryImpl(
             is AppResult.Error -> return@coroutineScope detailsResult
         }
 
-        // Videos and cast are optional - graceful degradation
+        // Videos, cast, and reviews are optional - graceful degradation
         val videosResult = videosDeferred.await()
         val creditsResult = creditsDeferred.await()
+        val reviewsResult = reviewsDeferred.await()
 
         val trailers = processVideosResult(videosResult)
         val cast = processCreditsResult(creditsResult)
         val directors = processDirectorsResult(creditsResult)
+        val reviews = processReviewsResult(reviewsResult)
 
         // Convert to entity then to domain (to apply mapping logic)
         val detailsEntity = details.asEntity()
         val detailsDomain = detailsEntity.toDomain()
 
-        // Return domain model with trailers, cast, and directors
+        // Return domain model with trailers, cast, directors, and reviews
         AppResult.Success(
             detailsDomain.copy(
                 trailers = trailers,
                 cast = cast,
-                directors = directors
+                directors = directors,
+                reviews = reviews
             )
         )
     }
@@ -289,6 +298,18 @@ class MoviesRepositoryImpl(
                     ?.map { it.toDomain() }
                     ?: emptyList()
             }
+            is AppResult.Error -> emptyList()
+        }
+    }
+
+    /**
+     * Processes reviews results.
+     * Returns empty list on error (graceful degradation).
+     */
+    private fun processReviewsResult(reviewsResult: AppResult<RemoteReviewResponse>)
+        : List<Review> {
+        return when (reviewsResult) {
+            is AppResult.Success -> reviewsResult.data.results.map { it.toDomain() }
             is AppResult.Error -> emptyList()
         }
     }
@@ -362,6 +383,21 @@ class MoviesRepositoryImpl(
             )
         }
         localDataSource.replaceDirectorsForMovie(movieId, directorEntities)
+
+        // Save reviews
+        val reviewList = movieDetails.reviews ?: emptyList()
+        val reviewEntities = reviewList.map { review ->
+            ReviewEntity(
+                id = review.id,
+                movieId = movieId,
+                author = review.author,
+                avatarPath = review.avatarPath,
+                rating = review.rating,
+                content = review.content,
+                createdAt = review.createdAt
+            )
+        }
+        localDataSource.replaceReviewsForMovie(movieId, reviewEntities)
     }
 
     /**
@@ -393,6 +429,7 @@ class MoviesRepositoryImpl(
         localDataSource.clearAllVideos()
         localDataSource.clearAllCast()
         localDataSource.clearAllDirectors()
+        localDataSource.clearAllReviews()
 
         // Load all categories in parallel
         coroutineScope {

@@ -37,6 +37,7 @@ import com.elna.moviedb.feature.movies.ui.components.CastSection
 import com.elna.moviedb.feature.movies.ui.components.DirectorSection
 import com.elna.moviedb.feature.movies.ui.components.InfoItem
 import com.elna.moviedb.feature.movies.ui.components.MovieHeroSection
+import com.elna.moviedb.feature.movies.ui.components.ReviewsSection
 import com.elna.moviedb.feature.movies.ui.components.SectionCard
 import com.elna.moviedb.feature.movies.ui.components.TrailersSection
 import com.elna.moviedb.resources.Res
@@ -218,6 +219,9 @@ private fun MovieDetailsContent(
                     movie = movie,
                     onCastMemberClick = onCastMemberClick
                 )
+
+                // Reviews Section
+                ReviewsSection(movie = movie)
 
                 // Genres Section
                 movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->

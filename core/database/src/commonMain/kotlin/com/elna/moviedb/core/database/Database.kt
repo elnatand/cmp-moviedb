@@ -12,6 +12,7 @@ import com.elna.moviedb.core.database.model.CastMemberEntity
 import com.elna.moviedb.core.database.model.DirectorEntity
 import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.MovieEntity
+import com.elna.moviedb.core.database.model.ReviewEntity
 import com.elna.moviedb.core.database.model.VideoEntity
 
 val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -45,15 +46,36 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
     }
 }
 
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.prepare(
+            "CREATE TABLE IF NOT EXISTS `reviews` (" +
+            "`id` TEXT NOT NULL PRIMARY KEY, " +
+            "`movie_id` INTEGER NOT NULL, " +
+            "`author` TEXT NOT NULL, " +
+            "`avatar_path` TEXT, " +
+            "`rating` REAL, " +
+            "`content` TEXT NOT NULL, " +
+            "`created_at` TEXT NOT NULL, " +
+            "FOREIGN KEY(`movie_id`) REFERENCES `MovieDetailsEntity`(`id`) " +
+            "ON DELETE CASCADE ON UPDATE NO ACTION DEFERRABLE INITIALLY DEFERRED)"
+        ).use { it.step() }
+        connection.prepare(
+            "CREATE INDEX IF NOT EXISTS `index_reviews_movie_id` ON `reviews` (`movie_id`)"
+        ).use { it.step() }
+    }
+}
+
 @Database(
     entities = [
         MovieEntity::class,
         MovieDetailsEntity::class,
         VideoEntity::class,
         CastMemberEntity::class,
-        DirectorEntity::class
+        DirectorEntity::class,
+        ReviewEntity::class
     ],
-    version = 3
+    version = 4
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -71,7 +93,7 @@ fun getRoomDatabase(
     appDispatchers: AppDispatchers
 ): AppDatabase {
     return builder
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(appDispatchers.io)
         .build()
