@@ -15,6 +15,7 @@ import com.elna.moviedb.core.datastore.PaginationPreferences
 import com.elna.moviedb.core.datastore.model.PaginationState
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.CastMember
+import com.elna.moviedb.core.model.ContentInfo
 import com.elna.moviedb.core.model.Director
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
@@ -27,6 +28,8 @@ import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import com.elna.moviedb.core.network.model.videos.toDomain
+import com.elna.moviedb.core.network.utils.extractUsRating
+import com.elna.moviedb.core.network.utils.toContentDescriptors
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -148,17 +151,34 @@ class MoviesRepositoryImpl(
      * @return AppResult<MovieDetails> Success with movie details or Error if fetch failed
      */
     override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> {
-        return cachingStrategy.execute(
-            fetchFromCache = {
-                fetchMovieDetailsFromCache(movieId)
-            },
-            fetchFromNetwork = {
-                fetchMovieDetailsFromNetwork(movieId)
-            },
-            saveToCache = { movieDetails ->
-                saveMovieDetailsToCache(movieId, movieDetails)
-            }
+        val baseResult = cachingStrategy.execute(
+            fetchFromCache = { fetchMovieDetailsFromCache(movieId) },
+            fetchFromNetwork = { fetchMovieDetailsFromNetwork(movieId) },
+            saveToCache = { saveMovieDetailsToCache(movieId, it) }
         )
+        if (baseResult is AppResult.Success) {
+            val contentInfo = fetchMovieContentInfo(movieId)
+            return AppResult.Success(baseResult.data.copy(contentInfo = contentInfo))
+        }
+        return baseResult
+    }
+
+    private suspend fun fetchMovieContentInfo(movieId: Int): ContentInfo? = coroutineScope {
+        val releaseDatesDeferred = async { remoteDataSource.getMovieReleaseDates(movieId) }
+        val keywordsDeferred = async { remoteDataSource.getMovieKeywords(movieId) }
+
+        val ageRating = when (val r = releaseDatesDeferred.await()) {
+            is AppResult.Success -> r.data.extractUsRating()
+            is AppResult.Error -> null
+        }
+        val descriptors = when (val r = keywordsDeferred.await()) {
+            is AppResult.Success -> r.data.keywords.map { it.name }.toContentDescriptors()
+            is AppResult.Error -> emptyList()
+        }
+
+        if (ageRating != null || descriptors.isNotEmpty()) {
+            ContentInfo(ageRating = ageRating, contentDescriptors = descriptors)
+        } else null
     }
 
     /**

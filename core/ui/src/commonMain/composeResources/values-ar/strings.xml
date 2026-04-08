@@ -113,7 +113,10 @@
     <string name="theme_dark">داكن</string>
     <string name="theme_system">افتراضي النظام</string>
 
-    <!-- TMDB Attribution -->
+    <!-- Content Info (details screen) -->
+    <string name="content_info_title">معلومات المحتوى</string>
+
+<!-- TMDB Attribution -->
     <string name="about">حول</string>
     <string name="data_source">مصدر البيانات</string>
     <string name="tmdb_attribution">يستخدم هذا التطبيق TMDB API ولكنه غير معتمد أو مصدق عليه من قبل TMDB.</string>

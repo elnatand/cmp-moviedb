@@ -17,9 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.ui.design_system.AppBackButton
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
-import com.elna.moviedb.core.ui.design_system.AppBackButton
+import com.elna.moviedb.core.ui.design_system.ContentInfoSection
 import com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent
 import com.elna.moviedb.feature.tvshows.ui.components.BasicInfoSection
 import com.elna.moviedb.feature.tvshows.ui.components.CastSection
@@ -101,6 +102,13 @@ fun TvShowDetailsScreen(
                             verticalArrangement = Arrangement.spacedBy(24.dp)
                         ) {
                             BasicInfoSection(tvShow = uiState.tvShowDetails)
+
+                            uiState.tvShowDetails.contentInfo?.let {
+                                ContentInfoSection(
+                                    ageRating = it.ageRating,
+                                    contentDescriptors = it.contentDescriptors
+                                )
+                            }
 
                             OverviewSection(tvShow = uiState.tvShowDetails)
 

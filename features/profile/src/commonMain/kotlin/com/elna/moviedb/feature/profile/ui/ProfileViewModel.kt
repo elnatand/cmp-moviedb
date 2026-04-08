@@ -14,17 +14,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel following MVI (Model-View-Intent) pattern for Profile screen.
- *
- * MVI Components:
- * - Model: [ProfileUiState] - Immutable state representing the UI
- * - View: ProfileScreen - Renders the state and dispatches intents
- * - Intent: [ProfileEvent] - User actions/intentions
- *
- * Depends only on AppSettingsPreferences,
- * not the full PreferencesManager with pagination methods it doesn't need.
- */
 class ProfileViewModel(
     private val appSettingsPreferences: AppSettingsPreferences,
     private val appVersion: AppVersion
@@ -49,26 +38,14 @@ class ProfileViewModel(
         )
     )
 
-    /**
-     * Main entry point for handling user intents.
-     * All UI interactions should go through this method.
-     */
     fun onEvent(intent: ProfileEvent) {
         when (intent) {
-            is ProfileEvent.SetLanguage -> setLanguage(intent.language)
-            is ProfileEvent.SetTheme -> setTheme(intent.theme)
-        }
-    }
-
-    private fun setLanguage(language: AppLanguage) {
-        viewModelScope.launch {
-            appSettingsPreferences.setAppLanguageCode(language)
-        }
-    }
-
-    private fun setTheme(theme: AppTheme) {
-        viewModelScope.launch {
-            appSettingsPreferences.setAppTheme(theme)
+            is ProfileEvent.SetLanguage -> viewModelScope.launch {
+                appSettingsPreferences.setAppLanguageCode(intent.language)
+            }
+            is ProfileEvent.SetTheme -> viewModelScope.launch {
+                appSettingsPreferences.setAppTheme(intent.theme)
+            }
         }
     }
 }

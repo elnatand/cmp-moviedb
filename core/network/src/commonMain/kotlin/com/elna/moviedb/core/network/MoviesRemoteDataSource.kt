@@ -3,9 +3,11 @@ package com.elna.moviedb.core.network
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
+import com.elna.moviedb.core.network.model.RemoteMovieKeywordsResponse
 import com.elna.moviedb.core.network.model.movies.RemoteMovieCredits
 import com.elna.moviedb.core.network.model.movies.RemoteMovieDetails
 import com.elna.moviedb.core.network.model.movies.RemoteMoviesPage
+import com.elna.moviedb.core.network.model.movies.RemoteReleaseDatesResponse
 import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
@@ -84,6 +86,26 @@ class MoviesRemoteDataSource(
                         parameters.append("language", language)
                     }
                 }.body<RemoteMovieCredits>()
+            }
+        }
+    }
+
+    suspend fun getMovieReleaseDates(movieId: Int): AppResult<RemoteReleaseDatesResponse> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}/movie/${movieId}/release_dates") {
+                    url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
+                }.body<RemoteReleaseDatesResponse>()
+            }
+        }
+    }
+
+    suspend fun getMovieKeywords(movieId: Int): AppResult<RemoteMovieKeywordsResponse> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}/movie/${movieId}/keywords") {
+                    url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
+                }.body<RemoteMovieKeywordsResponse>()
             }
         }
     }

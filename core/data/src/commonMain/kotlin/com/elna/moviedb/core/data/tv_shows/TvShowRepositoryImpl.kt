@@ -4,10 +4,13 @@ import com.elna.moviedb.core.data.LanguageChangeCoordinator
 import com.elna.moviedb.core.data.LanguageChangeListener
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.core.model.ContentInfo
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.network.TvShowsRemoteDataSource
+import com.elna.moviedb.core.network.utils.extractUsRating
+import com.elna.moviedb.core.network.utils.toContentDescriptors
 import com.elna.moviedb.core.network.mapper.toTmdbPath
 import com.elna.moviedb.core.network.model.tv_shows.toDomain
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
@@ -150,17 +153,14 @@ class TvShowRepositoryImpl(
     override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> = coroutineScope {
         val language = languageProvider.getCurrentLanguage()
 
-        // Fetch details, videos, and credits in parallel
-        val detailsDeferred =
-            async { remoteDataSource.getTvShowDetails(tvShowId, language) }
-        val videosDeferred =
-            async { remoteDataSource.getTvShowVideos(tvShowId, language) }
-        val creditsDeferred =
-            async { remoteDataSource.getTvShowCredits(tvShowId, language) }
+        // Fetch all data in parallel
+        val detailsDeferred = async { remoteDataSource.getTvShowDetails(tvShowId, language) }
+        val videosDeferred = async { remoteDataSource.getTvShowVideos(tvShowId, language) }
+        val creditsDeferred = async { remoteDataSource.getTvShowCredits(tvShowId, language) }
+        val contentRatingsDeferred = async { remoteDataSource.getTvShowContentRatings(tvShowId) }
+        val keywordsDeferred = async { remoteDataSource.getTvShowKeywords(tvShowId) }
 
         val detailsResult = detailsDeferred.await()
-        val videosResult = videosDeferred.await()
-        val creditsResult = creditsDeferred.await()
 
         // Extract details or return error
         val details = when (detailsResult) {
@@ -168,38 +168,37 @@ class TvShowRepositoryImpl(
             is AppResult.Error -> return@coroutineScope detailsResult
         }
 
-        // Map videos to domain and filter for trailers/teasers
-        val trailers = when (videosResult) {
-            is AppResult.Success -> {
-                videosResult.data.results
-                    .filter { it.type == "Trailer" || it.type == "Teaser" }
-                    .sortedWith(compareByDescending<RemoteVideo> { it.official }
-                        .thenByDescending { it.publishedAt })
-                    .map { it.toDomain() }
-            }
-
-            is AppResult.Error -> emptyList() // Videos are optional, don't fail if they error
+        val trailers = when (val r = videosDeferred.await()) {
+            is AppResult.Success -> r.data.results
+                .filter { it.type == "Trailer" || it.type == "Teaser" }
+                .sortedWith(compareByDescending<RemoteVideo> { it.official }
+                    .thenByDescending { it.publishedAt })
+                .map { it.toDomain() }
+            is AppResult.Error -> emptyList()
         }
 
-        // Map cast to domain and sort by order
-        val cast = when (creditsResult) {
-            is AppResult.Success -> {
-                creditsResult.data.cast
-                    ?.sortedBy { it.order }
-                    ?.map { remoteCastMember ->
-                        remoteCastMember.toDomain()
-                    }
-                    ?: emptyList()
-            }
-
-            is AppResult.Error -> emptyList() // Cast is optional, don't fail if they error
+        val cast = when (val r = creditsDeferred.await()) {
+            is AppResult.Success -> r.data.cast
+                ?.sortedBy { it.order }
+                ?.map { it.toDomain() }
+                ?: emptyList()
+            is AppResult.Error -> emptyList()
         }
 
-        // Combine details with trailers and cast
-        val tvShowDetails = details.toDomain().copy(
-            trailers = trailers,
-            cast = cast
+        val ageRating = when (val r = contentRatingsDeferred.await()) {
+            is AppResult.Success -> r.data.extractUsRating()
+            is AppResult.Error -> null
+        }
+        val descriptors = when (val r = keywordsDeferred.await()) {
+            is AppResult.Success -> r.data.results.map { it.name }.toContentDescriptors()
+            is AppResult.Error -> emptyList()
+        }
+        val contentInfo = if (ageRating != null || descriptors.isNotEmpty()) {
+            ContentInfo(ageRating = ageRating, contentDescriptors = descriptors)
+        } else null
+
+        AppResult.Success(
+            details.toDomain().copy(trailers = trailers, cast = cast, contentInfo = contentInfo)
         )
-        AppResult.Success(tvShowDetails)
     }
 }

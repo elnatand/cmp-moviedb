@@ -113,7 +113,10 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System Default</string>
 
-    <!-- TMDB Attribution -->
+    <!-- Content Info (details screen) -->
+    <string name="content_info_title">Content Info</string>
+
+<!-- TMDB Attribution -->
     <string name="about">About</string>
     <string name="data_source">Data Source</string>
     <string name="tmdb_attribution">This application uses the TMDB API but is not endorsed, certified, or otherwise approved by TMDB.</string>

@@ -3,6 +3,8 @@ package com.elna.moviedb.core.network
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
+import com.elna.moviedb.core.network.model.RemoteTvKeywordsResponse
+import com.elna.moviedb.core.network.model.tv_shows.RemoteContentRatingsResponse
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowCredits
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowsPage
@@ -83,6 +85,26 @@ class TvShowsRemoteDataSource(
                         parameters.append("language", language)
                     }
                 }.body<RemoteTvShowCredits>()
+            }
+        }
+    }
+
+    suspend fun getTvShowContentRatings(tvShowId: Int): AppResult<RemoteContentRatingsResponse> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/content_ratings") {
+                    url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
+                }.body<RemoteContentRatingsResponse>()
+            }
+        }
+    }
+
+    suspend fun getTvShowKeywords(tvShowId: Int): AppResult<RemoteTvKeywordsResponse> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/keywords") {
+                    url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
+                }.body<RemoteTvKeywordsResponse>()
             }
         }
     }

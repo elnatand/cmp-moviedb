@@ -113,7 +113,10 @@
     <string name="theme_dark">गहरा</string>
     <string name="theme_system">सिस्टम डिफ़ॉल्ट</string>
 
-    <!-- TMDB Attribution -->
+    <!-- Content Info (details screen) -->
+    <string name="content_info_title">सामग्री जानकारी</string>
+
+<!-- TMDB Attribution -->
     <string name="about">के बारे में</string>
     <string name="data_source">डेटा स्रोत</string>
     <string name="tmdb_attribution">यह एप्लिकेशन TMDB API का उपयोग करता है लेकिन TMDB द्वारा समर्थित, प्रमाणित या अनुमोदित नहीं है।</string>

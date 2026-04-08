@@ -113,7 +113,10 @@
     <string name="theme_dark">כהה</string>
     <string name="theme_system">ברירת מחדל של המערכת</string>
 
-    <!-- TMDB Attribution -->
+    <!-- Content Info (details screen) -->
+    <string name="content_info_title">מידע על תוכן</string>
+
+<!-- TMDB Attribution -->
     <string name="about">אודות</string>
     <string name="data_source">מקור נתונים</string>
     <string name="tmdb_attribution">אפליקציה זו משתמשת ב-TMDB API אך אינה מאושרת או מוסמכת על ידי TMDB.</string>
