@@ -8,6 +8,7 @@ import com.elna.moviedb.core.model.ContentInfo
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.core.network.model.movies.toDomain
 import com.elna.moviedb.core.network.TvShowsRemoteDataSource
 import com.elna.moviedb.core.network.utils.extractUsRating
 import com.elna.moviedb.core.network.utils.toContentDescriptors
@@ -159,6 +160,7 @@ class TvShowRepositoryImpl(
         val creditsDeferred = async { remoteDataSource.getTvShowCredits(tvShowId, language) }
         val contentRatingsDeferred = async { remoteDataSource.getTvShowContentRatings(tvShowId) }
         val keywordsDeferred = async { remoteDataSource.getTvShowKeywords(tvShowId) }
+        val reviewsDeferred = async { remoteDataSource.getTvShowReviews(tvShowId) }
 
         val detailsResult = detailsDeferred.await()
 
@@ -197,8 +199,13 @@ class TvShowRepositoryImpl(
             ContentInfo(ageRating = ageRating, contentDescriptors = descriptors)
         } else null
 
+        val reviews = when (val r = reviewsDeferred.await()) {
+            is AppResult.Success -> r.data.results.map { it.toDomain() }
+            is AppResult.Error -> emptyList()
+        }
+
         AppResult.Success(
-            details.toDomain().copy(trailers = trailers, cast = cast, contentInfo = contentInfo)
+            details.toDomain().copy(trailers = trailers, cast = cast, contentInfo = contentInfo, reviews = reviews)
         )
     }
 }

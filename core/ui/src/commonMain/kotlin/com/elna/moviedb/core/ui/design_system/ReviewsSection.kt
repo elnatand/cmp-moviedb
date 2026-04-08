@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.movies.ui.components
+package com.elna.moviedb.core.ui.design_system
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.model.Review
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.read_more
@@ -38,24 +37,27 @@ import com.elna.moviedb.resources.show_less
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ReviewsSection(movie: MovieDetails) {
-    movie.reviews?.takeIf { it.isNotEmpty() }?.let { reviewList ->
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+fun ReviewsSection(
+    reviews: List<Review>?,
+    modifier: Modifier = Modifier
+) {
+    reviews?.takeIf { it.isNotEmpty() } ?: return
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = stringResource(Res.string.reviews),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                reviewList.forEach { review ->
-                    ReviewCard(review = review)
-                }
+            Text(
+                text = stringResource(Res.string.reviews),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            reviews.forEach { review ->
+                ReviewCard(review = review)
             }
         }
     }
@@ -132,10 +134,7 @@ private fun ReviewCard(review: Review) {
         )
 
         if (review.content.length > 200) {
-            TextButton(
-                onClick = { expanded = !expanded },
-                modifier = Modifier.padding(top = 0.dp)
-            ) {
+            TextButton(onClick = { expanded = !expanded }) {
                 Text(
                     text = if (expanded) stringResource(Res.string.show_less)
                     else stringResource(Res.string.read_more),

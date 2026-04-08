@@ -21,6 +21,7 @@ import com.elna.moviedb.core.ui.design_system.AppBackButton
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.design_system.ContentInfoSection
+import com.elna.moviedb.core.ui.design_system.ReviewsSection
 import com.elna.moviedb.feature.tvshows.model.TvShowDetailsEvent
 import com.elna.moviedb.feature.tvshows.ui.components.BasicInfoSection
 import com.elna.moviedb.feature.tvshows.ui.components.CastSection
@@ -118,6 +119,8 @@ fun TvShowDetailsScreen(
                                 tvShow = uiState.tvShowDetails,
                                 onCastMemberClick = onCastMemberClick
                             )
+
+                            ReviewsSection(reviews = uiState.tvShowDetails.reviews)
 
                             RatingsSection(tvShow = uiState.tvShowDetails)
 

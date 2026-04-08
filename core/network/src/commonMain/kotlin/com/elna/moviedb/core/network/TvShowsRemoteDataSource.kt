@@ -4,6 +4,7 @@ import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.model.TMDB_BASE_URL
 import com.elna.moviedb.core.network.model.RemoteTvKeywordsResponse
+import com.elna.moviedb.core.network.model.movies.RemoteReviewResponse
 import com.elna.moviedb.core.network.model.tv_shows.RemoteContentRatingsResponse
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowCredits
 import com.elna.moviedb.core.network.model.tv_shows.RemoteTvShowDetails
@@ -105,6 +106,16 @@ class TvShowsRemoteDataSource(
                 httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/keywords") {
                     url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
                 }.body<RemoteTvKeywordsResponse>()
+            }
+        }
+    }
+
+    suspend fun getTvShowReviews(tvShowId: Int): AppResult<RemoteReviewResponse> {
+        return withContext(appDispatchers.io) {
+            safeApiCall {
+                httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/reviews") {
+                    url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
+                }.body<RemoteReviewResponse>()
             }
         }
     }
