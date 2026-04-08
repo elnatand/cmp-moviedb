@@ -1,22 +1,19 @@
-package com.elna.moviedb.core.ui.design_system
+package com.elna.moviedb.feature.movies.ui.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.Alignment
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -24,11 +21,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.model.Review
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.read_more
@@ -36,15 +33,17 @@ import com.elna.moviedb.resources.reviews
 import com.elna.moviedb.resources.show_less
 import org.jetbrains.compose.resources.stringResource
 
+private fun formatReviewDate(isoDate: String): String {
+    val parts = isoDate.take(10).split("-")
+    return if (parts.size == 3) "${parts[2]}-${parts[1]}-${parts[0]}" else isoDate
+}
+
 @Composable
-fun ReviewsSection(
-    reviews: List<Review>?,
-    modifier: Modifier = Modifier
-) {
-    reviews?.takeIf { it.isNotEmpty() } ?: return
+internal fun ReviewsSection(movie: MovieDetails) {
+    val reviewList = movie.reviews?.takeIf { it.isNotEmpty() } ?: return
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -56,7 +55,7 @@ fun ReviewsSection(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
-            reviews.forEach { review ->
+            reviewList.forEach { review ->
                 ReviewCard(review = review)
             }
         }
@@ -77,21 +76,6 @@ private fun ReviewCard(review: Review) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Surface(
-                modifier = Modifier.size(36.dp),
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-            }
-
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = review.author,
@@ -119,7 +103,7 @@ private fun ReviewCard(review: Review) {
             }
 
             Text(
-                text = review.createdAt.take(10),
+                text = formatReviewDate(review.createdAt),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

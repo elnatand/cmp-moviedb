@@ -309,7 +309,9 @@ class MoviesRepositoryImpl(
     private fun processReviewsResult(reviewsResult: AppResult<RemoteReviewResponse>)
         : List<Review> {
         return when (reviewsResult) {
-            is AppResult.Success -> reviewsResult.data.results.map { it.toDomain() }
+            is AppResult.Success -> reviewsResult.data.results
+                .sortedByDescending { it.createdAt }
+                .map { it.toDomain() }
             is AppResult.Error -> emptyList()
         }
     }

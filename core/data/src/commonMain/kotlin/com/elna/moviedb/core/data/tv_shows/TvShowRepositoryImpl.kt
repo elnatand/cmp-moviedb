@@ -200,7 +200,9 @@ class TvShowRepositoryImpl(
         } else null
 
         val reviews = when (val r = reviewsDeferred.await()) {
-            is AppResult.Success -> r.data.results.map { it.toDomain() }
+            is AppResult.Success -> r.data.results
+                .sortedByDescending { it.createdAt }
+                .map { it.toDomain() }
             is AppResult.Error -> emptyList()
         }
 
