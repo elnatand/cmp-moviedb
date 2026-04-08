@@ -27,16 +27,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.model.Review
 import com.elna.moviedb.core.model.TvShowDetails
+import com.elna.moviedb.core.ui.utils.formatIso8601Date
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.read_more
 import com.elna.moviedb.resources.reviews
 import com.elna.moviedb.resources.show_less
 import org.jetbrains.compose.resources.stringResource
-
-private fun formatReviewDate(isoDate: String): String {
-    val parts = isoDate.take(10).split("-")
-    return if (parts.size == 3) "${parts[2]}-${parts[1]}-${parts[0]}" else isoDate
-}
 
 @Composable
 internal fun ReviewsSection(tvShow: TvShowDetails) {
@@ -103,7 +99,7 @@ private fun ReviewCard(review: Review) {
             }
 
             Text(
-                text = formatReviewDate(review.createdAt),
+                text = formatIso8601Date(review.createdAt),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
