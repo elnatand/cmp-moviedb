@@ -118,6 +118,13 @@
 
     <!-- Content Info (details screen) -->
     <string name="content_info_title">מידע על תוכן</string>
+    <string name="close">סגור</string>
+    <string name="rating_description_g">מתאים לכל הגילאים.</string>
+    <string name="rating_description_pg">מומלצת הדרכת הורים. חלק מהתוכן עשוי שלא להתאים לילדים צעירים.</string>
+    <string name="rating_description_pg13">זהירות הורים. חלק מהחומר עשוי להיות לא מתאים לילדים מתחת לגיל 13.</string>
+    <string name="rating_description_r">מוגבל. עשוי להכיל תוכן לא מתאים לילדים מתחת לגיל 17.</string>
+    <string name="rating_description_nc17">למבוגרים בלבד. לא מתאים למי שמתחת לגיל 17.</string>
+    <string name="rating_description_unknown">מידע על הדירוג אינו זמין.</string>
 
 <!-- TMDB Attribution -->
     <string name="about">אודות</string>

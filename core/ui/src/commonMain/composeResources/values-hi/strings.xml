@@ -118,6 +118,13 @@
 
     <!-- Content Info (details screen) -->
     <string name="content_info_title">सामग्री जानकारी</string>
+    <string name="close">बंद करें</string>
+    <string name="rating_description_g">सभी उम्र के लिए उपयुक्त।</string>
+    <string name="rating_description_pg">माता-पिता का मार्गदर्शन सुझाया गया। कुछ सामग्री छोटे बच्चों के लिए उपयुक्त नहीं हो सकती।</string>
+    <string name="rating_description_pg13">माता-पिता को सावधानी बरतनी चाहिए। कुछ सामग्री 13 वर्ष से कम उम्र के बच्चों के लिए अनुचित हो सकती है।</string>
+    <string name="rating_description_r">प्रतिबंधित। 17 वर्ष से कम उम्र के बच्चों के लिए अनुचित सामग्री हो सकती है।</string>
+    <string name="rating_description_nc17">केवल वयस्कों के लिए। 17 वर्ष से कम उम्र के किसी के लिए उपयुक्त नहीं।</string>
+    <string name="rating_description_unknown">रेटिंग जानकारी उपलब्ध नहीं है।</string>
 
 <!-- TMDB Attribution -->
     <string name="about">के बारे में</string>

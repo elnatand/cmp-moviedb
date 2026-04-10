@@ -118,6 +118,13 @@
 
     <!-- Content Info (details screen) -->
     <string name="content_info_title">Content Info</string>
+    <string name="close">Close</string>
+    <string name="rating_description_g">Suitable for all ages.</string>
+    <string name="rating_description_pg">Parental guidance suggested. Some content may not be suitable for young children.</string>
+    <string name="rating_description_pg13">Parental caution. Some material may be inappropriate for children under 13.</string>
+    <string name="rating_description_r">Restricted. May contain content not suitable for children under 17.</string>
+    <string name="rating_description_nc17">Adults only. Not suitable for anyone under 17.</string>
+    <string name="rating_description_unknown">Rating information not available.</string>
 
 <!-- TMDB Attribution -->
     <string name="about">About</string>

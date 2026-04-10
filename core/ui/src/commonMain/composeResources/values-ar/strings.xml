@@ -118,6 +118,13 @@
 
     <!-- Content Info (details screen) -->
     <string name="content_info_title">معلومات المحتوى</string>
+    <string name="close">إغلاق</string>
+    <string name="rating_description_g">مناسب لجميع الأعمار.</string>
+    <string name="rating_description_pg">يُنصح بتوجيه أولياء الأمور. قد لا يكون بعض المحتوى مناسبًا للأطفال الصغار.</string>
+    <string name="rating_description_pg13">تحذير للوالدين. قد تكون بعض المواد غير مناسبة للأطفال دون سن 13 عامًا.</string>
+    <string name="rating_description_r">مقيّد. قد يحتوي على محتوى غير مناسب للأطفال دون سن 17 عامًا.</string>
+    <string name="rating_description_nc17">للبالغين فقط. غير مناسب لمن هم دون سن 17 عامًا.</string>
+    <string name="rating_description_unknown">معلومات التصنيف غير متوفرة.</string>
 
 <!-- TMDB Attribution -->
     <string name="about">حول</string>
