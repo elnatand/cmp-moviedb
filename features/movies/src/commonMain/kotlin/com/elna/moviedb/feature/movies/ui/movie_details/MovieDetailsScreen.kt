@@ -67,6 +67,7 @@ fun MovieDetailsScreen(
     onBack: () -> Unit,
     onCastMemberClick: (Int) -> Unit,
     onDirectorClick: (Int) -> Unit,
+    onShowAllReviews: (Int) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -80,6 +81,7 @@ fun MovieDetailsScreen(
         onRetry = { viewModel.onEvent(MovieDetailsEvent.Retry) },
         onCastMemberClick = onCastMemberClick,
         onDirectorClick = onDirectorClick,
+        onShowAllReviews = { onShowAllReviews(movieId) },
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope
     )
@@ -94,6 +96,7 @@ private fun MovieDetailsScreen(
     onRetry: () -> Unit,
     onCastMemberClick: (Int) -> Unit,
     onDirectorClick: (Int) -> Unit = {},
+    onShowAllReviews: () -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -117,6 +120,7 @@ private fun MovieDetailsScreen(
                     onBack = onBack,
                     onCastMemberClick = onCastMemberClick,
                     onDirectorClick = onDirectorClick,
+                    onShowAllReviews = onShowAllReviews,
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope
                 )
@@ -133,6 +137,7 @@ private fun MovieDetailsContent(
     onBack: () -> Unit,
     onCastMemberClick: (Int) -> Unit,
     onDirectorClick: (Int) -> Unit,
+    onShowAllReviews: () -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -222,7 +227,7 @@ private fun MovieDetailsContent(
                 )
 
                 // Reviews Section
-                ReviewsSection(movie = movie)
+                ReviewsSection(movie = movie, onShowAll = onShowAllReviews)
 
                 // Genres Section
                 movie.genres?.takeIf { it.isNotEmpty() }?.let { genres ->

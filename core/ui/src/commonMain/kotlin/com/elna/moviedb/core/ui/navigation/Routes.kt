@@ -41,3 +41,9 @@ data object ProfileRoute : Route
 data class PersonDetailsRoute(
     val personId: Int,
 ) : Route
+
+@Serializable
+data class ReviewsRoute(
+    val contentId: Int,
+    val isMovie: Boolean
+) : Route

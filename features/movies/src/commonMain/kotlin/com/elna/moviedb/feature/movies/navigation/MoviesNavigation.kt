@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
+import com.elna.moviedb.core.ui.navigation.ReviewsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.feature.movies.ui.movie_details.MovieDetailsScreen
 import com.elna.moviedb.feature.movies.ui.movies.MoviesScreen
@@ -38,6 +39,9 @@ fun EntryProviderScope<Route>.moviesFlow(
             },
             onDirectorClick = { personId ->
                 rootBackStack.add(PersonDetailsRoute(personId))
+            },
+            onShowAllReviews = { movieId ->
+                rootBackStack.add(ReviewsRoute(movieId, isMovie = true))
             }
         )
     }

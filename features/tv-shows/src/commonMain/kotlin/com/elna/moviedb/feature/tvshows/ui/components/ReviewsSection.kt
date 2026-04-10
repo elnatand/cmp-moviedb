@@ -29,13 +29,14 @@ import com.elna.moviedb.core.model.Review
 import com.elna.moviedb.core.model.TvShowDetails
 import com.elna.moviedb.core.ui.utils.formatIso8601Date
 import com.elna.moviedb.resources.Res
+import com.elna.moviedb.resources.all_reviews
 import com.elna.moviedb.resources.read_more
 import com.elna.moviedb.resources.reviews
 import com.elna.moviedb.resources.show_less
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ReviewsSection(tvShow: TvShowDetails) {
+internal fun ReviewsSection(tvShow: TvShowDetails, onShowAll: () -> Unit = {}) {
     val reviewList = tvShow.reviews?.takeIf { it.isNotEmpty() } ?: return
 
     Card(
@@ -46,12 +47,21 @@ internal fun ReviewsSection(tvShow: TvShowDetails) {
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = stringResource(Res.string.reviews),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            reviewList.forEach { review ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(Res.string.reviews),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                TextButton(onClick = onShowAll) {
+                    Text(stringResource(Res.string.all_reviews))
+                }
+            }
+            reviewList.take(2).forEach { review ->
                 ReviewCard(review = review)
             }
         }

@@ -44,6 +44,7 @@ fun TvShowDetailsScreen(
     category: String? = null,
     onBack: () -> Unit,
     onCastMemberClick: (Int) -> Unit,
+    onShowAllReviews: (Int) -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -56,6 +57,7 @@ fun TvShowDetailsScreen(
         onBack = onBack,
         onRetry = { viewModel.onEvent(TvShowDetailsEvent.Retry) },
         onCastMemberClick = onCastMemberClick,
+        onShowAllReviews = { onShowAllReviews(tvShowId) },
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope
     )
@@ -69,6 +71,7 @@ fun TvShowDetailsScreen(
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onCastMemberClick: (Int) -> Unit,
+    onShowAllReviews: () -> Unit = {},
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -120,7 +123,7 @@ fun TvShowDetailsScreen(
                                 onCastMemberClick = onCastMemberClick
                             )
 
-                            ReviewsSection(tvShow = uiState.tvShowDetails)
+                            ReviewsSection(tvShow = uiState.tvShowDetails, onShowAll = onShowAllReviews)
 
                             RatingsSection(tvShow = uiState.tvShowDetails)
 

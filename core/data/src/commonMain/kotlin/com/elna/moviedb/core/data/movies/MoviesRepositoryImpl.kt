@@ -22,6 +22,7 @@ import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.model.MovieDetails
 import com.elna.moviedb.core.model.Review
+import com.elna.moviedb.core.model.ReviewsPage
 import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.network.MoviesRemoteDataSource
 import com.elna.moviedb.core.network.mapper.toTmdbPath
@@ -299,6 +300,19 @@ class MoviesRepositoryImpl(
                     ?: emptyList()
             }
             is AppResult.Error -> emptyList()
+        }
+    }
+
+    override suspend fun getMovieReviews(movieId: Int, page: Int): AppResult<ReviewsPage> {
+        return when (val result = remoteDataSource.getMovieReviews(movieId, page)) {
+            is AppResult.Success -> AppResult.Success(
+                ReviewsPage(
+                    reviews = result.data.results.sortedByDescending { it.createdAt }.map { it.toDomain() },
+                    page = result.data.page,
+                    totalPages = result.data.totalPages
+                )
+            )
+            is AppResult.Error -> result
         }
     }
 

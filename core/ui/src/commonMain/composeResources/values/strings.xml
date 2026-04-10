@@ -71,6 +71,8 @@
     <string name="trailers">Trailers</string>
     <string name="cast">Cast</string>
     <string name="reviews">Reviews</string>
+    <string name="all_reviews">All Reviews</string>
+    <string name="no_reviews">No reviews yet</string>
     <string name="read_more">Read more</string>
     <string name="show_less">Show less</string>
 

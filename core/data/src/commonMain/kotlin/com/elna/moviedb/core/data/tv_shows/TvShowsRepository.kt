@@ -1,6 +1,7 @@
 package com.elna.moviedb.core.data.tv_shows
 
 import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.core.model.ReviewsPage
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.model.TvShowDetails
@@ -36,6 +37,8 @@ interface TvShowsRepository {
      * @return AppResult<TvShowDetails> Success with TV show details or Error if fetch failed
      */
     suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails>
+
+    suspend fun getTvShowReviews(tvShowId: Int, page: Int): AppResult<ReviewsPage>
 
     /**
      * Clears all cached TV shows and reloads initial pages for all categories.

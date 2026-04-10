@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
+import com.elna.moviedb.core.ui.navigation.ReviewsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.tvshows.ui.tv_show_details.TvShowDetailsScreen
@@ -35,6 +36,9 @@ fun EntryProviderScope<Route>.tvShowsFlow(
             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
             onCastMemberClick = { personId ->
                 rootBackStack.add(PersonDetailsRoute(personId))
+            },
+            onShowAllReviews = { tvShowId ->
+                rootBackStack.add(ReviewsRoute(tvShowId, isMovie = false))
             }
         )
     }

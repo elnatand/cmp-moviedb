@@ -71,6 +71,8 @@
     <string name="trailers">عرض تشويقي</string>
     <string name="cast">طاقم التمثيل</string>
     <string name="reviews">المراجعات</string>
+    <string name="all_reviews">كل المراجعات</string>
+    <string name="no_reviews">لا توجد مراجعات بعد</string>
     <string name="read_more">اقرأ المزيد</string>
     <string name="show_less">عرض أقل</string>
 

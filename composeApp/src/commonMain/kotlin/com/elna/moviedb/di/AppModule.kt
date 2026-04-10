@@ -11,15 +11,26 @@ import com.elna.moviedb.feature.person.di.personModule
 import com.elna.moviedb.feature.profile.di.profileModule
 import com.elna.moviedb.feature.search.di.searchModule
 import com.elna.moviedb.feature.tvshows.di.tvShowsModule
+import com.elna.moviedb.reviews.ReviewsViewModel
 import org.koin.core.context.startKoin
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.KoinAppDeclaration
+import org.koin.dsl.module
+
+private val reviewsModule = module {
+    factory { (contentId: Int, isMovie: Boolean) ->
+        ReviewsViewModel(
+            contentId = contentId,
+            isMovie = isMovie,
+            moviesRepository = get(),
+            tvShowsRepository = get()
+        )
+    }
+}
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
     appDeclaration()
 
-    /**
-     * Shared Modules
-     */
     modules(
         commonModule,
         networkModule,
@@ -30,7 +41,8 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
         tvShowsModule,
         searchModule,
         profileModule,
-        personModule
+        personModule,
+        reviewsModule
     )
 }
 

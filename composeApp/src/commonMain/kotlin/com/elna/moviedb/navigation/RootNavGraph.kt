@@ -7,12 +7,14 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.elna.moviedb.core.ui.navigation.ReviewsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.feature.movies.navigation.moviesFlow
 import com.elna.moviedb.feature.person.navigation.personDetailsEntry
 import com.elna.moviedb.feature.profile.navigation.profileEntry
 import com.elna.moviedb.feature.search.navigation.searchEntry
 import com.elna.moviedb.feature.tvshows.navigation.tvShowsFlow
+import com.elna.moviedb.reviews.ReviewsScreen
 
 @Composable
 fun RootNavGraph(
@@ -42,6 +44,14 @@ fun RootNavGraph(
                 personDetailsEntry(
                     rootBackStack = rootBackStack,
                 )
+
+                entry<ReviewsRoute> {
+                    ReviewsScreen(
+                        contentId = it.contentId,
+                        isMovie = it.isMovie,
+                        onBack = { rootBackStack.removeLastOrNull() }
+                    )
+                }
 
                 profileEntry()
             }

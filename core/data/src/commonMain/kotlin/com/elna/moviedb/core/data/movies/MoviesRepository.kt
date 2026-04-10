@@ -4,6 +4,7 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.core.model.ReviewsPage
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -40,6 +41,8 @@ interface MoviesRepository {
      * @return AppResult<MovieDetails> Success with movie details or Error if fetch failed
      */
     suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails>
+
+    suspend fun getMovieReviews(movieId: Int, page: Int): AppResult<ReviewsPage>
 
     /**
      * Clears all cached movies and reloads initial pages for all categories.

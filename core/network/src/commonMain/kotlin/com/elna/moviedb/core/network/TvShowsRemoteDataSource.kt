@@ -110,11 +110,14 @@ class TvShowsRemoteDataSource(
         }
     }
 
-    suspend fun getTvShowReviews(tvShowId: Int): AppResult<RemoteReviewResponse> {
+    suspend fun getTvShowReviews(tvShowId: Int, page: Int = 1): AppResult<RemoteReviewResponse> {
         return withContext(appDispatchers.io) {
             safeApiCall {
                 httpClient.get("${TMDB_BASE_URL}/tv/${tvShowId}/reviews") {
-                    url { parameters.append("api_key", BuildKonfig.TMDB_API_KEY) }
+                    url {
+                        parameters.append("api_key", BuildKonfig.TMDB_API_KEY)
+                        parameters.append("page", page.toString())
+                    }
                 }.body<RemoteReviewResponse>()
             }
         }

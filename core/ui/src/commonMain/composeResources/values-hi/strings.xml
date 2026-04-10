@@ -71,6 +71,8 @@
     <string name="trailers">ट्रेलर</string>
     <string name="cast">कलाकार</string>
     <string name="reviews">समीक्षाएं</string>
+    <string name="all_reviews">सभी समीक्षाएं</string>
+    <string name="no_reviews">अभी तक कोई समीक्षा नहीं</string>
     <string name="read_more">और पढ़ें</string>
     <string name="show_less">कम दिखाएं</string>
 

@@ -5,6 +5,7 @@ import com.elna.moviedb.core.data.LanguageChangeListener
 import com.elna.moviedb.core.data.util.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.ContentInfo
+import com.elna.moviedb.core.model.ReviewsPage
 import com.elna.moviedb.core.model.TvShow
 import com.elna.moviedb.core.model.TvShowCategory
 import com.elna.moviedb.core.model.TvShowDetails
@@ -137,6 +138,19 @@ class TvShowRepositoryImpl(
      * This method is called when the app language changes via onLanguageChanged().
      * It clears the in-memory cache and fetches fresh data in the new language.
      */
+    override suspend fun getTvShowReviews(tvShowId: Int, page: Int): AppResult<ReviewsPage> {
+        return when (val result = remoteDataSource.getTvShowReviews(tvShowId, page)) {
+            is AppResult.Success -> AppResult.Success(
+                ReviewsPage(
+                    reviews = result.data.results.sortedByDescending { it.createdAt }.map { it.toDomain() },
+                    page = result.data.page,
+                    totalPages = result.data.totalPages
+                )
+            )
+            is AppResult.Error -> result
+        }
+    }
+
     override suspend fun clearAndReload() {
         // Clear all pagination state and cached data for all categories
         currentPages.clear()

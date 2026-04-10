@@ -71,6 +71,8 @@
     <string name="trailers">טריילרים</string>
     <string name="cast">שחקנים</string>
     <string name="reviews">ביקורות</string>
+    <string name="all_reviews">כל הביקורות</string>
+    <string name="no_reviews">אין ביקורות עדיין</string>
     <string name="read_more">קרא עוד</string>
     <string name="show_less">הצג פחות</string>
 
