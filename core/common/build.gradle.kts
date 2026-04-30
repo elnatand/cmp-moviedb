@@ -7,7 +7,7 @@ plugins {
 
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.elna.moviedb.core.common"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
