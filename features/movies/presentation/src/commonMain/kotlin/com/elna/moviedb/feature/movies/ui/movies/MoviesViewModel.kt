@@ -9,8 +9,6 @@ import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.feature.movies.model.MoviesEvent
 import com.elna.moviedb.feature.movies.model.MoviesUiAction
 import com.elna.moviedb.feature.movies.model.MoviesUiState
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,6 +39,11 @@ class MoviesViewModel(
 
     private val _uiAction = Channel<MoviesUiAction>(Channel.BUFFERED)
     val uiAction = _uiAction.receiveAsFlow()
+
+    // Categories whose most recent load attempt failed. The full-screen error is only
+    // shown when there is no data to display anywhere (see recomputeScreenState). Confined
+    // to viewModelScope's main dispatcher, so it's never mutated concurrently.
+    private val erroredCategories = mutableSetOf<MovieCategory>()
 
     init {
         observeMovies()
@@ -82,12 +85,13 @@ class MoviesViewModel(
                         loadNextPage(category)
                     }
                     _uiState.update { currentState ->
-                        val updatedMoviesMap = currentState.moviesByCategory + (category to movies)
                         currentState.copy(
-                            moviesByCategory = updatedMoviesMap,
-                            state = MoviesUiState.State.SUCCESS
+                            moviesByCategory = currentState.moviesByCategory + (category to movies)
                         )
                     }
+                    // Overall screen state is derived, not set per-emission, so a single
+                    // category can't clobber another category's state.
+                    recomputeScreenState()
                 }
             }
         }
@@ -111,43 +115,55 @@ class MoviesViewModel(
         if (_uiState.value.isLoading(category)) return
 
         viewModelScope.launch {
-            // Set loading state for this category
-            _uiState.update { currentState ->
-                currentState.copy(
-                    loadingByCategory = currentState.loadingByCategory + (category to true)
-                )
-            }
+            setCategoryLoading(category, true)
 
             when (val result = moviesRepository.loadMoviesNextPage(category)) {
                 is AppResult.Error -> {
-                    // Clear loading state
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            loadingByCategory = currentState.loadingByCategory + (category to false)
-                        )
-                    }
+                    setCategoryLoading(category, false)
+                    erroredCategories += category
 
-                    // Get current movies for this category
-                    val currentMovies = _uiState.value.getMovies(category)
-
-                    // If we have movies, show snackbar; otherwise show error screen
-                    if (currentMovies.isNotEmpty()) {
+                    // A failed load only blanks the screen when there's nothing to show
+                    // anywhere. If any category already has data, this is a pagination /
+                    // refresh hiccup — surface it as a snackbar and keep the content.
+                    if (_uiState.value.hasAnyData) {
                         _uiAction.send(MoviesUiAction.ShowPaginationError)
-                    } else {
-                        _uiState.update { it.copy(state = MoviesUiState.State.ERROR) }
                     }
+                    recomputeScreenState()
                 }
 
                 is AppResult.Success -> {
-                    // Clear loading state
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            loadingByCategory = currentState.loadingByCategory + (category to false)
-                        )
-                    }
-                    // Success - movies are already updated via observeMovies()
+                    setCategoryLoading(category, false)
+                    erroredCategories -= category
+                    recomputeScreenState()
+                    // Loaded movies arrive via observeMovies().
                 }
             }
+        }
+    }
+
+    private fun setCategoryLoading(category: MovieCategory, isLoading: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                loadingByCategory = currentState.loadingByCategory + (category to isLoading)
+            )
+        }
+    }
+
+    /**
+     * Derives the overall screen state from the current data and error tracking.
+     *
+     * The full-screen error is shown only when a load has failed AND no category has any
+     * data to display. As soon as any category has content, errors become non-blocking
+     * (surfaced via snackbar), so one failing category never hides others' data.
+     */
+    private fun recomputeScreenState() {
+        _uiState.update { currentState ->
+            val newState = if (!currentState.hasAnyData && erroredCategories.isNotEmpty()) {
+                MoviesUiState.State.ERROR
+            } else {
+                MoviesUiState.State.SUCCESS
+            }
+            currentState.copy(state = newState)
         }
     }
 
@@ -158,22 +174,12 @@ class MoviesViewModel(
      * Loads all categories in parallel for better performance.
      */
     private fun retry() {
-        viewModelScope.launch {
-            // Try to load all categories in parallel
-            val results = MovieCategory.entries.map { category ->
-                async { moviesRepository.loadMoviesNextPage(category) }
-            }.awaitAll()
-
-            // If any succeeded, consider it a success
-            val hasSuccess = results.any { it is AppResult.Success }
-            val allFailed = results.all { it is AppResult.Error }
-
-            if (allFailed) {
-                _uiState.update { it.copy(state = MoviesUiState.State.ERROR) }
-            } else if (hasSuccess) {
-                // Success - state will be updated via observeMovies()
-            }
-        }
+        // Clear stale failures and let each category reload independently. The screen
+        // state (and any per-category snackbar) is then derived by loadNextPage, so the
+        // result naturally reflects "all failed" → error vs "some succeeded" → content.
+        erroredCategories.clear()
+        recomputeScreenState()
+        MovieCategory.entries.forEach { category -> loadNextPage(category) }
     }
 
     /**

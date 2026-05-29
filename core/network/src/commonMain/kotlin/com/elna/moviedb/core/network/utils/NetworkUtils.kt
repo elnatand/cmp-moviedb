@@ -4,6 +4,7 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.DataError
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
+import kotlinx.serialization.SerializationException
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -25,6 +26,11 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> T): AppResult<T> {
         val statusCode = e.response.status.value
         val message = "Server error (${statusCode}): ${e.message}"
         AppResult.Error(message = message, code = statusCode, throwable = e, type = DataError.SERVER)
+    } catch (e: SerializationException) {
+        // Response arrived but couldn't be deserialized (schema mismatch, malformed body).
+        // This is not a connectivity problem, so classify it as UNKNOWN rather than NETWORK.
+        val message = "Deserialization error: ${e.message ?: "Unknown error occurred"}"
+        AppResult.Error(message = message, throwable = e, type = DataError.UNKNOWN)
     } catch (e: Exception) {
         val message = "Network error: ${e.message ?: "Unknown error occurred"}"
         AppResult.Error(message = message, throwable = e, type = DataError.NETWORK)

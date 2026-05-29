@@ -36,16 +36,24 @@ class SearchViewModel(
 
     private var currentSearchJob: Job? = null
 
+    /**
+     * The (query, filter) pair that drives automatic searching. Kept separate from
+     * [_uiState] so the debounce reacts only to user intent — not to incidental state
+     * updates like loading toggles or incoming results (which would otherwise restart the
+     * debounce window and could delay or drop searches).
+     */
+    private data class SearchTrigger(val query: String, val filter: SearchFilter)
+
+    private val searchTrigger = MutableStateFlow(SearchTrigger("", SearchFilter.ALL))
+
     init {
         viewModelScope.launch {
-            _uiState
+            searchTrigger
                 .debounce(300)
-                .distinctUntilChanged { old, new ->
-                    old.searchQuery == new.searchQuery && old.selectedFilter == new.selectedFilter
-                }
-                .collect { state ->
-                    if (state.searchQuery.isNotBlank()) {
-                        performSearch(state.searchQuery, state.selectedFilter, 1)
+                .distinctUntilChanged()
+                .collect { trigger ->
+                    if (trigger.query.isNotBlank()) {
+                        performSearch(trigger.query, trigger.filter, 1)
                     }
                 }
         }
@@ -74,6 +82,7 @@ class SearchViewModel(
                 error = null
             )
         }
+        searchTrigger.update { it.copy(query = query) }
     }
 
     private fun onFilterChanged(filter: SearchFilter) {
@@ -86,6 +95,7 @@ class SearchViewModel(
                 error = null
             )
         }
+        searchTrigger.update { it.copy(filter = filter) }
     }
 
     private fun onLoadMore() {

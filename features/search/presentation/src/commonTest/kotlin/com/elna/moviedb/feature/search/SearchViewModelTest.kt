@@ -99,7 +99,7 @@ class SearchViewModelTest {
         }
 
     @Test
-    fun `an error result is surfaced in state, not as crash or stale results`() =
+    fun `an error result is surfaced in state - not as crash or stale results`() =
         runTest(testDispatcher) {
             fakeRepository.setResult(AppResult.Error("boom", type = DataError.NETWORK))
 
