@@ -11,7 +11,9 @@ import kotlin.coroutines.cancellation.CancellationException
  * Wraps API calls with error handling - shared across all feature remote data sources.
  *
  * Failures are classified into a [DataError] so the presentation layer can show a
- * localized message; the raw [AppResult.Error.message] is retained for logging only.
+ * localized message. The raw [AppResult.Error.message]/[AppResult.Error.throwable] carry
+ * the technical detail for diagnostics (e.g. when debugging or wiring up logging); the UI
+ * never displays them.
  */
 suspend fun <T> safeApiCall(apiCall: suspend () -> T): AppResult<T> {
     return try {

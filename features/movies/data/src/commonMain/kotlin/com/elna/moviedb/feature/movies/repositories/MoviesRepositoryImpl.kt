@@ -8,7 +8,6 @@ import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.datastore.pagination.PaginationPreferences
 import com.elna.moviedb.core.datastore.pagination.PaginationState
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.onSuccess
 import com.elna.moviedb.core.network.dto.credits.toCastMembersOrEmpty
 import com.elna.moviedb.core.network.dto.videos.toTrailersOrEmpty
 import com.elna.moviedb.feature.movies.datasources.MoviesRemoteDataSource
@@ -121,9 +120,7 @@ class MoviesRepositoryImpl(
     override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> {
         fetchMovieDetailsFromCache(movieId)?.let { return AppResult.Success(it) }
 
-        return fetchMovieDetailsFromNetwork(movieId).onSuccess { details ->
-            saveMovieDetailsToCache(movieId, details)
-        }
+        return fetchMovieDetailsFromNetwork(movieId)
     }
 
     /**
@@ -144,6 +141,9 @@ class MoviesRepositoryImpl(
     /**
      * Fetches movie details from network, making parallel API calls.
      * Implements graceful degradation for optional data (videos, cast).
+     *
+     * Persists to the offline-first cache only when the result is *complete* — see the
+     * inline note for why a partial result must not be cached.
      */
     private suspend fun fetchMovieDetailsFromNetwork(movieId: Int): AppResult<MovieDetails> =
         coroutineScope {
@@ -168,12 +168,23 @@ class MoviesRepositoryImpl(
             val trailers = videosResult.toTrailersOrEmpty()
             val cast = creditsResult.toCastMembersOrEmpty()
 
-            AppResult.Success(
-                details.toDomain().copy(
-                    trailers = trailers,
-                    cast = cast
-                )
+            val movieDetails = details.toDomain().copy(
+                trailers = trailers,
+                cast = cast
             )
+
+            // Offline-first, but persist only a *complete* result. Videos/cast degrade to
+            // empty on failure; since a later visit is served straight from cache (a hit on
+            // the details row), caching that empty data would hide cast/trailers permanently
+            // after a transient hiccup. When an optional fetch failed, return the partial
+            // result for this session only and re-fetch on the next visit.
+            val isComplete =
+                videosResult is AppResult.Success && creditsResult is AppResult.Success
+            if (isComplete) {
+                saveMovieDetailsToCache(movieId, movieDetails)
+            }
+
+            AppResult.Success(movieDetails)
         }
 
     /**

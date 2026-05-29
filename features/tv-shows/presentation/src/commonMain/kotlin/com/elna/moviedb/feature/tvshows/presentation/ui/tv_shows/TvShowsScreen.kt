@@ -144,9 +144,11 @@ private fun TvShowsContent(
         TvShowCategory.entries.forEach { category ->
             val tvShows = uiState.getTvShows(category)
             val isLoading = uiState.isLoading(category)
+            val isFailed = uiState.hasFailed(category)
 
-            // Show section if it has data OR if it's loading (initial load)
-            if (tvShows.isNotEmpty() || isLoading) {
+            // Show section if it has data, is loading (initial load), or failed (so the
+            // inline error + retry is reachable instead of the section silently vanishing).
+            if (tvShows.isNotEmpty() || isLoading || isFailed) {
                 TvShowsSection(
                     category = category,
                     title = stringResource(
@@ -157,6 +159,7 @@ private fun TvShowsContent(
                     tvShows = tvShows,
                     onClick = onClick,
                     isLoading = isLoading,
+                    isFailed = isFailed,
                     onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(category)) },
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope

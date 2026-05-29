@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.feature.tvshows.domain.model.TvShow
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
+import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.TvShowTile
 
@@ -44,6 +45,7 @@ fun TvShowsSection(
     tvShows: List<TvShow>,
     onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
     isLoading: Boolean,
+    isFailed: Boolean,
     onLoadMore: () -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
@@ -51,8 +53,12 @@ fun TvShowsSection(
     val listState = rememberLazyListState()
     val currentIsLoading by rememberUpdatedState(isLoading)
 
-    // Automatic pagination: Detect when user scrolls near the end to trigger loading more
-    LaunchedEffect(listState) {
+    // Automatic pagination: Detect when user scrolls near the end to trigger loading more.
+    // Guarded on a non-empty list so an empty/failed section doesn't auto-fire onLoadMore
+    // (an empty LazyRow reports lastVisibleIndex 0 >= totalItems 0 - 3, which is true).
+    LaunchedEffect(listState, tvShows.isNotEmpty()) {
+        if (tvShows.isEmpty()) return@LaunchedEffect
+
         snapshotFlow {
             val layoutInfo = listState.layoutInfo
             val totalItemsNumber = layoutInfo.totalItemsCount
@@ -78,34 +84,47 @@ fun TvShowsSection(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 
-        LazyRow(
-            state = listState,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            items(
-                items = tvShows,
-                key = { "${category.name}_${it.id}" }
-            ) { tvShow ->
-                TvShowTile(
-                    category = category,
-                    tvShow = tvShow,
-                    onClick = { id, title -> onClick(id, title, category) },
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
+        // A failed initial load (empty section) shows an inline error + retry instead of an
+        // empty row, so a category that failed while others have data isn't a dead-end.
+        if (tvShows.isEmpty() && isFailed) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                AppErrorComponent(onRetry = onLoadMore)
             }
+        } else {
+            LazyRow(
+                state = listState,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                items(
+                    items = tvShows,
+                    key = { "${category.name}_${it.id}" }
+                ) { tvShow ->
+                    TvShowTile(
+                        category = category,
+                        tvShow = tvShow,
+                        onClick = { id, title -> onClick(id, title, category) },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                }
 
-            // Show loader when loading (for both initial load and pagination)
-            if (isLoading) {
-                item(key = "loader") {
-                    Box(
-                        modifier = Modifier
-                            .height(240.dp)
-                            .padding(horizontal = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AppLoader()
+                // Show loader when loading (for both initial load and pagination)
+                if (isLoading) {
+                    item(key = "loader") {
+                        Box(
+                            modifier = Modifier
+                                .height(240.dp)
+                                .padding(horizontal = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AppLoader()
+                        }
                     }
                 }
             }

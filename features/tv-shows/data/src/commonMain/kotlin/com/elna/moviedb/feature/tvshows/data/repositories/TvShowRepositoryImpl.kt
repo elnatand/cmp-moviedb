@@ -49,7 +49,16 @@ class TvShowRepositoryImpl(
         languageChangeCoordinator.registerListener(this)
     }
 
-    // Category-based pagination state using Maps for scalability
+    // Category-based pagination state using Maps for scalability.
+    //
+    // Concurrency: these plain mutable maps carry no synchronization. Every mutation path —
+    // observeTvShows() (getOrPut), loadTvShowsNextPage(), and clearAndReload() — runs on the
+    // main dispatcher: the ViewModel drives loads from viewModelScope (main) and the
+    // LanguageChangeCoordinator dispatches onLanguageChanged() from its own main-confined
+    // scope. The remote fetch hops to IO internally (inside TmdbApiClient) but returns to the
+    // caller's main context before any map is touched, so accesses are serialized on a single
+    // thread and never race. If a future caller mutates these off the main dispatcher, this
+    // must move to a Mutex.
     private val currentPages = mutableMapOf<TvShowCategory, Int>()
     private val totalPages = mutableMapOf<TvShowCategory, Int>()
     private val tvShowsFlows = mutableMapOf<TvShowCategory, MutableStateFlow<List<TvShow>>>()

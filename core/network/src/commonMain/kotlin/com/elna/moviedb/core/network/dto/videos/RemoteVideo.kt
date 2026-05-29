@@ -35,5 +35,6 @@ fun RemoteVideo.toDomain() = Video(
     name = name,
     site = VideoSite.fromString(site),
     type = type,
-    official = official
+    official = official,
+    publishedAt = publishedAt
 )

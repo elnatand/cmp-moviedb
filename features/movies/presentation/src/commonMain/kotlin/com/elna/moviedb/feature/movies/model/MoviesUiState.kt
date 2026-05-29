@@ -11,11 +11,13 @@ package com.elna.moviedb.feature.movies.model
  * @property state Overall screen state (LOADING, ERROR, SUCCESS)
  * @property moviesByCategory Map of movie categories to their respective movie lists
  * @property loadingByCategory Map of movie categories to their pagination loading states
+ * @property failedCategories Categories whose most recent load failed (for inline section errors)
  */
 data class MoviesUiState(
     val state: State,
     val moviesByCategory: Map<MovieCategory, List<Movie>> = emptyMap(),
     val loadingByCategory: Map<MovieCategory, Boolean> = emptyMap(),
+    val failedCategories: Set<MovieCategory> = emptySet(),
     val isRefreshing: Boolean = false
 ) {
 
@@ -24,6 +26,15 @@ data class MoviesUiState(
      */
     val hasAnyData: Boolean
         get() = moviesByCategory.values.any { it.isNotEmpty() }
+
+    /**
+     * Checks if a specific category's most recent load failed.
+     *
+     * Used to render an inline error + retry for an empty section instead of a loader
+     * that would otherwise spin forever (the full-screen error only covers the case where
+     * no category has any data).
+     */
+    fun hasFailed(category: MovieCategory): Boolean = category in failedCategories
 
     /**
      * Gets movies for a specific category.

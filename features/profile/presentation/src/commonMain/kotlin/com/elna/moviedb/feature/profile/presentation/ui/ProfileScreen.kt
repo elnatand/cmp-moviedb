@@ -100,7 +100,11 @@ private fun ProfileScreen(
     // Confirmation Dialog
     if (showConfirmDialog && pendingLanguage != null) {
         AlertDialog(
-            onDismissRequest = {},
+            onDismissRequest = {
+                // Back press / scrim tap cancels the pending change, same as the dismiss button.
+                showConfirmDialog = false
+                pendingLanguage = null
+            },
             title = { Text(stringResource(Res.string.change_language_title)) },
             text = { Text(stringResource(Res.string.change_language_message)) },
             confirmButton = {

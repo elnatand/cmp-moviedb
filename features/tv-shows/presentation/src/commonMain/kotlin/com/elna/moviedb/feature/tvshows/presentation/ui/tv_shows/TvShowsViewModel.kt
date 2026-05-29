@@ -153,7 +153,9 @@ class TvShowsViewModel(
                 erroredCategories.isNotEmpty() -> TvShowsUiState.State.ERROR
                 else -> TvShowsUiState.State.LOADING
             }
-            currentState.copy(state = newState)
+            // Mirror the per-category failures into state so a section that failed while
+            // others have data renders an inline error + retry instead of a stuck loader.
+            currentState.copy(state = newState, failedCategories = erroredCategories.toSet())
         }
     }
 

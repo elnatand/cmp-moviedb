@@ -167,6 +167,7 @@ private fun MoviesContent(
                     movies = movies,
                     onClick = onClick,
                     isLoading = uiState.isLoading(category),
+                    isFailed = uiState.hasFailed(category),
                     onLoadMore = { onEvent(MoviesEvent.LoadNextPage(category)) },
                     sharedTransitionScope = sharedTransitionScope,
                     animatedVisibilityScope = animatedVisibilityScope
@@ -206,6 +207,7 @@ private fun MoviesSection(
     movies: List<Movie>,
     onClick: (id: Int, title: String, category: MovieCategory) -> Unit,
     isLoading: Boolean,
+    isFailed: Boolean,
     onLoadMore: () -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
@@ -243,14 +245,17 @@ private fun MoviesSection(
         )
 
         if (movies.isEmpty()) {
-            // Show loader for initial load state
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp),
                 contentAlignment = Alignment.Center
             ) {
-                AppLoader()
+                if (isFailed) {
+                    AppErrorComponent(onRetry = onLoadMore)
+                } else {
+                    AppLoader()
+                }
             }
         } else {
             LazyRow(

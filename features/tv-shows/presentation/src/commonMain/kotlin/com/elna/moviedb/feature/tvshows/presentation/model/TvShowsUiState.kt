@@ -14,11 +14,13 @@ import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
  * @property state Overall screen state (LOADING, ERROR, SUCCESS)
  * @property tvShowsByCategory Map of TV show categories to their respective TV show lists
  * @property loadingByCategory Map of TV show categories to their pagination loading states
+ * @property failedCategories Categories whose most recent load failed (for inline section errors)
  */
 data class TvShowsUiState(
     val state: State,
     val tvShowsByCategory: Map<TvShowCategory, List<TvShow>> = emptyMap(),
-    val loadingByCategory: Map<TvShowCategory, Boolean> = emptyMap()
+    val loadingByCategory: Map<TvShowCategory, Boolean> = emptyMap(),
+    val failedCategories: Set<TvShowCategory> = emptySet()
 ) {
 
     /**
@@ -26,6 +28,15 @@ data class TvShowsUiState(
      */
     val hasAnyData: Boolean
         get() = tvShowsByCategory.values.any { it.isNotEmpty() }
+
+    /**
+     * Checks if a specific category's most recent load failed.
+     *
+     * Used to render an inline error + retry for an empty section instead of a loader
+     * that would otherwise spin forever (the full-screen error only covers the case where
+     * no category has any data).
+     */
+    fun hasFailed(category: TvShowCategory): Boolean = category in failedCategories
 
     /**
      * Gets TV shows for a specific category.
