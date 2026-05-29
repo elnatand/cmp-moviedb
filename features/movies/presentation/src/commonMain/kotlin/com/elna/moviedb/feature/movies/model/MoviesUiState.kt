@@ -1,5 +1,7 @@
 package com.elna.moviedb.feature.movies.model
 
+import androidx.compose.runtime.Immutable
+
 /**
  * Represents the UI state for the Movies screen.
  * Uses map-based state management.
@@ -8,11 +10,17 @@ package com.elna.moviedb.feature.movies.model
  * Simply add the new category to the MovieCategory enum, and it will automatically
  * be supported by this state structure.
  *
+ * Marked [Immutable] because the Map/Set fields are read-only types Compose otherwise
+ * treats as unstable, which would make this state (and the whole screen) non-skippable.
+ * The contract holds: these collections are only ever replaced via copy(), never mutated
+ * in place.
+ *
  * @property state Overall screen state (LOADING, ERROR, SUCCESS)
  * @property moviesByCategory Map of movie categories to their respective movie lists
  * @property loadingByCategory Map of movie categories to their pagination loading states
  * @property failedCategories Categories whose most recent load failed (for inline section errors)
  */
+@Immutable
 data class MoviesUiState(
     val state: State,
     val moviesByCategory: Map<MovieCategory, List<Movie>> = emptyMap(),

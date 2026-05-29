@@ -8,10 +8,14 @@ import com.elna.moviedb.feature.movies.model.RemoteMovieDetails
 import com.elna.moviedb.feature.movies.model.RemoteMoviesPage
 
 
-class MoviesRemoteDataSource(
-    private val apiClient: TmdbApiClient
-) {
-
+/**
+ * Remote source for movie data from the TMDB API.
+ *
+ * Declared as an interface (mirroring [com.elna.moviedb.feature.movies.datasources.MoviesLocalDataSource])
+ * so the repository depends on an abstraction and can be unit-tested with a fake, without
+ * standing up a real HTTP client.
+ */
+interface MoviesRemoteDataSource {
     /**
      * Fetches a page of movies for any category from TMDB API.
      *
@@ -27,6 +31,23 @@ class MoviesRemoteDataSource(
         apiPath: String,
         page: Int,
         language: String
+    ): AppResult<RemoteMoviesPage>
+
+    suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails>
+
+    suspend fun getMovieVideos(movieId: Int, language: String): AppResult<RemoteVideoResponse>
+
+    suspend fun getMovieCredits(movieId: Int, language: String): AppResult<RemoteCredits>
+}
+
+class MoviesRemoteDataSourceImpl(
+    private val apiClient: TmdbApiClient
+) : MoviesRemoteDataSource {
+
+    override suspend fun fetchMoviesPage(
+        apiPath: String,
+        page: Int,
+        language: String
     ): AppResult<RemoteMoviesPage> {
         return apiClient.get(
             path = apiPath,
@@ -35,14 +56,14 @@ class MoviesRemoteDataSource(
         )
     }
 
-    suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
+    override suspend fun getMovieDetails(movieId: Int, language: String): AppResult<RemoteMovieDetails> {
         return apiClient.get(
             path = "/movie/$movieId",
             "language" to language
         )
     }
 
-    suspend fun getMovieVideos(movieId: Int, language: String): AppResult<RemoteVideoResponse> {
+    override suspend fun getMovieVideos(movieId: Int, language: String): AppResult<RemoteVideoResponse> {
         // include_video_language expects ISO-639-1 codes ("en"), not the regional form
         // ("en-US") used for `language`; passing the regional form filters out all videos.
         val languageCode = language.substringBefore("-")
@@ -53,7 +74,7 @@ class MoviesRemoteDataSource(
         )
     }
 
-    suspend fun getMovieCredits(movieId: Int, language: String): AppResult<RemoteCredits> {
+    override suspend fun getMovieCredits(movieId: Int, language: String): AppResult<RemoteCredits> {
         return apiClient.get(
             path = "/movie/$movieId/credits",
             "language" to language

@@ -1,5 +1,6 @@
 package com.elna.moviedb.feature.tvshows.presentation.model
 
+import androidx.compose.runtime.Immutable
 import com.elna.moviedb.feature.tvshows.domain.model.TvShow
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
 
@@ -11,12 +12,18 @@ import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
  * Simply add the new category to the TvShowCategory enum, and it will automatically
  * be supported by this state structure.
  *
+ * Marked [Immutable] because the Map/Set fields are read-only types Compose otherwise
+ * treats as unstable, which would make this state (and the whole screen) non-skippable.
+ * The contract holds: these collections are only ever replaced via copy(), never mutated
+ * in place.
+ *
  * @property state Overall screen state (LOADING, ERROR, SUCCESS)
  * @property tvShowsByCategory Map of TV show categories to their respective TV show lists
  * @property loadingByCategory Map of TV show categories to their pagination loading states
  * @property failedCategories Categories whose most recent load failed (for inline section errors)
  * @property isRefreshing Whether a pull-to-refresh reload is currently in progress
  */
+@Immutable
 data class TvShowsUiState(
     val state: State,
     val tvShowsByCategory: Map<TvShowCategory, List<TvShow>> = emptyMap(),

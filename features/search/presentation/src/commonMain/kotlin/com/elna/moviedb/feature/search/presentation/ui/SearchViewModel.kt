@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -47,10 +46,15 @@ class SearchViewModel(
     private val searchTrigger = MutableStateFlow(SearchTrigger("", SearchFilter.ALL))
 
     init {
+        // No distinctUntilChanged here: onSearchQueryChanged/onFilterChanged eagerly clear the
+        // results, so a settled trigger that happens to equal the previously searched value
+        // (e.g. search "X" → clear → type "X" again, or toggle a filter away and back within
+        // the debounce window) must still re-run the search rather than leave a blank screen.
+        // debounce already collapses rapid input, so re-issuing an identical settled query is
+        // the intended behavior.
         viewModelScope.launch {
             searchTrigger
                 .debounce(300)
-                .distinctUntilChanged()
                 .collect { trigger ->
                     if (trigger.query.isNotBlank()) {
                         performSearch(trigger.query, trigger.filter, 1)

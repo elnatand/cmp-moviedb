@@ -30,6 +30,12 @@ class FakeMoviesRepository : MoviesRepository {
      */
     var loadNextPageDelay = 0L
 
+    /** Result returned by [getMovieDetails]; configurable per detail-screen test. */
+    var detailsResult: AppResult<MovieDetails> = AppResult.Error("Not configured")
+
+    /** Optional suspension applied inside [getMovieDetails] to keep a fetch "in flight". */
+    var detailsDelay = 0L
+
     init {
         // Initialize flows and counters for all categories
         MovieCategory.entries.forEach { category ->
@@ -69,7 +75,10 @@ class FakeMoviesRepository : MoviesRepository {
     }
 
     override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> {
-        return AppResult.Error("Not implemented in fake")
+        if (detailsDelay > 0) {
+            delay(detailsDelay)
+        }
+        return detailsResult
     }
 
     override suspend fun clearAndReload(): AppResult<Unit> {

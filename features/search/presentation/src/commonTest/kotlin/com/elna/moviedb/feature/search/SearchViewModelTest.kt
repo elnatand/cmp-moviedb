@@ -186,6 +186,48 @@ class SearchViewModelTest {
         }
 
     @Test
+    fun `re-searching the same term after clearing fires the search again`() =
+        runTest(testDispatcher) {
+            // Regression: a distinctUntilChanged() after debounce used to suppress this,
+            // leaving a blank screen because the results were cleared but no search re-ran.
+            fakeRepository.setSuccess(items = listOf(movie(1)))
+            viewModel.onEvent(SearchEvent.UpdateSearchQuery("batman"))
+            advanceUntilIdle()
+            assertEquals(1, fakeRepository.calls.size)
+
+            // Clear the field, then type the exact same term again.
+            viewModel.onEvent(SearchEvent.UpdateSearchQuery(""))
+            advanceUntilIdle()
+            viewModel.onEvent(SearchEvent.UpdateSearchQuery("batman"))
+            advanceUntilIdle()
+
+            // The identical settled query must still trigger a fresh search.
+            assertEquals(2, fakeRepository.calls.size)
+            assertEquals("batman", fakeRepository.calls.last().query)
+            assertEquals(1, viewModel.uiState.value.searchResults.size)
+        }
+
+    @Test
+    fun `toggling filter away and back within the debounce window still searches`() =
+        runTest(testDispatcher) {
+            fakeRepository.setSuccess(items = listOf(movie(1)))
+            viewModel.onEvent(SearchEvent.UpdateSearchQuery("batman"))
+            advanceUntilIdle()
+            val callsAfterInitial = fakeRepository.calls.size
+
+            // Toggle MOVIES then back to ALL faster than the debounce; the settled trigger
+            // equals the original (batman/ALL) but results were cleared, so it must re-run.
+            viewModel.onEvent(SearchEvent.UpdateFilter(SearchFilter.MOVIES))
+            advanceTimeBy(100)
+            viewModel.onEvent(SearchEvent.UpdateFilter(SearchFilter.ALL))
+            advanceUntilIdle()
+
+            assertTrue(fakeRepository.calls.size > callsAfterInitial)
+            assertEquals(SearchFilter.ALL, fakeRepository.calls.last().filter)
+            assertEquals("batman", fakeRepository.calls.last().query)
+        }
+
+    @Test
     fun `changing the filter re-runs the search for the new filter`() = runTest(testDispatcher) {
         fakeRepository.setSuccess(items = listOf(movie(1)))
         viewModel.onEvent(SearchEvent.UpdateSearchQuery("batman"))
