@@ -92,7 +92,6 @@ class MoviesRepositoryImpl(
                 }
                 localDataSource.insertMoviesPage(entities)
 
-                // Save pagination state
                 paginationPreferences.savePaginationState(
                     category.name,
                     PaginationState(

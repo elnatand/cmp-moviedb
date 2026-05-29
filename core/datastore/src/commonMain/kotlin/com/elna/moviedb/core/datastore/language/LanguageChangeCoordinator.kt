@@ -7,6 +7,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Interface for components that need to respond to language changes.
@@ -64,9 +65,20 @@ class LanguageChangeCoordinator(
                 .distinctUntilChanged()
                 .drop(1) // Skip initial emission to avoid clearing on app start
                 .collect {
-                    // Notify all registered listeners
+                    // Notify all registered listeners. Each notification is isolated:
+                    // a failure in one listener must not kill the collection coroutine,
+                    // otherwise language changes would silently stop working for the
+                    // rest of the session. Cancellation is rethrown to honor structured
+                    // concurrency.
                     listeners.forEach { listener ->
-                        listener.onLanguageChanged()
+                        try {
+                            listener.onLanguageChanged()
+                        } catch (e: CancellationException) {
+                            throw e
+                        } catch (_: Exception) {
+                            // Listener-local failure (e.g. a reload that threw) — skip it
+                            // and continue notifying the rest.
+                        }
                     }
                 }
         }

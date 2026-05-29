@@ -11,6 +11,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
@@ -31,7 +32,7 @@ class SearchViewModel(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
-    val uiState: StateFlow<SearchUiState> = _uiState
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private var currentSearchJob: Job? = null
 
@@ -149,7 +150,6 @@ class SearchViewModel(
                             isLoadingMore = false,
                             currentPage = searchPage.page,
                             hasMorePages = searchPage.hasMorePages,
-                            totalResults = newResults.size,
                             error = null
                         )
                     }

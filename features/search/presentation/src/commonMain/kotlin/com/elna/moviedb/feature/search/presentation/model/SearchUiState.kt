@@ -11,7 +11,6 @@ data class SearchUiState(
     val isLoading: Boolean = false,
     val isLoadingMore: Boolean = false,
     val error: DataError? = null,
-    val totalResults: Int = 0,
     val hasSearched: Boolean = false,
     val currentPage: Int = 1,
     val hasMorePages: Boolean = true

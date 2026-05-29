@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import com.elna.moviedb.core.ui.theme.GoldStar
+import com.elna.moviedb.core.ui.utils.formatRating
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -157,11 +159,11 @@ internal fun HeroSection(
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = stringResource(Res.string.rating),
-                            tint = Color(0xFFFFD700),
+                            tint = GoldStar,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
-                            text = "${(rating * 10).toInt() / 10.0}",
+                            text = formatRating(rating),
                             style = MaterialTheme.typography.titleMedium,
                             color = Color.White,
                             fontWeight = FontWeight.Bold

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.ui.utils.ImageLoader
+import com.elna.moviedb.core.ui.utils.formatRating
 import com.elna.moviedb.core.ui.utils.toImageUrl
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
 
@@ -112,7 +113,7 @@ fun SearchResultItem(
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Text(
-                                    text = "${(rating * 10).toInt() / 10.0}",
+                                    text = formatRating(rating),
                                     style = MaterialTheme.typography.bodySmall
                                 )
                             }
