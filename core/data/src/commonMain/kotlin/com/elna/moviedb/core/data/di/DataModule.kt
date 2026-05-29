@@ -21,17 +21,20 @@ val dataModule = module {
 
     single { LanguageProvider(get()) }
 
-    // Language change coordinator - uses Observer Pattern for loose coupling
-    // Lazily created when first repository is initialized
-    // Repositories self-register during their initialization
-    single {
+    // Language change coordinator - uses Observer Pattern for loose coupling.
+    // Created at startup so it begins observing language changes immediately,
+    // independent of which repository (if any) is injected first.
+    single(createdAtStart = true) {
         LanguageChangeCoordinator(
             appSettingsPreferences = get(),
             appDispatchers = get(),
         )
     }
 
-    single<MoviesRepository> {
+    // Created at startup so the repository self-registers as a language-change
+    // listener immediately. Otherwise a listener would only be wired up after the
+    // user first navigates to its screen, silently missing earlier language changes.
+    single<MoviesRepository>(createdAtStart = true) {
         MoviesRepositoryImpl(
             remoteDataSource = get(),
             localDataSource = get(),
@@ -42,7 +45,7 @@ val dataModule = module {
         )
     }
 
-    single<TvShowsRepository> {
+    single<TvShowsRepository>(createdAtStart = true) {
         TvShowRepositoryImpl(
             remoteDataSource = get(),
             languageProvider = get(),

@@ -30,22 +30,28 @@ class AppState(
 
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() {
+            val currentRoute = navBackStack.lastOrNull() ?: return null
             return TopLevelDestination.entries.firstOrNull { topLevelDestination ->
-                navBackStack.last() == topLevelDestination.route
+                currentRoute == topLevelDestination.route
             }
         }
 
     @Composable
     fun shouldShowBottomBar(): Boolean {
-        return navBackStack.last() in bottomBarRoutes
+        return navBackStack.lastOrNull() in bottomBarRoutes
     }
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
-        when (topLevelDestination) {
-            TopLevelDestination.MOVIES -> navBackStack.add(MoviesRoute.MoviesListRoute)
-            TopLevelDestination.TV_SHOWS -> navBackStack.add(TvShowsRoute.TvShowsListRoute)
-            TopLevelDestination.SEARCH -> navBackStack.add(SearchRoute)
-            TopLevelDestination.PROFILE -> navBackStack.add(ProfileRoute)
+        val targetRoute = when (topLevelDestination) {
+            TopLevelDestination.MOVIES -> MoviesRoute.MoviesListRoute
+            TopLevelDestination.TV_SHOWS -> TvShowsRoute.TvShowsListRoute
+            TopLevelDestination.SEARCH -> SearchRoute
+            TopLevelDestination.PROFILE -> ProfileRoute
         }
+
+        if (navBackStack.lastOrNull() == targetRoute) return
+
+        navBackStack.clear()
+        navBackStack.add(targetRoute)
     }
 }

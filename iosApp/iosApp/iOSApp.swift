@@ -5,12 +5,12 @@ import ComposeApp
 struct iOSApp: App {
 
     init() {
-        HelperKt.doInitKoin()
+        AppModuleKt.iOsInitKoin()
     }
 
-	var body: some Scene {
-		WindowGroup {
-			ContentView()
-		}
-	}
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
 }

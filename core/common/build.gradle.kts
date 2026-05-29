@@ -1,5 +1,4 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
@@ -8,7 +7,7 @@ plugins {
 
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.elna.moviedb.core.common"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }

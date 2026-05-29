@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
@@ -6,18 +5,21 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)  // for navigation routes
 }
 
+
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.elna.moviedb.core.ui"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
-        experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
+        androidResources.enable = true
     }
+
+
 
     sourceSets {
         androidMain.dependencies {
-            // Tooling support - the new plugin doesn't support debugImplementation
-            implementation(libs.compose.ui.tooling)
+            // Tooling support - runtime only but transitive to consumer modules
+            runtimeOnly(libs.compose.ui.tooling)
         }
         commonMain.dependencies {
             api(libs.compose.material3)

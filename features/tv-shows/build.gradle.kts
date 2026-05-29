@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.moviedb.kotlinMultiplatform)
@@ -6,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.elna.moviedb.tvshows"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
