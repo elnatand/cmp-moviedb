@@ -27,9 +27,9 @@ Kotlin Multiplatform Movie DB app (Android/iOS). Architecture: Feature-based mul
 - **Offline-first:** Movies are cached in Room; TV Shows are currently in-memory.
 - **Module deps default to `implementation`.** Even types in a module's public API (e.g. `core.model`'s `AppResult`, `Flow`) are declared `implementation`, not `api`; consumers declare the foundational deps they use directly. Reserve `api` for the rare case where consumers genuinely shouldn't need to know about the transitive module.
 - **Language Sync:** `LanguageChangeCoordinator` handles cache invalidation on locale change.
-- **Tests live in each module's `src/commonTest`** (not the feature grouping dir). The android target has no host-test source set, so `commonTest` runs on the iOS sim target: `./gradlew :features:<feature>:presentation:iosSimulatorArm64Test` (or `allTests`). To also run them on the JVM, add `withHostTest {}` to the android target in the convention plugin.
+- **Tests live in each module's `src/commonTest`** (not the feature grouping dir). A module that adds `commonTest` must opt into JVM host tests with `withHostTest { }` inside its `android { }` block (AGP 9's KMP library plugin disables them by default) — otherwise `commonTest` only runs on iOS. `allTests`/`check` then run both targets; the plain `test` task does not.
 
 ## Commands & Skills
-- **Build:** `./gradlew :composeApp:installDebug` (Android), `./gradlew test`.
+- **Build:** `./gradlew :composeApp:installDebug` (Android). **Test:** `./gradlew allTests` (runs JVM host + iOS sim common tests; `test` alone does not). Per-module JVM: `./gradlew :features:<feature>:presentation:testAndroidHostTest`.
 - **New Feature:** Use `/add-feature-module` skill.
 - **API Keys:** Reads from `secrets.properties` (Android) and `Secrets.plist` (iOS). **Never commit keys.**

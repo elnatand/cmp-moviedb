@@ -8,6 +8,9 @@ kotlin {
     android {
         namespace = "com.elna.moviedb.movies"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
+        // Opt in to host-side (JVM) unit tests so commonTest runs under `./gradlew test`,
+        // not only on the iOS sim target. Disabled by default in AGP 9's KMP library plugin.
+        withHostTest { }
     }
 
     sourceSets {
