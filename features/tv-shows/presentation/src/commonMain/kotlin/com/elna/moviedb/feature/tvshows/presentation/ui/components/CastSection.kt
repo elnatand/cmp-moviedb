@@ -46,7 +46,7 @@ internal fun CastSection(
                         items = cast,
                         key = { it.id }
                     ) { castMember ->
-                        _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.CastMemberCard(
+                        CastMemberCard(
                             castMember = castMember,
                             onClick = { onCastMemberClick(castMember.id) }
                         )

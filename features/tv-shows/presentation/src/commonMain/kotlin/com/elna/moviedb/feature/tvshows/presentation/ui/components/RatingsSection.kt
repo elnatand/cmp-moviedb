@@ -44,7 +44,7 @@ internal fun RatingsSection(tvShow: TvShowDetails) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.RatingCard(
+                RatingCard(
                     title = stringResource(Res.string.rating),
                     value = "${((tvShow.voteAverage ?: 0.0) * 10).toInt() / 10.0}",
                     subtitle = "⭐",
@@ -53,7 +53,7 @@ internal fun RatingsSection(tvShow: TvShowDetails) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.RatingCard(
+                RatingCard(
                     title = stringResource(Res.string.votes),
                     value = "${tvShow.voteCount ?: 0}",
                     subtitle = stringResource(Res.string.votes),
@@ -62,7 +62,7 @@ internal fun RatingsSection(tvShow: TvShowDetails) {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.RatingCard(
+                RatingCard(
                     title = stringResource(Res.string.popularity),
                     value = "${(tvShow.popularity ?: 0.0).toInt()}",
                     subtitle = stringResource(Res.string.score),

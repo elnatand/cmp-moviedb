@@ -46,10 +46,10 @@ fun TvShowsScreen(
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
-    val viewModel = koinViewModel<com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.TvShowsViewModel>()
+    val viewModel = koinViewModel<TvShowsViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.TvShowsScreen(
+    TvShowsScreen(
         uiState = uiState,
         onClick = onClick,
         onEvent = viewModel::onEvent,
@@ -62,10 +62,10 @@ fun TvShowsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TvShowsScreen(
-    uiState: com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiState,
+    uiState: TvShowsUiState,
     onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
     onEvent: (TvShowsEvent) -> Unit,
-    uiActions: Flow<com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiAction>,
+    uiActions: Flow<TvShowsUiAction>,
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
@@ -76,7 +76,7 @@ private fun TvShowsScreen(
     LaunchedEffect(Unit) {
         uiActions.collect { effect ->
             when (effect) {
-                is com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiAction.ShowPaginationError -> {
+                is TvShowsUiAction.ShowPaginationError -> {
                     snackbarHostState.showSnackbar(
                         message = paginationErrorMessage,
                         withDismissAction = true
@@ -99,7 +99,7 @@ private fun TvShowsScreen(
         ) {
             when {
                 // Show error screen only when there's no data and repository emits error
-                uiState.state == _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiState.State.ERROR && !uiState.hasAnyData -> {
+                uiState.state == TvShowsUiState.State.ERROR && !uiState.hasAnyData -> {
                     AppErrorComponent(
                         onRetry = { onEvent(TvShowsEvent.Retry) }
                     )
@@ -107,7 +107,7 @@ private fun TvShowsScreen(
 
                 // Show content with section-specific loaders
                 else -> {
-                    _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.TvShowsContent(
+                    TvShowsContent(
                         uiState = uiState,
                         onClick = onClick,
                         onEvent = onEvent,
@@ -127,7 +127,7 @@ private fun TvShowsScreen(
 
 @Composable
 private fun TvShowsContent(
-    uiState: com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiState,
+    uiState: TvShowsUiState,
     onClick: (id: Int, title: String, category: TvShowCategory) -> Unit,
     onEvent: (TvShowsEvent) -> Unit,
     sharedTransitionScope: SharedTransitionScope? = null,
@@ -147,10 +147,10 @@ private fun TvShowsContent(
 
             // Show section if it has data OR if it's loading (initial load)
             if (tvShows.isNotEmpty() || isLoading) {
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.TvShowsSection(
+                TvShowsSection(
                     category = category,
                     title = stringResource(
-                        _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.getCategoryStringResource(
+                        getCategoryStringResource(
                             category
                         )
                     ),

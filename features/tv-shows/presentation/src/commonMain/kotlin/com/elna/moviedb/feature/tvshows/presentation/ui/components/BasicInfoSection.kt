@@ -50,7 +50,7 @@ internal fun BasicInfoSection(tvShow: TvShowDetails) {
                 fontWeight = FontWeight.Bold
             )
 
-            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+            InfoRow(
                 icon = Icons.Default.CalendarToday,
                 label = stringResource(Res.string.first_air_date),
                 value = formatDate(
@@ -59,27 +59,27 @@ internal fun BasicInfoSection(tvShow: TvShowDetails) {
             )
 
             tvShow.lastAirDate?.takeIf { it.isNotEmpty() }?.let { lastAirDate ->
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.CalendarToday,
                     label = stringResource(Res.string.last_air_date),
                     value = formatDate(lastAirDate)
                 )
             }
 
-            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+            InfoRow(
                 icon = Icons.AutoMirrored.Filled.List,
                 label = stringResource(Res.string.seasons),
                 value = "${tvShow.numberOfSeasons ?: 0}"
             )
 
-            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+            InfoRow(
                 icon = Icons.Default.PlayArrow,
                 label = stringResource(Res.string.episodes),
                 value = "${tvShow.numberOfEpisodes ?: 0}"
             )
 
             tvShow.episodeRunTime?.takeIf { it.isNotEmpty() }?.let { episodeRunTime ->
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.PlayArrow,
                     label = stringResource(Res.string.episode_runtime),
                     value = "${
@@ -89,21 +89,21 @@ internal fun BasicInfoSection(tvShow: TvShowDetails) {
             }
 
             tvShow.type?.takeIf { it.isNotEmpty() }?.let { type ->
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.Tv,
                     label = stringResource(Res.string.type),
                     value = type
                 )
             }
 
-            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+            InfoRow(
                 icon = Icons.Default.Language,
                 label = stringResource(Res.string.original_language),
                 value = (tvShow.originalLanguage ?: "").uppercase()
             )
 
             tvShow.originCountry?.takeIf { it.isNotEmpty() }?.let { originCountry ->
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.Language,
                     label = stringResource(Res.string.origin_country),
                     value = originCountry.joinToString(", ")

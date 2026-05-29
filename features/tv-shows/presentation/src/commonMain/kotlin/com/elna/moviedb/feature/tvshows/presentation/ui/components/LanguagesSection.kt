@@ -41,7 +41,7 @@ internal fun LanguagesSection(tvShow: TvShowDetails) {
                 )
 
                 tvShow.spokenLanguages?.takeIf { it.isNotEmpty() }?.let { spokenLanguages ->
-                    _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                    InfoRow(
                         icon = Icons.Default.Language,
                         label = stringResource(Res.string.spoken_languages),
                         value = spokenLanguages.joinToString(", ")
@@ -49,7 +49,7 @@ internal fun LanguagesSection(tvShow: TvShowDetails) {
                 }
 
                 tvShow.languages?.takeIf { it.isNotEmpty() }?.let { languages ->
-                    _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                    InfoRow(
                         icon = Icons.Default.Language,
                         label = stringResource(Res.string.available_languages),
                         value = languages.joinToString(", ")

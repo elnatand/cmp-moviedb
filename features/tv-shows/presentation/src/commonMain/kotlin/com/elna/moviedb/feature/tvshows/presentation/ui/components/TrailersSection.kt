@@ -40,7 +40,7 @@ internal fun TrailersSection(tvShow: TvShowDetails) {
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(trailers) { trailer ->
-                        _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.TrailerCard(
+                        TrailerCard(
                             trailer = trailer
                         )
                     }

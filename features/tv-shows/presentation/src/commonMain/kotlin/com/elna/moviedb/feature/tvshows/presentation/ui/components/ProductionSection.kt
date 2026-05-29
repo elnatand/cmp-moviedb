@@ -40,7 +40,7 @@ internal fun ProductionSection(tvShow: TvShowDetails) {
             )
 
             tvShow.createdBy?.takeIf { it.isNotEmpty() }?.let { createdBy ->
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.People,
                     label = stringResource(Res.string.created_by),
                     value = createdBy.joinToString(", ")
@@ -48,7 +48,7 @@ internal fun ProductionSection(tvShow: TvShowDetails) {
             }
 
             tvShow.productionCompanies?.takeIf { it.isNotEmpty() }?.let { productionCompanies ->
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.People,
                     label = stringResource(Res.string.production_companies),
                     value = productionCompanies.joinToString(", ")
@@ -56,7 +56,7 @@ internal fun ProductionSection(tvShow: TvShowDetails) {
             }
 
             tvShow.productionCountries?.takeIf { it.isNotEmpty() }?.let { productionCountries ->
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.Language,
                     label = stringResource(Res.string.production_countries),
                     value = productionCountries.joinToString(", ")

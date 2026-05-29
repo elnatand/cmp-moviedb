@@ -21,6 +21,7 @@ import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.design_system.AppBackButton
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsEvent
+import com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsUiState
 import com.elna.moviedb.feature.tvshows.presentation.ui.components.BasicInfoSection
 import com.elna.moviedb.feature.tvshows.presentation.ui.components.CastSection
 import com.elna.moviedb.feature.tvshows.presentation.ui.components.EpisodesSection
@@ -45,14 +46,14 @@ fun TvShowDetailsScreen(
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
-    val viewModel = koinViewModel<com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details.TvShowDetailsViewModel> { parametersOf(tvShowId) }
+    val viewModel = koinViewModel<TvShowDetailsViewModel> { parametersOf(tvShowId) }
     val uiState by viewModel.uiState.collectAsState()
 
-    _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details.TvShowDetailsScreen(
+    TvShowDetailsScreen(
         uiState = uiState,
         category = category,
         onBack = onBack,
-        onRetry = { viewModel.onEvent(_root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsEvent.Retry) },
+        onRetry = { viewModel.onEvent(TvShowDetailsEvent.Retry) },
         onCastMemberClick = onCastMemberClick,
         sharedTransitionScope = sharedTransitionScope,
         animatedVisibilityScope = animatedVisibilityScope
@@ -62,7 +63,7 @@ fun TvShowDetailsScreen(
 
 @Composable
 fun TvShowDetailsScreen(
-    uiState: com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details.TvShowDetailsViewModel.TvShowDetailsUiState,
+    uiState: TvShowDetailsUiState,
     category: String? = null,
     onBack: () -> Unit,
     onRetry: () -> Unit,
@@ -77,19 +78,20 @@ fun TvShowDetailsScreen(
         contentAlignment = Alignment.Center
     ) {
         when (uiState) {
-            is com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details.TvShowDetailsViewModel.TvShowDetailsUiState.Loading -> AppLoader()
-            is com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details.TvShowDetailsViewModel.TvShowDetailsUiState.Error -> AppErrorComponent(
-                onRetry = onRetry
+            is TvShowDetailsUiState.Loading -> AppLoader()
+            is TvShowDetailsUiState.Error -> AppErrorComponent(
+                onRetry = onRetry,
+                error = uiState.error
             )
 
-            is com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details.TvShowDetailsViewModel.TvShowDetailsUiState.Success -> {
+            is TvShowDetailsUiState.Success -> {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.HeroSection(
+                        HeroSection(
                             tvShow = uiState.tvShowDetails,
                             category = category,
                             sharedTransitionScope = sharedTransitionScope,
@@ -100,48 +102,48 @@ fun TvShowDetailsScreen(
                             modifier = Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(24.dp)
                         ) {
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.BasicInfoSection(
+                            BasicInfoSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.OverviewSection(
+                            OverviewSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.TrailersSection(
+                            TrailersSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.CastSection(
+                            CastSection(
                                 tvShow = uiState.tvShowDetails,
                                 onCastMemberClick = onCastMemberClick
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.RatingsSection(
+                            RatingsSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.SeriesInfoSection(
+                            SeriesInfoSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.ProductionSection(
+                            ProductionSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.EpisodesSection(
+                            EpisodesSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.GenresSection(
+                            GenresSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.NetworksSection(
+                            NetworksSection(
                                 tvShow = uiState.tvShowDetails
                             )
 
-                            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.LanguagesSection(
+                            LanguagesSection(
                                 tvShow = uiState.tvShowDetails
                             )
                         }

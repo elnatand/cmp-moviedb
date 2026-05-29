@@ -49,14 +49,14 @@ internal fun SeriesInfoSection(tvShow: TvShowDetails) {
                 fontWeight = FontWeight.Bold
             )
 
-            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+            InfoRow(
                 icon = Icons.Default.Tv,
                 label = stringResource(Res.string.status),
                 value = tvShow.status?.ifEmpty { stringResource(Res.string.unknown) }
                     ?: stringResource(Res.string.unknown)
             )
 
-            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+            InfoRow(
                 icon = Icons.Default.PlayArrow,
                 label = stringResource(Res.string.in_production),
                 value = if (tvShow.inProduction == true) stringResource(Res.string.yes) else stringResource(
@@ -64,14 +64,14 @@ internal fun SeriesInfoSection(tvShow: TvShowDetails) {
                 )
             )
 
-            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+            InfoRow(
                 icon = Icons.AutoMirrored.Filled.List,
                 label = stringResource(Res.string.total_seasons),
                 value = "${tvShow.seasonsCount ?: 0}"
             )
 
             if (tvShow.adult == true) {
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.People,
                     label = stringResource(Res.string.content_rating),
                     value = stringResource(Res.string.adult_content)
@@ -80,7 +80,7 @@ internal fun SeriesInfoSection(tvShow: TvShowDetails) {
 
             tvShow.homepage?.takeIf { it.isNotBlank() }?.let { homepage ->
                 val uriHandler = LocalUriHandler.current
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.components.InfoRow(
+                InfoRow(
                     icon = Icons.Default.Language,
                     label = stringResource(Res.string.official_website),
                     value = homepage,
