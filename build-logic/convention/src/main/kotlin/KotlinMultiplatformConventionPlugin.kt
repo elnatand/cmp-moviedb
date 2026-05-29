@@ -14,14 +14,8 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
         // Configure Kotlin Multiplatform extension
         extensions.configure<KotlinMultiplatformExtension> {
             // Configure iOS targets
-            listOf(
-                iosArm64(), // for ios devices
-                iosSimulatorArm64(), // for ios simulators in Apple silicon Mac computer
-            ).forEach { iosTarget ->
-                iosTarget.binaries.framework {
-                    baseName = path.substring(1).replace(':', '-')
-                }
-            }
+            iosArm64() // for ios devices
+            iosSimulatorArm64() // for ios simulators in Apple silicon Mac computer
 
             //remove expect actual warning
             compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")

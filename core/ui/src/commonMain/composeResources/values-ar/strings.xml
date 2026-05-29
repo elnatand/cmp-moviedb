@@ -12,6 +12,7 @@
     <string name="profile">الملف الشخصي</string>
     <string name="notifications">إشعارات</string>
     <string name="network_error">حدث خطأ. يرجى المحاولة مرة أخرى.</string>
+    <string name="server_error">خطأ في الخادم. يرجى المحاولة لاحقًا.</string>
     <string name="error_title">حدث خطأ</string>
     <string name="retry">إعادة المحاولة</string>
     <string name="back">رجوع</string>

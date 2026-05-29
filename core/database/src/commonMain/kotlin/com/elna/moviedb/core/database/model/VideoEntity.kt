@@ -39,11 +39,12 @@ data class VideoEntity(
         name = name,
         site = VideoSite.fromString(site),
         type = type,
-        official = official
+        official = official,
+        publishedAt = publishedAt
     )
 }
 
-fun Video.asEntity(movieId: Int, publishedAt: String? = null): VideoEntity = VideoEntity(
+fun Video.asEntity(movieId: Int): VideoEntity = VideoEntity(
     id = id,
     movieId = movieId,
     key = key,

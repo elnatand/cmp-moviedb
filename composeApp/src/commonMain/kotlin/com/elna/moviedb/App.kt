@@ -5,7 +5,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.elna.moviedb.core.datastore.AppSettingsPreferences
+import com.elna.moviedb.core.datastore.settings.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
 import com.elna.moviedb.navigation.RootNavGraph

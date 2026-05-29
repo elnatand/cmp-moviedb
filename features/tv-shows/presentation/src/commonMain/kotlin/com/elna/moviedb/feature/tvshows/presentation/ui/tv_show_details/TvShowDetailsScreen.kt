@@ -1,0 +1,163 @@
+package com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details
+
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.ui.design_system.AppErrorComponent
+import com.elna.moviedb.core.ui.design_system.toLocalizedMessage
+import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.core.ui.design_system.AppBackButton
+import com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsEvent
+import com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsUiState
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.BasicInfoSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.CastSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.EpisodesSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.GenresSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.HeroSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.LanguagesSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.NetworksSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.OverviewSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.ProductionSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.RatingsSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.SeriesInfoSection
+import com.elna.moviedb.feature.tvshows.presentation.ui.components.TrailersSection
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+
+@Composable
+fun TvShowDetailsScreen(
+    tvShowId: Int,
+    category: String? = null,
+    onBack: () -> Unit,
+    onCastMemberClick: (Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
+) {
+    val viewModel = koinViewModel<TvShowDetailsViewModel> { parametersOf(tvShowId) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    TvShowDetailsScreen(
+        uiState = uiState,
+        category = category,
+        onBack = onBack,
+        onRetry = { viewModel.onEvent(TvShowDetailsEvent.Retry) },
+        onCastMemberClick = onCastMemberClick,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope
+    )
+}
+
+
+@Composable
+fun TvShowDetailsScreen(
+    uiState: TvShowDetailsUiState,
+    category: String? = null,
+    onBack: () -> Unit,
+    onRetry: () -> Unit,
+    onCastMemberClick: (Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope? = null,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center
+    ) {
+        when (uiState) {
+            is TvShowDetailsUiState.Loading -> AppLoader()
+            is TvShowDetailsUiState.Error -> AppErrorComponent(
+                onRetry = onRetry,
+                message = uiState.error.toLocalizedMessage()
+            )
+
+            is TvShowDetailsUiState.Success -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        HeroSection(
+                            tvShow = uiState.tvShowDetails,
+                            category = category,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(24.dp)
+                        ) {
+                            BasicInfoSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            OverviewSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            TrailersSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            CastSection(
+                                tvShow = uiState.tvShowDetails,
+                                onCastMemberClick = onCastMemberClick
+                            )
+
+                            RatingsSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            SeriesInfoSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            ProductionSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            EpisodesSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            GenresSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            NetworksSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+
+                            LanguagesSection(
+                                tvShow = uiState.tvShowDetails
+                            )
+                        }
+                    }
+
+                    AppBackButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(start = 16.dp, top = 48.dp)
+                    )
+                }
+            }
+        }
+    }
+}

@@ -1,7 +1,5 @@
 package com.elna.moviedb.core.database.di
 
-import com.elna.moviedb.core.database.MoviesLocalDataSource
-import com.elna.moviedb.core.database.MoviesLocalDataSourceImpl
 import com.elna.moviedb.core.database.getMovieDao
 import com.elna.moviedb.core.database.getMovieDetailsDao
 import com.elna.moviedb.core.database.getRoomDatabase
@@ -19,13 +17,6 @@ val databaseModule = module {
     }
     single { getMovieDao(get()) }
     single { getMovieDetailsDao(get()) }
-
-    single<MoviesLocalDataSource> {
-        MoviesLocalDataSourceImpl(
-            movieDao = get(),
-            movieDetailsDao = get(),
-        )
-    }
 }
 
 internal expect fun platformDatabaseBuilder(): Module

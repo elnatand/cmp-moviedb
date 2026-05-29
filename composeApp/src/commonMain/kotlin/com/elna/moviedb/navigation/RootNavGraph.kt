@@ -9,10 +9,10 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.feature.movies.navigation.moviesFlow
-import com.elna.moviedb.feature.person.navigation.personDetailsEntry
-import com.elna.moviedb.feature.profile.navigation.profileEntry
-import com.elna.moviedb.feature.search.navigation.searchEntry
-import com.elna.moviedb.feature.tvshows.navigation.tvShowsFlow
+import com.elna.moviedb.feature.person.presentation.navigation.personDetailsEntry
+import com.elna.moviedb.feature.profile.presentation.navigation.profileEntry
+import com.elna.moviedb.feature.search.presentation.navigation.searchEntry
+import com.elna.moviedb.feature.tvshows.presentation.navigation.tvShowsFlow
 
 @Composable
 fun RootNavGraph(

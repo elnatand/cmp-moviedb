@@ -4,6 +4,9 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
+/** Gold used for rating stars across feature UIs. */
+val GoldStar = Color(0xFFFFD700)
+
 // Light theme colors
 private val LightPrimary = Color(0xFF6200EE)
 private val LightOnPrimary = Color(0xFFFFFFFF)

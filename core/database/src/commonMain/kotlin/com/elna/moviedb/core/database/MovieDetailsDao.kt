@@ -49,4 +49,25 @@ interface MovieDetailsDao {
         deleteCastForMovie(movieId)
         if (cast.isNotEmpty()) insertCastMembers(cast)
     }
+
+    /**
+     * Persists a movie's full detail aggregate (details + videos + cast) atomically.
+     *
+     * The cache-hit check keys only on the details row, so these writes must land together:
+     * a partial write (e.g. details persisted but cast not yet) would otherwise serve a
+     * "complete" cache hit with missing relations on the next visit. Wrapping them in a
+     * single transaction guarantees the details row only becomes visible once its videos
+     * and cast are committed too.
+     */
+    @Transaction
+    suspend fun insertMovieDetailsWithRelations(
+        details: MovieDetailsEntity,
+        videos: List<VideoEntity>,
+        cast: List<CastMemberEntity>
+    ) {
+        insertMovieDetails(details)
+        deleteVideosForMovie(details.id)
+        if (videos.isNotEmpty()) insertVideos(videos)
+        replaceCastForMovie(details.id, cast)
+    }
 }

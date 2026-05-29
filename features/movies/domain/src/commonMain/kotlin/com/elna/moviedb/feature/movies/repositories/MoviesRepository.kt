@@ -1,0 +1,53 @@
+package com.elna.moviedb.feature.movies.repositories
+
+import com.elna.moviedb.core.model.AppResult
+import com.elna.moviedb.feature.movies.model.Movie
+import com.elna.moviedb.feature.movies.model.MovieCategory
+import com.elna.moviedb.feature.movies.model.MovieDetails
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * Repository interface for movie data operations.
+ *
+ * This interface uses category abstraction.
+ * New movie categories can be added to [com.elna.moviedb.feature.movies.model.MovieCategory] enum without modifying this interface.
+ */
+interface MoviesRepository {
+
+    /**
+     * Observes movies for a specific category from local storage.
+     *
+     * This is a passive query: it only exposes the cached stream and performs no
+     * side effects. Triggering an initial/refresh load is the caller's responsibility
+     * via [loadMoviesNextPage], keeping reads (queries) and loads (commands) separate.
+     *
+     * @param category The movie category to observe (e.g., POPULAR, TOP_RATED)
+     * @return Flow emitting list of movies for the category
+     */
+    fun observeMovies(category: MovieCategory): Flow<List<Movie>>
+
+    /**
+     * Loads the next page of movies for a specific category from the remote API.
+     *
+     * @param category The movie category to load (e.g., POPULAR, TOP_RATED)
+     * @return AppResult<Unit> Success if page loaded, Error if loading failed
+     */
+    suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit>
+
+    /**
+     * Retrieves detailed information for a specific movie.
+     *
+     * @param movieId The unique identifier of the movie
+     * @return AppResult<MovieDetails> Success with movie details or Error if fetch failed
+     */
+    suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails>
+
+    /**
+     * Clears all cached movies and reloads initial pages for all categories.
+     * Used by language coordinator when language changes and by pull-to-refresh.
+     *
+     * @return AppResult<Unit> Success if at least one category reloaded; Error only when
+     * every category failed (so callers can surface an error instead of an empty screen).
+     */
+    suspend fun clearAndReload(): AppResult<Unit>
+}

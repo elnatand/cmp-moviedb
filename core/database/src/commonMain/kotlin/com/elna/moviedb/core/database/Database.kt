@@ -19,7 +19,7 @@ import com.elna.moviedb.core.database.model.VideoEntity
         VideoEntity::class,
         CastMemberEntity::class
     ],
-    version = 1
+    version = 2
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -39,6 +39,12 @@ fun getRoomDatabase(
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(appDispatchers.io)
+        // Destructive migration is intentional: this database is purely an offline cache of
+        // TMDB data, all of which is re-fetchable from the network on next launch. Dropping
+        // and rebuilding on a schema change is simpler and safer than hand-writing migrations
+        // for disposable cached rows. If any user-authored (non-re-fetchable) data is ever
+        // added here, replace this with explicit Migration steps.
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
 }
 

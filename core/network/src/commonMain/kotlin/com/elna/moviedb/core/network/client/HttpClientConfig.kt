@@ -12,6 +12,12 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 fun createHttpClient(engine: HttpClientEngineFactory<*>) = HttpClient(engine) {
+    // Throw ClientRequestException (4xx) / ServerResponseException (5xx) on non-2xx
+    // responses so safeApiCall can classify them into DataError.CLIENT / DataError.SERVER.
+    // Without this, Ktor attempts to deserialize the error body and the failure is
+    // misclassified as a generic DataError.NETWORK.
+    expectSuccess = true
+
     install(ContentNegotiation) {
         json(Json {
             isLenient = true

@@ -15,8 +15,9 @@ compose-material-icons = "1.7.3"
 agp = "9.2.1"
 koin = "4.2.1"
 ktor = "3.5.0"
-coil = "3.4.0"
+coil = "3.5.0-beta01"
 kotlinx-coroutines = "1.11.0"
+kotlinx-serialization = "1.11.0"
 navigation = "1.1.1"
 lifecycle = "2.10.0"
 room = "2.8.4"
@@ -56,6 +57,8 @@ navigation-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", 
 lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 

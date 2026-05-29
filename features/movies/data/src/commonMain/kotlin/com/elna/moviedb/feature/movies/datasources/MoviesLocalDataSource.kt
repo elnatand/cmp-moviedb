@@ -1,0 +1,197 @@
+package com.elna.moviedb.feature.movies.datasources
+
+import com.elna.moviedb.core.database.MovieDao
+import com.elna.moviedb.core.database.MovieDetailsDao
+import com.elna.moviedb.core.database.model.CastMemberEntity
+import com.elna.moviedb.core.database.model.MovieDetailsEntity
+import com.elna.moviedb.core.database.model.MovieEntity
+import com.elna.moviedb.core.database.model.VideoEntity
+import com.elna.moviedb.feature.movies.model.MovieCategory
+import kotlinx.coroutines.flow.Flow
+
+/**
+ * Interface for movies list operations (categories, pagination).
+ * Clients only depend on what they need.
+ *
+ * Use this interface for:
+ * - Fetching paginated movie lists by category
+ * - Inserting new movie pages
+ * - Clearing movie list cache
+ */
+interface MoviesListDataSource {
+    /**
+     * Observes movies for a specific category as a reactive flow.
+     * Uses type-safe MovieCategory enum instead of raw strings.
+     * @param category The movie category (POPULAR, TOP_RATED, NOW_PLAYING)
+     * @return Flow emitting list of movies for the category
+     */
+    fun getMoviesByCategoryAsFlow(category: MovieCategory): Flow<List<MovieEntity>>
+
+    /**
+     * Inserts a page of movies into the local database.
+     * @param movies List of movie entities to insert
+     */
+    suspend fun insertMoviesPage(movies: List<MovieEntity>)
+
+    /**
+     * Clears only the movie list cache.
+     */
+    suspend fun clearMoviesList()
+}
+
+/**
+ * Interface for movie details operations.
+ * Focused on movie detail entity only.
+ *
+ * Use this interface for:
+ * - Fetching detailed movie information
+ * - Caching movie details
+ * - Clearing movie details cache
+ */
+interface MovieDetailsDataSource {
+    /**
+     * Gets movie details from cache.
+     * @param movieId The movie's unique identifier
+     * @return MovieDetailsEntity if cached, null otherwise
+     */
+    suspend fun getMovieDetails(movieId: Int): MovieDetailsEntity?
+
+    /**
+     * Atomically persists a movie's full detail aggregate: the details row plus its videos
+     * and cast. Replaces any previously cached videos/cast for the movie in the same
+     * transaction, so a cache hit never exposes a details row with stale or missing relations.
+     *
+     * @param details The movie details entity to save
+     * @param videos The movie's trailers/videos (may be empty)
+     * @param cast The movie's cast members (may be empty)
+     */
+    suspend fun saveMovieDetailsWithRelations(
+        details: MovieDetailsEntity,
+        videos: List<VideoEntity>,
+        cast: List<CastMemberEntity>
+    )
+
+    /**
+     * Clears only the movie details cache.
+     */
+    suspend fun clearMovieDetails()
+}
+
+/**
+ * Interface for movie videos/trailers operations.
+ * Focused on video entities only.
+ *
+ * Use this interface for:
+ * - Managing movie trailers and video clips
+ * - Cache management for videos
+ */
+interface MovieVideosDataSource {
+    /**
+     * Gets all videos for a specific movie.
+     * @param movieId The movie's unique identifier
+     * @return List of video entities (trailers, teasers, etc.)
+     */
+    suspend fun getVideosForMovie(movieId: Int): List<VideoEntity>
+
+    /**
+     * Clears only the videos cache for all movies.
+     */
+    suspend fun clearAllVideos()
+}
+
+/**
+ * Interface for movie cast operations.
+ * Focused on cast entities only.
+ *
+ * Use this interface for:
+ * - Managing movie cast information
+ * - Cache management for cast members
+ */
+interface MovieCastDataSource {
+    /**
+     * Gets all cast members for a specific movie.
+     * @param movieId The movie's unique identifier
+     * @return List of cast member entities sorted by order
+     */
+    suspend fun getCastForMovie(movieId: Int): List<CastMemberEntity>
+
+    /**
+     * Clears only the cast cache for all movies.
+     */
+    suspend fun clearAllCast()
+}
+
+/**
+ * Composite interface combining all movie data source interfaces.
+ * Clients can depend on focused interfaces or this composite if they need multiple data sources.
+ *
+ * Use this interface when:
+ * - You need access to multiple movie data operations
+ * - You're implementing a general-purpose data layer
+ *
+ * Prefer using focused interfaces (MoviesListDataSource, MovieDetailsDataSource, etc.)
+ * when you only need specific operations.
+ */
+interface MoviesLocalDataSource :
+    MoviesListDataSource,
+    MovieDetailsDataSource,
+    MovieVideosDataSource,
+    MovieCastDataSource
+
+/**
+ * Implementation of MoviesLocalDataSource using Room DAOs.
+ */
+class MoviesLocalDataSourceImpl(
+    private val movieDao: MovieDao,
+    private val movieDetailsDao: MovieDetailsDao,
+) : MoviesLocalDataSource {
+
+    // MoviesListDataSource implementation
+    override fun getMoviesByCategoryAsFlow(category: MovieCategory): Flow<List<MovieEntity>> {
+        // Convert type-safe enum to string for database query
+        return movieDao.getMoviesByCategoryAsFlow(category.name)
+    }
+
+    override suspend fun insertMoviesPage(movies: List<MovieEntity>) {
+        movieDao.insertMovies(movies)
+    }
+
+    override suspend fun clearMoviesList() {
+        movieDao.clearAllMovies()
+    }
+
+    // MovieDetailsDataSource implementation
+    override suspend fun getMovieDetails(movieId: Int): MovieDetailsEntity? {
+        return movieDetailsDao.getMovieDetails(movieId)
+    }
+
+    override suspend fun saveMovieDetailsWithRelations(
+        details: MovieDetailsEntity,
+        videos: List<VideoEntity>,
+        cast: List<CastMemberEntity>
+    ) {
+        movieDetailsDao.insertMovieDetailsWithRelations(details, videos, cast)
+    }
+
+    override suspend fun clearMovieDetails() {
+        movieDetailsDao.clearAllMovieDetails()
+    }
+
+    // MovieVideosDataSource implementation
+    override suspend fun getVideosForMovie(movieId: Int): List<VideoEntity> {
+        return movieDetailsDao.getVideosForMovie(movieId)
+    }
+
+    override suspend fun clearAllVideos() {
+        movieDetailsDao.clearAllVideos()
+    }
+
+    // MovieCastDataSource implementation
+    override suspend fun getCastForMovie(movieId: Int): List<CastMemberEntity> {
+        return movieDetailsDao.getCastForMovie(movieId)
+    }
+
+    override suspend fun clearAllCast() {
+        movieDetailsDao.clearAllCast()
+    }
+}

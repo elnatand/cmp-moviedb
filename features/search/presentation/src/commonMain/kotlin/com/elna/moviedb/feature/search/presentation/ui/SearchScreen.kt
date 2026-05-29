@@ -1,0 +1,162 @@
+package com.elna.moviedb.feature.search.presentation.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.ui.design_system.AppErrorComponent
+import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.core.ui.design_system.toLocalizedMessage
+import com.elna.moviedb.feature.search.domain.model.SearchFilter
+import com.elna.moviedb.feature.search.domain.model.SearchResultItem
+import com.elna.moviedb.feature.search.presentation.model.SearchEvent
+import com.elna.moviedb.feature.search.presentation.model.SearchUiState
+import com.elna.moviedb.feature.search.presentation.ui.components.SearchBar
+import com.elna.moviedb.feature.search.presentation.ui.components.SearchEmptyState
+import com.elna.moviedb.feature.search.presentation.ui.components.SearchFilters
+import org.koin.compose.viewmodel.koinViewModel
+import com.elna.moviedb.feature.search.presentation.ui.components.SearchResultItem as SearchResultItemComponent
+
+/** Trigger the next page once the user scrolls within this many items of the end. */
+private const val LOAD_MORE_THRESHOLD = 6
+
+@Composable
+fun SearchScreen(
+    onMovieClicked: (Int) -> Unit,
+    onTvShowClicked: (Int) -> Unit,
+    onPersonClicked: (Int) -> Unit,
+) {
+    val viewModel = koinViewModel<SearchViewModel>()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    SearchScreen(
+        uiState = uiState,
+        onSearchQueryChanged = { viewModel.onEvent(SearchEvent.UpdateSearchQuery(it)) },
+        onFilterChanged = { viewModel.onEvent(SearchEvent.UpdateFilter(it)) },
+        onRetry = { viewModel.onEvent(SearchEvent.Retry) },
+        onLoadMore = { viewModel.onEvent(SearchEvent.LoadMore) },
+        onMovieClicked = onMovieClicked,
+        onTvShowClicked = onTvShowClicked,
+        onPersonClicked = onPersonClicked
+    )
+}
+
+@Composable
+private fun SearchScreen(
+    uiState: SearchUiState,
+    onSearchQueryChanged: (String) -> Unit,
+    onFilterChanged: (SearchFilter) -> Unit,
+    onRetry: () -> Unit,
+    onLoadMore: () -> Unit,
+    onMovieClicked: (Int) -> Unit,
+    onTvShowClicked: (Int) -> Unit,
+    onPersonClicked: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .systemBarsPadding()
+    ) {
+        SearchBar(
+            query = uiState.searchQuery,
+            onQueryChanged = onSearchQueryChanged
+        )
+
+        SearchFilters(
+            selectedFilter = uiState.selectedFilter,
+            onFilterChanged = onFilterChanged
+        )
+
+        when {
+            uiState.isLoading -> {
+                Box(
+                    contentAlignment = Alignment.TopCenter,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    AppLoader(Modifier.padding(top = 100.dp))
+                }
+            }
+
+            uiState.error != null -> {
+                AppErrorComponent(
+                    onRetry = onRetry,
+                    message = uiState.error.toLocalizedMessage()
+                )
+            }
+
+            uiState.searchResults.isEmpty() -> {
+                SearchEmptyState(
+                    hasSearched = uiState.hasSearched,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            else -> {
+                val listState = rememberLazyListState()
+
+                val shouldLoadMore by remember {
+                    derivedStateOf {
+                        val lastVisibleIndex =
+                            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        val totalItems = listState.layoutInfo.totalItemsCount
+                        totalItems > 0 && lastVisibleIndex >= totalItems - LOAD_MORE_THRESHOLD
+                    }
+                }
+
+                // Keyed on isLoadingMore as well as shouldLoadMore: when a page's results
+                // all fit on screen, shouldLoadMore stays continuously true and would never
+                // re-fire on its own (derivedStateOf only emits on value *changes*). Keying on
+                // isLoadingMore re-runs the check each time a load completes, so pagination
+                // keeps cascading until the viewport fills or there are no more pages.
+                LaunchedEffect(shouldLoadMore, uiState.isLoadingMore) {
+                    if (shouldLoadMore && uiState.hasMorePages && !uiState.isLoadingMore) {
+                        onLoadMore()
+                    }
+                }
+
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(
+                        items = uiState.searchResults,
+                        // Type-qualified: a movie and a person can share the same numeric id
+                        // in an "All" search, so id alone isn't unique.
+                        key = { item -> "${item::class.simpleName}_${item.id}" }
+                    ) { item ->
+                        SearchResultItemComponent(
+                            item = item,
+                            onItemClicked = {
+                                when (item) {
+                                    is SearchResultItem.MovieItem -> onMovieClicked(item.id)
+                                    is SearchResultItem.TvShowItem -> onTvShowClicked(item.id)
+                                    is SearchResultItem.PersonItem -> onPersonClicked(item.id)
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

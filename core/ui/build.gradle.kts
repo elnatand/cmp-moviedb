@@ -22,6 +22,8 @@ kotlin {
             runtimeOnly(libs.compose.ui.tooling)
         }
         commonMain.dependencies {
+            implementation(projects.core.model)
+
             api(libs.compose.material3)
             api(libs.compose.material.icons.extended)
             api(libs.compose.resources)

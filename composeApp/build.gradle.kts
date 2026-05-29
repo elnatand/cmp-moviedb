@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
@@ -12,10 +11,11 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
-    // iOS targets are configured by the convention plugin
-    // Customize the framework configuration
+    // iOS targets are declared by the convention plugin, but the framework binary is
+    // created here: :composeApp is the only module linked into the iOS app, so it owns
+    // the framework the Xcode project embeds.
     targets.withType<KotlinNativeTarget>().configureEach {
-        binaries.withType<Framework>().configureEach {
+        binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
             binaryOption("bundleId", "com.elna.moviedb")
@@ -27,19 +27,30 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.core.model)
             implementation(projects.core.network)
-            implementation(projects.core.data)
+
             implementation(projects.core.database)
             implementation(projects.core.datastore)
             implementation(projects.core.ui)
 
-            implementation(projects.features.movies)
-            implementation(projects.features.tvShows)
-            implementation(projects.features.search)
-            implementation(projects.features.profile)
-            implementation(projects.features.person)
+            implementation(projects.features.movies.presentation)
+            implementation(projects.features.movies.data)
+
+            implementation(projects.features.tvShows.presentation)
+            implementation(projects.features.tvShows.data)
+
+            implementation(projects.features.search.presentation)
+            implementation(projects.features.search.data)
+
+            implementation(projects.features.profile.presentation)
+
+            implementation(projects.features.person.presentation)
+            implementation(projects.features.person.data)
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+
+            // Serializes the navigation back stack for rememberSaveable (process-death restore).
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

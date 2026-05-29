@@ -22,7 +22,13 @@ data class Video(
     val name: String,
     val site: VideoSite,
     val type: String,
-    val official: Boolean
+    val official: Boolean,
+    /**
+     * ISO-8601 publish timestamp from TMDB. Carried through so the cached ordering
+     * (official, then most recent) matches the freshly-fetched ordering. Nullable because
+     * the API may omit it.
+     */
+    val publishedAt: String? = null
 ) {
     fun getThumbnailUrl(): String = when (site) {
         VideoSite.YOUTUBE -> "https://img.youtube.com/vi/$key/hqdefault.jpg"
