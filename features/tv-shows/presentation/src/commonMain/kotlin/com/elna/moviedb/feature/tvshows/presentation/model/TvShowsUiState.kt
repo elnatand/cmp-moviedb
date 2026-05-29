@@ -15,12 +15,14 @@ import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
  * @property tvShowsByCategory Map of TV show categories to their respective TV show lists
  * @property loadingByCategory Map of TV show categories to their pagination loading states
  * @property failedCategories Categories whose most recent load failed (for inline section errors)
+ * @property isRefreshing Whether a pull-to-refresh reload is currently in progress
  */
 data class TvShowsUiState(
     val state: State,
     val tvShowsByCategory: Map<TvShowCategory, List<TvShow>> = emptyMap(),
     val loadingByCategory: Map<TvShowCategory, Boolean> = emptyMap(),
-    val failedCategories: Set<TvShowCategory> = emptySet()
+    val failedCategories: Set<TvShowCategory> = emptySet(),
+    val isRefreshing: Boolean = false
 ) {
 
     /**

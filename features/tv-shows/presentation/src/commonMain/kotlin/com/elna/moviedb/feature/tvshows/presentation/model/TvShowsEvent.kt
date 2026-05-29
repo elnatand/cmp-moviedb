@@ -19,4 +19,9 @@ sealed interface TvShowsEvent {
      * User clicked retry button after an error
      */
     data object Retry : TvShowsEvent
+
+    /**
+     * User triggered pull-to-refresh: clear cached data and reload all categories.
+     */
+    data object Refresh : TvShowsEvent
 }

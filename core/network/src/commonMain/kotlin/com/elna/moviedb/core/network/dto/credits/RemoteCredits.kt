@@ -28,7 +28,7 @@ data class RemoteCastMember(
     @SerialName("known_for_department")
     val knownForDepartment: String? = null,
     @SerialName("name")
-    val name: String,
+    val name: String? = null,
     @SerialName("original_name")
     val originalName: String? = null,
     @SerialName("popularity")
@@ -36,19 +36,19 @@ data class RemoteCastMember(
     @SerialName("profile_path")
     val profilePath: String? = null,
     @SerialName("character")
-    val character: String,
+    val character: String? = null,
     @SerialName("credit_id")
     val creditId: String? = null,
     @SerialName("order")
-    val order: Int
+    val order: Int? = null
 )
 
 fun RemoteCastMember.toDomain(): CastMember = CastMember(
     id = id,
-    name = name,
-    character = character,
+    name = name.orEmpty(),
+    character = character.orEmpty(),
     profilePath = profilePath,
-    order = order
+    order = order ?: Int.MAX_VALUE
 )
 
 /**
@@ -59,7 +59,7 @@ fun RemoteCastMember.toDomain(): CastMember = CastMember(
  */
 fun AppResult<RemoteCredits>.toCastMembersOrEmpty(): List<CastMember> = when (this) {
     is AppResult.Success -> data.cast
-        ?.sortedBy { it.order }
+        ?.sortedBy { it.order ?: Int.MAX_VALUE }
         ?.map { it.toDomain() }
         ?: emptyList()
 

@@ -195,23 +195,21 @@ class MoviesRepositoryImpl(
 
     /**
      * Saves movie details to local cache.
-     * Saves details, videos, and cast in separate operations.
+     *
+     * Details, videos, and cast are persisted in a single transaction (see
+     * [com.elna.moviedb.core.database.MovieDetailsDao.insertMovieDetailsWithRelations]):
+     * since the cache-hit check keys on the details row alone, a partial write would
+     * otherwise serve a "complete" hit with missing relations on the next visit.
      */
     private suspend fun saveMovieDetailsToCache(movieId: Int, movieDetails: MovieDetails) {
-        // Save main details
-        localDataSource.insertMovieDetails(movieDetails.asEntity())
-
-        // Save videos
-        localDataSource.deleteVideosForMovie(movieId)
-        val trailersList = movieDetails.trailers ?: emptyList()
-        if (trailersList.isNotEmpty()) {
-            val videoEntities = trailersList.map { it.asEntity(movieId) }
-            localDataSource.insertVideos(videoEntities)
-        }
-
-        // Save cast
+        val videoEntities = (movieDetails.trailers ?: emptyList()).map { it.asEntity(movieId) }
         val castEntities = (movieDetails.cast ?: emptyList()).map { it.asEntity(movieId) }
-        localDataSource.replaceCastForMovie(movieId, castEntities)
+
+        localDataSource.saveMovieDetailsWithRelations(
+            details = movieDetails.asEntity(),
+            videos = videoEntities,
+            cast = castEntities
+        )
     }
 
     /**

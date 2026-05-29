@@ -57,10 +57,19 @@ interface MovieDetailsDataSource {
     suspend fun getMovieDetails(movieId: Int): MovieDetailsEntity?
 
     /**
-     * Saves movie details to cache.
-     * @param movieDetails The movie details entity to save
+     * Atomically persists a movie's full detail aggregate: the details row plus its videos
+     * and cast. Replaces any previously cached videos/cast for the movie in the same
+     * transaction, so a cache hit never exposes a details row with stale or missing relations.
+     *
+     * @param details The movie details entity to save
+     * @param videos The movie's trailers/videos (may be empty)
+     * @param cast The movie's cast members (may be empty)
      */
-    suspend fun insertMovieDetails(movieDetails: MovieDetailsEntity)
+    suspend fun saveMovieDetailsWithRelations(
+        details: MovieDetailsEntity,
+        videos: List<VideoEntity>,
+        cast: List<CastMemberEntity>
+    )
 
     /**
      * Clears only the movie details cache.
@@ -85,19 +94,6 @@ interface MovieVideosDataSource {
     suspend fun getVideosForMovie(movieId: Int): List<VideoEntity>
 
     /**
-     * Saves videos to cache.
-     * @param videos List of video entities to save
-     */
-    suspend fun insertVideos(videos: List<VideoEntity>)
-
-    /**
-     * Deletes all videos for a specific movie.
-     * Used before inserting fresh video data.
-     * @param movieId The movie's unique identifier
-     */
-    suspend fun deleteVideosForMovie(movieId: Int)
-
-    /**
      * Clears only the videos cache for all movies.
      */
     suspend fun clearAllVideos()
@@ -118,14 +114,6 @@ interface MovieCastDataSource {
      * @return List of cast member entities sorted by order
      */
     suspend fun getCastForMovie(movieId: Int): List<CastMemberEntity>
-
-    /**
-     * Atomically replaces all cast for a movie.
-     * Deletes existing cast and inserts new cast in a transaction.
-     * @param movieId The movie's unique identifier
-     * @param cast New list of cast members
-     */
-    suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>)
 
     /**
      * Clears only the cast cache for all movies.
@@ -177,8 +165,12 @@ class MoviesLocalDataSourceImpl(
         return movieDetailsDao.getMovieDetails(movieId)
     }
 
-    override suspend fun insertMovieDetails(movieDetails: MovieDetailsEntity) {
-        movieDetailsDao.insertMovieDetails(movieDetails)
+    override suspend fun saveMovieDetailsWithRelations(
+        details: MovieDetailsEntity,
+        videos: List<VideoEntity>,
+        cast: List<CastMemberEntity>
+    ) {
+        movieDetailsDao.insertMovieDetailsWithRelations(details, videos, cast)
     }
 
     override suspend fun clearMovieDetails() {
@@ -190,14 +182,6 @@ class MoviesLocalDataSourceImpl(
         return movieDetailsDao.getVideosForMovie(movieId)
     }
 
-    override suspend fun insertVideos(videos: List<VideoEntity>) {
-        movieDetailsDao.insertVideos(videos)
-    }
-
-    override suspend fun deleteVideosForMovie(movieId: Int) {
-        movieDetailsDao.deleteVideosForMovie(movieId)
-    }
-
     override suspend fun clearAllVideos() {
         movieDetailsDao.clearAllVideos()
     }
@@ -205,10 +189,6 @@ class MoviesLocalDataSourceImpl(
     // MovieCastDataSource implementation
     override suspend fun getCastForMovie(movieId: Int): List<CastMemberEntity> {
         return movieDetailsDao.getCastForMovie(movieId)
-    }
-
-    override suspend fun replaceCastForMovie(movieId: Int, cast: List<CastMemberEntity>) {
-        movieDetailsDao.replaceCastForMovie(movieId, cast)
     }
 
     override suspend fun clearAllCast() {

@@ -16,6 +16,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -125,6 +126,7 @@ private fun TvShowsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TvShowsContent(
     uiState: TvShowsUiState,
@@ -133,40 +135,45 @@ private fun TvShowsContent(
     sharedTransitionScope: SharedTransitionScope? = null,
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(vertical = 8.dp)
+    PullToRefreshBox(
+        isRefreshing = uiState.isRefreshing,
+        onRefresh = { onEvent(TvShowsEvent.Refresh) }
     ) {
-        // Dynamically render all TV show categories
-        // Following OCP - adding new categories requires ZERO changes here
-        TvShowCategory.entries.forEach { category ->
-            val tvShows = uiState.getTvShows(category)
-            val isLoading = uiState.isLoading(category)
-            val isFailed = uiState.hasFailed(category)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(vertical = 8.dp)
+        ) {
+            // Dynamically render all TV show categories
+            // Following OCP - adding new categories requires ZERO changes here
+            TvShowCategory.entries.forEach { category ->
+                val tvShows = uiState.getTvShows(category)
+                val isLoading = uiState.isLoading(category)
+                val isFailed = uiState.hasFailed(category)
 
-            // Show section if it has data, is loading (initial load), or failed (so the
-            // inline error + retry is reachable instead of the section silently vanishing).
-            if (tvShows.isNotEmpty() || isLoading || isFailed) {
-                TvShowsSection(
-                    category = category,
-                    title = stringResource(
-                        getCategoryStringResource(
-                            category
-                        )
-                    ),
-                    tvShows = tvShows,
-                    onClick = onClick,
-                    isLoading = isLoading,
-                    isFailed = isFailed,
-                    onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(category)) },
-                    sharedTransitionScope = sharedTransitionScope,
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
+                // Show section if it has data, is loading (initial load), or failed (so the
+                // inline error + retry is reachable instead of the section silently vanishing).
+                if (tvShows.isNotEmpty() || isLoading || isFailed) {
+                    TvShowsSection(
+                        category = category,
+                        title = stringResource(
+                            getCategoryStringResource(
+                                category
+                            )
+                        ),
+                        tvShows = tvShows,
+                        onClick = onClick,
+                        isLoading = isLoading,
+                        isFailed = isFailed,
+                        onLoadMore = { onEvent(TvShowsEvent.LoadNextPage(category)) },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                }
             }
+            Spacer(modifier = Modifier.height(70.dp))
         }
-        Spacer(modifier = Modifier.height(70.dp))
     }
 }
 

@@ -53,6 +53,7 @@ class TvShowsViewModel(
         when (event) {
             is TvShowsEvent.LoadNextPage -> loadNextPage(event.category)
             TvShowsEvent.Retry -> retry()
+            TvShowsEvent.Refresh -> refresh()
         }
     }
 
@@ -148,10 +149,10 @@ class TvShowsViewModel(
      */
     private fun recomputeScreenState() {
         _uiState.update { currentState ->
-            val newState = when {
-                currentState.hasAnyData -> TvShowsUiState.State.SUCCESS
-                erroredCategories.isNotEmpty() -> TvShowsUiState.State.ERROR
-                else -> TvShowsUiState.State.LOADING
+            val newState = if (!currentState.hasAnyData && erroredCategories.isNotEmpty()) {
+                TvShowsUiState.State.ERROR
+            } else {
+                TvShowsUiState.State.SUCCESS
             }
             // Mirror the per-category failures into state so a section that failed while
             // others have data renders an inline error + retry instead of a stuck loader.
@@ -169,5 +170,36 @@ class TvShowsViewModel(
         erroredCategories.clear()
         recomputeScreenState()
         TvShowCategory.entries.forEach { category -> loadNextPage(category) }
+    }
+
+    /**
+     * Refreshes all TV show categories by clearing the cache and reloading.
+     *
+     * Triggered by the pull-to-refresh gesture. Mirrors the Movies refresh flow: keeps the
+     * current content visible while reloading, and only surfaces an error (snackbar or
+     * full-screen) when appropriate.
+     */
+    private fun refresh() {
+        // Prevent duplicate refresh operations
+        if (_uiState.value.isRefreshing) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isRefreshing = true) }
+            when (tvShowsRepository.clearAndReload()) {
+                is AppResult.Error -> {
+                    // The cache was just cleared. If the reload failed wholesale, record the
+                    // failures so the derived screen state shows an error instead of spinning
+                    // on empty per-section loaders forever.
+                    erroredCategories.addAll(TvShowCategory.entries)
+                    if (_uiState.value.hasAnyData) {
+                        _uiAction.send(TvShowsUiAction.ShowPaginationError)
+                    }
+                }
+
+                is AppResult.Success -> erroredCategories.clear()
+            }
+            recomputeScreenState()
+            _uiState.update { it.copy(isRefreshing = false) }
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.ui.extansions
+package com.elna.moviedb.core.ui.extensions
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
