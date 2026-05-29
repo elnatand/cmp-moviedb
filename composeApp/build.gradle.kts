@@ -48,6 +48,9 @@ kotlin {
 
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+
+            // Serializes the navigation back stack for rememberSaveable (process-death restore).
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

@@ -122,7 +122,12 @@ private fun SearchScreen(
                     }
                 }
 
-                LaunchedEffect(shouldLoadMore) {
+                // Keyed on isLoadingMore as well as shouldLoadMore: when a page's results
+                // all fit on screen, shouldLoadMore stays continuously true and would never
+                // re-fire on its own (derivedStateOf only emits on value *changes*). Keying on
+                // isLoadingMore re-runs the check each time a load completes, so pagination
+                // keeps cascading until the viewport fills or there are no more pages.
+                LaunchedEffect(shouldLoadMore, uiState.isLoadingMore) {
                     if (shouldLoadMore && uiState.hasMorePages && !uiState.isLoadingMore) {
                         onLoadMore()
                     }

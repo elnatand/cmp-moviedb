@@ -22,6 +22,7 @@ import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.error_title
 import com.elna.moviedb.resources.network_error
 import com.elna.moviedb.resources.retry
+import com.elna.moviedb.resources.server_error
 import com.elna.moviedb.resources.unknown_error_occurred
 import org.jetbrains.compose.resources.stringResource
 
@@ -34,7 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun DataError.toLocalizedMessage(): String = when (this) {
     DataError.NETWORK -> stringResource(Res.string.network_error)
-    DataError.SERVER -> stringResource(Res.string.network_error)
+    DataError.SERVER -> stringResource(Res.string.server_error)
     DataError.CLIENT -> stringResource(Res.string.unknown_error_occurred)
     DataError.UNKNOWN -> stringResource(Res.string.unknown_error_occurred)
 }

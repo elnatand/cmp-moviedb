@@ -198,5 +198,41 @@ class TvShowsViewModelTest {
         assertEquals(1, fakeRepository.clearAndReloadCallCount)
     }
 
+    @Test
+    fun `refresh does not trigger a redundant observe-driven load per category`() =
+        runTest(testDispatcher) {
+            // Given - a warm cache: every category already has data, so the ViewModel's FIRST
+            // observe emission is non-empty (mirrors a normal launch with cached shows). This
+            // is the precondition for the regression: the initial-load latch must already be
+            // set, so a later empty emission can't be mistaken for an empty cache to load.
+            val warmRepository = FakeTvShowsRepository()
+            TvShowCategory.entries.forEach { category ->
+                warmRepository.setTvShowsForCategory(category, listOf(show(category.ordinal + 1, "Show")))
+                warmRepository.setNextPageResult(category, AppResult.Success(Unit))
+            }
+
+            val warmViewModel = TvShowsViewModel(warmRepository)
+            backgroundScope.launch { warmViewModel.uiState.collect {} }
+            advanceUntilIdle()
+            // Drop construction-time bookkeeping; assert only what refresh itself produces.
+            warmRepository.resetCounters()
+
+            // When - pull-to-refresh. clearAndReload wipes the cache (flows emit empty) and
+            // reloads internally; the transient empty emission must NOT make observeTvShows
+            // fire its own per-category load alongside it.
+            warmViewModel.onEvent(TvShowsEvent.Refresh)
+            advanceUntilIdle()
+
+            // Then - refresh delegates entirely to clearAndReload; no extra observe-driven loads.
+            assertEquals(1, warmRepository.clearAndReloadCallCount)
+            TvShowCategory.entries.forEach { category ->
+                assertEquals(
+                    0,
+                    warmRepository.loadNextPageCallCount[category],
+                    "refresh must not trigger an observe-driven loadTvShowsNextPage for $category"
+                )
+            }
+        }
+
     private fun show(id: Int, name: String) = TvShow(id = id, name = name, posterPath = null)
 }

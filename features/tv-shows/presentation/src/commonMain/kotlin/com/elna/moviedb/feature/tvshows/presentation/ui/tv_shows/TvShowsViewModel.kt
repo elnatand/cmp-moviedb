@@ -71,9 +71,13 @@ class TvShowsViewModel(
                 tvShowsRepository.observeTvShows(category).collect { tvShows ->
                     // Repository observe is passive; trigger the first load here (once)
                     // when the cache is empty. Keeps query/command responsibilities split.
-                    if (!initialLoadRequested && tvShows.isEmpty()) {
+                    // The flag latches on the FIRST emission regardless of its contents: a
+                    // later empty emission (e.g. clearAndReload wiping the cache during
+                    // pull-to-refresh) must not re-trigger a load here, which would race a
+                    // redundant page fetch against refresh's own reload.
+                    if (!initialLoadRequested) {
                         initialLoadRequested = true
-                        loadNextPage(category)
+                        if (tvShows.isEmpty()) loadNextPage(category)
                     }
                     _uiState.update { currentState ->
                         currentState.copy(

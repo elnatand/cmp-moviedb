@@ -76,6 +76,11 @@ class FakeTvShowsRepository : TvShowsRepository {
 
     override suspend fun clearAndReload(): AppResult<Unit> {
         clearAndReloadCallCount++
+        // Mirror the real repository: clearing the cache makes the observed flows emit an
+        // empty list before the reload repopulates them. A correct ViewModel must not treat
+        // that transient empty emission as a fresh "cache is empty → load it" trigger (which
+        // would race a redundant page fetch against this clearAndReload's own reload).
+        tvShowsFlows.values.forEach { it.value = emptyList() }
         if (clearAndReloadDelay > 0) {
             delay(clearAndReloadDelay)
         }
