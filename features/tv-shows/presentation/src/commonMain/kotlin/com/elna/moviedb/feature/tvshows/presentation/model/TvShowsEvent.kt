@@ -1,4 +1,6 @@
-package com.elna.moviedb.feature.tvshows.domain.model
+package com.elna.moviedb.feature.tvshows.presentation.model
+
+import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
 
 /**
  * Represents all possible user actions/events in the TV Shows screen.

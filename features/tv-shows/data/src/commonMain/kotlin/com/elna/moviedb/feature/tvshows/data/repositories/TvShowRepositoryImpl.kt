@@ -7,9 +7,9 @@ import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.domain.model.TvShow
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
-import com.elna.moviedb.core.network.model.videos.toTrailersOrEmpty
+import com.elna.moviedb.core.network.dto.credits.toCastMembersOrEmpty
+import com.elna.moviedb.core.network.dto.videos.toTrailersOrEmpty
 import com.elna.moviedb.feature.tvshows.data.datasources.TvShowsRemoteService
-import com.elna.moviedb.feature.tvshows.data.model.toDomain
 import com.elna.moviedb.feature.tvshows.data.mappers.toDomain
 import com.elna.moviedb.feature.tvshows.data.mappers.toTmdbPath
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowDetails
@@ -164,20 +164,7 @@ class TvShowRepositoryImpl(
             }
 
             val trailers = videosResult.toTrailersOrEmpty()
-
-            // Map cast to domain and sort by order
-            val cast = when (creditsResult) {
-                is AppResult.Success -> {
-                    creditsResult.data.cast
-                        ?.sortedBy { it.order }
-                        ?.map { remoteCastMember ->
-                            remoteCastMember.toDomain()
-                        }
-                        ?: emptyList()
-                }
-
-                is AppResult.Error -> emptyList() // Cast is optional, don't fail if they error
-            }
+            val cast = creditsResult.toCastMembersOrEmpty()
 
             // Combine details with trailers and cast
             val tvShowDetails = details.toDomain().copy(

@@ -1,10 +1,10 @@
 package com.elna.moviedb.feature.tvshows.data.model
 
 
-import com.elna.moviedb.core.network.model.shared.Genre
-import com.elna.moviedb.core.network.model.shared.ProductionCompany
-import com.elna.moviedb.core.network.model.shared.ProductionCountry
-import com.elna.moviedb.core.network.model.shared.SpokenLanguage
+import com.elna.moviedb.core.network.dto.shared.Genre
+import com.elna.moviedb.core.network.dto.shared.ProductionCompany
+import com.elna.moviedb.core.network.dto.shared.ProductionCountry
+import com.elna.moviedb.core.network.dto.shared.SpokenLanguage
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

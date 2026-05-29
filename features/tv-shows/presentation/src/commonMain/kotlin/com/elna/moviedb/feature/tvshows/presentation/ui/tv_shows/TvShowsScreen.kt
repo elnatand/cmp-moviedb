@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
-import com.elna.moviedb.feature.tvshows.domain.model.TvShowsEvent
+import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiState
 import com.elna.moviedb.feature.tvshows.presentation.ui.components.TvShowsSection

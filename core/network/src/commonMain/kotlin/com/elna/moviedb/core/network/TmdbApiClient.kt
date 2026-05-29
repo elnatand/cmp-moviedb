@@ -2,7 +2,7 @@ package com.elna.moviedb.core.network
 
 import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.network.model.TMDB_BASE_URL
+import com.elna.moviedb.core.network.dto.TMDB_BASE_URL
 import com.elna.moviedb.core.network.utils.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body

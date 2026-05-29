@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import com.elna.moviedb.feature.tvshows.domain.repositories.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
-import com.elna.moviedb.feature.tvshows.domain.model.TvShowsEvent
+import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiState
 import kotlinx.coroutines.async

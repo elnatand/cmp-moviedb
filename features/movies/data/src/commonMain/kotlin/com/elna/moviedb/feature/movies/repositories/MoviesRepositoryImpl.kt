@@ -8,11 +8,10 @@ import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.datastore.pagination.PaginationPreferences
 import com.elna.moviedb.core.datastore.pagination.PaginationState
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.CastMember
-import com.elna.moviedb.core.network.model.videos.toTrailersOrEmpty
+import com.elna.moviedb.core.model.onSuccess
+import com.elna.moviedb.core.network.dto.credits.toCastMembersOrEmpty
+import com.elna.moviedb.core.network.dto.videos.toTrailersOrEmpty
 import com.elna.moviedb.feature.movies.datasources.MoviesRemoteDataSource
-import com.elna.moviedb.feature.movies.model.RemoteMovieCredits
-import com.elna.moviedb.feature.movies.model.toDomain
 import com.elna.moviedb.feature.movies.mappers.asEntity
 import com.elna.moviedb.feature.movies.mappers.toDomain
 import com.elna.moviedb.feature.movies.mappers.toTmdbPath
@@ -31,8 +30,8 @@ import kotlinx.coroutines.flow.map
  * This repository uses category abstraction.
  * New movie categories can be added to [com.elna.moviedb.feature.movies.model.MovieCategory] enum without modifying this class.
  *
- * This repository uses the Strategy Pattern for caching, allowing different caching
- * behaviors to be injected without modifying repository code.
+ * Movie details follow an offline-first policy: cached data is returned when present,
+ * otherwise it is fetched from the network and persisted before returning.
  *
  * This repository implements LanguageChangeListener and self-registers with the coordinator
  * during initialization, ensuring it's always properly set up to respond to language changes.
@@ -41,7 +40,6 @@ import kotlinx.coroutines.flow.map
  * @param localDataSource Local data source for caching movies in database
  * @param paginationPreferences Manager for pagination state
  * @param languageProvider Provider for formatted language strings
- * @param cachingStrategy Strategy for cache/network coordination (default: offline-first)
  * @param languageChangeCoordinator Coordinator for language change notifications
  */
 class MoviesRepositoryImpl(
@@ -49,7 +47,6 @@ class MoviesRepositoryImpl(
     private val localDataSource: MoviesLocalDataSource,
     private val paginationPreferences: PaginationPreferences,
     private val languageProvider: LanguageProvider,
-    private val cachingStrategy: CachingStrategy,
     languageChangeCoordinator: LanguageChangeCoordinator,
 ) : MoviesRepository, LanguageChangeListener {
 
@@ -112,29 +109,21 @@ class MoviesRepositoryImpl(
     }
 
     /**
-     * Retrieves detailed information for a specific movie using caching strategy.
+     * Retrieves detailed information for a specific movie (offline-first).
      *
-     * This function uses the injected CachingStrategy (typically offline-first) to:
-     * 1. Check local cache for movie details
-     * 2. On cache miss, fetch from remote API in parallel (details + videos + cast)
-     * 3. Save fetched data to cache
-     * 4. Return movie details with trailers and cast
+     * 1. Returns cached details immediately on a cache hit.
+     * 2. On a cache miss, fetches from the remote API in parallel (details + videos + cast).
+     * 3. Persists the fetched data to cache before returning it.
      *
      * @param movieId The unique identifier of the movie to retrieve
      * @return AppResult<MovieDetails> Success with movie details or Error if fetch failed
      */
     override suspend fun getMovieDetails(movieId: Int): AppResult<MovieDetails> {
-        return cachingStrategy.execute(
-            fetchFromCache = {
-                fetchMovieDetailsFromCache(movieId)
-            },
-            fetchFromNetwork = {
-                fetchMovieDetailsFromNetwork(movieId)
-            },
-            saveToCache = { movieDetails ->
-                saveMovieDetailsToCache(movieId, movieDetails)
-            }
-        )
+        fetchMovieDetailsFromCache(movieId)?.let { return AppResult.Success(it) }
+
+        return fetchMovieDetailsFromNetwork(movieId).onSuccess { details ->
+            saveMovieDetailsToCache(movieId, details)
+        }
     }
 
     /**
@@ -177,7 +166,7 @@ class MoviesRepositoryImpl(
             val creditsResult = creditsDeferred.await()
 
             val trailers = videosResult.toTrailersOrEmpty()
-            val cast = processCreditsResult(creditsResult)
+            val cast = creditsResult.toCastMembersOrEmpty()
 
             AppResult.Success(
                 details.toDomain().copy(
@@ -186,23 +175,6 @@ class MoviesRepositoryImpl(
                 )
             )
         }
-
-    /**
-     * Processes cast credits results, sorting by order.
-     * Returns empty list on error (graceful degradation).
-     */
-    private fun processCreditsResult(creditsResult: AppResult<RemoteMovieCredits>)
-        : List<CastMember> {
-        return when (creditsResult) {
-            is AppResult.Success -> {
-                creditsResult.data.cast
-                    ?.sortedBy { it.order }
-                    ?.map { it.toDomain() }
-                    ?: emptyList()
-            }
-            is AppResult.Error -> emptyList()
-        }
-    }
 
     /**
      * Saves movie details to local cache.

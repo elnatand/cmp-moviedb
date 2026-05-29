@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.network.model
+package com.elna.moviedb.core.network.dto
 
 /**
  * TMDB API base URL - shared across all feature remote data sources

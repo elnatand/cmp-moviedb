@@ -2,8 +2,8 @@ package com.elna.moviedb.feature.tvshows.data.datasources
 
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.network.TmdbApiClient
-import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
-import com.elna.moviedb.feature.tvshows.data.model.RemoteTvShowCredits
+import com.elna.moviedb.core.network.dto.credits.RemoteCredits
+import com.elna.moviedb.core.network.dto.videos.RemoteVideoResponse
 import com.elna.moviedb.feature.tvshows.data.model.RemoteTvShowDetails
 import com.elna.moviedb.feature.tvshows.data.model.RemoteTvShowsPage
 
@@ -49,7 +49,7 @@ class TvShowsRemoteService(
         )
     }
 
-    suspend fun getTvShowCredits(tvShowId: Int, language: String): AppResult<RemoteTvShowCredits> {
+    suspend fun getTvShowCredits(tvShowId: Int, language: String): AppResult<RemoteCredits> {
         return apiClient.get(
             path = "/tv/$tvShowId/credits",
             "language" to language

@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.network.model.shared
+package com.elna.moviedb.core.network.dto.shared
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -4,10 +4,8 @@ package com.elna.moviedb.feature.movies.di
 import com.elna.moviedb.feature.movies.datasources.MoviesLocalDataSource
 import com.elna.moviedb.feature.movies.datasources.MoviesLocalDataSourceImpl
 import com.elna.moviedb.feature.movies.datasources.MoviesRemoteDataSource
-import com.elna.moviedb.feature.movies.repositories.CachingStrategy
 import com.elna.moviedb.feature.movies.repositories.MoviesRepository
 import com.elna.moviedb.feature.movies.repositories.MoviesRepositoryImpl
-import com.elna.moviedb.feature.movies.repositories.OfflineFirstCachingStrategy
 import org.koin.dsl.module
 
 val moviesDataModule = module {
@@ -19,16 +17,12 @@ val moviesDataModule = module {
         )
     }
 
-    // Caching strategy - used by repositories to handle cache/network coordination
-    single<CachingStrategy> { OfflineFirstCachingStrategy() }
-
     single<MoviesRepository>(createdAtStart = true) {
         MoviesRepositoryImpl(
             remoteDataSource = get(),
             localDataSource = get(),
             paginationPreferences =  get(),
             languageProvider = get(),
-            cachingStrategy = get(),
             languageChangeCoordinator = get(),
         )
     }

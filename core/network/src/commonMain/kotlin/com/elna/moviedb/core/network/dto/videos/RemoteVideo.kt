@@ -1,4 +1,4 @@
-package com.elna.moviedb.core.network.model.videos
+package com.elna.moviedb.core.network.dto.videos
 
 import com.elna.moviedb.core.model.Video
 import com.elna.moviedb.core.model.VideoSite
