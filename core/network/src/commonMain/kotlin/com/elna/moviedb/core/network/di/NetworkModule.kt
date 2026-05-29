@@ -16,8 +16,6 @@ import org.koin.dsl.module
 val networkModule = module {
     single { provideHttpClientEngine() }
     single { createHttpClient(get()) }
-
-    // Public API client - the only network dependency features should use
     single {
         TmdbApiClient(
             httpClient = get(),
