@@ -44,6 +44,7 @@ import com.elna.moviedb.feature.movies.model.MoviesUiAction
 import com.elna.moviedb.feature.movies.model.MoviesUiState
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.movies
+import com.elna.moviedb.resources.network_error
 import com.elna.moviedb.resources.now_playing_movies
 import com.elna.moviedb.resources.popular_movies
 import com.elna.moviedb.resources.top_rated_movies
@@ -83,6 +84,7 @@ private fun MoviesScreen(
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val paginationErrorMessage = stringResource(Res.string.network_error)
 
     // Handle UI actions (one-time events)
     LaunchedEffect(Unit) {
@@ -90,7 +92,7 @@ private fun MoviesScreen(
             when (effect) {
                 is MoviesUiAction.ShowPaginationError -> {
                     snackbarHostState.showSnackbar(
-                        message = effect.message,
+                        message = paginationErrorMessage,
                         withDismissAction = true
                     )
                 }

@@ -49,6 +49,11 @@ class LanguageChangeCoordinator(
     private val appSettingsPreferences: AppSettingsPreferences,
     appDispatchers: AppDispatchers,
 ) {
+    // All access to `listeners` is confined to `scope` (a single-threaded main
+    // dispatcher), so registration and iteration never run concurrently. This avoids
+    // a ConcurrentModificationException when a repository self-registers (possibly off
+    // the main thread, during lazy DI construction) while a language change is being
+    // dispatched to existing listeners.
     private val listeners = mutableSetOf<LanguageChangeListener>()
     private val scope = CoroutineScope(SupervisorJob() + appDispatchers.main)
 
@@ -70,8 +75,13 @@ class LanguageChangeCoordinator(
     /**
      * Registers a listener to be notified of language changes.
      * Listeners are typically repositories that need to clear/reload data.
+     *
+     * Registration is marshalled onto the coordinator's main-confined scope so it
+     * never races with in-flight notification dispatch.
      */
     fun registerListener(listener: LanguageChangeListener) {
-        listeners.add(listener)
+        scope.launch {
+            listeners.add(listener)
+        }
     }
 }
