@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.Framework
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
@@ -12,10 +11,11 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
 
-    // iOS targets are configured by the convention plugin
-    // Customize the framework configuration
+    // iOS targets are declared by the convention plugin, but the framework binary is
+    // created here: :composeApp is the only module linked into the iOS app, so it owns
+    // the framework the Xcode project embeds.
     targets.withType<KotlinNativeTarget>().configureEach {
-        binaries.withType<Framework>().configureEach {
+        binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
             binaryOption("bundleId", "com.elna.moviedb")

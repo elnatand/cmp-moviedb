@@ -331,7 +331,7 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
-					composeApp,
+					ComposeApp,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_ID}${TEAM_ID}";
@@ -366,7 +366,7 @@
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-framework",
-					composeApp,
+					ComposeApp,
 					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_ID}${TEAM_ID}";
