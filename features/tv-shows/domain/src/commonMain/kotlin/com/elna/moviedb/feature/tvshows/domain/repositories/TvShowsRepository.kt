@@ -13,13 +13,14 @@ interface TvShowsRepository {
     /**
      * Observes TV shows for a specific category from in-memory storage.
      *
-     * Returns a flow of TV shows from the in-memory cache. Automatically triggers
-     * initial load if cache is empty for the given category.
+     * Passive query: exposes the cached stream and performs no side effects.
+     * Triggering an initial/refresh load is the caller's responsibility via
+     * [loadTvShowsNextPage], keeping reads (queries) and loads (commands) separate.
      *
      * @param category The TV show category to observe (e.g., POPULAR, ON_THE_AIR)
      * @return Flow emitting list of TV shows for the category
      */
-    suspend fun observeTvShows(category: TvShowCategory): Flow<List<TvShow>>
+    fun observeTvShows(category: TvShowCategory): Flow<List<TvShow>>
 
     /**
      * Loads the next page of TV shows for a specific category from the remote API.

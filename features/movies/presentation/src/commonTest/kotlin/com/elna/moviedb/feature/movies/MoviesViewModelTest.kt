@@ -1,9 +1,8 @@
 package com.elna.moviedb.feature.movies
 
-import com.elna.moviedb.core.data.movies.FakeMoviesRepository
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.Movie
-import com.elna.moviedb.core.model.MovieCategory
+import com.elna.moviedb.feature.movies.model.Movie
+import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.feature.movies.model.MoviesEvent
 import com.elna.moviedb.feature.movies.model.MoviesUiAction
 import com.elna.moviedb.feature.movies.model.MoviesUiState
@@ -36,6 +35,9 @@ class MoviesViewModelTest {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMoviesRepository()
         viewModel = MoviesViewModel(fakeRepository)
+        // Constructing the ViewModel starts observing and triggers one initial load per
+        // (empty) category. Reset counters so each test asserts only its own interactions.
+        fakeRepository.resetCounters()
     }
 
     @AfterTest
@@ -44,7 +46,23 @@ class MoviesViewModelTest {
     }
 
     @Test
-    fun `initial state is SUCCESS with empty movies`() = runTest(testDispatcher) {
+    fun `init triggers an initial load for each empty category`() = runTest(testDispatcher) {
+        // Given - a fresh fake whose categories all start empty
+        val freshRepository = FakeMoviesRepository()
+
+        // When - the ViewModel is constructed and starts observing
+        MoviesViewModel(freshRepository)
+        advanceUntilIdle()
+
+        // Then - the passive repository observe did not load; the ViewModel triggered
+        // exactly one initial load per category.
+        MovieCategory.entries.forEach { category ->
+            assertEquals(1, freshRepository.loadNextPageCallCount[category])
+        }
+    }
+
+    @Test
+    fun `state is SUCCESS with empty movies after initial observe`() = runTest(testDispatcher) {
         // Given - ViewModel is initialized in setup()
         backgroundScope.launch { viewModel.uiState.collect {} }
 

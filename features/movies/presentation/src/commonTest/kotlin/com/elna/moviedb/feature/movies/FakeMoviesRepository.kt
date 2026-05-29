@@ -1,9 +1,10 @@
-package com.elna.moviedb.core.data.movies
+package com.elna.moviedb.feature.movies
 
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.core.model.Movie
-import com.elna.moviedb.core.model.MovieCategory
-import com.elna.moviedb.core.model.MovieDetails
+import com.elna.moviedb.feature.movies.model.Movie
+import com.elna.moviedb.feature.movies.model.MovieCategory
+import com.elna.moviedb.feature.movies.model.MovieDetails
+import com.elna.moviedb.feature.movies.repositories.MoviesRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +45,17 @@ class FakeMoviesRepository : MoviesRepository {
         nextPageResults[category] = result
     }
 
-    override suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>> {
+    /**
+     * Resets all interaction counters. Useful after constructing the ViewModel under test,
+     * which triggers one initial load per empty category, so individual tests can assert
+     * only the calls produced by their own actions.
+     */
+    fun resetCounters() {
+        MovieCategory.entries.forEach { loadNextPageCallCount[it] = 0 }
+        clearAndReloadCallCount = 0
+    }
+
+    override fun observeMovies(category: MovieCategory): Flow<List<Movie>> {
         return moviesFlows[category] ?: flowOf(emptyList())
     }
 

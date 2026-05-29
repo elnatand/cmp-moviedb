@@ -63,7 +63,14 @@ class TvShowsViewModel(
     private fun observeTvShows() {
         TvShowCategory.entries.forEach { category ->
             viewModelScope.launch {
+                var initialLoadRequested = false
                 tvShowsRepository.observeTvShows(category).collect { tvShows ->
+                    // Repository observe is passive; trigger the first load here (once)
+                    // when the cache is empty. Keeps query/command responsibilities split.
+                    if (!initialLoadRequested && tvShows.isEmpty()) {
+                        initialLoadRequested = true
+                        loadNextPage(category)
+                    }
                     _uiState.update { currentState ->
                         val updatedTvShowsMap = currentState.tvShowsByCategory + (category to tvShows)
                         currentState.copy(

@@ -36,7 +36,7 @@ class MoviesViewModel(
     private val moviesRepository: MoviesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.SUCCESS))
+    private val _uiState = MutableStateFlow(MoviesUiState(state = MoviesUiState.State.LOADING))
     val uiState: StateFlow<MoviesUiState> = _uiState.asStateFlow()
 
     private val _uiAction = Channel<MoviesUiAction>(Channel.BUFFERED)
@@ -73,7 +73,14 @@ class MoviesViewModel(
     private fun observeMovies() {
         MovieCategory.entries.forEach { category ->
             viewModelScope.launch {
+                var initialLoadRequested = false
                 moviesRepository.observeMovies(category).collect { movies ->
+                    // Repository observe is passive; trigger the first load here (once)
+                    // when the cache is empty. Keeps query/command responsibilities split.
+                    if (!initialLoadRequested && movies.isEmpty()) {
+                        initialLoadRequested = true
+                        loadNextPage(category)
+                    }
                     _uiState.update { currentState ->
                         val updatedMoviesMap = currentState.moviesByCategory + (category to movies)
                         currentState.copy(

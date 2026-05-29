@@ -6,10 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
-import com.elna.moviedb.core.ui.navigation.ProfileRoute
 import com.elna.moviedb.core.ui.navigation.Route
-import com.elna.moviedb.core.ui.navigation.SearchRoute
-import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.navigation.TopLevelDestination
 
 @Composable
@@ -42,16 +39,23 @@ class AppState(
     }
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
-        val targetRoute = when (topLevelDestination) {
-            TopLevelDestination.MOVIES -> MoviesRoute.MoviesListRoute
-            TopLevelDestination.TV_SHOWS -> TvShowsRoute.TvShowsListRoute
-            TopLevelDestination.SEARCH -> SearchRoute
-            TopLevelDestination.PROFILE -> ProfileRoute
-        }
+        // The route the enum already carries — no hardcoded branch to keep in sync.
+        val targetRoute = topLevelDestination.route
 
+        // Already on this top-level destination: nothing to do.
         if (navBackStack.lastOrNull() == targetRoute) return
 
-        navBackStack.clear()
-        navBackStack.add(targetRoute)
+        val targetIndex = navBackStack.indexOf(targetRoute)
+        if (targetIndex >= 0) {
+            // Destination already in the stack (e.g. its root sits below detail screens):
+            // pop back to it instead of wiping the stack, preserving navigation history.
+            while (navBackStack.size > targetIndex + 1) {
+                navBackStack.removeAt(navBackStack.lastIndex)
+            }
+        } else {
+            // Brand-new top-level destination: reset to its root.
+            navBackStack.clear()
+            navBackStack.add(targetRoute)
+        }
     }
 }

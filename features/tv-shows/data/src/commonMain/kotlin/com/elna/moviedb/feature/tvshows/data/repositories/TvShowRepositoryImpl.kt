@@ -10,9 +10,8 @@ import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
 import com.elna.moviedb.core.network.model.videos.RemoteVideo
 import com.elna.moviedb.core.network.model.videos.toDomain
 import com.elna.moviedb.feature.tvshows.data.datasources.TvShowsRemoteService
-import com.elna.moviedb.feature.tvshows.data.model.RemoteTvShow
-import com.elna.moviedb.feature.tvshows.data.model.RemoteTvShowDetails
 import com.elna.moviedb.feature.tvshows.data.model.toDomain
+import com.elna.moviedb.feature.tvshows.data.mappers.toDomain
 import com.elna.moviedb.feature.tvshows.data.mappers.toTmdbPath
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowDetails
 import kotlinx.coroutines.async
@@ -66,21 +65,15 @@ class TvShowRepositoryImpl(
     /**
      * Observes TV shows for a specific category from in-memory storage.
      *
-     * Returns a flow of TV shows from the in-memory cache. Automatically triggers
-     * initial load if cache is empty for the given category.
+     * Passive query: returns the in-memory stream and performs no side effects. The
+     * caller (ViewModel) decides when to trigger an initial/refresh load via
+     * [loadTvShowsNextPage].
      *
      * @param category The TV show category to observe
      * @return Flow emitting list of TV shows for the category
      */
-    override suspend fun observeTvShows(category: TvShowCategory): Flow<List<TvShow>> {
-        val flow = getFlowForCategory(category)
-
-        if (flow.value.isEmpty()) {
-            loadTvShowsNextPage(category)
-        }
-
-        return flow
-    }
+    override fun observeTvShows(category: TvShowCategory): Flow<List<TvShow>> =
+        getFlowForCategory(category)
 
     /**
      * Loads the next page of TV shows for a specific category from the remote API.
@@ -206,49 +199,3 @@ class TvShowRepositoryImpl(
             AppResult.Success(tvShowDetails)
         }
 }
-
-fun RemoteTvShow.toDomain(): TvShow {
-    return TvShow(
-        id = id,
-        name = name,
-        posterPath = posterPath
-    )
-}
-
-
-fun RemoteTvShowDetails.toDomain() = TvShowDetails(
-    id = id,
-    name = name,
-    overview = overview,
-    posterPath = posterPath,
-    backdropPath = backdropPath,
-    adult = adult,
-    firstAirDate = firstAirDate,
-    lastAirDate = lastAirDate,
-    numberOfEpisodes = numberOfEpisodes,
-    numberOfSeasons = numberOfSeasons,
-    episodeRunTime = episodeRunTime,
-    status = status,
-    tagline = tagline,
-    type = type,
-    voteAverage = voteAverage,
-    voteCount = voteCount,
-    popularity = popularity,
-    originalName = originalName,
-    originalLanguage = originalLanguage,
-    originCountry = originCountry,
-    homepage = homepage,
-    inProduction = inProduction,
-    languages = languages,
-    genres = genres?.map { it.name },
-    networks = networks?.mapNotNull { it.name },
-    productionCompanies = productionCompanies?.map { it.name },
-    productionCountries = productionCountries?.map { it.name },
-    spokenLanguages = spokenLanguages?.map { it.englishName },
-    seasonsCount = seasons?.size,
-    createdBy = createdBy?.mapNotNull { it.name },
-    lastEpisodeName = lastEpisodeToAir?.name,
-    lastEpisodeAirDate = lastEpisodeToAir?.airDate,
-    nextEpisodeToAir = nextEpisodeToAir?.airDate,
-    nextEpisodeAirDate = null
-)

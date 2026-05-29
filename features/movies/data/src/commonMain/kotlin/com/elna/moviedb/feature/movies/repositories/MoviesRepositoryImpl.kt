@@ -4,8 +4,6 @@ import com.elna.moviedb.core.datastore.language.LanguageChangeCoordinator
 import com.elna.moviedb.core.datastore.language.LanguageChangeListener
 import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.feature.movies.datasources.MoviesLocalDataSource
-import com.elna.moviedb.core.database.model.CastMemberEntity
-import com.elna.moviedb.core.database.model.MovieDetailsEntity
 import com.elna.moviedb.core.database.model.asEntity
 import com.elna.moviedb.core.datastore.pagination.PaginationPreferences
 import com.elna.moviedb.core.datastore.pagination.PaginationState
@@ -67,29 +65,13 @@ class MoviesRepositoryImpl(
     /**
      * Observes movies for a specific category from local storage.
      *
-     * Returns a flow of movies from the local cache. Automatically triggers
-     * initial load if cache is empty for the given category.
+     * Passive query: returns the cached stream and performs no side effects. The
+     * caller (ViewModel) decides when to trigger an initial/refresh load via
+     * [loadMoviesNextPage].
      */
-    override suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>> {
-        // Use type-safe category enum directly
-        val localMoviesPageStream =
-            localDataSource.getMoviesByCategoryAsFlow(category)
-
-        // Load initial data if empty
-        if (localMoviesPageStream.first().isEmpty()) {
-            loadMoviesNextPage(category)
-        }
-
-        return localMoviesPageStream.map { movieEntities ->
-            movieEntities.map {
-                Movie(
-                    id = it.id,
-                    title = it.title,
-                    posterPath = it.posterPath
-                )
-            }
-        }
-    }
+    override fun observeMovies(category: MovieCategory): Flow<List<Movie>> =
+        localDataSource.getMoviesByCategoryAsFlow(category)
+            .map { movieEntities -> movieEntities.map { it.toDomain() } }
 
     /**
      * Loads the next page of movies for a specific category from the remote API.
@@ -256,34 +238,7 @@ class MoviesRepositoryImpl(
      */
     private suspend fun saveMovieDetailsToCache(movieId: Int, movieDetails: MovieDetails) {
         // Save main details
-        val detailsEntity = movieDetails.run {
-            MovieDetailsEntity(
-                id = id,
-                title = title,
-                overview = overview,
-                posterPath = posterPath,
-                backdropPath = backdropPath,
-                releaseDate = releaseDate,
-                runtime = runtime,
-                voteAverage = voteAverage,
-                voteCount = voteCount,
-                adult = adult,
-                budget = budget,
-                revenue = revenue,
-                homepage = homepage,
-                imdbId = imdbId,
-                originalLanguage = originalLanguage,
-                originalTitle = originalTitle,
-                popularity = popularity,
-                status = status,
-                tagline = tagline,
-                genres = genres?.joinToString(","),
-                productionCompanies = productionCompanies?.joinToString(","),
-                productionCountries = productionCountries?.joinToString(","),
-                spokenLanguages = spokenLanguages?.joinToString(",")
-            )
-        }
-        localDataSource.insertMovieDetails(detailsEntity)
+        localDataSource.insertMovieDetails(movieDetails.asEntity())
 
         // Save videos
         localDataSource.deleteVideosForMovie(movieId)
@@ -294,17 +249,7 @@ class MoviesRepositoryImpl(
         }
 
         // Save cast
-        val castList = movieDetails.cast ?: emptyList()
-        val castEntities = castList.map { castMember ->
-            CastMemberEntity(
-                movieId = movieId,
-                personId = castMember.id,
-                name = castMember.name,
-                character = castMember.character,
-                profilePath = castMember.profilePath,
-                order = castMember.order
-            )
-        }
+        val castEntities = (movieDetails.cast ?: emptyList()).map { it.asEntity(movieId) }
         localDataSource.replaceCastForMovie(movieId, castEntities)
     }
 

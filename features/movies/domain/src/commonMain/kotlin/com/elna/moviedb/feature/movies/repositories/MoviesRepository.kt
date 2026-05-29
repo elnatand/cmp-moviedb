@@ -17,13 +17,14 @@ interface MoviesRepository {
     /**
      * Observes movies for a specific category from local storage.
      *
-     * Returns a flow of movies from the local cache. Automatically triggers
-     * initial load if cache is empty for the given category.
+     * This is a passive query: it only exposes the cached stream and performs no
+     * side effects. Triggering an initial/refresh load is the caller's responsibility
+     * via [loadMoviesNextPage], keeping reads (queries) and loads (commands) separate.
      *
      * @param category The movie category to observe (e.g., POPULAR, TOP_RATED)
      * @return Flow emitting list of movies for the category
      */
-    suspend fun observeMovies(category: MovieCategory): Flow<List<Movie>>
+    fun observeMovies(category: MovieCategory): Flow<List<Movie>>
 
     /**
      * Loads the next page of movies for a specific category from the remote API.

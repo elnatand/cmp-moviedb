@@ -4,8 +4,8 @@ import com.elna.moviedb.core.common.utils.FakeAppVersion
 import com.elna.moviedb.core.datastore.FakeAppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
-import com.elna.moviedb.feature.profile.model.ProfileEvent
-import com.elna.moviedb.feature.profile.ui.ProfileViewModel
+import com.elna.moviedb.feature.profile.presentation.model.ProfileEvent
+import com.elna.moviedb.feature.profile.presentation.ui.ProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
