@@ -83,7 +83,7 @@ cmp-moviedb/
 │   ├── common/           # Common infrastructure utilities (AppDispatchers)
 │   ├── database/         # Room database with cross-platform drivers
 │   ├── datastore/        # DataStore for preferences, pagination state, and language coordination
-│   ├── model/            # Shared domain models (Movie, TvShow, AppResult, AppLanguage, AppTheme)
+│   ├── model/            # Cross-feature shared models
 │   ├── network/          # Ktor HTTP client and TMDB API integration
 │   └── ui/               # Shared UI components, Material 3 design system, Compose resources
 │
@@ -115,7 +115,7 @@ cmp-moviedb/
 ## 🛠️ Technology Stack
 
 ### Shared
-- **Kotlin Multiplatform** (2.3.0) - Multi-platform development
+- **Kotlin Multiplatform** (2.3.21) - Multi-platform development
 - **Compose Multiplatform** - UI framework
 - **Koin** - Dependency injection with Compose and ViewModel support
 - **Room** - Local database with SQLite bundled driver
@@ -239,7 +239,7 @@ BuildKonfig will automatically generate the `BuildKonfig` object containing your
 
 ### Testing
 
-ViewModel unit tests live in each feature module's `commonTest` source set (e.g. `MoviesViewModelTest`, `ProfileViewModelTest`). They use `kotlin-test` assertions, `kotlinx-coroutines-test` (`runTest` + `UnconfinedTestDispatcher`), and fake repositories from the `core` modules.
+ViewModel unit tests live in each feature module's `commonTest` source set (e.g. `MoviesViewModelTest`, `ProfileViewModelTest`, `SearchViewModelTest`). They use `kotlin-test` assertions, `kotlinx-coroutines-test` (`runTest` + `UnconfinedTestDispatcher`), and fake repositories from the `core` modules.
 
 ```bash
 # Run all multiplatform tests for a feature module
@@ -378,14 +378,16 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 ## 📋 Development Roadmap
 
 ### Recently Completed ✨
+- [x] **Pull-to-refresh** on the Movies screen via Material 3 `PullToRefreshBox`
+- [x] **Search debouncing** (300ms) in `SearchViewModel` to collapse rapid keystrokes into a single query
 - [x] **Feature-based architecture refactoring**: Removed `core:data` module and distributed repositories into self-contained feature modules with data/domain/presentation layers
 - [x] **Language coordination consolidation**: Merged language handling logic from `core:data` into `core:datastore` with `LanguageChangeCoordinator`
-- [x] **Unit tests for Movies and Profile ViewModels** using `kotlin-test` and `kotlinx-coroutines-test` with fake repositories
+- [x] **Unit tests for Movies, Profile, and Search ViewModels** using `kotlin-test` and `kotlinx-coroutines-test` with fake repositories
 - [x] **Migration to `com.android.kotlin.multiplatform.library` plugin** for improved KMP integration
 - [x] **Dedicated Android app module** (`androidApp`) wrapping shared `composeApp` library
 - [x] **BuildKonfig integration** for cross-platform secrets management (replaced expect/actual pattern)
 - [x] **Gradle convention plugin improvements** with centralized expect/actual warning suppression
-- [x] **Kotlin 2.3.0 upgrade** and lifecycle dependencies update to 2.10.0-alpha07
+- [x] **Kotlin 2.3.21 upgrade** and lifecycle dependencies update to 2.10.0-alpha07
 - [x] Simplified repository architecture (Repository = data provider, ViewModel = state coordinator)
 - [x] DataStore integration for persistent pagination state
 - [x] Language-aware cache invalidation with LanguageChangeCoordinator
@@ -416,11 +418,10 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 
 ### High Priority 🚀
 - [ ] Add TV Show database entities and local caching (currently only Movies cached)
-- [ ] Add pull-to-refresh functionality
-- [ ] Expand unit test coverage to repositories and the remaining feature ViewModels (TV Shows, Search, Person)
+- [ ] Expand unit test coverage to repositories and the remaining feature ViewModels (TV Shows, Person)
 - [ ] Enable Android host tests (`withHostTest {}`) so `commonTest` suites also run on the JVM/Android target
 - [ ] Add ktlint code formatting configuration
-- [ ] Improve search UX with debouncing and better empty states
+- [ ] Improve search UX with better empty states
 
 ### Medium Priority 📋
 - [ ] Add favorites/watchlist feature with local storage
