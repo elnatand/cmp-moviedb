@@ -4,6 +4,7 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.Movie
 import com.elna.moviedb.core.model.MovieCategory
 import com.elna.moviedb.core.model.MovieDetails
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -19,6 +20,13 @@ class FakeMoviesRepository : MoviesRepository {
     val loadNextPageCallCount = mutableMapOf<MovieCategory, Int>()
     var clearAndReloadCallCount = 0
     var clearAndReloadDelay = 0L
+
+    /**
+     * Optional suspension applied inside [loadMoviesNextPage] after the call is counted.
+     * Use a non-zero value to keep a load "in flight" so tests can verify that the
+     * ViewModel's in-progress guard prevents duplicate concurrent loads.
+     */
+    var loadNextPageDelay = 0L
 
     init {
         // Initialize flows and counters for all categories
@@ -42,6 +50,9 @@ class FakeMoviesRepository : MoviesRepository {
 
     override suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit> {
         loadNextPageCallCount[category] = (loadNextPageCallCount[category] ?: 0) + 1
+        if (loadNextPageDelay > 0) {
+            delay(loadNextPageDelay)
+        }
         return nextPageResults[category] ?: AppResult.Success(Unit)
     }
 
@@ -52,7 +63,7 @@ class FakeMoviesRepository : MoviesRepository {
     override suspend fun clearAndReload() {
         clearAndReloadCallCount++
         if (clearAndReloadDelay > 0) {
-            kotlinx.coroutines.delay(clearAndReloadDelay)
+            delay(clearAndReloadDelay)
         }
     }
 }

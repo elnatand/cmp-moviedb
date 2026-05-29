@@ -132,8 +132,9 @@ class MoviesViewModelTest {
         assertEquals(MoviesUiState.State.SUCCESS, state.state)
         assertFalse(state.isLoading(MovieCategory.POPULAR))
         assertEquals(1, uiActions.size)
+        // ShowPaginationError is a parameterless data object; the user-facing message is
+        // resolved from localized string resources at the UI layer, not carried on the action.
         assertTrue(uiActions[0] is MoviesUiAction.ShowPaginationError)
-        assertEquals("Network error", (uiActions[0] as MoviesUiAction.ShowPaginationError).message)
 
         uiActionJob.cancel()
     }
@@ -162,23 +163,22 @@ class MoviesViewModelTest {
 
     @Test
     fun `loadNextPage prevents duplicate loading for same category`() = runTest(testDispatcher) {
-        // Given
+        // Given - a slow load so the first request stays in flight while we dispatch the second
         val movies = listOf(createMovie(1, "Movie"))
         fakeRepository.setMoviesForCategory(MovieCategory.POPULAR, movies)
         fakeRepository.setNextPageResult(MovieCategory.POPULAR, AppResult.Success(Unit))
+        fakeRepository.loadNextPageDelay = 100
 
         backgroundScope.launch { viewModel.uiState.collect {} }
         advanceUntilIdle()
 
-        // Manually set loading state
+        // When - the first load is still in progress when the second is requested
         viewModel.onEvent(MoviesEvent.LoadNextPage(MovieCategory.POPULAR))
-
-        // When - Try to load again while already loading
         viewModel.onEvent(MoviesEvent.LoadNextPage(MovieCategory.POPULAR))
         advanceUntilIdle()
 
-        // Then - Should only call once (prevented duplicate)
-        assertTrue(fakeRepository.loadNextPageCallCount[MovieCategory.POPULAR]!! <= 2)
+        // Then - the in-progress guard prevents the duplicate; only one load runs
+        assertEquals(1, fakeRepository.loadNextPageCallCount[MovieCategory.POPULAR])
     }
 
     @Test
@@ -311,27 +311,28 @@ class MoviesViewModelTest {
         advanceUntilIdle()
 
         // Then - Should only call once
-        assertTrue(fakeRepository.clearAndReloadCallCount <= 1)
+        assertEquals(1, fakeRepository.clearAndReloadCallCount)
     }
 
     @Test
     fun `multiple loadNextPage events for same category are handled correctly`() = runTest(testDispatcher) {
-        // Given
+        // Given - a slow load so all rapid requests overlap a single in-flight load
         val movies = listOf(createMovie(1, "Movie"))
         fakeRepository.setMoviesForCategory(MovieCategory.POPULAR, movies)
         fakeRepository.setNextPageResult(MovieCategory.POPULAR, AppResult.Success(Unit))
+        fakeRepository.loadNextPageDelay = 100
 
         backgroundScope.launch { viewModel.uiState.collect {} }
         advanceUntilIdle()
 
-        // When
+        // When - five rapid events arrive while the first load is still in progress
         repeat(5) {
             viewModel.onEvent(MoviesEvent.LoadNextPage(MovieCategory.POPULAR))
         }
         advanceUntilIdle()
 
-        // Then - Should not crash and should handle gracefully
-        assertTrue(fakeRepository.loadNextPageCallCount[MovieCategory.POPULAR]!! >= 1)
+        // Then - the in-progress guard collapses them into a single load
+        assertEquals(1, fakeRepository.loadNextPageCallCount[MovieCategory.POPULAR])
     }
 
     @Test
