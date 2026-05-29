@@ -8,7 +8,7 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.elna.moviedb.core.network"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
     }
@@ -59,6 +59,17 @@ buildkonfig {
             FieldSpec.Type.STRING,
             "TMDB_API_KEY",
             tmdbApiKey
+        )
+
+        // Network request/response logging. OFF by default so release builds never
+        // log the request URL, which carries the TMDB api_key as a query parameter.
+        // Enable locally with: ./gradlew ... -PenableNetworkLogging=true
+        val enableNetworkLogging =
+            (project.findProperty("enableNetworkLogging") as? String)?.toBoolean() ?: false
+        buildConfigField(
+            FieldSpec.Type.BOOLEAN,
+            "ENABLE_NETWORK_LOGGING",
+            enableNetworkLogging.toString()
         )
     }
 }

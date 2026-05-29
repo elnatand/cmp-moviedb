@@ -4,26 +4,26 @@ app-version = "1.0.0"
 app-build = "1"
 
 android-minSdk = "24"
-android-compileSdk = "36"
-android-targetSdk = "36"
+android-compileSdk = "37"
+android-targetSdk = "37"
 
-kotlin = "2.3.10"
-ksp = "2.3.4"
-composeMultiplatform = "1.10.1"
+kotlin = "2.3.21"
+ksp = "2.3.8"
+composeMultiplatform = "1.11.0"
 compose-material3 = "1.10.0-alpha05"
 compose-material-icons = "1.7.3"
-agp = "9.1.0"
-koin = "4.1.1"
-ktor = "3.4.1"
+agp = "9.2.1"
+koin = "4.2.1"
+ktor = "3.5.0"
 coil = "3.4.0"
-kotlinx-coroutines = "1.10.2"
+kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.10.0"
-navigation = "1.0.0-alpha06"
-lifecycle = "2.10.0-alpha08"
+navigation = "1.1.1"
+lifecycle = "2.10.0"
 room = "2.8.4"
 sqlite = "2.6.2"
-datastore = "1.2.0"
-buildkonfig = "0.17.1"
+datastore = "1.2.1"
+buildkonfig = "0.21.2"
 
 
 [plugins]
@@ -58,6 +58,8 @@ lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:l
 
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }

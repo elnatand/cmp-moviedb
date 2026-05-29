@@ -6,7 +6,8 @@ package com.elna.moviedb.feature.tvshows.presentation.model
  */
 sealed interface TvShowsUiAction {
     /**
-     * Show a pagination error snackbar with the given message
+     * Show a pagination error snackbar. The user-facing message is resolved from
+     * localized string resources at the UI layer — never carried as a raw string.
      */
-    data class ShowPaginationError(val message: String) : TvShowsUiAction
+    data object ShowPaginationError : TvShowsUiAction
 }

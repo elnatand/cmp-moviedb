@@ -128,6 +128,7 @@ cmp-moviedb/
 - **Material 3** - Design system components
 - **KSP** - Kotlin Symbol Processing for Room code generation
 - **BuildKonfig** - Build-time constant generation for secrets and configuration
+- **kotlin-test & kotlinx-coroutines-test** - Multiplatform unit testing for ViewModels (`runTest`, `UnconfinedTestDispatcher`, fake repositories)
 
 ### Android
 - **Jetpack Compose** - UI toolkit
@@ -235,6 +236,18 @@ BuildKonfig will automatically generate the `BuildKonfig` object containing your
 # Build shared library
 ./gradlew :composeApp:build
 ```
+
+### Testing
+
+ViewModel unit tests live in each feature module's `commonTest` source set (e.g. `MoviesViewModelTest`, `ProfileViewModelTest`). They use `kotlin-test` assertions, `kotlinx-coroutines-test` (`runTest` + `UnconfinedTestDispatcher`), and fake repositories from the `core` modules.
+
+```bash
+# Run all multiplatform tests for a feature module
+./gradlew :features:movies:allTests
+./gradlew :features:profile:allTests
+```
+
+> ℹ️ The feature modules do not enable Android host tests (`withHostTest {}`), so the shared `commonTest` suites currently execute on the **iOS simulator target** via `allTests`. Running `./gradlew test` (the Android/JVM unit-test task) will report success without executing these tests.
 
 
 ## 🏛️ Architecture Overview
@@ -367,6 +380,7 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 ### Recently Completed ✨
 - [x] **Feature-based architecture refactoring**: Removed `core:data` module and distributed repositories into self-contained feature modules with data/domain/presentation layers
 - [x] **Language coordination consolidation**: Merged language handling logic from `core:data` into `core:datastore` with `LanguageChangeCoordinator`
+- [x] **Unit tests for Movies and Profile ViewModels** using `kotlin-test` and `kotlinx-coroutines-test` with fake repositories
 - [x] **Migration to `com.android.kotlin.multiplatform.library` plugin** for improved KMP integration
 - [x] **Dedicated Android app module** (`androidApp`) wrapping shared `composeApp` library
 - [x] **BuildKonfig integration** for cross-platform secrets management (replaced expect/actual pattern)
@@ -403,7 +417,8 @@ This app was built with the assistance of **[Claude Code](https://claude.com/cla
 ### High Priority 🚀
 - [ ] Add TV Show database entities and local caching (currently only Movies cached)
 - [ ] Add pull-to-refresh functionality
-- [ ] Create unit tests for ViewModels and repositories
+- [ ] Expand unit test coverage to repositories and the remaining feature ViewModels (TV Shows, Search, Person)
+- [ ] Enable Android host tests (`withHostTest {}`) so `commonTest` suites also run on the JVM/Android target
 - [ ] Add ktlint code formatting configuration
 - [ ] Improve search UX with debouncing and better empty states
 

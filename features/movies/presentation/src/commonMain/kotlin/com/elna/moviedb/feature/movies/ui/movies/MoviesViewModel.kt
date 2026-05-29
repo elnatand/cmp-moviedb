@@ -125,7 +125,7 @@ class MoviesViewModel(
 
                     // If we have movies, show snackbar; otherwise show error screen
                     if (currentMovies.isNotEmpty()) {
-                        _uiAction.send(MoviesUiAction.ShowPaginationError(result.message))
+                        _uiAction.send(MoviesUiAction.ShowPaginationError)
                     } else {
                         _uiState.update { it.copy(state = MoviesUiState.State.ERROR) }
                     }
