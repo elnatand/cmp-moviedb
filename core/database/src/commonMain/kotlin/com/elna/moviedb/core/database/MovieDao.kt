@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MovieDao {
-    @Query("SELECT * FROM MovieEntity WHERE category = :category ORDER BY timestamp")
+    @Query("SELECT * FROM MovieEntity WHERE category = :category ORDER BY position")
     fun getMoviesByCategoryAsFlow(category: String): Flow<List<MovieEntity>>
 
     @Query("DELETE FROM MovieEntity")

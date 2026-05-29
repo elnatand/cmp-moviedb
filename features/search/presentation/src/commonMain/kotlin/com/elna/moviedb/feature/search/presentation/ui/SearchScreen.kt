@@ -16,15 +16,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.elna.moviedb.core.ui.design_system.AppErrorComponent
+import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.core.ui.design_system.toLocalizedMessage
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
-import com.elna.moviedb.core.ui.design_system.AppErrorComponent
-import com.elna.moviedb.core.ui.design_system.toLocalizedMessage
-import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.search.presentation.model.SearchEvent
 import com.elna.moviedb.feature.search.presentation.model.SearchUiState
 import com.elna.moviedb.feature.search.presentation.ui.components.SearchBar
@@ -32,6 +32,9 @@ import com.elna.moviedb.feature.search.presentation.ui.components.SearchEmptySta
 import com.elna.moviedb.feature.search.presentation.ui.components.SearchFilters
 import org.koin.compose.viewmodel.koinViewModel
 import com.elna.moviedb.feature.search.presentation.ui.components.SearchResultItem as SearchResultItemComponent
+
+/** Trigger the next page once the user scrolls within this many items of the end. */
+private const val LOAD_MORE_THRESHOLD = 6
 
 @Composable
 fun SearchScreen(
@@ -87,9 +90,9 @@ private fun SearchScreen(
             uiState.isLoading -> {
                 Box(
                     contentAlignment = Alignment.TopCenter,
-                    modifier = modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    AppLoader(modifier.padding(top = 100.dp))
+                    AppLoader(Modifier.padding(top = 100.dp))
                 }
             }
 
@@ -112,9 +115,10 @@ private fun SearchScreen(
 
                 val shouldLoadMore by remember {
                     derivedStateOf {
-                        val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+                        val lastVisibleIndex =
+                            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                         val totalItems = listState.layoutInfo.totalItemsCount
-                        lastVisibleItem?.index == totalItems - 6 && totalItems > 0
+                        totalItems > 0 && lastVisibleIndex >= totalItems - LOAD_MORE_THRESHOLD
                     }
                 }
 
@@ -129,7 +133,12 @@ private fun SearchScreen(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(uiState.searchResults) { item ->
+                    items(
+                        items = uiState.searchResults,
+                        // Type-qualified: a movie and a person can share the same numeric id
+                        // in an "All" search, so id alone isn't unique.
+                        key = { item -> "${item::class.simpleName}_${item.id}" }
+                    ) { item ->
                         SearchResultItemComponent(
                             item = item,
                             onItemClicked = {

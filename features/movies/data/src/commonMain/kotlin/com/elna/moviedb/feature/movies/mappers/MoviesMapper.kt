@@ -9,7 +9,6 @@ import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.feature.movies.model.MovieDetails
 import com.elna.moviedb.feature.movies.model.RemoteMovie
 import com.elna.moviedb.feature.movies.model.RemoteMovieDetails
-import kotlin.time.Clock
 
 /**
  * Delimiter for persisting list fields (genres, companies, ...) as a single string column.
@@ -65,11 +64,17 @@ fun MovieCategory.toTmdbPath(): String = when (this) {
 }
 
 
-fun RemoteMovie.asEntity() = MovieEntity(
+/**
+ * @param category the category this row belongs to (part of the composite primary key, so the
+ *   same movie can be cached under several categories at once).
+ * @param position the movie's absolute rank within the category, used to preserve API ordering.
+ */
+fun RemoteMovie.asEntity(category: MovieCategory, position: Int) = MovieEntity(
     id = id,
-    timestamp = Clock.System.now().epochSeconds,
+    position = position,
     title = title,
     posterPath = posterPath,
+    category = category.name,
 )
 
 

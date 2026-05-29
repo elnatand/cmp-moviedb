@@ -6,6 +6,7 @@ import com.elna.moviedb.feature.movies.repositories.MoviesRepository
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
 import com.elna.moviedb.feature.movies.model.MovieDetailsUiState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +28,8 @@ class MovieDetailsViewModel(
     private val _uiState = MutableStateFlow<MovieDetailsUiState>(MovieDetailsUiState.Loading)
     val uiState: StateFlow<MovieDetailsUiState> = _uiState.asStateFlow()
 
+    private var detailsJob: Job? = null
+
     init {
         getMovieDetails(movieId)
     }
@@ -42,7 +45,9 @@ class MovieDetailsViewModel(
     }
 
     private fun getMovieDetails(movieId: Int) {
-        viewModelScope.launch {
+        // Cancel any in-flight load so rapid retry taps don't race overlapping fetches.
+        detailsJob?.cancel()
+        detailsJob = viewModelScope.launch {
             _uiState.value = MovieDetailsUiState.Loading
             when (val result = moviesRepository.getMovieDetails(movieId)) {
                 is AppResult.Success -> {

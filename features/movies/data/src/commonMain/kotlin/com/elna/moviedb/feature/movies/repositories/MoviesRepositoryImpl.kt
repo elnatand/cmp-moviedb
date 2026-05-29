@@ -24,6 +24,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+/** Per-page multiplier for computing a movie's absolute [MovieEntity.position] within a category. */
+private const val PAGE_ORDER_STRIDE = 1000
+
 /**
  * Implementation of MoviesRepository that manages movie data from remote API and local cache.
  *
@@ -87,8 +90,11 @@ class MoviesRepositoryImpl(
             remoteDataSource.fetchMoviesPage(category.toTmdbPath(), nextPage, currentLanguage)) {
             is AppResult.Success -> {
                 val newTotalPages = result.data.totalPages
-                val entities = result.data.results.map {
-                    it.asEntity().copy(category = category.name)
+                // Absolute rank = page offset + index within the page, so ordering is stable
+                // across pages. PAGE_ORDER_STRIDE is comfortable headroom over TMDB's 20-item
+                // pages; index never reaches it, so positions never overlap between pages.
+                val entities = result.data.results.mapIndexed { index, remoteMovie ->
+                    remoteMovie.asEntity(category, position = nextPage * PAGE_ORDER_STRIDE + index)
                 }
                 localDataSource.insertMoviesPage(entities)
 

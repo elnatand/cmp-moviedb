@@ -19,7 +19,7 @@ import com.elna.moviedb.core.database.model.VideoEntity
         VideoEntity::class,
         CastMemberEntity::class
     ],
-    version = 1
+    version = 2
 )
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -39,6 +39,7 @@ fun getRoomDatabase(
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(appDispatchers.io)
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
 }
 

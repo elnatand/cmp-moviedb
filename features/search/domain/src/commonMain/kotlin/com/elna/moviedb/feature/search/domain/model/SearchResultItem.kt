@@ -1,13 +1,14 @@
 package com.elna.moviedb.feature.search.domain.model
 
 sealed class SearchResultItem {
+    abstract val id: Int
     abstract val overview: String?
     abstract val voteAverage: Double?
     abstract val voteCount: Int?
     abstract val backdropPath: String?
 
     data class MovieItem(
-        val id: Int,
+        override val id: Int,
         val title: String,
         val posterPath: String?,
         override val overview: String?,
@@ -18,7 +19,7 @@ sealed class SearchResultItem {
     ) : SearchResultItem()
 
     data class TvShowItem(
-        val id: Int,
+        override val id: Int,
         val name: String,
         val posterPath: String?,
         override val overview: String?,
@@ -29,7 +30,7 @@ sealed class SearchResultItem {
     ) : SearchResultItem()
 
     data class PersonItem(
-        val id: Int,
+        override val id: Int,
         val name: String,
         val knownForDepartment: String?,
         val profilePath: String?,

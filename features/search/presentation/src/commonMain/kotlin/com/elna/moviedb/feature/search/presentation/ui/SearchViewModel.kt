@@ -73,6 +73,10 @@ class SearchViewModel(
     }
 
     private fun onSearchQueryChanged(query: String) {
+        // Cancel any in-flight search so its (now stale) results can't land after the query
+        // changed — e.g. clearing the field while a request for the previous query is running.
+        // A fresh search is re-issued by the debounced trigger below.
+        currentSearchJob?.cancel()
         _uiState.update {
             it.copy(
                 searchQuery = query,
@@ -86,6 +90,8 @@ class SearchViewModel(
     }
 
     private fun onFilterChanged(filter: SearchFilter) {
+        // Same rationale as onSearchQueryChanged: drop the in-flight result for the old filter.
+        currentSearchJob?.cancel()
         _uiState.update {
             it.copy(
                 selectedFilter = filter,
