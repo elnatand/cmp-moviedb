@@ -45,8 +45,8 @@ fun SearchResultItem(
         ) {
             ImageLoader(
                 imageUrl = when (item) {
-                    is SearchResultItem.MovieItem -> item.movie.posterPath.toImageUrl()
-                    is SearchResultItem.TvShowItem -> item.tvShow.posterPath.toImageUrl()
+                    is SearchResultItem.MovieItem -> item.posterPath.toImageUrl()
+                    is SearchResultItem.TvShowItem -> item.posterPath.toImageUrl()
                     is SearchResultItem.PersonItem -> item.profilePath.toImageUrl()
                 },
                 modifier = Modifier
@@ -60,8 +60,8 @@ fun SearchResultItem(
             ) {
                 Text(
                     text = when (item) {
-                        is SearchResultItem.MovieItem -> item.movie.title
-                        is SearchResultItem.TvShowItem -> item.tvShow.name
+                        is SearchResultItem.MovieItem -> item.title
+                        is SearchResultItem.TvShowItem -> item.name
                         is SearchResultItem.PersonItem -> item.name
                     },
                     style = MaterialTheme.typography.titleMedium,

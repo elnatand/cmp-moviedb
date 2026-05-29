@@ -4,10 +4,8 @@ import com.elna.moviedb.feature.search.data.model.RemoteMultiSearchItem
 import com.elna.moviedb.feature.search.data.model.RemoteSearchMovie
 import com.elna.moviedb.feature.search.data.model.RemoteSearchPerson
 import com.elna.moviedb.feature.search.data.model.RemoteSearchTvShow
-import com.elna.moviedb.feature.movies.model.Movie
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
-import com.elna.moviedb.feature.tvshows.domain.model.TvShow
 
 /**
  * Maps domain SearchFilter to TMDB API endpoint paths.
@@ -27,11 +25,9 @@ fun SearchFilter.toTmdbPath(): String = when (this) {
 
 fun RemoteSearchMovie.toSearchResult(): SearchResultItem.MovieItem {
     return SearchResultItem.MovieItem(
-        movie = Movie(
-            id = id,
-            title = title,
-            posterPath = posterPath
-        ),
+        id = id,
+        title = title,
+        posterPath = posterPath,
         overview = overview,
         releaseDate = releaseDate,
         voteAverage = voteAverage,
@@ -52,11 +48,9 @@ fun RemoteSearchPerson.toSearchResult(): SearchResultItem.PersonItem {
 
 fun RemoteSearchTvShow.toSearchResult(): SearchResultItem.TvShowItem {
     return SearchResultItem.TvShowItem(
-        tvShow = TvShow(
-            id = id,
-            name = name,
-            posterPath = posterPath
-        ),
+        id = id,
+        name = name,
+        posterPath = posterPath,
         overview = overview,
         firstAirDate = firstAirDate,
         voteAverage = voteAverage,
@@ -71,11 +65,9 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
         "movie" -> {
             val movieTitle = title ?: return null
             SearchResultItem.MovieItem(
-                movie = Movie(
-                    id = id,
-                    title = movieTitle,
-                    posterPath = posterPath
-                ),
+                id = id,
+                title = movieTitle,
+                posterPath = posterPath,
                 overview = overview,
                 releaseDate = releaseDate,
                 voteAverage = voteAverage,
@@ -86,11 +78,9 @@ fun RemoteMultiSearchItem.toSearchResult(): SearchResultItem? {
         "tv" -> {
             val tvShowName = name ?: return null
             SearchResultItem.TvShowItem(
-                tvShow = TvShow(
-                    id = id,
-                    name = tvShowName,
-                    posterPath = posterPath
-                ),
+                id = id,
+                name = tvShowName,
+                posterPath = posterPath,
                 overview = overview,
                 firstAirDate = firstAirDate,
                 voteAverage = voteAverage,

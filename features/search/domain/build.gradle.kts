@@ -10,9 +10,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.features.tvShows.domain)
-            implementation(projects.features.movies.domain)
-
             implementation(projects.core.model)
 
             implementation(libs.kotlinx.coroutines.core)

@@ -1,8 +1,5 @@
 package com.elna.moviedb.feature.search.domain.model
 
-import com.elna.moviedb.feature.movies.model.Movie
-import com.elna.moviedb.feature.tvshows.domain.model.TvShow
-
 sealed class SearchResultItem {
     abstract val overview: String?
     abstract val voteAverage: Double?
@@ -10,7 +7,9 @@ sealed class SearchResultItem {
     abstract val backdropPath: String?
 
     data class MovieItem(
-        val movie: Movie,
+        val id: Int,
+        val title: String,
+        val posterPath: String?,
         override val overview: String?,
         val releaseDate: String?,
         override val voteAverage: Double?,
@@ -19,7 +18,9 @@ sealed class SearchResultItem {
     ) : SearchResultItem()
 
     data class TvShowItem(
-        val tvShow: TvShow,
+        val id: Int,
+        val name: String,
+        val posterPath: String?,
         override val overview: String?,
         val firstAirDate: String?,
         override val voteAverage: Double?,
