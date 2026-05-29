@@ -1,5 +1,6 @@
 package com.elna.moviedb.core.network.client
 
+import com.elna.moviedb.core.network.BuildKonfig
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.HttpTimeout
@@ -13,19 +14,23 @@ import kotlinx.serialization.json.Json
 fun createHttpClient(engine: HttpClientEngineFactory<*>) = HttpClient(engine) {
     install(ContentNegotiation) {
         json(Json {
-            prettyPrint = true
             isLenient = true
             ignoreUnknownKeys = true
         })
     }
 
-    install(Logging) {
-        logger = object : Logger {
-            override fun log(message: String) {
-                println("http client log = $message")
+    // Logging is gated behind a build flag because LogLevel.BODY logs the full
+    // request URL, which includes the TMDB api_key query parameter. Leaving it on
+    // would leak the key into release logs. Enable via -PenableNetworkLogging=true.
+    if (BuildKonfig.ENABLE_NETWORK_LOGGING) {
+        install(Logging) {
+            logger = object : Logger {
+                override fun log(message: String) {
+                    println("http client log = $message")
+                }
             }
+            level = LogLevel.BODY
         }
-        level = LogLevel.BODY
     }
 
     install(HttpTimeout) {

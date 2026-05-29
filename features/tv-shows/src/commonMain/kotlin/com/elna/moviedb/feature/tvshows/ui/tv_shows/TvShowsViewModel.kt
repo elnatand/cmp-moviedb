@@ -118,7 +118,7 @@ class TvShowsViewModel(
 
                     // If we have TV shows, show snackbar; otherwise show error screen
                     if (currentTvShows.isNotEmpty()) {
-                        _uiAction.send(TvShowsUiAction.ShowPaginationError(result.message))
+                        _uiAction.send(TvShowsUiAction.ShowPaginationError)
                     } else {
                         _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
                     }

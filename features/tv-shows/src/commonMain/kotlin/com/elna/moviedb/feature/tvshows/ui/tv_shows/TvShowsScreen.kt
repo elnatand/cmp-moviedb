@@ -31,6 +31,7 @@ import com.elna.moviedb.feature.tvshows.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.model.TvShowsUiState
 import com.elna.moviedb.feature.tvshows.ui.components.TvShowsSection
 import com.elna.moviedb.resources.Res
+import com.elna.moviedb.resources.network_error
 import com.elna.moviedb.resources.on_the_air_tv_shows
 import com.elna.moviedb.resources.popular_tv_shows
 import com.elna.moviedb.resources.top_rated_tv_shows
@@ -69,6 +70,7 @@ private fun TvShowsScreen(
     animatedVisibilityScope: AnimatedVisibilityScope? = null
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val paginationErrorMessage = stringResource(Res.string.network_error)
 
     // Handle UI actions (one-time events)
     LaunchedEffect(Unit) {
@@ -76,7 +78,7 @@ private fun TvShowsScreen(
             when (effect) {
                 is TvShowsUiAction.ShowPaginationError -> {
                     snackbarHostState.showSnackbar(
-                        message = effect.message,
+                        message = paginationErrorMessage,
                         withDismissAction = true
                     )
                 }

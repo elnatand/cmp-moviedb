@@ -30,14 +30,15 @@ class AppState(
 
     val currentTopLevelDestination: TopLevelDestination?
         @Composable get() {
+            val currentRoute = navBackStack.lastOrNull() ?: return null
             return TopLevelDestination.entries.firstOrNull { topLevelDestination ->
-                navBackStack.last() == topLevelDestination.route
+                currentRoute == topLevelDestination.route
             }
         }
 
     @Composable
     fun shouldShowBottomBar(): Boolean {
-        return navBackStack.last() in bottomBarRoutes
+        return navBackStack.lastOrNull() in bottomBarRoutes
     }
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
