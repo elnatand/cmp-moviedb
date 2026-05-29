@@ -1,4 +1,4 @@
-package com.elna.moviedb.feature.person.data.mappar
+package com.elna.moviedb.feature.person.data.mapper
 
 import com.elna.moviedb.feature.person.data.model.RemoteCastCredit
 import com.elna.moviedb.feature.person.data.model.RemoteCombinedCredits
