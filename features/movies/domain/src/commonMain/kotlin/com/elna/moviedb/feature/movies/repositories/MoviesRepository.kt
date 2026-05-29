@@ -44,7 +44,10 @@ interface MoviesRepository {
 
     /**
      * Clears all cached movies and reloads initial pages for all categories.
-     * Used by language coordinator when language changes.
+     * Used by language coordinator when language changes and by pull-to-refresh.
+     *
+     * @return AppResult<Unit> Success if at least one category reloaded; Error only when
+     * every category failed (so callers can surface an error instead of an empty screen).
      */
-    suspend fun clearAndReload()
+    suspend fun clearAndReload(): AppResult<Unit>
 }

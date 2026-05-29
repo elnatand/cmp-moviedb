@@ -194,7 +194,20 @@ class MoviesViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
-            moviesRepository.clearAndReload()
+            when (moviesRepository.clearAndReload()) {
+                is AppResult.Error -> {
+                    // The cache was just cleared. If the reload failed wholesale, record the
+                    // failures so the derived screen state shows an error instead of spinning
+                    // on empty per-section loaders forever.
+                    erroredCategories.addAll(MovieCategory.entries)
+                    if (_uiState.value.hasAnyData) {
+                        _uiAction.send(MoviesUiAction.ShowPaginationError)
+                    }
+                }
+
+                is AppResult.Success -> erroredCategories.clear()
+            }
+            recomputeScreenState()
             _uiState.update { it.copy(isRefreshing = false) }
         }
     }

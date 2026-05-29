@@ -41,6 +41,9 @@ interface TvShowsRepository {
     /**
      * Clears all cached TV shows and reloads initial pages for all categories.
      * Used by language coordinator when language changes.
+     *
+     * @return AppResult<Unit> Success if at least one category reloaded; Error only when
+     * every category failed.
      */
-    suspend fun clearAndReload()
+    suspend fun clearAndReload(): AppResult<Unit>
 }

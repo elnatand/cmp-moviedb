@@ -15,8 +15,6 @@ import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiState
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 
 /**
  * ViewModel following MVI (Model-View-Intent) pattern for TV Shows screen.
@@ -37,6 +35,11 @@ class TvShowsViewModel(
 
     private val _uiAction = Channel<TvShowsUiAction>(Channel.BUFFERED)
     val uiAction = _uiAction.receiveAsFlow()
+
+    // Categories whose most recent load attempt failed. The full-screen error is only shown
+    // when no category has data anywhere (see recomputeScreenState). Confined to
+    // viewModelScope's main dispatcher, so it's never mutated concurrently.
+    private val erroredCategories = mutableSetOf<TvShowCategory>()
 
     init {
         observeTvShows()
@@ -72,15 +75,13 @@ class TvShowsViewModel(
                         loadNextPage(category)
                     }
                     _uiState.update { currentState ->
-                        val updatedTvShowsMap = currentState.tvShowsByCategory + (category to tvShows)
                         currentState.copy(
-                            tvShowsByCategory = updatedTvShowsMap,
-                            state = if (updatedTvShowsMap.values.any { it.isNotEmpty() })
-                                TvShowsUiState.State.SUCCESS
-                            else
-                                TvShowsUiState.State.LOADING
+                            tvShowsByCategory = currentState.tvShowsByCategory + (category to tvShows)
                         )
                     }
+                    // Overall screen state is derived, not set per-emission, so a single
+                    // category can't clobber another category's state.
+                    recomputeScreenState()
                 }
             }
         }
@@ -104,67 +105,67 @@ class TvShowsViewModel(
         if (_uiState.value.isLoading(category)) return
 
         viewModelScope.launch {
-            // Set loading state for this category
-            _uiState.update { currentState ->
-                currentState.copy(
-                    loadingByCategory = currentState.loadingByCategory + (category to true)
-                )
-            }
+            setCategoryLoading(category, true)
 
             when (val result = tvShowsRepository.loadTvShowsNextPage(category)) {
                 is AppResult.Error -> {
-                    // Clear loading state
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            loadingByCategory = currentState.loadingByCategory + (category to false)
-                        )
-                    }
+                    setCategoryLoading(category, false)
+                    erroredCategories += category
 
-                    // Get current TV shows for this category
-                    val currentTvShows = _uiState.value.getTvShows(category)
-
-                    // If we have TV shows, show snackbar; otherwise show error screen
-                    if (currentTvShows.isNotEmpty()) {
+                    // A failed load only blanks the screen when there's nothing to show
+                    // anywhere. If any category already has data, this is a pagination /
+                    // refresh hiccup — surface it as a snackbar and keep the content.
+                    if (_uiState.value.hasAnyData) {
                         _uiAction.send(TvShowsUiAction.ShowPaginationError)
-                    } else {
-                        _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
                     }
+                    recomputeScreenState()
                 }
 
                 is AppResult.Success -> {
-                    // Clear loading state
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            loadingByCategory = currentState.loadingByCategory + (category to false)
-                        )
-                    }
-                    // Success - TV shows are already updated via observeTvShows()
+                    setCategoryLoading(category, false)
+                    erroredCategories -= category
+                    recomputeScreenState()
+                    // Loaded TV shows arrive via observeTvShows().
                 }
             }
         }
     }
 
+    private fun setCategoryLoading(category: TvShowCategory, isLoading: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                loadingByCategory = currentState.loadingByCategory + (category to isLoading)
+            )
+        }
+    }
+
+    /**
+     * Derives the overall screen state from the current data and error tracking.
+     *
+     * The full-screen error is shown only when a load has failed AND no category has any
+     * data to display. As soon as any category has content, errors become non-blocking
+     * (surfaced via snackbar), so one failing category never hides others' data.
+     */
+    private fun recomputeScreenState() {
+        _uiState.update { currentState ->
+            val newState = when {
+                currentState.hasAnyData -> TvShowsUiState.State.SUCCESS
+                erroredCategories.isNotEmpty() -> TvShowsUiState.State.ERROR
+                else -> TvShowsUiState.State.LOADING
+            }
+            currentState.copy(state = newState)
+        }
+    }
+
     /**
      * Retries loading TV shows for all categories after an error.
+     *
+     * Clears stale failures and lets each category reload independently. The screen state
+     * (and any per-category snackbar) is then derived by loadNextPage.
      */
     private fun retry() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(state = TvShowsUiState.State.LOADING) }
-
-            // Try to load all categories in parallel
-            val results = TvShowCategory.entries.map { category ->
-                async { tvShowsRepository.loadTvShowsNextPage(category) }
-            }.awaitAll()
-
-            // If any succeeded, consider it a success
-            val hasSuccess = results.any { it is AppResult.Success }
-            val allFailed = results.all { it is AppResult.Error }
-
-            if (allFailed) {
-                _uiState.update { it.copy(state = TvShowsUiState.State.ERROR) }
-            } else if (hasSuccess) {
-                // Success - state will be updated via observeTvShows()
-            }
-        }
+        erroredCategories.clear()
+        recomputeScreenState()
+        TvShowCategory.entries.forEach { category -> loadNextPage(category) }
     }
 }

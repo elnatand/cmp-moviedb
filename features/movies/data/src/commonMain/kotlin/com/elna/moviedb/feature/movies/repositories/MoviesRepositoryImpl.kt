@@ -19,6 +19,7 @@ import com.elna.moviedb.feature.movies.model.Movie
 import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.feature.movies.model.MovieDetails
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -214,7 +215,7 @@ class MoviesRepositoryImpl(
      *
      * This method automatically handles all categories defined in [com.elna.moviedb.feature.movies.model.MovieCategory] enum.
      */
-    override suspend fun clearAndReload() {
+    override suspend fun clearAndReload(): AppResult<Unit> {
         // Clear all pagination state and local data
         paginationPreferences.clearAllPaginationState()
 
@@ -225,11 +226,15 @@ class MoviesRepositoryImpl(
         localDataSource.clearAllVideos()
         localDataSource.clearAllCast()
 
-        // Load all categories in parallel
-        coroutineScope {
-            MovieCategory.entries.forEach { category ->
+        // Load all categories in parallel and await the outcomes — the cache was just
+        // wiped, so a swallowed failure here would leave the screen empty with no error.
+        val results = coroutineScope {
+            MovieCategory.entries.map { category ->
                 async { loadMoviesNextPage(category) }
-            }
+            }.awaitAll()
         }
+
+        // Partial success still yields content; only report an error when all failed.
+        return results.firstOrNull { it is AppResult.Success } ?: results.first()
     }
 }

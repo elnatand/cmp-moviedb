@@ -21,6 +21,7 @@ class FakeMoviesRepository : MoviesRepository {
     val loadNextPageCallCount = mutableMapOf<MovieCategory, Int>()
     var clearAndReloadCallCount = 0
     var clearAndReloadDelay = 0L
+    var clearAndReloadResult: AppResult<Unit> = AppResult.Success(Unit)
 
     /**
      * Optional suspension applied inside [loadMoviesNextPage] after the call is counted.
@@ -71,10 +72,11 @@ class FakeMoviesRepository : MoviesRepository {
         return AppResult.Error("Not implemented in fake")
     }
 
-    override suspend fun clearAndReload() {
+    override suspend fun clearAndReload(): AppResult<Unit> {
         clearAndReloadCallCount++
         if (clearAndReloadDelay > 0) {
             delay(clearAndReloadDelay)
         }
+        return clearAndReloadResult
     }
 }

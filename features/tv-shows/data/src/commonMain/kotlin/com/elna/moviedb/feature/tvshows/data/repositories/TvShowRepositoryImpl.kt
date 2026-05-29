@@ -14,6 +14,7 @@ import com.elna.moviedb.feature.tvshows.data.mappers.toDomain
 import com.elna.moviedb.feature.tvshows.data.mappers.toTmdbPath
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowDetails
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -127,18 +128,22 @@ class TvShowRepositoryImpl(
      * This method is called when the app language changes via onLanguageChanged().
      * It clears the in-memory cache and fetches fresh data in the new language.
      */
-    override suspend fun clearAndReload() {
+    override suspend fun clearAndReload(): AppResult<Unit> {
         // Clear all pagination state and cached data for all categories
         currentPages.clear()
         totalPages.clear()
         tvShowsFlows.values.forEach { it.value = emptyList() }
 
-        // Reload all categories in parallel
-        coroutineScope {
-            TvShowCategory.entries.forEach { category ->
+        // Reload all categories in parallel and await the outcomes so failures aren't
+        // swallowed (the in-memory cache was just cleared).
+        val results = coroutineScope {
+            TvShowCategory.entries.map { category ->
                 async { loadTvShowsNextPage(category) }
-            }
+            }.awaitAll()
         }
+
+        // Partial success still yields content; only report an error when all failed.
+        return results.firstOrNull { it is AppResult.Success } ?: results.first()
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> =

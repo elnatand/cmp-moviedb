@@ -43,10 +43,13 @@ class MoviesRemoteDataSource(
     }
 
     suspend fun getMovieVideos(movieId: Int, language: String): AppResult<RemoteVideoResponse> {
+        // include_video_language expects ISO-639-1 codes ("en"), not the regional form
+        // ("en-US") used for `language`; passing the regional form filters out all videos.
+        val languageCode = language.substringBefore("-")
         return apiClient.get(
             path = "/movie/$movieId/videos",
             "language" to language,
-            "include_video_language" to "$language,null"
+            "include_video_language" to "$languageCode,null"
         )
     }
 

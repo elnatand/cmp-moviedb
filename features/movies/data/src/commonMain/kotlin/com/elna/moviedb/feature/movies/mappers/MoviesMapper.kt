@@ -11,6 +11,13 @@ import com.elna.moviedb.feature.movies.model.RemoteMovie
 import com.elna.moviedb.feature.movies.model.RemoteMovieDetails
 import kotlin.time.Clock
 
+/**
+ * Delimiter for persisting list fields (genres, companies, ...) as a single string column.
+ * Uses the ASCII Unit Separator (U+001F) instead of a comma so values that themselves
+ * contain commas (e.g. "Columbia Pictures Corporation, Ltd.") survive the round-trip.
+ */
+private const val LIST_DELIMITER = "\u001F"
+
 fun MovieEntity.toDomain(): Movie = Movie(
     id = id,
     title = title,
@@ -37,10 +44,10 @@ fun MovieDetailsEntity.toDomain(): MovieDetails = MovieDetails(
     popularity = popularity,
     status = status,
     tagline = tagline,
-    genres = genres?.split(",")?.filter { it.isNotBlank() },
-    productionCompanies = productionCompanies?.split(",")?.filter { it.isNotBlank() },
-    productionCountries = productionCountries?.split(",")?.filter { it.isNotBlank() },
-    spokenLanguages = spokenLanguages?.split(",")?.filter { it.isNotBlank() }
+    genres = genres?.split(LIST_DELIMITER)?.filter { it.isNotBlank() },
+    productionCompanies = productionCompanies?.split(LIST_DELIMITER)?.filter { it.isNotBlank() },
+    productionCountries = productionCountries?.split(LIST_DELIMITER)?.filter { it.isNotBlank() },
+    spokenLanguages = spokenLanguages?.split(LIST_DELIMITER)?.filter { it.isNotBlank() }
 )
 
 /**
@@ -112,10 +119,10 @@ fun MovieDetails.asEntity(): MovieDetailsEntity = MovieDetailsEntity(
     popularity = popularity,
     status = status,
     tagline = tagline,
-    genres = genres?.joinToString(","),
-    productionCompanies = productionCompanies?.joinToString(","),
-    productionCountries = productionCountries?.joinToString(","),
-    spokenLanguages = spokenLanguages?.joinToString(",")
+    genres = genres?.joinToString(LIST_DELIMITER),
+    productionCompanies = productionCompanies?.joinToString(LIST_DELIMITER),
+    productionCountries = productionCountries?.joinToString(LIST_DELIMITER),
+    spokenLanguages = spokenLanguages?.joinToString(LIST_DELIMITER)
 )
 
 fun CastMember.asEntity(movieId: Int): CastMemberEntity = CastMemberEntity(
