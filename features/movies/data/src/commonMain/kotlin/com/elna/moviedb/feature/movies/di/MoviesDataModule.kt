@@ -22,7 +22,7 @@ val moviesDataModule = module {
     // Caching strategy - used by repositories to handle cache/network coordination
     single<CachingStrategy> { OfflineFirstCachingStrategy() }
 
-    single<MoviesRepository> {
+    single<MoviesRepository>(createdAtStart = true) {
         MoviesRepositoryImpl(
             remoteDataSource = get(),
             localDataSource = get(),

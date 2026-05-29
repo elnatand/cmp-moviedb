@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.feature.person.domain.model.PersonDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
+import com.elna.moviedb.core.ui.design_system.toLocalizedMessage
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.design_system.AppBackButton
 import com.elna.moviedb.core.ui.utils.formatDate
@@ -77,7 +78,8 @@ private fun PersonDetailsScreen(
             is PersonUiState.Loading -> AppLoader()
 
             is PersonUiState.Error -> AppErrorComponent(
-                onRetry = onRetry
+                onRetry = onRetry,
+                message = uiState.error.toLocalizedMessage()
             )
 
             is PersonUiState.Success -> {

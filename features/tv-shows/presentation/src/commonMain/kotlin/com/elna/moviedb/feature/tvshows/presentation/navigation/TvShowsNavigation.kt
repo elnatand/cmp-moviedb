@@ -17,7 +17,7 @@ fun EntryProviderScope<Route>.tvShowsFlow(
     sharedTransitionScope: SharedTransitionScope
 ) {
     entry<TvShowsRoute.TvShowsListRoute> {
-        _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.TvShowsScreen(
+        TvShowsScreen(
             onClick = { tvShowId: Int, _: String, category: TvShowCategory ->
                 rootBackStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId, category.name))
             },
@@ -27,7 +27,7 @@ fun EntryProviderScope<Route>.tvShowsFlow(
     }
 
     entry<TvShowsRoute.TvShowDetailsRoute> {
-        _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_show_details.TvShowDetailsScreen(
+        TvShowDetailsScreen(
             tvShowId = it.tvShowId,
             category = it.category,
             onBack = { rootBackStack.removeLastOrNull() },

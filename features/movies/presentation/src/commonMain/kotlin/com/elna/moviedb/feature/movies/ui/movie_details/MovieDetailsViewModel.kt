@@ -49,7 +49,7 @@ class MovieDetailsViewModel(
                     _uiState.value = MovieDetailsUiState.Success(result.data)
                 }
                 is AppResult.Error -> {
-                    _uiState.value = MovieDetailsUiState.Error(result.message)
+                    _uiState.value = MovieDetailsUiState.Error(result.type)
                 }
             }
         }

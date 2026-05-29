@@ -46,7 +46,7 @@ class PersonDetailsViewModel(
             _uiState.value = PersonUiState.Loading
             when (val result = personRepository.getPersonDetails(personId)) {
                 is AppResult.Error -> _uiState.value =
-                    PersonUiState.Error(result.message)
+                    PersonUiState.Error(result.type)
 
                 is AppResult.Success -> _uiState.value = PersonUiState.Success(result.data)
             }

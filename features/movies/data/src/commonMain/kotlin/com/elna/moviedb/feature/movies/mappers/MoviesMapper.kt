@@ -66,7 +66,7 @@ fun RemoteMovie.asEntity() = MovieEntity(
 )
 
 
-fun RemoteMovieDetails.asEntity() = MovieDetailsEntity(
+fun RemoteMovieDetails.toDomain(): MovieDetails = MovieDetails(
     id = id,
     title = title,
     overview = overview,
@@ -86,10 +86,10 @@ fun RemoteMovieDetails.asEntity() = MovieDetailsEntity(
     popularity = popularity,
     status = status,
     tagline = tagline,
-    genres = genres?.joinToString(",") { it.name },
-    productionCompanies = productionCompanies?.joinToString(",") { it.name },
-    productionCountries = productionCountries?.joinToString(",") { it.name },
-    spokenLanguages = spokenLanguages?.joinToString(",") { it.englishName }
+    genres = genres?.map { it.name },
+    productionCompanies = productionCompanies?.map { it.name },
+    productionCountries = productionCountries?.map { it.name },
+    spokenLanguages = spokenLanguages?.map { it.englishName }
 )
 
 fun MovieDetails.asEntity(): MovieDetailsEntity = MovieDetailsEntity(

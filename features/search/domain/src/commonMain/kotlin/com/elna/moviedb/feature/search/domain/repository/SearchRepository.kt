@@ -2,16 +2,15 @@ package com.elna.moviedb.feature.search.domain.repository
 
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
-import com.elna.moviedb.feature.search.domain.model.SearchResultItem
-import kotlinx.coroutines.flow.Flow
+import com.elna.moviedb.feature.search.domain.model.SearchPage
 
 /**
  * Repository interface for search operations.
- * Uses category parameter to avoid duplication.
+ * Uses the [SearchFilter] parameter to avoid per-category duplication.
  *
  * To add a new search category:
- * 1. Add new value to [com.elna.moviedb.core.model.SearchFilter] enum
- * 2. Update [com.elna.moviedb.feature.search.data.SearchRepositoryImpl] to handle the new category
+ * 1. Add a new value to the [SearchFilter] enum
+ * 2. Register its execution strategy in the data layer (SearchFilterExecutor)
  * 3. No changes needed to this interface
  */
 interface SearchRepository {
@@ -21,11 +20,11 @@ interface SearchRepository {
      * @param filter The search filter category (ALL, MOVIES, TV_SHOWS, PEOPLE)
      * @param query The search query string
      * @param page The page number to fetch
-     * @return Flow emitting AppResult with list of search results
+     * @return AppResult with the requested [SearchPage] (empty for a blank query)
      */
-    fun search(
+    suspend fun search(
         filter: SearchFilter,
         query: String,
         page: Int
-    ): Flow<AppResult<List<SearchResultItem>>>
+    ): AppResult<SearchPage>
 }

@@ -17,21 +17,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.model.DataError
 import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.error_title
+import com.elna.moviedb.resources.network_error
 import com.elna.moviedb.resources.retry
+import com.elna.moviedb.resources.unknown_error_occurred
 import org.jetbrains.compose.resources.stringResource
+
+/**
+ * Maps a [DataError] to a localized, user-facing message.
+ *
+ * Keeps the raw technical text from the data layer out of the UI — the presentation
+ * layer only ever shows these translated strings.
+ */
+@Composable
+fun DataError.toLocalizedMessage(): String = when (this) {
+    DataError.NETWORK -> stringResource(Res.string.network_error)
+    DataError.SERVER -> stringResource(Res.string.network_error)
+    DataError.CLIENT -> stringResource(Res.string.unknown_error_occurred)
+    DataError.UNKNOWN -> stringResource(Res.string.unknown_error_occurred)
+}
 
 @Composable
 fun AppErrorComponent(
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    message: String? = null,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = stringResource(Res.string.error_title),
+            text = message ?: stringResource(Res.string.error_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.error,
             textAlign = TextAlign.Center

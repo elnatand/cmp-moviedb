@@ -27,8 +27,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.elna.moviedb.core.model.DataError
 import com.elna.moviedb.feature.movies.model.MovieDetails
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
+import com.elna.moviedb.core.ui.design_system.toLocalizedMessage
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.feature.movies.model.MovieDetailsEvent
 import com.elna.moviedb.feature.movies.ui.components.BoxOfficeItem
@@ -100,7 +102,8 @@ private fun MovieDetailsScreen(
             is MovieDetailsUiState.Loading -> AppLoader()
 
             is MovieDetailsUiState.Error -> AppErrorComponent(
-                onRetry = onRetry
+                onRetry = onRetry,
+                message = uiState.error.toLocalizedMessage()
             )
 
             is MovieDetailsUiState.Success -> {
@@ -343,7 +346,7 @@ private fun MovieDetailsScreenLoadingPreview() {
 @Composable
 private fun MovieDetailsScreenErrorPreview() {
     MovieDetailsScreen(
-        uiState = MovieDetailsUiState.Error("Failed to load movie details. Please check your internet connection."),
+        uiState = MovieDetailsUiState.Error(DataError.NETWORK),
         onBack = {},
         onRetry = {},
         onCastMemberClick = {}

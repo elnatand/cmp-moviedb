@@ -9,10 +9,7 @@ import com.elna.moviedb.core.datastore.pagination.PaginationPreferences
 import com.elna.moviedb.core.datastore.pagination.PaginationState
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.CastMember
-import com.elna.moviedb.core.model.Video
-import com.elna.moviedb.core.network.model.videos.RemoteVideo
-import com.elna.moviedb.core.network.model.videos.RemoteVideoResponse
-import com.elna.moviedb.core.network.model.videos.toDomain
+import com.elna.moviedb.core.network.model.videos.toTrailersOrEmpty
 import com.elna.moviedb.feature.movies.datasources.MoviesRemoteDataSource
 import com.elna.moviedb.feature.movies.model.RemoteMovieCredits
 import com.elna.moviedb.feature.movies.model.toDomain
@@ -179,41 +176,16 @@ class MoviesRepositoryImpl(
             val videosResult = videosDeferred.await()
             val creditsResult = creditsDeferred.await()
 
-            val trailers = processVideosResult(videosResult)
+            val trailers = videosResult.toTrailersOrEmpty()
             val cast = processCreditsResult(creditsResult)
 
-            // Convert to entity then to domain (to apply mapping logic)
-            val detailsEntity = details.asEntity()
-            val detailsDomain = detailsEntity.toDomain()
-
-            // Return domain model with trailers and cast
             AppResult.Success(
-                detailsDomain.copy(
+                details.toDomain().copy(
                     trailers = trailers,
                     cast = cast
                 )
             )
         }
-
-    /**
-     * Processes video results, filtering for trailers and teasers.
-     * Returns empty list on error (graceful degradation).
-     */
-    private fun processVideosResult(videosResult: AppResult<RemoteVideoResponse>)
-        : List<Video> {
-        return when (videosResult) {
-            is AppResult.Success -> {
-                videosResult.data.results
-                    .filter { it.type == "Trailer" || it.type == "Teaser" }
-                    .sortedWith(
-                        compareByDescending<RemoteVideo> { it.official }
-                            .thenByDescending { it.publishedAt }
-                    )
-                    .map { it.toDomain() }
-            }
-            is AppResult.Error -> emptyList()
-        }
-    }
 
     /**
      * Processes cast credits results, sorting by order.

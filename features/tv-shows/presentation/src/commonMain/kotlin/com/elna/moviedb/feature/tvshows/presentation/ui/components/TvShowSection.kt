@@ -87,7 +87,7 @@ fun TvShowsSection(
                 items = tvShows,
                 key = { "${category.name}_${it.id}" }
             ) { tvShow ->
-                _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.TvShowTile(
+                TvShowTile(
                     category = category,
                     tvShow = tvShow,
                     onClick = { id, title -> onClick(id, title, category) },

@@ -23,7 +23,7 @@ import kotlinx.coroutines.awaitAll
  * Implements Android's unidirectional data flow (UDF) pattern.
  *
  * UDF Components:
- * - Model: [com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiState] - Immutable state representing the UI
+ * - Model: [TvShowsUiState] - Immutable state representing the UI
  * - View: TvShowsScreen - Renders the state and dispatches events
  * - Event: [TvShowsEvent] - User actions/events
  * - UI Action: [TvShowsUiAction] - One-time events (e.g., show snackbar)

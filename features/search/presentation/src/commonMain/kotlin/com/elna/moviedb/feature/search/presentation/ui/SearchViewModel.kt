@@ -7,18 +7,12 @@ import com.elna.moviedb.feature.search.domain.repository.SearchRepository
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.presentation.model.SearchEvent
 import com.elna.moviedb.feature.search.presentation.model.SearchUiState
-import com.elna.moviedb.feature.search.presentation.strategy.AllSearchStrategy
-import com.elna.moviedb.feature.search.presentation.strategy.MovieSearchStrategy
-import com.elna.moviedb.feature.search.presentation.strategy.PeopleSearchStrategy
-import com.elna.moviedb.feature.search.presentation.strategy.SearchStrategy
-import com.elna.moviedb.feature.search.presentation.strategy.TvShowSearchStrategy
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -40,18 +34,6 @@ class SearchViewModel(
     val uiState: StateFlow<SearchUiState> = _uiState
 
     private var currentSearchJob: Job? = null
-
-    private val strategies by lazy {
-        mapOf(
-            SearchFilter.ALL to AllSearchStrategy(searchRepository),
-            SearchFilter.MOVIES to MovieSearchStrategy(searchRepository),
-            SearchFilter.TV_SHOWS to TvShowSearchStrategy(searchRepository),
-            SearchFilter.PEOPLE to PeopleSearchStrategy(searchRepository),
-        )
-    }
-
-    private fun getStrategyForFilter(filter: SearchFilter): SearchStrategy =
-        strategies.getValue(filter)
 
     init {
         viewModelScope.launch {
@@ -88,7 +70,7 @@ class SearchViewModel(
                 searchResults = emptyList(),
                 currentPage = 1,
                 hasMorePages = true,
-                errorMessage = null
+                error = null
             )
         }
     }
@@ -100,7 +82,7 @@ class SearchViewModel(
                 searchResults = emptyList(),
                 currentPage = 1,
                 hasMorePages = true,
-                errorMessage = null
+                error = null
             )
         }
     }
@@ -128,12 +110,10 @@ class SearchViewModel(
     }
 
     /**
-     * Performs a search using the Strategy Pattern.
-     * This method is now closed for modification - new filters can be added by:
-     * 1. Creating a new SearchStrategy implementation
-     * 2. Adding a case to getStrategyForFilter()
+     * Performs a search for the given filter.
      *
-     * No changes to this method are needed when adding new filter types.
+     * The filter is just a parameter forwarded to the repository, which selects the
+     * right TMDB endpoint and mapping. Adding a new filter requires no changes here.
      */
     private fun performSearch(
         query: String,
@@ -148,30 +128,29 @@ class SearchViewModel(
                     isLoading = !isLoadingMore,
                     isLoadingMore = isLoadingMore,
                     hasSearched = true,
-                    errorMessage = null
+                    error = null
                 )
             }
 
-            // Strategy Pattern - delegate search to the appropriate strategy
-            val strategy = getStrategyForFilter(filter)
-            val result = strategy.search(query, page).first()
+            val result = searchRepository.search(filter, query, page)
 
             _uiState.update { currentState ->
                 when (result) {
                     is AppResult.Success -> {
+                        val searchPage = result.data
                         val newResults = if (isLoadingMore) {
-                            currentState.searchResults + result.data
+                            currentState.searchResults + searchPage.items
                         } else {
-                            result.data
+                            searchPage.items
                         }
                         currentState.copy(
                             searchResults = newResults,
                             isLoading = false,
                             isLoadingMore = false,
-                            currentPage = page,
-                            hasMorePages = result.data.isNotEmpty(),
+                            currentPage = searchPage.page,
+                            hasMorePages = searchPage.hasMorePages,
                             totalResults = newResults.size,
-                            errorMessage = null
+                            error = null
                         )
                     }
 
@@ -179,7 +158,7 @@ class SearchViewModel(
                         currentState.copy(
                             isLoading = false,
                             isLoadingMore = false,
-                            errorMessage = result.message
+                            error = result.type
                         )
                     }
                 }

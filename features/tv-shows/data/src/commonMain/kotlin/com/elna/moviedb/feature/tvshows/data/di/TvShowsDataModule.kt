@@ -14,7 +14,7 @@ val tvShowsDataModule = module {
         )
     }
 
-    single<TvShowsRepository> {
+    single<TvShowsRepository>(createdAtStart = true) {
         TvShowRepositoryImpl(
             remoteDataSource = get(),
             languageProvider = get(),

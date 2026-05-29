@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elna.moviedb.feature.tvshows.domain.repositories.TvShowsRepository
 import com.elna.moviedb.core.model.AppResult
-import com.elna.moviedb.feature.tvshows.domain.model.TvShowDetails
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsEvent
+import com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
  * MVI Components:
  * - Model: [TvShowDetailsUiState] - Immutable state representing the UI
  * - View: TvShowDetailsScreen - Renders the state and dispatches intents
- * - Intent: [com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsEvent] - User actions/intentions
+ * - Intent: [TvShowDetailsEvent] - User actions/intentions
  */
 class TvShowDetailsViewModel(
     private val tvShowId: Int,
@@ -35,9 +35,9 @@ class TvShowDetailsViewModel(
      * Main entry point for handling user intents.
      * All UI interactions should go through this method.
      */
-    fun onEvent(intent: com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsEvent) {
+    fun onEvent(intent: TvShowDetailsEvent) {
         when (intent) {
-            _root_ide_package_.com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsEvent.Retry -> retry()
+            TvShowDetailsEvent.Retry -> retry()
         }
     }
 
@@ -47,7 +47,7 @@ class TvShowDetailsViewModel(
             val result = tvShowsRepository.getTvShowDetails(tvShowId)
             when (result) {
                 is AppResult.Error -> _uiState.value =
-                    TvShowDetailsUiState.Error(result.message)
+                    TvShowDetailsUiState.Error(result.type)
 
                 is AppResult.Success -> _uiState.value =
                     TvShowDetailsUiState.Success(result.data)
@@ -57,11 +57,5 @@ class TvShowDetailsViewModel(
 
     private fun retry() {
         getTvShowDetails(tvShowId)
-    }
-
-    sealed interface TvShowDetailsUiState {
-        data object Loading : TvShowDetailsUiState
-        data class Success(val tvShowDetails: TvShowDetails) : TvShowDetailsUiState
-        data class Error(val message: String) : TvShowDetailsUiState
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
+import com.elna.moviedb.core.ui.design_system.toLocalizedMessage
 import com.elna.moviedb.core.ui.design_system.AppLoader
 import com.elna.moviedb.core.ui.design_system.AppBackButton
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowDetailsEvent
@@ -81,7 +82,7 @@ fun TvShowDetailsScreen(
             is TvShowDetailsUiState.Loading -> AppLoader()
             is TvShowDetailsUiState.Error -> AppErrorComponent(
                 onRetry = onRetry,
-                error = uiState.error
+                message = uiState.error.toLocalizedMessage()
             )
 
             is TvShowDetailsUiState.Success -> {

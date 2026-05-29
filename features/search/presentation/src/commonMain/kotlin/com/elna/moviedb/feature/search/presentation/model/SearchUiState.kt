@@ -1,5 +1,6 @@
 package com.elna.moviedb.feature.search.presentation.model
 
+import com.elna.moviedb.core.model.DataError
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
 import com.elna.moviedb.feature.search.domain.model.SearchResultItem
 
@@ -9,7 +10,7 @@ data class SearchUiState(
     val selectedFilter: SearchFilter = SearchFilter.ALL,
     val isLoading: Boolean = false,
     val isLoadingMore: Boolean = false,
-    val errorMessage: String? = null,
+    val error: DataError? = null,
     val totalResults: Int = 0,
     val hasSearched: Boolean = false,
     val currentPage: Int = 1,

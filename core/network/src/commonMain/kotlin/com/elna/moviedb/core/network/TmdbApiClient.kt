@@ -18,8 +18,10 @@ import kotlinx.coroutines.withContext
  * This provides complete isolation between network infrastructure and feature business logic.
  */
 class TmdbApiClient(
-    val httpClient: HttpClient,
-    val appDispatchers: AppDispatchers
+    @PublishedApi
+    internal val httpClient: HttpClient,
+    @PublishedApi
+    internal val appDispatchers: AppDispatchers
 ) {
 
     /**

@@ -10,13 +10,13 @@ import com.elna.moviedb.feature.search.data.model.RemoteSearchTvShowsPage
 import com.elna.moviedb.feature.search.data.mappers.toSearchResult
 import com.elna.moviedb.feature.search.data.mappers.toTmdbPath
 import com.elna.moviedb.feature.search.domain.model.SearchFilter
-import com.elna.moviedb.feature.search.domain.model.SearchResultItem
+import com.elna.moviedb.feature.search.domain.model.SearchPage
 
 /**
  * Strategy interface for executing search based on filter type.
  * Each SearchFilter has an associated strategy that knows:
  * - Which response type to request
- * - How to map the response to SearchResultItem list
+ * - How to map the response to a [SearchPage]
  */
 private fun interface SearchStrategy {
     suspend fun execute(
@@ -25,7 +25,7 @@ private fun interface SearchStrategy {
         query: String,
         page: Int,
         language: String
-    ): AppResult<List<SearchResultItem>>
+    ): AppResult<SearchPage>
 }
 
 /**
@@ -43,25 +43,25 @@ private val searchStrategies: Map<SearchFilter, SearchStrategy> = mapOf(
     SearchFilter.ALL to SearchStrategy { dataSource, filter, query, page, language ->
         dataSource
             .search<RemoteMultiSearchPage>(filter.toTmdbPath(), query, page, language)
-            .map { it.results.mapNotNull { item -> item.toSearchResult() } }
+            .map { SearchPage(it.results.mapNotNull { item -> item.toSearchResult() }, it.page, it.totalPages) }
     },
 
     SearchFilter.MOVIES to SearchStrategy { dataSource, filter, query, page, language ->
         dataSource
             .search<RemoteSearchMoviesPage>(filter.toTmdbPath(), query, page, language)
-            .map { it.results.map { item -> item.toSearchResult() } }
+            .map { SearchPage(it.results.map { item -> item.toSearchResult() }, it.page, it.totalPages) }
     },
 
     SearchFilter.TV_SHOWS to SearchStrategy { dataSource, filter, query, page, language ->
         dataSource
             .search<RemoteSearchTvShowsPage>(filter.toTmdbPath(), query, page, language)
-            .map { it.results.map { item -> item.toSearchResult() } }
+            .map { SearchPage(it.results.map { item -> item.toSearchResult() }, it.page, it.totalPages) }
     },
 
     SearchFilter.PEOPLE to SearchStrategy { dataSource, filter, query, page, language ->
         dataSource
             .search<RemoteSearchPeoplePage>(filter.toTmdbPath(), query, page, language)
-            .map { it.results.map { item -> item.toSearchResult() } }
+            .map { SearchPage(it.results.map { item -> item.toSearchResult() }, it.page, it.totalPages) }
     }
 )
 
@@ -76,7 +76,7 @@ suspend fun SearchFilter.executeSearch(
     query: String,
     page: Int,
     language: String
-): AppResult<List<SearchResultItem>> {
+): AppResult<SearchPage> {
     val strategy = searchStrategies[this]
         ?: error("No search strategy registered for filter: $this")
 

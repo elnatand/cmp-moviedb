@@ -7,8 +7,7 @@ import com.elna.moviedb.core.datastore.language.LanguageProvider
 import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.feature.tvshows.domain.model.TvShow
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
-import com.elna.moviedb.core.network.model.videos.RemoteVideo
-import com.elna.moviedb.core.network.model.videos.toDomain
+import com.elna.moviedb.core.network.model.videos.toTrailersOrEmpty
 import com.elna.moviedb.feature.tvshows.data.datasources.TvShowsRemoteService
 import com.elna.moviedb.feature.tvshows.data.model.toDomain
 import com.elna.moviedb.feature.tvshows.data.mappers.toDomain
@@ -164,18 +163,7 @@ class TvShowRepositoryImpl(
                 is AppResult.Error -> return@coroutineScope detailsResult
             }
 
-            // Map videos to domain and filter for trailers/teasers
-            val trailers = when (videosResult) {
-                is AppResult.Success -> {
-                    videosResult.data.results
-                        .filter { it.type == "Trailer" || it.type == "Teaser" }
-                        .sortedWith(compareByDescending<RemoteVideo> { it.official }
-                            .thenByDescending { it.publishedAt })
-                        .map { it.toDomain() }
-                }
-
-                is AppResult.Error -> emptyList() // Videos are optional, don't fail if they error
-            }
+            val trailers = videosResult.toTrailersOrEmpty()
 
             // Map cast to domain and sort by order
             val cast = when (creditsResult) {
