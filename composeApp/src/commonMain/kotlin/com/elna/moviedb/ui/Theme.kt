@@ -1,7 +1,7 @@
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import com.elna.moviedb.core.model.AppTheme
 import com.elna.moviedb.core.ui.theme.AppTheme
-import com.elna.moviedb.core.ui.theme.isSystemInDarkTheme
 
 @Composable
 fun Theme(selectedTheme: String, content: @Composable () -> Unit) {

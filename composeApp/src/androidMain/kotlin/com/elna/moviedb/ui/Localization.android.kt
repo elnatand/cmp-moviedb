@@ -6,7 +6,9 @@ import android.content.res.Configuration
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -48,7 +50,11 @@ private class LocaleComposeEnvironment(private val language: String, private val
 @Composable
 actual fun Localization(selectedLanguage: String, content: @Composable () -> Unit) {
     val locale = Locale.forLanguageTag(selectedLanguage)
-    Locale.setDefault(locale)
+    // Mutating the process-global default Locale is a side effect, so run it after a
+    // successful composition rather than inline in the composable body.
+    SideEffect {
+        Locale.setDefault(locale)
+    }
 
     val newConfig = Configuration(LocalConfiguration.current).apply {
         setLocale(locale)
@@ -60,8 +66,14 @@ actual fun Localization(selectedLanguage: String, content: @Composable () -> Uni
         else -> LayoutDirection.Ltr
     }
 
+    // Keyed on language so a new environment isn't allocated (and re-provided to every
+    // stringResource consumer) on unrelated recompositions.
+    val composeEnvironment = remember(selectedLanguage) {
+        LocaleComposeEnvironment(selectedLanguage, "")
+    }
+
     CompositionLocalProvider(
-        LocalComposeEnvironment provides LocaleComposeEnvironment(selectedLanguage, ""),
+        LocalComposeEnvironment provides composeEnvironment,
         LocalConfiguration provides newConfig,
         LocalContext provides localizedContext,
         LocalLayoutDirection provides layoutDirection

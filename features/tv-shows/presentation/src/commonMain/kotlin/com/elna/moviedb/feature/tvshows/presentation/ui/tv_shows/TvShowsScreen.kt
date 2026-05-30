@@ -16,15 +16,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
+import com.elna.moviedb.core.ui.utils.ObserveAsEvents
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsEvent
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiAction
 import com.elna.moviedb.feature.tvshows.presentation.model.TvShowsUiState
@@ -36,6 +37,7 @@ import com.elna.moviedb.resources.popular_tv_shows
 import com.elna.moviedb.resources.top_rated_tv_shows
 import com.elna.moviedb.resources.tv_shows
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -70,12 +72,14 @@ private fun TvShowsScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val paginationErrorMessage = stringResource(Res.string.network_error)
+    val scope = rememberCoroutineScope()
 
-    // Handle UI actions (one-time events)
-    LaunchedEffect(Unit) {
-        uiActions.collect { effect ->
-            when (effect) {
-                is TvShowsUiAction.ShowPaginationError -> {
+    // Handle UI actions (one-time events), lifecycle-aware so they aren't processed while the
+    // screen is backgrounded.
+    ObserveAsEvents(uiActions) { effect ->
+        when (effect) {
+            is TvShowsUiAction.ShowPaginationError -> {
+                scope.launch {
                     snackbarHostState.showSnackbar(
                         message = paginationErrorMessage,
                         withDismissAction = true

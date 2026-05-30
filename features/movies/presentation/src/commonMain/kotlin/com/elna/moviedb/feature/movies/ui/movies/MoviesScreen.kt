@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -38,6 +39,7 @@ import com.elna.moviedb.feature.movies.model.Movie
 import com.elna.moviedb.feature.movies.model.MovieCategory
 import com.elna.moviedb.core.ui.design_system.AppErrorComponent
 import com.elna.moviedb.core.ui.design_system.AppLoader
+import com.elna.moviedb.core.ui.utils.ObserveAsEvents
 import com.elna.moviedb.feature.movies.model.MoviesEvent
 import com.elna.moviedb.feature.movies.model.MoviesUiAction
 import com.elna.moviedb.feature.movies.model.MoviesUiState
@@ -48,6 +50,7 @@ import com.elna.moviedb.resources.now_playing_movies
 import com.elna.moviedb.resources.popular_movies
 import com.elna.moviedb.resources.top_rated_movies
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -84,12 +87,14 @@ private fun MoviesScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val paginationErrorMessage = stringResource(Res.string.network_error)
+    val scope = rememberCoroutineScope()
 
-    // Handle UI actions (one-time events)
-    LaunchedEffect(Unit) {
-        uiActions.collect { effect ->
-            when (effect) {
-                is MoviesUiAction.ShowPaginationError -> {
+    // Handle UI actions (one-time events), lifecycle-aware so they aren't processed while the
+    // screen is backgrounded.
+    ObserveAsEvents(uiActions) { effect ->
+        when (effect) {
+            is MoviesUiAction.ShowPaginationError -> {
+                scope.launch {
                     snackbarHostState.showSnackbar(
                         message = paginationErrorMessage,
                         withDismissAction = true

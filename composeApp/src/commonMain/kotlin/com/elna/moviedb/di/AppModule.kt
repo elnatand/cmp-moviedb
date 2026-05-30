@@ -14,10 +14,14 @@ import com.elna.moviedb.feature.search.data.di.searchDataModule
 import com.elna.moviedb.feature.search.presentation.di.searchPresentationModule
 import com.elna.moviedb.feature.tvshows.data.di.tvShowsDataModule
 import com.elna.moviedb.feature.tvshows.presentation.di.tvShowsPresentationModule
+import com.elna.moviedb.core.ui.utils.configureImageLoader
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) = startKoin {
+    // Install the shared singleton Coil image loader (memory cache + crossfade) once at startup.
+    configureImageLoader()
+
     appDeclaration()
 
     /**

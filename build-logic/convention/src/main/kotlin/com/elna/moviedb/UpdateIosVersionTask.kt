@@ -3,10 +3,11 @@ package com.elna.moviedb
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.register
 
@@ -22,30 +23,23 @@ import org.gradle.kotlin.dsl.register
  */
 class IosVersionUpdatePlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        project.afterEvaluate {
-            // Read version from version catalog
-            val versionCatalog = project.extensions.findByType(
-                org.gradle.api.artifacts.VersionCatalogsExtension::class.java
-            ) ?: return@afterEvaluate
+        // Register eagerly (not in afterEvaluate): registering tasks during afterEvaluate
+        // breaks task-configuration avoidance and hides the task during configuration. The
+        // version catalog is already available at apply time.
+        val versionCatalog = project.extensions.findByType(VersionCatalogsExtension::class.java)
+            ?: return
+        val libs = versionCatalog.find("libs").orElse(null) ?: return
+        val appVersion = libs.findVersion("app-version").orElse(null) ?: return
+        val appBuild = libs.findVersion("app-build").orElse(null) ?: return
 
-            val libs = versionCatalog.find("libs").orElse(null) ?: return@afterEvaluate
-            val appVersion = libs.findVersion("app-version").orElse(null) ?: return@afterEvaluate
-            val appBuild = libs.findVersion("app-build").orElse(null) ?: return@afterEvaluate
+        project.tasks.register<UpdateIosVersionTask>("updateIosVersion") {
+            this.appVersion.set(appVersion.requiredVersion)
+            this.appBuild.set(appBuild.requiredVersion)
+            this.infoPlistFile.set(project.rootProject.file("iosApp/iosApp/Info.plist"))
+            this.pbxprojFile.set(project.rootProject.file("iosApp/iosApp.xcodeproj/project.pbxproj"))
 
-            // Locate iOS files
-            val infoPlistFile = project.rootProject.file("iosApp/iosApp/Info.plist")
-            val pbxprojFile = project.rootProject.file("iosApp/iosApp.xcodeproj/project.pbxproj")
-
-            // Register task for manual execution
-            project.tasks.register<UpdateIosVersionTask>("updateIosVersion") {
-                this.appVersion.set(appVersion.requiredVersion)
-                this.appBuild.set(appBuild.requiredVersion)
-                this.infoPlistFile.set(infoPlistFile)
-                this.pbxprojFile.set(pbxprojFile)
-
-                group = "versioning"
-                description = "Updates iOS version in Info.plist and project.pbxproj from libs.versions.toml"
-            }
+            group = "versioning"
+            description = "Updates iOS version in Info.plist and project.pbxproj from libs.versions.toml"
         }
     }
 }
@@ -62,10 +56,13 @@ abstract class UpdateIosVersionTask : DefaultTask() {
     @get:Input
     abstract val appBuild: Property<String>
 
-    @get:InputFile
+    // @Internal, not @InputFile: this task edits these files in place (input == output), so
+    // declaring them as inputs would be a misleading, never-up-to-date dependency. It's a
+    // manual versioning task that always runs.
+    @get:Internal
     abstract val infoPlistFile: RegularFileProperty
 
-    @get:InputFile
+    @get:Internal
     abstract val pbxprojFile: RegularFileProperty
 
     @TaskAction
