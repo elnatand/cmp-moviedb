@@ -32,7 +32,7 @@ fun createHttpClient(engine: HttpClientEngineFactory<*>) = HttpClient(engine) {
         install(Logging) {
             logger = object : Logger {
                 override fun log(message: String) {
-                    println("http client log = $message")
+                    platformNetworkLog(message)
                 }
             }
             level = LogLevel.BODY

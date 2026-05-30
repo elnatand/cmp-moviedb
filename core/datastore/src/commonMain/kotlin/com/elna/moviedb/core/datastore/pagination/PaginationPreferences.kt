@@ -1,6 +1,5 @@
 package com.elna.moviedb.core.datastore.pagination
 
-import com.elna.moviedb.core.datastore.pagination.PaginationState
 import kotlinx.coroutines.flow.Flow
 
 /**

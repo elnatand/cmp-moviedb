@@ -4,6 +4,7 @@ import com.elna.moviedb.core.model.AppResult
 import com.elna.moviedb.core.model.DataError
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.ServerResponseException
+import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -33,8 +34,14 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> T): AppResult<T> {
         // This is not a connectivity problem, so classify it as UNKNOWN rather than NETWORK.
         val message = "Deserialization error: ${e.message ?: "Unknown error occurred"}"
         AppResult.Error(message = message, throwable = e, type = DataError.UNKNOWN)
-    } catch (e: Exception) {
+    } catch (e: IOException) {
+        // Genuine connectivity / IO failure (timeouts and socket errors extend IOException).
         val message = "Network error: ${e.message ?: "Unknown error occurred"}"
         AppResult.Error(message = message, throwable = e, type = DataError.NETWORK)
+    } catch (e: Exception) {
+        // Anything else (e.g. an unexpected IllegalStateException) is not connectivity-related,
+        // so don't tell the user to "check your connection" — classify it as UNKNOWN.
+        val message = "Unexpected error: ${e.message ?: "Unknown error occurred"}"
+        AppResult.Error(message = message, throwable = e, type = DataError.UNKNOWN)
     }
 }
