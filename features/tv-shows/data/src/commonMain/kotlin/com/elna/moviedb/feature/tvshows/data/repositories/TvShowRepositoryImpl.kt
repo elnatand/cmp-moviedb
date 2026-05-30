@@ -18,6 +18,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Implementation of TvShowsRepository that manages TV show data from remote API.
@@ -51,17 +53,22 @@ class TvShowRepositoryImpl(
 
     // Category-based pagination state using Maps for scalability.
     //
-    // Concurrency: these plain mutable maps carry no synchronization. Every mutation path —
-    // observeTvShows() (getOrPut), loadTvShowsNextPage(), and clearAndReload() — runs on the
-    // main dispatcher: the ViewModel drives loads from viewModelScope (main) and the
-    // LanguageChangeCoordinator dispatches onLanguageChanged() from its own main-confined
-    // scope. The remote fetch hops to IO internally (inside TmdbApiClient) but returns to the
-    // caller's main context before any map is touched, so accesses are serialized on a single
-    // thread and never race. If a future caller mutates these off the main dispatcher, this
-    // must move to a Mutex.
+    // Concurrency: same-category loads are serialized by `categoryLocks` (below), so the
+    // check-then-fetch-then-write sequence in loadTvShowsNextPage() can't interleave for a
+    // given category and read a stale page, fetch it twice, and skip the next one — regardless
+    // of the caller's dispatcher. clearAndReload()'s full resets still rely on being driven
+    // from a main-confined caller (the ViewModel's viewModelScope and the
+    // LanguageChangeCoordinator's main scope); it intentionally does not hold the per-category
+    // locks so its parallel reloads stay parallel.
     private val currentPages = mutableMapOf<TvShowCategory, Int>()
     private val totalPages = mutableMapOf<TvShowCategory, Int>()
     private val tvShowsFlows = mutableMapOf<TvShowCategory, MutableStateFlow<List<TvShow>>>()
+
+    // One lock per category. Pre-populated from the fixed enum so the map is immutable after
+    // construction (no racy getOrPut), and distinct categories use distinct locks so their
+    // loads never block each other.
+    private val categoryLocks: Map<TvShowCategory, Mutex> =
+        TvShowCategory.entries.associateWith { Mutex() }
 
     /**
      * Helper function to get or create a StateFlow for a specific category.
@@ -92,34 +99,35 @@ class TvShowRepositoryImpl(
      * @param category The TV show category to load
      * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
-    override suspend fun loadTvShowsNextPage(category: TvShowCategory): AppResult<Unit> {
-        val currentPage = currentPages[category] ?: 0
-        val totalPage = totalPages[category] ?: 0
+    override suspend fun loadTvShowsNextPage(category: TvShowCategory): AppResult<Unit> =
+        categoryLocks.getValue(category).withLock {
+            val currentPage = currentPages[category] ?: 0
+            val totalPage = totalPages[category] ?: 0
 
-        if (totalPage in 1..currentPage) {
-            return AppResult.Success(Unit)  // All pages loaded
-        }
-
-        val nextPage = currentPage + 1
-
-        return when (val result =
-            remoteDataSource.fetchTvShowsPage(category.toTmdbPath(), nextPage, languageProvider.getCurrentLanguage())) {
-            is AppResult.Success -> {
-                totalPages[category] = result.data.totalPages
-                val newTvShows = result.data.results.map { remoteTvShow ->
-                    remoteTvShow.toDomain()
-                }
-
-                val flow = getFlowForCategory(category)
-                flow.value = (flow.value + newTvShows).distinctBy { it.id }
-                currentPages[category] = nextPage
-
-                AppResult.Success(Unit)
+            if (totalPage in 1..currentPage) {
+                return@withLock AppResult.Success(Unit)  // All pages loaded
             }
 
-            is AppResult.Error -> result
+            val nextPage = currentPage + 1
+
+            when (val result =
+                remoteDataSource.fetchTvShowsPage(category.toTmdbPath(), nextPage, languageProvider.getCurrentLanguage())) {
+                is AppResult.Success -> {
+                    totalPages[category] = result.data.totalPages
+                    val newTvShows = result.data.results.map { remoteTvShow ->
+                        remoteTvShow.toDomain()
+                    }
+
+                    val flow = getFlowForCategory(category)
+                    flow.value = (flow.value + newTvShows).distinctBy { it.id }
+                    currentPages[category] = nextPage
+
+                    AppResult.Success(Unit)
+                }
+
+                is AppResult.Error -> result
+            }
         }
-    }
 
     /**
      * Responds to language changes via the Observer Pattern.

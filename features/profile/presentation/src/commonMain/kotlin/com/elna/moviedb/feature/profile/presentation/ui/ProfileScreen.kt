@@ -296,8 +296,6 @@ private fun ProfileScreen(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(90.dp))
         }
     }
 }

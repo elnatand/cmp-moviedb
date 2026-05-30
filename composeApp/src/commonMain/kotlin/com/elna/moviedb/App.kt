@@ -30,8 +30,11 @@ fun App() {
                 bottomBar = {
                     NavigationBar(appState = appState)
                 }
-            ) {
-                RootNavGraph(appState.navBackStack)
+            ) { innerPadding ->
+                RootNavGraph(
+                    rootBackStack = appState.navBackStack,
+                    contentPadding = innerPadding,
+                )
             }
         }
     }

@@ -50,11 +50,12 @@ class LanguageChangeCoordinator(
     private val appSettingsPreferences: AppSettingsPreferences,
     appDispatchers: AppDispatchers,
 ) {
-    // All access to `listeners` is confined to `scope` (a single-threaded main
-    // dispatcher), so registration and iteration never run concurrently. This avoids
-    // a ConcurrentModificationException when a repository self-registers (possibly off
-    // the main thread, during lazy DI construction) while a language change is being
-    // dispatched to existing listeners.
+    // All access to `listeners` is confined to `scope`'s dispatcher, but confinement alone
+    // does NOT prevent interleaving: onLanguageChanged() suspends, and a suspension point
+    // yields the thread, letting a queued registerListener() mutate the set mid-dispatch.
+    // The notification loop below therefore iterates a snapshot (listeners.toList()) to avoid
+    // a ConcurrentModificationException when a repository self-registers (e.g. during lazy DI
+    // construction) while a language change is being dispatched to existing listeners.
     private val listeners = mutableSetOf<LanguageChangeListener>()
     private val scope = CoroutineScope(SupervisorJob() + appDispatchers.main)
 
@@ -65,12 +66,14 @@ class LanguageChangeCoordinator(
                 .distinctUntilChanged()
                 .drop(1) // Skip initial emission to avoid clearing on app start
                 .collect {
-                    // Notify all registered listeners. Each notification is isolated:
-                    // a failure in one listener must not kill the collection coroutine,
-                    // otherwise language changes would silently stop working for the
+                    // Notify all registered listeners. Iterate a snapshot so a listener that
+                    // self-registers mid-dispatch (across an onLanguageChanged() suspension)
+                    // can't structurally modify the set we're iterating. Each notification is
+                    // isolated: a failure in one listener must not kill the collection
+                    // coroutine, otherwise language changes would silently stop working for the
                     // rest of the session. Cancellation is rethrown to honor structured
                     // concurrency.
-                    listeners.forEach { listener ->
+                    listeners.toList().forEach { listener ->
                         try {
                             listener.onLanguageChanged()
                         } catch (e: CancellationException) {
