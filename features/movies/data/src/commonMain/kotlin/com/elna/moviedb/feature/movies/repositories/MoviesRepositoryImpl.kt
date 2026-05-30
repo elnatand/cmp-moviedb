@@ -23,6 +23,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /** Per-page multiplier for computing a movie's absolute [MovieEntity.position] within a category. */
 private const val PAGE_ORDER_STRIDE = 1000
@@ -59,6 +61,19 @@ class MoviesRepositoryImpl(
         languageChangeCoordinator.registerListener(this)
     }
 
+    // One lock per category. Pre-populated from the fixed enum so the map is immutable after
+    // construction (no racy getOrPut), and distinct categories use distinct locks so their
+    // loads never block each other.
+    //
+    // Concurrency: same-category loads are serialized by these locks so the
+    // check-then-fetch-then-write sequence in loadMoviesNextPage() can't interleave for a given
+    // category — read a stale page, fetch it twice, and skip the next one — regardless of the
+    // caller's dispatcher. This keeps the repository self-protecting rather than relying on the
+    // ViewModel's per-category loading guard. clearAndReload()'s full reset intentionally does
+    // not hold these locks so its parallel reloads (one per distinct category) stay parallel.
+    private val categoryLocks: Map<MovieCategory, Mutex> =
+        MovieCategory.entries.associateWith { Mutex() }
+
     /**
      * Observes movies for a specific category from local storage.
      *
@@ -76,42 +91,43 @@ class MoviesRepositoryImpl(
      * @param category The movie category to load
      * @return AppResult<Unit> Success if page loaded, Error if loading failed
      */
-    override suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit> {
-        val currentLanguage = languageProvider.getCurrentLanguage()
-        val paginationState = paginationPreferences.getPaginationState(category.name).first()
+    override suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit> =
+        categoryLocks.getValue(category).withLock {
+            val currentLanguage = languageProvider.getCurrentLanguage()
+            val paginationState = paginationPreferences.getPaginationState(category.name).first()
 
-        if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
-            return AppResult.Success(Unit)  // All pages loaded
-        }
-
-        val nextPage = paginationState.currentPage + 1
-
-        return when (val result =
-            remoteDataSource.fetchMoviesPage(category.toTmdbPath(), nextPage, currentLanguage)) {
-            is AppResult.Success -> {
-                val newTotalPages = result.data.totalPages
-                // Absolute rank = page offset + index within the page, so ordering is stable
-                // across pages. PAGE_ORDER_STRIDE is comfortable headroom over TMDB's 20-item
-                // pages; index never reaches it, so positions never overlap between pages.
-                val entities = result.data.results.mapIndexed { index, remoteMovie ->
-                    remoteMovie.asEntity(category, position = nextPage * PAGE_ORDER_STRIDE + index)
-                }
-                localDataSource.insertMoviesPage(entities)
-
-                paginationPreferences.savePaginationState(
-                    category.name,
-                    PaginationState(
-                        currentPage = nextPage,
-                        totalPages = newTotalPages
-                    )
-                )
-
-                AppResult.Success(Unit)
+            if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
+                return@withLock AppResult.Success(Unit)  // All pages loaded
             }
 
-            is AppResult.Error -> result
+            val nextPage = paginationState.currentPage + 1
+
+            when (val result =
+                remoteDataSource.fetchMoviesPage(category.toTmdbPath(), nextPage, currentLanguage)) {
+                is AppResult.Success -> {
+                    val newTotalPages = result.data.totalPages
+                    // Absolute rank = page offset + index within the page, so ordering is stable
+                    // across pages. PAGE_ORDER_STRIDE is comfortable headroom over TMDB's 20-item
+                    // pages; index never reaches it, so positions never overlap between pages.
+                    val entities = result.data.results.mapIndexed { index, remoteMovie ->
+                        remoteMovie.asEntity(category, position = nextPage * PAGE_ORDER_STRIDE + index)
+                    }
+                    localDataSource.insertMoviesPage(entities)
+
+                    paginationPreferences.savePaginationState(
+                        category.name,
+                        PaginationState(
+                            currentPage = nextPage,
+                            totalPages = newTotalPages
+                        )
+                    )
+
+                    AppResult.Success(Unit)
+                }
+
+                is AppResult.Error -> result
+            }
         }
-    }
 
     /**
      * Retrieves detailed information for a specific movie (offline-first).
