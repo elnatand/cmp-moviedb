@@ -69,8 +69,9 @@ class MoviesRepositoryImpl(
     // check-then-fetch-then-write sequence in loadMoviesNextPage() can't interleave for a given
     // category — read a stale page, fetch it twice, and skip the next one — regardless of the
     // caller's dispatcher. This keeps the repository self-protecting rather than relying on the
-    // ViewModel's per-category loading guard. clearAndReload()'s full reset intentionally does
-    // not hold these locks so its parallel reloads (one per distinct category) stay parallel.
+    // ViewModel's per-category loading guard. clearAndReload() acquires *all* of these locks (see
+    // withAllCategoryLocks) so its cache wipe can't interleave with an in-flight load; its
+    // per-category reloads still run in parallel, just under the already-held locks.
     private val categoryLocks: Map<MovieCategory, Mutex> =
         MovieCategory.entries.associateWith { Mutex() }
 
@@ -93,41 +94,72 @@ class MoviesRepositoryImpl(
      */
     override suspend fun loadMoviesNextPage(category: MovieCategory): AppResult<Unit> =
         categoryLocks.getValue(category).withLock {
-            val currentLanguage = languageProvider.getCurrentLanguage()
-            val paginationState = paginationPreferences.getPaginationState(category.name).first()
-
-            if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
-                return@withLock AppResult.Success(Unit)  // All pages loaded
-            }
-
-            val nextPage = paginationState.currentPage + 1
-
-            when (val result =
-                remoteDataSource.fetchMoviesPage(category.toTmdbPath(), nextPage, currentLanguage)) {
-                is AppResult.Success -> {
-                    val newTotalPages = result.data.totalPages
-                    // Absolute rank = page offset + index within the page, so ordering is stable
-                    // across pages. PAGE_ORDER_STRIDE is comfortable headroom over TMDB's 20-item
-                    // pages; index never reaches it, so positions never overlap between pages.
-                    val entities = result.data.results.mapIndexed { index, remoteMovie ->
-                        remoteMovie.asEntity(category, position = nextPage * PAGE_ORDER_STRIDE + index)
-                    }
-                    localDataSource.insertMoviesPage(entities)
-
-                    paginationPreferences.savePaginationState(
-                        category.name,
-                        PaginationState(
-                            currentPage = nextPage,
-                            totalPages = newTotalPages
-                        )
-                    )
-
-                    AppResult.Success(Unit)
-                }
-
-                is AppResult.Error -> result
-            }
+            loadMoviesNextPageUnlocked(category)
         }
+
+    /**
+     * Loads the next page for [category] **without** acquiring its lock.
+     *
+     * The caller must already hold the relevant lock(s): [loadMoviesNextPage] holds the
+     * single category lock, and [clearAndReload] holds every lock via [withAllCategoryLocks].
+     * Splitting the body out this way lets clearAndReload reload under the locks it already
+     * holds without re-entering (Kotlin's [Mutex] is non-reentrant and would deadlock).
+     */
+    private suspend fun loadMoviesNextPageUnlocked(category: MovieCategory): AppResult<Unit> {
+        val currentLanguage = languageProvider.getCurrentLanguage()
+        val paginationState = paginationPreferences.getPaginationState(category.name).first()
+
+        if (paginationState.totalPages > 0 && paginationState.currentPage >= paginationState.totalPages) {
+            return AppResult.Success(Unit)  // All pages loaded
+        }
+
+        val nextPage = paginationState.currentPage + 1
+
+        return when (val result =
+            remoteDataSource.fetchMoviesPage(category.toTmdbPath(), nextPage, currentLanguage)) {
+            is AppResult.Success -> {
+                val newTotalPages = result.data.totalPages
+                // Absolute rank = page offset + index within the page, so ordering is stable
+                // across pages. PAGE_ORDER_STRIDE is comfortable headroom over TMDB's 20-item
+                // pages; index never reaches it, so positions never overlap between pages.
+                val entities = result.data.results.mapIndexed { index, remoteMovie ->
+                    remoteMovie.asEntity(category, position = nextPage * PAGE_ORDER_STRIDE + index)
+                }
+                localDataSource.insertMoviesPage(entities)
+
+                paginationPreferences.savePaginationState(
+                    category.name,
+                    PaginationState(
+                        currentPage = nextPage,
+                        totalPages = newTotalPages
+                    )
+                )
+
+                AppResult.Success(Unit)
+            }
+
+            is AppResult.Error -> result
+        }
+    }
+
+    /**
+     * Runs [block] while holding every category lock, acquired in a fixed (enum) order.
+     *
+     * [clearAndReload] uses this so its cache wipe can't interleave with an in-flight
+     * single-category load: a load that had already read its pagination page and was awaiting
+     * the network would otherwise resume *after* the wipe and re-persist that now-stale page,
+     * leaving the earlier pages permanently missing (a gap that only a later refresh heals).
+     * Holding all locks blocks such a load until the wipe-and-reload finishes; the parallel
+     * reloads inside call [loadMoviesNextPageUnlocked] (the locks are already held), so they
+     * neither deadlock nor lose their parallelism.
+     */
+    private suspend fun <T> withAllCategoryLocks(block: suspend () -> T): T {
+        val locks = categoryLocks.values.toList()
+        suspend fun acquireFrom(index: Int): T =
+            if (index == locks.size) block()
+            else locks[index].withLock { acquireFrom(index + 1) }
+        return acquireFrom(0)
+    }
 
     /**
      * Retrieves detailed information for a specific movie (offline-first).
@@ -246,7 +278,11 @@ class MoviesRepositoryImpl(
      *
      * This method automatically handles all categories defined in [com.elna.moviedb.feature.movies.model.MovieCategory] enum.
      */
-    override suspend fun clearAndReload(): AppResult<Unit> {
+    override suspend fun clearAndReload(): AppResult<Unit> = withAllCategoryLocks {
+        // Hold every category lock across the whole wipe-and-reload so a concurrent
+        // single-category load can't interleave and re-persist a stale page (see
+        // withAllCategoryLocks).
+
         // Clear all pagination state and local data
         paginationPreferences.clearAllPaginationState()
 
@@ -259,13 +295,14 @@ class MoviesRepositoryImpl(
 
         // Load all categories in parallel and await the outcomes — the cache was just
         // wiped, so a swallowed failure here would leave the screen empty with no error.
+        // The unlocked variant is used because the locks are already held.
         val results = coroutineScope {
             MovieCategory.entries.map { category ->
-                async { loadMoviesNextPage(category) }
+                async { loadMoviesNextPageUnlocked(category) }
             }.awaitAll()
         }
 
         // Partial success still yields content; only report an error when all failed.
-        return results.firstOrNull { it is AppResult.Success } ?: results.first()
+        results.firstOrNull { it is AppResult.Success } ?: results.first()
     }
 }

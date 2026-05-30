@@ -52,7 +52,12 @@ fun SearchResultItem(
                 },
                 modifier = Modifier
                     .size(80.dp, 120.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp)),
+                contentDescription = when (item) {
+                    is SearchResultItem.MovieItem -> item.title
+                    is SearchResultItem.TvShowItem -> item.name
+                    is SearchResultItem.PersonItem -> item.name
+                }
             )
 
             Column(

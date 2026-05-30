@@ -67,7 +67,8 @@ fun MovieTile(
 
             ImageLoader(
                 imageUrl = imageUrl,
-                modifier = finalModifier
+                modifier = finalModifier,
+                contentDescription = movie.title
             )
 
             Text(

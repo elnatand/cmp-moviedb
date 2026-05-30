@@ -55,7 +55,8 @@ internal fun FilmographyCard(
                 credit.posterPath?.let { posterPath ->
                     ImageLoader(
                         imageUrl = posterPath.toPosterUrl(),
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = credit.displayTitle
                     )
                 } ?: Box(
                     modifier = Modifier

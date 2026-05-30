@@ -58,7 +58,8 @@ internal fun HeroSection(
         tvShow.backdropPath?.takeIf { it.isNotEmpty() }?.let { backdropPath ->
             ImageLoader(
                 imageUrl = backdropPath.toBackdropUrl(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = tvShow.name
             )
         }
 
@@ -121,7 +122,8 @@ internal fun HeroSection(
                         imageUrl = posterPath.toPosterUrl(),
                         modifier = Modifier
                             .fillMaxSize()
-                            .clip(cornerShape)
+                            .clip(cornerShape),
+                        contentDescription = tvShow.name
                     )
                 }
             }
@@ -150,8 +152,9 @@ internal fun HeroSection(
                     )
                 }
 
-                // Rating
-                tvShow.voteAverage?.let { rating ->
+                // Rating — only shown when actually rated. TMDB returns 0.0 (not null) for
+                // unrated titles, which would otherwise render a misleading "0.0".
+                tvShow.voteAverage?.takeIf { it > 0 }?.let { rating ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)

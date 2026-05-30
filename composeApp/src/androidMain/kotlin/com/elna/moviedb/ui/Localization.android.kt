@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import com.elna.moviedb.core.model.AppLanguage
 import org.jetbrains.compose.resources.ComposeEnvironment
 import org.jetbrains.compose.resources.DensityQualifier
 import org.jetbrains.compose.resources.InternalResourceApi
@@ -61,9 +62,10 @@ actual fun Localization(selectedLanguage: String, content: @Composable () -> Uni
     }
     val localizedContext = LocalContext.current.createConfigurationContext(newConfig)
 
-    val layoutDirection = when (selectedLanguage) {
-        "ar", "he" -> LayoutDirection.Rtl
-        else -> LayoutDirection.Ltr
+    val layoutDirection = if (AppLanguage.isRtl(selectedLanguage)) {
+        LayoutDirection.Rtl
+    } else {
+        LayoutDirection.Ltr
     }
 
     // Keyed on language so a new environment isn't allocated (and re-provided to every

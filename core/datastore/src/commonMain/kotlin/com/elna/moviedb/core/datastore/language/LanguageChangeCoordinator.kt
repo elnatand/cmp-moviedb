@@ -4,6 +4,7 @@ import com.elna.moviedb.core.common.AppDispatchers
 import com.elna.moviedb.core.datastore.settings.AppSettingsPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
@@ -66,21 +67,28 @@ class LanguageChangeCoordinator(
                 .distinctUntilChanged()
                 .drop(1) // Skip initial emission to avoid clearing on app start
                 .collect {
-                    // Notify all registered listeners. Iterate a snapshot so a listener that
+                    // Notify all registered listeners in parallel: each listener's reload is
+                    // independent (distinct repositories with distinct caches/locks), so there's
+                    // no reason to serialize them — movies' Room wipe + reload shouldn't block
+                    // tv-shows'. coroutineScope joins all children before the collector advances
+                    // to the next language change. Iterate a snapshot so a listener that
                     // self-registers mid-dispatch (across an onLanguageChanged() suspension)
                     // can't structurally modify the set we're iterating. Each notification is
-                    // isolated: a failure in one listener must not kill the collection
-                    // coroutine, otherwise language changes would silently stop working for the
-                    // rest of the session. Cancellation is rethrown to honor structured
-                    // concurrency.
-                    listeners.toList().forEach { listener ->
-                        try {
-                            listener.onLanguageChanged()
-                        } catch (e: CancellationException) {
-                            throw e
-                        } catch (_: Exception) {
-                            // Listener-local failure (e.g. a reload that threw) — skip it
-                            // and continue notifying the rest.
+                    // isolated: a failure in one listener must not kill the collection coroutine,
+                    // otherwise language changes would silently stop working for the rest of the
+                    // session. Cancellation is rethrown to honor structured concurrency.
+                    coroutineScope {
+                        listeners.toList().forEach { listener ->
+                            launch {
+                                try {
+                                    listener.onLanguageChanged()
+                                } catch (e: CancellationException) {
+                                    throw e
+                                } catch (_: Exception) {
+                                    // Listener-local failure (e.g. a reload that threw) — skip it
+                                    // and continue notifying the rest.
+                                }
+                            }
                         }
                     }
                 }

@@ -50,7 +50,8 @@ internal fun CastMemberCard(
                 if (profileUrl.isNotEmpty()) {
                     ImageLoader(
                         imageUrl = profileUrl,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = castMember.name
                     )
                 } else {
                     Box(

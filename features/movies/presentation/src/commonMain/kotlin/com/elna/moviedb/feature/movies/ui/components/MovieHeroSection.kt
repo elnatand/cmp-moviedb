@@ -57,7 +57,8 @@ internal fun MovieHeroSection(
         // Backdrop Image
         ImageLoader(
             imageUrl = movie.backdropPath.toBackdropUrl(),
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentDescription = movie.title
         )
 
         // Gradient Overlay
@@ -118,7 +119,8 @@ internal fun MovieHeroSection(
                     imageUrl = movie.posterPath.toPosterUrl(),
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(cornerShape)
+                        .clip(cornerShape),
+                    contentDescription = movie.title
                 )
             }
 
@@ -146,8 +148,9 @@ internal fun MovieHeroSection(
                     )
                 }
 
-                // Rating
-                movie.voteAverage?.let { rating ->
+                // Rating — only shown when actually rated. TMDB returns 0.0 (not null) for
+                // unrated titles, which would otherwise render a misleading "0.0".
+                movie.voteAverage?.takeIf { it > 0 }?.let { rating ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)

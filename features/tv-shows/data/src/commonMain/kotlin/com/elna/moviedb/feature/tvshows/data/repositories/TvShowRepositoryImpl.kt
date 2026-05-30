@@ -56,10 +56,11 @@ class TvShowRepositoryImpl(
     // Concurrency: same-category loads are serialized by `categoryLocks` (below), so the
     // check-then-fetch-then-write sequence in loadTvShowsNextPage() can't interleave for a
     // given category and read a stale page, fetch it twice, and skip the next one — regardless
-    // of the caller's dispatcher. clearAndReload()'s full resets still rely on being driven
-    // from a main-confined caller (the ViewModel's viewModelScope and the
-    // LanguageChangeCoordinator's main scope); it intentionally does not hold the per-category
-    // locks so its parallel reloads stay parallel.
+    // of the caller's dispatcher. clearAndReload() acquires *all* of these locks (see
+    // withAllCategoryLocks) so its reset can't interleave with an in-flight load; its
+    // per-category reloads still run in parallel, just under the already-held locks. The
+    // backing maps below stay correct because every mutation is reached only while holding
+    // a lock and resumes on the caller's (main-confined) dispatcher.
     private val currentPages = mutableMapOf<TvShowCategory, Int>()
     private val totalPages = mutableMapOf<TvShowCategory, Int>()
     private val tvShowsFlows = mutableMapOf<TvShowCategory, MutableStateFlow<List<TvShow>>>()
@@ -101,33 +102,63 @@ class TvShowRepositoryImpl(
      */
     override suspend fun loadTvShowsNextPage(category: TvShowCategory): AppResult<Unit> =
         categoryLocks.getValue(category).withLock {
-            val currentPage = currentPages[category] ?: 0
-            val totalPage = totalPages[category] ?: 0
+            loadTvShowsNextPageUnlocked(category)
+        }
 
-            if (totalPage in 1..currentPage) {
-                return@withLock AppResult.Success(Unit)  // All pages loaded
-            }
+    /**
+     * Loads the next page for [category] **without** acquiring its lock.
+     *
+     * The caller must already hold the relevant lock(s): [loadTvShowsNextPage] holds the
+     * single category lock, and [clearAndReload] holds every lock via [withAllCategoryLocks].
+     * Splitting the body out this way lets clearAndReload reload under the locks it already
+     * holds without re-entering (Kotlin's [Mutex] is non-reentrant and would deadlock).
+     */
+    private suspend fun loadTvShowsNextPageUnlocked(category: TvShowCategory): AppResult<Unit> {
+        val currentPage = currentPages[category] ?: 0
+        val totalPage = totalPages[category] ?: 0
 
-            val nextPage = currentPage + 1
+        if (totalPage in 1..currentPage) {
+            return AppResult.Success(Unit)  // All pages loaded
+        }
 
-            when (val result =
-                remoteDataSource.fetchTvShowsPage(category.toTmdbPath(), nextPage, languageProvider.getCurrentLanguage())) {
-                is AppResult.Success -> {
-                    totalPages[category] = result.data.totalPages
-                    val newTvShows = result.data.results.map { remoteTvShow ->
-                        remoteTvShow.toDomain()
-                    }
+        val nextPage = currentPage + 1
 
-                    val flow = getFlowForCategory(category)
-                    flow.value = (flow.value + newTvShows).distinctBy { it.id }
-                    currentPages[category] = nextPage
-
-                    AppResult.Success(Unit)
+        return when (val result =
+            remoteDataSource.fetchTvShowsPage(category.toTmdbPath(), nextPage, languageProvider.getCurrentLanguage())) {
+            is AppResult.Success -> {
+                totalPages[category] = result.data.totalPages
+                val newTvShows = result.data.results.map { remoteTvShow ->
+                    remoteTvShow.toDomain()
                 }
 
-                is AppResult.Error -> result
+                val flow = getFlowForCategory(category)
+                flow.value = (flow.value + newTvShows).distinctBy { it.id }
+                currentPages[category] = nextPage
+
+                AppResult.Success(Unit)
             }
+
+            is AppResult.Error -> result
         }
+    }
+
+    /**
+     * Runs [block] while holding every category lock, acquired in a fixed (enum) order.
+     *
+     * [clearAndReload] uses this so its cache wipe can't interleave with an in-flight
+     * single-category load: a load that had already read its page counters and was awaiting
+     * the network would otherwise resume *after* the wipe and re-append that now-stale page,
+     * leaving the earlier pages missing. Holding all locks blocks such a load until the
+     * wipe-and-reload finishes; the parallel reloads inside call [loadTvShowsNextPageUnlocked]
+     * (the locks are already held), so they neither deadlock nor lose their parallelism.
+     */
+    private suspend fun <T> withAllCategoryLocks(block: suspend () -> T): T {
+        val locks = categoryLocks.values.toList()
+        suspend fun acquireFrom(index: Int): T =
+            if (index == locks.size) block()
+            else locks[index].withLock { acquireFrom(index + 1) }
+        return acquireFrom(0)
+    }
 
     /**
      * Responds to language changes via the Observer Pattern.
@@ -145,22 +176,27 @@ class TvShowRepositoryImpl(
      * This method is called when the app language changes via onLanguageChanged().
      * It clears the in-memory cache and fetches fresh data in the new language.
      */
-    override suspend fun clearAndReload(): AppResult<Unit> {
+    override suspend fun clearAndReload(): AppResult<Unit> = withAllCategoryLocks {
+        // Hold every category lock across the whole wipe-and-reload so a concurrent
+        // single-category load can't interleave and re-append a stale page (see
+        // withAllCategoryLocks).
+
         // Clear all pagination state and cached data for all categories
         currentPages.clear()
         totalPages.clear()
         tvShowsFlows.values.forEach { it.value = emptyList() }
 
         // Reload all categories in parallel and await the outcomes so failures aren't
-        // swallowed (the in-memory cache was just cleared).
+        // swallowed (the in-memory cache was just cleared). The unlocked variant is used
+        // because the locks are already held.
         val results = coroutineScope {
             TvShowCategory.entries.map { category ->
-                async { loadTvShowsNextPage(category) }
+                async { loadTvShowsNextPageUnlocked(category) }
             }.awaitAll()
         }
 
         // Partial success still yields content; only report an error when all failed.
-        return results.firstOrNull { it is AppResult.Success } ?: results.first()
+        results.firstOrNull { it is AppResult.Success } ?: results.first()
     }
 
     override suspend fun getTvShowDetails(tvShowId: Int): AppResult<TvShowDetails> =

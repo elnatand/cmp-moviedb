@@ -71,7 +71,8 @@ fun TvShowTile(
 
             ImageLoader(
                 imageUrl = imageUrl,
-                modifier = finalModifier
+                modifier = finalModifier,
+                contentDescription = tvShow.name
             )
 
             Text(

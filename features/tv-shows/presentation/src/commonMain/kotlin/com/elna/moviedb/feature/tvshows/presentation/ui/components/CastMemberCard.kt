@@ -49,7 +49,8 @@ internal fun CastMemberCard(
                 castMember.profilePath?.let { profilePath ->
                     ImageLoader(
                         imageUrl = profilePath.toProfileUrl(),
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        contentDescription = castMember.name
                     )
                 } ?: Box(
                     modifier = Modifier
