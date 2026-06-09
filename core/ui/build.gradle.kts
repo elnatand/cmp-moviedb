@@ -12,6 +12,7 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
         androidResources.enable = true
+        withHostTest { }
     }
 
 
@@ -33,9 +34,15 @@ kotlin {
             api(libs.lifecycle.viewmodel.navigation3)
             api(libs.koin.compose.navigation)
 
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.okio)
             implementation(libs.coil.compose)
             implementation(libs.coil.ktor)
             implementation(libs.coil.svg)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }

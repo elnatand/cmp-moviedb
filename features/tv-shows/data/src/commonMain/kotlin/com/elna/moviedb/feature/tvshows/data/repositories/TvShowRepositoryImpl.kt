@@ -45,12 +45,6 @@ class TvShowRepositoryImpl(
     languageChangeCoordinator: LanguageChangeCoordinator,
 ) : TvShowsRepository, LanguageChangeListener {
 
-    init {
-        // Self-register with coordinator during initialization
-        // Ensures repository is always properly set up to receive language change notifications
-        languageChangeCoordinator.registerListener(this)
-    }
-
     // Category-based pagination state using Maps for scalability.
     //
     // Concurrency: same-category loads are serialized by `categoryLocks` (below), so the
@@ -59,25 +53,30 @@ class TvShowRepositoryImpl(
     // of the caller's dispatcher. clearAndReload() acquires *all* of these locks (see
     // withAllCategoryLocks) so its reset can't interleave with an in-flight load; its
     // per-category reloads still run in parallel, just under the already-held locks. The
-    // backing maps below stay correct because every mutation is reached only while holding
-    // a lock and resumes on the caller's (main-confined) dispatcher.
+    // backing maps below stay correct because they are pre-populated in init and only mutated
+    // while holding their respective category lock.
     private val currentPages = mutableMapOf<TvShowCategory, Int>()
     private val totalPages = mutableMapOf<TvShowCategory, Int>()
     private val tvShowsFlows = mutableMapOf<TvShowCategory, MutableStateFlow<List<TvShow>>>()
+
+    init {
+        // Pre-populate maps to avoid racy getOrPut calls during concurrent access.
+        TvShowCategory.entries.forEach { category ->
+            currentPages[category] = 0
+            totalPages[category] = 0
+            tvShowsFlows[category] = MutableStateFlow(emptyList())
+        }
+
+        // Self-register with coordinator during initialization
+        // Ensures repository is always properly set up to receive language change notifications
+        languageChangeCoordinator.registerListener(this)
+    }
 
     // One lock per category. Pre-populated from the fixed enum so the map is immutable after
     // construction (no racy getOrPut), and distinct categories use distinct locks so their
     // loads never block each other.
     private val categoryLocks: Map<TvShowCategory, Mutex> =
         TvShowCategory.entries.associateWith { Mutex() }
-
-    /**
-     * Helper function to get or create a StateFlow for a specific category.
-     * Ensures lazy initialization of category flows.
-     */
-    private fun getFlowForCategory(category: TvShowCategory): MutableStateFlow<List<TvShow>> {
-        return tvShowsFlows.getOrPut(category) { MutableStateFlow(emptyList()) }
-    }
 
     /**
      * Observes TV shows for a specific category from in-memory storage.
@@ -90,7 +89,7 @@ class TvShowRepositoryImpl(
      * @return Flow emitting list of TV shows for the category
      */
     override fun observeTvShows(category: TvShowCategory): Flow<List<TvShow>> =
-        getFlowForCategory(category)
+        tvShowsFlows.getValue(category)
 
     /**
      * Loads the next page of TV shows for a specific category from the remote API.
@@ -131,7 +130,7 @@ class TvShowRepositoryImpl(
                     remoteTvShow.toDomain()
                 }
 
-                val flow = getFlowForCategory(category)
+                val flow = tvShowsFlows.getValue(category)
                 flow.value = (flow.value + newTvShows).distinctBy { it.id }
                 currentPages[category] = nextPage
 

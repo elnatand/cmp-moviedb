@@ -7,6 +7,7 @@ dependencies {
     implementation(projects.composeApp)
     implementation(projects.core.ui)
 
+    implementation(libs.androidx.activity.compose)
     implementation(libs.koin.android)
 }
 
