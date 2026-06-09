@@ -1,6 +1,7 @@
 package com.elna.moviedb.core.ui.utils
 
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 
 /**
  * Formats a date string from yyyy-MM-dd to dd.MM.yyyy.
@@ -9,8 +10,8 @@ import kotlinx.datetime.LocalDate
 fun formatDate(date: String): String {
     return try {
         val localDate = LocalDate.parse(date)
-        val day = localDate.dayOfMonth.toString().padStart(2, '0')
-        val month = localDate.monthNumber.toString().padStart(2, '0')
+        val day = localDate.day.toString().padStart(2, '0')
+        val month = localDate.month.number.toString().padStart(2, '0')
         val year = localDate.year
         "$day.$month.$year"
     } catch (_: Exception) {
