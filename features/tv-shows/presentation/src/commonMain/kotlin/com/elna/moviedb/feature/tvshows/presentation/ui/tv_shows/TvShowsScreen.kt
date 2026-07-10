@@ -4,12 +4,18 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -94,7 +100,11 @@ private fun TvShowsScreen(
             TopAppBar(
                 title = { Text(text = stringResource(Res.string.tv_shows)) },
             )
-        }
+        },
+        // No bottom inset: content draws under the (translucent on iOS 26) bottom bar;
+        // scrollable content pads its own end instead (see TvShowsContent).
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
     ) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
@@ -145,6 +155,9 @@ private fun TvShowsContent(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                // After verticalScroll = content padding: the last section scrolls clear of the
+                // bottom bar while content still draws underneath it.
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
                 .padding(vertical = 8.dp)
         ) {
             // Dynamically render all TV show categories

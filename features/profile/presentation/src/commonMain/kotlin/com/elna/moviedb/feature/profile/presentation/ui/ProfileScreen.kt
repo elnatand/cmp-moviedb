@@ -4,11 +4,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -22,6 +27,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -136,14 +142,21 @@ private fun ProfileScreen(
             TopAppBar(
                 title = { Text(text = stringResource(Res.string.profile)) },
             )
-        }
+        },
+        // No bottom inset: content draws under the (translucent on iOS 26) bottom bar;
+        // the scrolled Column pads its own end instead.
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                // After verticalScroll = content padding: the last item scrolls clear of the
+                // bottom bar while content still draws underneath it.
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom)),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(modifier = Modifier.height(0.dp))

@@ -4,9 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -74,7 +79,11 @@ private fun SearchScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .systemBarsPadding()
+            // No bottom inset: results draw under the (translucent on iOS 26) bottom bar;
+            // the LazyColumn pads its own end via contentPadding instead.
+            .windowInsetsPadding(
+                WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+            )
     ) {
         SearchBar(
             query = uiState.searchQuery,
@@ -136,7 +145,10 @@ private fun SearchScreen(
                 LazyColumn(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = WindowInsets.systemBars
+                        .only(WindowInsetsSides.Bottom)
+                        .asPaddingValues()
                 ) {
                     items(
                         items = uiState.searchResults,

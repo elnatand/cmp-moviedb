@@ -7,10 +7,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -19,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -109,7 +115,11 @@ private fun MoviesScreen(
             TopAppBar(
                 title = { Text(text = stringResource(Res.string.movies)) },
             )
-        }
+        },
+        // No bottom inset: content draws under the (translucent on iOS 26) bottom bar;
+        // scrollable content pads its own end instead (see MoviesContent).
+        contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
     ) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
@@ -159,6 +169,9 @@ private fun MoviesContent(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                // After verticalScroll = content padding: the last section scrolls clear of the
+                // bottom bar while content still draws underneath it.
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
                 .padding(vertical = 8.dp)
         ) {
             // Dynamically render all movie categories
