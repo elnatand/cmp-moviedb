@@ -33,13 +33,9 @@ kotlin {
             implementation(projects.core.ui)
 
             implementation(projects.features.movies.presentation)
-            // Domain modules: ScreenContent wires screen callbacks directly (category/media-type
-            // enums appear in the lambda signatures), so composeApp uses these types itself.
-            implementation(projects.features.movies.domain)
             implementation(projects.features.movies.data)
 
             implementation(projects.features.tvShows.presentation)
-            implementation(projects.features.tvShows.domain)
             implementation(projects.features.tvShows.data)
 
             implementation(projects.features.search.presentation)
@@ -48,7 +44,6 @@ kotlin {
             implementation(projects.features.profile.presentation)
 
             implementation(projects.features.person.presentation)
-            implementation(projects.features.person.domain)
             implementation(projects.features.person.data)
 
             implementation(libs.koin.core)
