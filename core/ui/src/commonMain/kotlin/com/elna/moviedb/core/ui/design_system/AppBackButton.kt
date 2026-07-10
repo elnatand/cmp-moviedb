@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,11 +25,20 @@ import com.elna.moviedb.resources.Res
 import com.elna.moviedb.resources.back
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * True when the hosting shell draws its own back control — the iOS 26+ Liquid Glass
+ * shell overlays a native glass back button (see iosApp/ContentView.swift), so Compose
+ * screens must not draw a second one. [AppBackButton] renders nothing while this is set.
+ */
+val LocalBackButtonOwnedByShell = staticCompositionLocalOf { false }
+
 @Composable
 fun AppBackButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (LocalBackButtonOwnedByShell.current) return
+
     Box(
         modifier = modifier
             .size(40.dp)

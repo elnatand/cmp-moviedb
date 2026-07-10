@@ -1,11 +1,15 @@
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.ComposeUIViewController
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.elna.moviedb.core.datastore.settings.AppSettingsPreferences
 import com.elna.moviedb.core.model.AppLanguage
 import com.elna.moviedb.core.model.AppTheme
+import com.elna.moviedb.core.ui.design_system.LocalBackButtonOwnedByShell
 import com.elna.moviedb.core.ui.navigation.Route
+import com.elna.moviedb.resources.Res
+import com.elna.moviedb.resources.back
 import com.elna.moviedb.navigation.ScreenContent
 import com.elna.moviedb.navigation.TopLevelDestination
 import com.elna.moviedb.ui.Localization
@@ -46,6 +50,12 @@ fun tabCount(): Int = TopLevelDestination.entries.size
 @Suppress("unused")
 fun tabTitle(tabIndex: Int): String = runBlocking {
     getString(TopLevelDestination.entries[tabIndex].titleRes)
+}
+
+/** Localized accessibility label for the native glass back button. */
+@Suppress("unused")
+fun backButtonLabel(): String = runBlocking {
+    getString(Res.string.back)
 }
 
 /**
@@ -97,11 +107,15 @@ private fun NativeSingleScreen(
 
     Localization(selectedLanguage) {
         Theme(selectedTheme, onThemeChange) {
-            ScreenContent(
-                route = route,
-                onNavigate = { newRoute, title -> onNavigate(encodeRoute(newRoute), title) },
-                onBack = onBack,
-            )
+            // The SwiftUI shell overlays a native Liquid Glass back button on detail
+            // screens, so Compose screens must not draw their own.
+            CompositionLocalProvider(LocalBackButtonOwnedByShell provides true) {
+                ScreenContent(
+                    route = route,
+                    onNavigate = { newRoute, title -> onNavigate(encodeRoute(newRoute), title) },
+                    onBack = onBack,
+                )
+            }
         }
     }
 }

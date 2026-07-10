@@ -172,15 +172,25 @@ struct TabContentView: View {
             // Tab roots keep their Compose top bars; only detail screens use the native bar.
             .toolbar(.hidden, for: .navigationBar)
             .navigationDestination(for: PushedRoute.self) { pushed in
-                DetailComposeView(
-                    routeJson: pushed.routeJson,
-                    coordinator: coordinator
-                )
-                .ignoresSafeArea(.all)
-                // Keep the native bar hidden on details too: on iOS 26, taps in the top region
+                // The ZStack keeps the back button inside the safe area while the
+                // Compose content underneath extends edge-to-edge.
+                ZStack(alignment: .topLeading) {
+                    DetailComposeView(
+                        routeJson: pushed.routeJson,
+                        coordinator: coordinator
+                    )
+                    .ignoresSafeArea(.all)
+
+                    // Native Liquid Glass back button, overlaid ABOVE the Compose view so
+                    // the glass refracts the screen content behind it. Compose suppresses
+                    // its own back button under this shell (LocalBackButtonOwnedByShell).
+                    GlassBackButton { coordinator.pop() }
+                        .padding(.leading, 16)
+                }
+                // Keep the native bar hidden on details: on iOS 26, taps in the top region
                 // over hosted Compose content are unreliable (native toolbar buttons never fire;
-                // reproducible on the pure-Compose fallback as well). The Compose screen draws
-                // its own back button; back events arrive via Kotlin onBack → coordinator.pop().
+                // reproducible on the pure-Compose fallback as well). The glass button above is
+                // a plain overlay, not a toolbar item, so its taps are delivered normally.
                 .toolbar(.hidden, for: .navigationBar)
             }
         }
@@ -190,6 +200,24 @@ struct TabContentView: View {
         .onChange(of: path) { _, newValue in
             if coordinator.path != newValue { coordinator.path = newValue }
         }
+    }
+}
+
+/// Circular Liquid Glass back button matching the system NavigationStack chrome.
+@available(iOS 26.0, *)
+struct GlassBackButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 17, weight: .semibold))
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.glass)
+        .buttonBorderShape(.circle)
+        .tint(.primary)
+        .accessibilityLabel(NativeShellKt.backButtonLabel())
     }
 }
 
