@@ -76,7 +76,7 @@ class MoviesRepositoryImplTest {
         }
 
     @Test
-    fun `a partial result (failed videos) is not cached and is refetched next time`() =
+    fun `a partial result with failed videos is not cached and is refetched next time`() =
         runTest(testDispatcher) {
             remote.detailsResult =
                 AppResult.Success(FakeMoviesRemoteDataSource.remoteDetails(2, "Partial"))

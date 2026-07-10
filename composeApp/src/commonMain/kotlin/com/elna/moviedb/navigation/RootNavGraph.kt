@@ -8,19 +8,15 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.elna.moviedb.core.ui.navigation.Navigator
 import com.elna.moviedb.core.ui.navigation.Route
-import com.elna.moviedb.feature.movies.navigation.moviesFlow
-import com.elna.moviedb.feature.person.presentation.navigation.personDetailsEntry
-import com.elna.moviedb.feature.profile.presentation.navigation.profileEntry
-import com.elna.moviedb.feature.search.presentation.navigation.searchEntry
-import com.elna.moviedb.feature.tvshows.presentation.navigation.tvShowsFlow
 
 @Composable
 fun RootNavGraph(
@@ -42,6 +38,8 @@ fun RootNavGraph(
     val systemBottomInset = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
     val bottomBarReservation = (contentPadding.calculateBottomPadding() - systemBottomInset).coerceAtLeast(0.dp)
 
+    val navigator = remember(rootBackStack) { BackStackNavigator(rootBackStack) }
+
     Box(
         modifier = Modifier.padding(bottom = bottomBarReservation)
     ) {
@@ -52,27 +50,24 @@ fun RootNavGraph(
                     rememberSaveableStateHolderNavEntryDecorator(),
                     rememberViewModelStoreNavEntryDecorator()
                 ),
-                entryProvider = entryProvider {
-
-                    moviesFlow(
-                        rootBackStack = rootBackStack,
-                        sharedTransitionScope = this@SharedTransitionLayout
-                    )
-
-                    tvShowsFlow(
-                        rootBackStack = rootBackStack,
-                        sharedTransitionScope = this@SharedTransitionLayout
-                    )
-
-                    searchEntry(rootBackStack)
-
-                    personDetailsEntry(
-                        rootBackStack = rootBackStack,
-                    )
-
-                    profileEntry()
-                }
+                entryProvider = appEntryProvider(
+                    navigator = navigator,
+                    sharedTransitionScope = this@SharedTransitionLayout
+                )
             )
         }
+    }
+}
+
+/** [Navigator] for the Compose-driven shell: pushes and pops [backStack]; titles are unused. */
+private class BackStackNavigator(
+    private val backStack: SnapshotStateList<Route>
+) : Navigator {
+    override fun navigate(route: Route, title: String) {
+        backStack.add(route)
+    }
+
+    override fun goBack() {
+        backStack.removeLastOrNull()
     }
 }

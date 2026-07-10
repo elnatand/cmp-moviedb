@@ -1,10 +1,10 @@
 package com.elna.moviedb.feature.tvshows.presentation.navigation
 
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.elna.moviedb.feature.tvshows.domain.model.TvShowCategory
+import com.elna.moviedb.core.ui.navigation.Navigator
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.TvShowsRoute
@@ -13,16 +13,16 @@ import com.elna.moviedb.feature.tvshows.presentation.ui.tv_shows.TvShowsScreen
 
 
 fun EntryProviderScope<Route>.tvShowsFlow(
-    rootBackStack: SnapshotStateList<Route>,
-    sharedTransitionScope: SharedTransitionScope
+    navigator: Navigator,
+    sharedTransitionScope: SharedTransitionScope?
 ) {
     entry<TvShowsRoute.TvShowsListRoute> {
         TvShowsScreen(
-            onClick = { tvShowId: Int, _: String, category: TvShowCategory ->
-                rootBackStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId, category.name))
+            onClick = { tvShowId: Int, title: String, category: TvShowCategory ->
+                navigator.navigate(TvShowsRoute.TvShowDetailsRoute(tvShowId, category.name), title)
             },
             sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = LocalNavAnimatedContentScope.current
+            animatedVisibilityScope = if (sharedTransitionScope != null) LocalNavAnimatedContentScope.current else null
         )
     }
 
@@ -30,11 +30,11 @@ fun EntryProviderScope<Route>.tvShowsFlow(
         TvShowDetailsScreen(
             tvShowId = it.tvShowId,
             category = it.category,
-            onBack = { rootBackStack.removeLastOrNull() },
+            onBack = navigator::goBack,
             sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+            animatedVisibilityScope = if (sharedTransitionScope != null) LocalNavAnimatedContentScope.current else null,
             onCastMemberClick = { personId ->
-                rootBackStack.add(PersonDetailsRoute(personId))
+                navigator.navigate(PersonDetailsRoute(personId))
             }
         )
     }

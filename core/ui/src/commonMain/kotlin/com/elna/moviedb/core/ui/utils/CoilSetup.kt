@@ -7,6 +7,7 @@ import coil3.memory.MemoryCache
 import coil3.request.crossfade
 import okio.FileSystem
 import okio.Path.Companion.toPath
+import okio.SYSTEM
 
 /**
  * Installs the singleton Coil [ImageLoader] used by every [ImageLoader] composable.

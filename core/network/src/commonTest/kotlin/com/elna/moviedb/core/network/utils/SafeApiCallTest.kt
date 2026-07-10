@@ -33,7 +33,7 @@ class SafeApiCallTest {
     }
 
     @Test
-    fun `classifies a SerializationException as UNKNOWN (not a connectivity problem)`() = runTest {
+    fun `classifies a SerializationException as UNKNOWN rather than a connectivity problem`() = runTest {
         val result = safeApiCall<Int> { throw SerializationException("bad json") }
 
         assertTrue(result is AppResult.Error)

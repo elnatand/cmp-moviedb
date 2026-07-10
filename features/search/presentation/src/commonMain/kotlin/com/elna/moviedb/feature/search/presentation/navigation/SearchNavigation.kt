@@ -1,8 +1,8 @@
 package com.elna.moviedb.feature.search.presentation.navigation
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import com.elna.moviedb.core.ui.navigation.MoviesRoute
+import com.elna.moviedb.core.ui.navigation.Navigator
 import com.elna.moviedb.core.ui.navigation.PersonDetailsRoute
 import com.elna.moviedb.core.ui.navigation.Route
 import com.elna.moviedb.core.ui.navigation.SearchRoute
@@ -10,18 +10,18 @@ import com.elna.moviedb.core.ui.navigation.TvShowsRoute
 import com.elna.moviedb.feature.search.presentation.ui.SearchScreen
 
 fun EntryProviderScope<Route>.searchEntry(
-    rootBackStack: SnapshotStateList<Route>
+    navigator: Navigator
 ) {
     entry<SearchRoute> {
         SearchScreen(
             onMovieClicked = { movieId ->
-                rootBackStack.add(MoviesRoute.MovieDetailsRoute(movieId))
+                navigator.navigate(MoviesRoute.MovieDetailsRoute(movieId))
             },
             onTvShowClicked = { tvShowId ->
-                rootBackStack.add(TvShowsRoute.TvShowDetailsRoute(tvShowId))
+                navigator.navigate(TvShowsRoute.TvShowDetailsRoute(tvShowId))
             },
             onPersonClicked = { personId ->
-                rootBackStack.add(PersonDetailsRoute(personId))
+                navigator.navigate(PersonDetailsRoute(personId))
             }
         )
     }
