@@ -2,6 +2,17 @@ import UIKit
 import SwiftUI
 import ComposeApp
 
+struct ContentView: View {
+    var body: some View {
+        if #available(iOS 26.0, *) {
+            LiquidGlassContentView()
+        } else {
+            ComposeView()
+                .ignoresSafeArea(.all) // Compose has own keyboard handler
+        }
+    }
+}
+
 /// Pre-iOS 26 fallback: Compose drives all navigation (tab bar + back stack).
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
@@ -9,17 +20,6 @@ struct ComposeView: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
-}
-
-struct ContentView: View {
-    var body: some View {
-        if #available(iOS 26.0, *) {
-            LiquidGlassContentView()
-        } else {
-            ComposeView()
-                    .ignoresSafeArea(.all) // Compose has own keyboard handler
-        }
-    }
 }
 
 // MARK: - iOS 26+ Liquid Glass shell
